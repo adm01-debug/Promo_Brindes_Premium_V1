@@ -1,6 +1,6 @@
 # Matriz local de navegadores — 22/09/2026
 
-Playwright `1.63.0`, Linux headless e build de produção. Cada motor executou as mesmas 28 jornadas: catálogo/contrato/API, busca e histórico, seleção e briefing, menu e reflow móvel, diálogos, privacidade, plano e axe nos fluxos representativos. Foram **84 aprovações** após corrigir os dois defeitos abaixo.
+Playwright `1.63.0`, Linux headless e build de produção. Cada motor executou as mesmas 28 jornadas: catálogo/contrato/API, busca e histórico, seleção e briefing, menu e reflow móvel, diálogos, privacidade, plano e axe nos fluxos representativos. Foram **84 aprovações** localmente e no [CI remoto do commit `6e87c3b`](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35740802785), após corrigir os dois defeitos abaixo.
 
 | Motor | Versão observada | Larguras exercitadas | Resultado local |
 | --- | --- | --- | --- |

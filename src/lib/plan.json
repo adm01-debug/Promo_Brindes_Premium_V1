@@ -4739,8 +4739,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "A matriz local registra 28 jornadas por Chromium, Firefox e WebKit, com 84 testes aprovados e correções de foco e isolamento da prévia; o CI foi ampliado. Aparelhos físicos e Safari instalado ainda não foram exercitados.",
-        "nextAction": "Confirmar a matriz no CI remoto e testar Safari, teclado virtual e navegação em aparelhos reais.",
+        "finding": "A matriz local e o CI remoto aprovaram 28 jornadas por Chromium, Firefox e WebKit, com correções de foco e isolamento da prévia. Aparelhos físicos e Safari instalado ainda não foram exercitados.",
+        "nextAction": "Testar Safari, teclado virtual e navegação em aparelhos reais.",
         "evidence": [
           "playwright.config.ts",
           "docs/VALIDACAO.md",
