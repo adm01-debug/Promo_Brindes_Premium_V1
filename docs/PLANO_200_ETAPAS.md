@@ -1058,15 +1058,15 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **117. Implementar envio real no backend.** Enviar briefing validado com chave de idempotência e proteção contra abuso.
   - **Situação auditada:** Parcial.
   - **Aceite:** Duplo clique e retry não geram oportunidades duplicadas.
-  - **Constatação:** Entrega opcional usa chave estável, persistência/hash, lease atômica, leitura sem cache do catálogo no POST e rate limit compartilhado no banco; falta receptor comercial homologado e validar o cabeçalho de IP no proxy real.
-  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`, `supabase/migrations/20260922142000_add_briefing_rate_limit.sql`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
+  - **Constatação:** Entrega opcional usa chave estável, hash da intenção normalizada, consulta prévia de protocolo, lease atômica, leitura sem cache do catálogo para novos envios e rate limit compartilhado no banco. Retry entregue recupera o protocolo após retirada do produto; novo envio da peça retirada é rejeitado. Falta receptor comercial homologado e validar o cabeçalho de IP no proxy real.
+  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`, `supabase/migrations/20260922142000_add_briefing_rate_limit.sql`, `supabase/migrations/20260922150000_lookup_briefing_intent.sql`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
   - **Próxima ação:** Integrar o destino aprovado e validar a criação de oportunidade sem duplicação.
   - **Dependências:** 116 (Parcial), 126 (Parcial), 134 (Concluída no escopo).
 
 - [ ] **118. Implementar resposta confiável.** Apresentar protocolo somente após confirmação persistida no servidor.
   - **Situação auditada:** Parcial.
   - **Aceite:** Falha permite tentar novamente e sucesso nunca é simulado por temporizador.
-  - **Constatação:** Protocolo é persistido antes da entrega; a interface rejeita 2xx sem protocolo válido e mantém o formulário. Aceite do receptor seguido de falha na confirmação do banco não é marcado como entrega rejeitada. Falta validar retorno e conciliação do CRM homologado.
+  - **Constatação:** Protocolo é persistido antes da entrega; a interface rejeita 2xx sem protocolo válido e mantém o formulário. Retry de entrega concluída recupera o protocolo mesmo após retirada do produto; uma entrega ainda pendente com produto retirado preserva o protocolo sem novo disparo. Aceite do receptor seguido de falha na confirmação do banco não é marcado como entrega rejeitada. Falta validar retorno e conciliação do CRM homologado.
   - **Evidências e referências:** `src/app/api/briefings/route.ts`, `docs/audit/plan-database-check.json`, `tests/storefront.spec.ts`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
   - **Próxima ação:** Testar resposta, erro e conciliação com o receptor comercial aprovado.
   - **Dependências:** 117 (Parcial).
@@ -1248,7 +1248,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **139. Implementar retries e conciliação.** Prever fila, tentativas controladas e tratamento de falhas de integração.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Uma falha parcial não perde briefing e pode ser reprocessada por usuário autorizado.
-  - **Constatação:** Aceite do receptor seguido de falha na confirmação local não é registrado como rejeição; o estado incerto permanece para conciliação. Ainda não há outbox, retry persistente ou processo de reconciliação homologado.
+  - **Constatação:** Aceite do receptor seguido de falha na confirmação local não é registrado como rejeição; o estado incerto permanece para conciliação. Retry com produto retirado preserva o protocolo sem novo envio, mas ainda não há outbox, retry persistente ou processo de reconciliação homologado.
   - **Evidências e referências:** `src/app/api/briefings/route.ts`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
   - **Próxima ação:** Persistir envio e reprocessamento com rastreabilidade e sem perda.
   - **Dependências:** 136 (Sem entrega comprovada).

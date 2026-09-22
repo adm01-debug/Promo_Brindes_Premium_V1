@@ -11,7 +11,7 @@ Esses números contam critérios do plano, não esforço restante ou porcentagem
 - Foram lidos os **200 títulos, ações, critérios, dependências e estados anteriores**. Cada etapa recebeu uma constatação individual, referências e próxima ação em [`src/lib/plan.json`](../src/lib/plan.json).
 - Foram confrontados componentes, rotas, helpers, configurações, migration, scripts, três arquivos de testes e documentação de pesquisa/arquitetura/validação. Não se atribuiu conclusão apenas à existência de um arquivo.
 - O grafo local orientou o levantamento de relações; arquivos atuais prevaleceram quando houve alteração posterior à extração. Não se confundiu esse grafo com o artefato histórico do aplicativo comercial.
-- Foram executados 27 cenários sintéticos em módulos TypeScript e cinco em Chromium local. Os sintéticos confirmam idempotência concorrente, conflito de payload, limite de corpo com cancelamento do fluxo, data, paginação, contagem exata, consulta por IDs sem cache, allowlist de host e limite compartilhado entre instâncias; os cinco de browser verificam as correções de jornada. Não são uma certificação de produção.
+- Foram executados 31 cenários sintéticos em módulos TypeScript e cinco em Chromium local. Os sintéticos confirmam idempotência concorrente, recuperação de protocolo após retirada, conflito de payload, limite de corpo com cancelamento do fluxo, data, paginação, contagem exata, consulta por IDs sem cache, allowlist de host e limite compartilhado entre instâncias; os cinco de browser verificam as correções de jornada. Não são uma certificação de produção.
 - O PostgreSQL da vitrine foi consultado para conferir migrations, contagens, RLS e privilégios. As funções de entrega foram exercitadas dentro de uma transação revertida; nenhum dado comercial foi mantido e nenhuma mensagem foi enviada.
 - Referências externas e estudos de mercado foram avaliados como evidência documental histórica de 20/09; não houve nova pesquisa de mercado, entrevistas ou auditoria administrativa do banco operacional nesta revisão.
 
@@ -84,10 +84,11 @@ Os endpoints foram carregados com `fetch` simulado e as interações de envio fo
 | AUD-21–22 | P0 antes de ativar envio · 117, 128 | O POST podia ler produto retirado ou mínimo antigo pelo cache. Agora consulta a publicação sem cache e rejeita a intenção desatualizada. | Testar em staging com publicação e CRM homologados. |
 | AUD-23–29, 32 | P0 antes de ampliar catálogo · 127, 130 | Drift de slug, data, mídia, duplicata, filtro, paginação e correspondência de ficha passa a falhar explicitamente. | Homologar contrato editorial completo, variantes e staging. |
 | AUD-30–31 | P0 antes de ativar envio · 118, 139 | Aceite do receptor seguido de falha no banco não é marcado como rejeição; falha real do receptor continua registrada. | Exigir idempotência do CRM e conciliação por protocolo. |
+| AUD-33–36 | P0 antes de ativar envio · 117, 118, 139 | Retry de entrega concluída após retirada recupera o protocolo sem novo webhook; pendência preserva o protocolo sem reenviar; conteúdo divergente retorna `409`, e normalização equivalente não gera conflito. | Validar com CRM homologado e implantar conciliação operacional de estados incertos. |
 
 Os controles **AUD-07 e AUD-08 passam**: projeto operacional e host semelhante são rejeitados antes da leitura do catálogo.
 
-A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, JavaScript, fontes e chunks, 27 cenários sintéticos, cinco sondas de browser e 102 testes E2E em Chromium, Firefox e WebKit local. A cobertura inclui API 503, offline, mídia 403, resposta atrasada, página fora do intervalo, protocolo ausente, seleção retirada ou com mínimo alterado antes do briefing e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
+A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, JavaScript, fontes e chunks, 31 cenários sintéticos, cinco sondas de browser e 102 testes E2E em Chromium, Firefox e WebKit local. A cobertura inclui API 503, offline, mídia 403, resposta atrasada, página fora do intervalo, protocolo ausente, seleção retirada ou com mínimo alterado antes do briefing, retry após retirada e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
 
 O painel atualizado também foi inspecionado em **390 e 1440 pixels**, com filtro de parciais e critério expandido: sem overflow horizontal e sem violações nas regras axe selecionadas. [Registro da inspeção](audit/plan-dashboard-check.json).
 
@@ -127,13 +128,13 @@ Essas lacunas ainda exigem decisões, ambiente e evidências próprias. As corre
 
 ## Banco e repositório
 
-O banco oficial **da vitrine** confirmou **8 produtos publicados**, **0 briefings comerciais**, migrations até `20260922143000`, RLS nas tabelas da aplicação e ausência de privilégios anônimos de escrita. `anon` não tem SELECT em briefings ou limites. A persistência, reserva concorrente e finalização foram exercitadas em transação revertida; o limite compartilhado aceitou cinco chamadas, bloqueou a sexta e expôs um retorno REST booleano. Evidências: [consulta de auditoria](audit/plan-database-check.json) e [controle de abuso](audit/2026-09-22-rate-limit.md).
+O banco oficial **da vitrine** confirmou **8 produtos publicados**, **0 briefings comerciais**, migrations até `20260922150000`, RLS nas tabelas da aplicação e ausência de privilégios anônimos de escrita. `anon` não tem SELECT em briefings ou limites; a nova consulta por protocolo também foi negada à chave pública (`401`) e aceita pela chave de serviço (`200`, sem registro). A persistência, reserva concorrente e finalização foram exercitadas em transação revertida; o limite compartilhado aceitou cinco chamadas, bloqueou a sexta e expôs um retorno REST booleano. Evidências: [consulta de auditoria](audit/plan-database-check.json), [controle de abuso](audit/2026-09-22-rate-limit.md) e [retry após retirada](audit/2026-09-22-server-catalog-and-delivery.md).
 
 Isso comprova schema, dados da curadoria, consumo dinâmico nas jornadas públicas e persistência técnica pronta. Não comprova integração no CRM. A conta da CLI continua sem permissão de Management API para `supabase link`; as migrations foram aplicadas por conexão PostgreSQL autorizada. O banco operacional `doufsxqlfjyuvxuezpln` não recebeu alterações nesta revisão.
 
 Também foi feita comparação exata da chave de servidor e senha atuais contra arquivos candidatos ao Git e os arquivos públicos de `.next/static`: **zero ocorrências**, sem registrar valores. [Evidência da inspeção](audit/plan-secret-scan.json). O scanner automatizado agora cobre código, scripts e build estático; logs operacionais completos ainda não existem para auditoria, por isso a etapa 143 permanece parcial.
 
-O código anterior está sincronizado no GitHub e as migrations do banco dedicado estão atualizadas. As correções desta rodada não exigem nova migration. Publicação do código no GitHub não significa hospedagem do site em domínio de produção.
+A migration nova foi aplicada ao banco dedicado e uma checagem posterior confirmou que não há migrations pendentes. A publicação do código é conferida pelo commit remoto e CI; ela não significa hospedagem do site em domínio de produção.
 
 ## Gates e sequência recomendada
 

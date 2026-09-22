@@ -3041,13 +3041,14 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Entrega opcional usa chave estável, persistência/hash, lease atômica, leitura sem cache do catálogo no POST e rate limit compartilhado no banco; falta receptor comercial homologado e validar o cabeçalho de IP no proxy real.",
+        "finding": "Entrega opcional usa chave estável, hash da intenção normalizada, consulta prévia de protocolo, lease atômica, leitura sem cache do catálogo para novos envios e rate limit compartilhado no banco. Retry entregue recupera o protocolo após retirada do produto; novo envio da peça retirada é rejeitado. Falta receptor comercial homologado e validar o cabeçalho de IP no proxy real.",
         "nextAction": "Integrar o destino aprovado e validar a criação de oportunidade sem duplicação.",
         "evidence": [
           "src/app/api/briefings/route.ts",
           "src/components/Storefront.tsx",
           "docs/audit/plan-browser-scenarios.json",
           "supabase/migrations/20260922142000_add_briefing_rate_limit.sql",
+          "supabase/migrations/20260922150000_lookup_briefing_intent.sql",
           "docs/audit/2026-09-22-server-catalog-and-delivery.md"
         ]
       }
@@ -3068,7 +3069,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Protocolo é persistido antes da entrega; a interface rejeita 2xx sem protocolo válido e mantém o formulário. Aceite do receptor seguido de falha na confirmação do banco não é marcado como entrega rejeitada. Falta validar retorno e conciliação do CRM homologado.",
+        "finding": "Protocolo é persistido antes da entrega; a interface rejeita 2xx sem protocolo válido e mantém o formulário. Retry de entrega concluída recupera o protocolo mesmo após retirada do produto; uma entrega ainda pendente com produto retirado preserva o protocolo sem novo disparo. Aceite do receptor seguido de falha na confirmação do banco não é marcado como entrega rejeitada. Falta validar retorno e conciliação do CRM homologado.",
         "nextAction": "Testar resposta, erro e conciliação com o receptor comercial aprovado.",
         "evidence": [
           "src/app/api/briefings/route.ts",
@@ -3593,7 +3594,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Aceite do receptor seguido de falha na confirmação local não é registrado como rejeição; o estado incerto permanece para conciliação. Ainda não há outbox, retry persistente ou processo de reconciliação homologado.",
+        "finding": "Aceite do receptor seguido de falha na confirmação local não é registrado como rejeição; o estado incerto permanece para conciliação. Retry com produto retirado preserva o protocolo sem novo envio, mas ainda não há outbox, retry persistente ou processo de reconciliação homologado.",
         "nextAction": "Persistir envio e reprocessamento com rastreabilidade e sem perda.",
         "evidence": [
           "src/app/api/briefings/route.ts",

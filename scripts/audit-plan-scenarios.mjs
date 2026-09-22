@@ -105,6 +105,21 @@ function deliveryHarness() {
       return new Response(JSON.stringify([item]), {
         headers: { "content-range": "0-0/1" },
       });
+    if (url.pathname.endsWith("/lookup_premium_briefing")) {
+      const body = JSON.parse(String(init.body));
+      const current = records.get(body.p_idempotency_key);
+      return Response.json(
+        current
+          ? [
+              {
+                protocol: current.protocol,
+                payload_conflict: current.hash !== body.p_request_hash,
+                delivery_status: current.status,
+              },
+            ]
+          : [],
+      );
+    }
     if (url.pathname.endsWith("/persist_premium_briefing")) {
       const body = JSON.parse(String(init.body));
       const current = records.get(body.p_idempotency_key);
@@ -208,6 +223,123 @@ await probe("AUD-02-key-payload-conflict", 409, async () => {
       request("audit-conflict-0001", { ...payload, company: "Outra empresa" }),
     )
   ).status;
+});
+
+await probe(
+  "AUD-33-delivered-retry-after-withdrawal",
+  "201,200;1",
+  async () => {
+    const harness = deliveryHarness();
+    let withdrawn = false;
+    const api = load(
+      "src/app/api/briefings/route.ts",
+      activeEnv,
+      async (input, init = {}) => {
+        if (
+          new URL(String(input)).pathname === "/rest/v1/premium_catalog_items"
+        ) {
+          const rows = withdrawn ? [] : [item];
+          return new Response(JSON.stringify(rows), {
+            headers: { "content-range": rows.length ? "0-0/1" : "*/0" },
+          });
+        }
+        return harness.fetcher(input, init);
+      },
+    );
+    const first = await api.POST(request("audit-withdrawn-retry-0001"));
+    withdrawn = true;
+    const retry = await api.POST(request("audit-withdrawn-retry-0001"));
+    return `${first.status},${retry.status};${harness.webhookCalls()}`;
+  },
+);
+
+await probe(
+  "AUD-34-pending-retry-after-withdrawal",
+  "503,503;true",
+  async () => {
+    const harness = deliveryHarness();
+    let withdrawn = false;
+    let deliveries = 0;
+    const api = load(
+      "src/app/api/briefings/route.ts",
+      activeEnv,
+      async (input, init = {}) => {
+        const url = new URL(String(input));
+        if (url.pathname === "/rest/v1/premium_catalog_items") {
+          const rows = withdrawn ? [] : [item];
+          return new Response(JSON.stringify(rows), {
+            headers: { "content-range": rows.length ? "0-0/1" : "*/0" },
+          });
+        }
+        if (url.hostname === "localhost") {
+          deliveries++;
+          return new Response("unavailable", { status: 503 });
+        }
+        return harness.fetcher(input, init);
+      },
+    );
+    const first = await api.POST(request("audit-pending-withdrawal-0001"));
+    const firstBody = await first.json();
+    withdrawn = true;
+    const retry = await api.POST(request("audit-pending-withdrawal-0001"));
+    const retryBody = await retry.json();
+    return `${first.status},${retry.status};${deliveries === 1 && firstBody.protocol === retryBody.protocol}`;
+  },
+);
+
+await probe("AUD-35-conflict-after-withdrawal", 409, async () => {
+  const harness = deliveryHarness();
+  let withdrawn = false;
+  const api = load(
+    "src/app/api/briefings/route.ts",
+    activeEnv,
+    async (input, init = {}) => {
+      if (
+        new URL(String(input)).pathname === "/rest/v1/premium_catalog_items"
+      ) {
+        const rows = withdrawn ? [] : [item];
+        return new Response(JSON.stringify(rows), {
+          headers: { "content-range": rows.length ? "0-0/1" : "*/0" },
+        });
+      }
+      return harness.fetcher(input, init);
+    },
+  );
+  assert.equal(
+    (await api.POST(request("audit-withdrawn-conflict-0001"))).status,
+    201,
+  );
+  withdrawn = true;
+  return (
+    await api.POST(
+      request("audit-withdrawn-conflict-0001", {
+        ...payload,
+        company: "Outra empresa",
+      }),
+    )
+  ).status;
+});
+
+await probe("AUD-36-normalized-intent-retry", "200;1", async () => {
+  const harness = deliveryHarness();
+  const api = load(
+    "src/app/api/briefings/route.ts",
+    activeEnv,
+    harness.fetcher,
+  );
+  assert.equal(
+    (await api.POST(request("audit-normalized-retry-0001"))).status,
+    201,
+  );
+  const retry = await api.POST(
+    request("audit-normalized-retry-0001", {
+      ...payload,
+      name: `  ${payload.name}  `,
+      email: payload.email.toUpperCase(),
+      budget: "",
+    }),
+  );
+  return `${retry.status};${harness.webhookCalls()}`;
 });
 
 await probe("AUD-03-body-without-content-length", 413, async () => {

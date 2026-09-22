@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-22T15:23:34.164Z",
+  "generatedAt": "2026-09-22T15:50:21.881Z",
   "scope": "Isolated source modules; synthetic inputs; no external network or database writes",
   "results": [
     {
@@ -12,6 +12,30 @@
       "id": "AUD-02-key-payload-conflict",
       "expected": 409,
       "observed": 409,
+      "passed": true
+    },
+    {
+      "id": "AUD-33-delivered-retry-after-withdrawal",
+      "expected": "201,200;1",
+      "observed": "201,200;1",
+      "passed": true
+    },
+    {
+      "id": "AUD-34-pending-retry-after-withdrawal",
+      "expected": "503,503;true",
+      "observed": "503,503;true",
+      "passed": true
+    },
+    {
+      "id": "AUD-35-conflict-after-withdrawal",
+      "expected": 409,
+      "observed": 409,
+      "passed": true
+    },
+    {
+      "id": "AUD-36-normalized-intent-retry",
+      "expected": "200;1",
+      "observed": "200;1",
       "passed": true
     },
     {
@@ -165,6 +189,6 @@
       "passed": true
     }
   ],
-  "passed": 27,
+  "passed": 31,
   "failed": 0
 }

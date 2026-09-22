@@ -29,6 +29,8 @@ const text = (value: unknown, max: number) => {
 };
 const optionalText = (value: unknown, max: number) =>
   value === undefined || value === null ? "" : text(value, max);
+const productIdPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function isCalendarDate(value: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -41,11 +43,8 @@ function isCalendarDate(value: string) {
   );
 }
 
-/** Validates public input without accepting supplier or price data from a browser. */
-export function validateBriefing(
-  input: unknown,
-  catalogItems: readonly Product[] = products,
-): ValidationResult {
+/** Normalizes the user's intent independently of mutable catalog data. */
+export function parseBriefingInput(input: unknown): ValidationResult {
   if (!input || typeof input !== "object" || Array.isArray(input))
     return { ok: false, message: "Solicitação inválida." };
   const data = input as Record<string, unknown>;
@@ -86,16 +85,13 @@ export function validateBriefing(
     const item = rawItem as Record<string, unknown>;
     const productId = text(item.productId, 64);
     const quantity = item.quantity;
-    const product = catalogItems.find(
-      (candidate) => candidate.id === productId,
-    );
     if (
       !productId ||
-      !product ||
+      !productIdPattern.test(productId) ||
       seen.has(productId) ||
       !Number.isInteger(quantity) ||
       typeof quantity !== "number" ||
-      quantity < Math.max(1, product.minimum ?? 1) ||
+      quantity < 1 ||
       quantity > 10000
     )
       return { ok: false, message: "Revise as quantidades selecionadas." };
@@ -107,6 +103,23 @@ export function validateBriefing(
     ok: true,
     value: { name, company, email, occasion, date, budget, message, items },
   };
+}
+
+/** Validates public input against the current catalog without trusting browser product data. */
+export function validateBriefing(
+  input: unknown,
+  catalogItems: readonly Product[] = products,
+): ValidationResult {
+  const parsed = parseBriefingInput(input);
+  if (!parsed.ok) return parsed;
+  for (const item of parsed.value.items) {
+    const product = catalogItems.find(
+      (candidate) => candidate.id === item.productId,
+    );
+    if (!product || item.quantity < Math.max(1, product.minimum ?? 1))
+      return { ok: false, message: "Revise as quantidades selecionadas." };
+  }
+  return parsed;
 }
 
 export function toCommercialPayload(

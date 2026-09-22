@@ -2,8 +2,10 @@ import { createHash, createHmac } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import {
   BRIEFING_CONTRACT_VERSION,
+  parseBriefingInput,
   toCommercialPayload,
   validateBriefing,
+  type BriefingPayload,
 } from "@/lib/briefing";
 import { getSiteCatalogPage } from "@/lib/site-database";
 import {
@@ -22,6 +24,10 @@ type PersistedBriefing = {
   payload_conflict: boolean;
   delivery_status: "pending" | "delivering" | "delivered" | "failed";
 };
+type ExistingBriefing = Pick<
+  PersistedBriefing,
+  "protocol" | "payload_conflict" | "delivery_status"
+>;
 type DeliveryClaim = {
   protocol: string;
   claimed: boolean;
@@ -124,37 +130,52 @@ function briefingHash(value: object) {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
 }
 
-function submittedProductIds(input: unknown) {
-  if (!input || typeof input !== "object" || Array.isArray(input)) return [];
-  const items = (input as Record<string, unknown>).items;
-  if (!Array.isArray(items) || items.length > 24) return [];
-  return items.flatMap((item) => {
-    const id =
-      item && typeof item === "object" && !Array.isArray(item)
-        ? (item as Record<string, unknown>).productId
-        : null;
-    return typeof id === "string" &&
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        id,
-      )
-      ? [id]
-      : [];
-  });
+async function lookupBriefing(
+  config: BriefingDeliveryConfig["database"],
+  key: string,
+  body: BriefingPayload,
+) {
+  const rows = await rpc<ExistingBriefing[]>(
+    config,
+    "lookup_premium_briefing",
+    {
+      p_idempotency_key: key,
+      p_request_hash: briefingHash(body),
+    },
+  );
+  if (!Array.isArray(rows) || rows.length > 1)
+    throw new Error("BRIEFING_LOOKUP_INVALID");
+  const row = rows[0];
+  if (!row) return null;
+  if (
+    typeof row.protocol !== "string" ||
+    typeof row.payload_conflict !== "boolean" ||
+    !["pending", "delivering", "delivered", "failed"].includes(
+      row.delivery_status,
+    )
+  )
+    throw new Error("BRIEFING_LOOKUP_INVALID");
+  return row;
+}
+
+function existingResponse(row: ExistingBriefing | null) {
+  if (!row) return null;
+  if (row.payload_conflict)
+    return jsonNoStore({ error: "IDEMPOTENCY_PAYLOAD_CONFLICT" }, 409);
+  if (row.delivery_status === "delivered")
+    return jsonNoStore({ protocol: row.protocol, duplicate: true }, 200);
+  if (row.delivery_status === "delivering")
+    return jsonNoStore(
+      { protocol: row.protocol, duplicate: true, pending: true },
+      202,
+    );
+  return null;
 }
 
 async function persistBriefing(
   config: BriefingDeliveryConfig["database"],
   key: string,
-  body: {
-    name: string;
-    company: string;
-    email: string;
-    occasion: string;
-    date?: string;
-    budget?: string;
-    message?: string;
-    items: { productId: string; quantity: number }[];
-  },
+  body: BriefingPayload,
   catalog: Awaited<ReturnType<typeof getSiteCatalogPage>>["items"],
 ) {
   const commercial = toCommercialPayload(body, catalog);
@@ -163,7 +184,7 @@ async function persistBriefing(
     "persist_premium_briefing",
     {
       p_idempotency_key: key,
-      p_request_hash: briefingHash(commercial),
+      p_request_hash: briefingHash(body),
       p_contact_name: body.name,
       p_company: body.company,
       p_email: body.email,
@@ -260,26 +281,65 @@ export async function POST(request: NextRequest) {
       return jsonNoStore({ error: "PAYLOAD_TOO_LARGE" }, 413);
     return jsonNoStore({ error: "INVALID_BRIEFING" }, 422);
   }
+  const intent = parseBriefingInput(input);
+  if (!intent.ok)
+    return jsonNoStore(
+      { error: "INVALID_BRIEFING", message: intent.message },
+      422,
+    );
+
+  let existing: ExistingBriefing | null = null;
+  if (config) {
+    try {
+      existing = await lookupBriefing(config.database, key!, intent.value);
+    } catch {
+      return jsonNoStore({ error: "PERSISTENCE_UNAVAILABLE" }, 503);
+    }
+    const response = existingResponse(existing);
+    if (response) return response;
+  }
+
   let catalog;
   try {
     catalog = (
       await getSiteCatalogPage(
         {
-          ids: submittedProductIds(input),
+          ids: intent.value.items.map((item) => item.productId),
           pageSize: 24,
         },
         { fresh: true },
       )
     ).items;
   } catch {
+    if (existing)
+      return jsonNoStore(
+        { error: "BRIEFING_PENDING", protocol: existing.protocol },
+        503,
+      );
     return jsonNoStore({ error: "CATALOG_UNAVAILABLE" }, 503);
   }
   const parsed = validateBriefing(input, catalog);
-  if (!parsed.ok)
+  if (!parsed.ok) {
+    // Another request may have persisted this key after the first lookup.
+    if (!existing && config) {
+      try {
+        existing = await lookupBriefing(config.database, key!, intent.value);
+      } catch {
+        return jsonNoStore({ error: "PERSISTENCE_UNAVAILABLE" }, 503);
+      }
+      const response = existingResponse(existing);
+      if (response) return response;
+    }
+    if (existing)
+      return jsonNoStore(
+        { error: "BRIEFING_PENDING", protocol: existing.protocol },
+        503,
+      );
     return jsonNoStore(
       { error: "INVALID_BRIEFING", message: parsed.message },
       422,
     );
+  }
   if (!config) return jsonNoStore({ error: "DESTINATION_UNAVAILABLE" }, 503);
 
   let persisted;

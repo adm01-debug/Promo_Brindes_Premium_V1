@@ -10,8 +10,13 @@
 | Ficha por slug recebe outro produto | A página poderia mostrar um item diferente sob o endereço solicitado. | A leitura da ficha exige correspondência do slug consultado. |
 | Receptor responde com sucesso, mas o banco falha ao registrar esse sucesso | A falha de confirmação caía no mesmo bloco de erro do webhook e tentava marcar a entrega como rejeitada. | O servidor mantém o estado incerto e responde `BRIEFING_PENDING`; não grava rejeição falsa. |
 | Receptor responde com falha | A tentativa precisa continuar registrada como falha recuperável. | O servidor registra falha de entrega e preserva o protocolo. |
+| Produto é retirado depois de um envio entregue e o cliente repete a mesma chave | A validação do catálogo devolvia `422` antes de consultar a solicitação já registrada. | A consulta prévia por chave e hash da intenção normalizada recupera o protocolo com `200`; não chama novamente o receptor. |
+| Produto é retirado enquanto o envio permanece pendente | Uma nova tentativa poderia perder o vínculo com o protocolo. | O servidor retorna `BRIEFING_PENDING` e o mesmo protocolo, sem novo disparo da peça retirada. Uma nova chave ainda recebe `422`. |
+| A chave é repetida com conteúdo alterado após a retirada | O catálogo retirado podia ocultar o conflito. | O servidor retorna `409` antes da validação editorial. Espaços e caixa do e-mail normalizados não criam um conflito falso. |
 
-`node scripts/audit-plan-scenarios.mjs` reproduz **27 casos sintéticos**, incluindo `AUD-21` a `AUD-32` para os cenários acima. O build de produção consulta o catálogo real e concluiu com os oito produtos publicados. A suíte E2E local mantém **102 aprovações** nos três motores.
+`node scripts/audit-plan-scenarios.mjs` reproduz **31 casos sintéticos**, incluindo `AUD-21` a `AUD-36` para os cenários acima. O build de produção consulta o catálogo real e concluiu com os oito produtos publicados. A suíte E2E local mantém **102 aprovações** nos três motores.
+
+A migration `20260922150000_lookup_briefing_intent.sql` só instala a consulta após confirmar que não há briefings antigos com hash do payload comercial. O banco oficial da vitrine tinha zero registros; a função respondeu `200` com lista vazia usando a chave de serviço, enquanto a chave pública recebeu `401`. Em transação revertida, um registro sintético retornou correspondência com o mesmo hash e conflito com hash diferente (`LOOKUP_OK`); após o rollback, a contagem permaneceu zero. A checagem posterior de migrations confirmou o banco atualizado. Nenhum briefing comercial foi criado por esses testes.
 
 ## Limite operacional
 
