@@ -37,6 +37,23 @@ O produto de UUID `0144f10f-c311-47eb-afd6-14b9ebef35b6`, SKU `08255`, foi consu
 
 O projeto operacional `doufsxqlfjyuvxuezpln` não recebeu consulta nem escrita desse comando. A suíte confirma que esse destino é rejeitado antes da rede.
 
+## Repositório, CI e produção
+
+O commit técnico `1e7b55de2ee3d9a38b5c06fa37ce3d635dcb0ecf` foi enviado ao `main`. A [qualidade remota 35793370735](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35793370735) passou em 4m13s com tipos, plano, 86 contratos unitários, build, scanner, orçamento, 57 cenários sintéticos e 213 jornadas de navegador. O [banco isolado 35793370707](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35793370707) passou em 2m03s com rebuild de onze migrations, 64 contratos pgTAP, concorrência e lint.
+
+A Vercel publicou o commit técnico no deploy imutável `dpl_28aqxQGamE3XAu82usMyymqhh4qS`, URL `promo-brindes-premium-v1-jgyubc3h0-juca1.vercel.app`, com status `Ready` e alias `promo-brindes-premium-v1.vercel.app`.
+
+O smoke test autenticado no deploy confirmou:
+
+- `GET /api/catalog?pageSize=24`: `200`, oito itens, total oito, contrato `2026-09-22.2` no header e corpo e fonte `site-database`;
+- cache da mesma consulta: `MISS`, seguido por `HIT` com idade de dois segundos;
+- parâmetro desconhecido: `400 INVALID_CATALOG_QUERY` com `no-store`;
+- home, ficha permanente e `robots.txt`: `200`;
+- `X-Robots-Tag: noindex, nofollow`, CSP, HSTS, `nosniff` e `DENY` presentes;
+- logs do deploy: quatro requisições informativas observadas, sem erro de runtime.
+
+O dry-run de migrations confirmou o remoto atualizado e sem migration pendente. O dry-run do catálogo verificou os oito produtos ativos e não escreveu. O dry-run de retirada foi seguido por nova inspeção com `published=true`, limites nulos e o mesmo `updated_at`.
+
 ## Limites
 
 O controle técnico não concede autorização editorial, direitos de imagem ou responsabilidade a uma pessoa. A etapa 050 continua aberta até os nomes e o SLA serem aprovados. Uma futura execução com `--apply` deve ter uma decisão editorial concreta e gerar evidência operacional própria.
