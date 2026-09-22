@@ -1,12 +1,12 @@
 # Matriz local de navegadores — 22/09/2026
 
-Playwright `1.63.0`, Linux headless e build de produção. A matriz vigente executou as mesmas 66 jornadas em cada motor: catálogo/contrato/API, facetas combináveis, busca e histórico, seleção e briefing, recomendações contextuais, metadados, teclado, alvos, rede lenta, menu e reflow móvel, diálogos, privacidade, plano e axe nos fluxos representativos. Foram **198 aprovações locais**. A matriz anterior também passou no [CI remoto do commit `7dcc960`](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35776344257).
+Playwright `1.63.0`, Linux headless e build de produção. A matriz vigente executa as mesmas 67 jornadas em cada motor: catálogo/contrato/API, facetas combináveis, busca e histórico, seleção e briefing, recomendações contextuais, metadados, teclado, alvos, privacidade de runtime, rede lenta, menu e reflow móvel, diálogos, privacidade, plano e axe nos fluxos representativos. A rodada atual tem **201 aprovações locais**; a matriz imediatamente anterior teve 198 aprovações no [CI remoto do commit `41f2af9`](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35782380054).
 
 | Motor    | Versão observada | Larguras exercitadas | Resultado local |
 | -------- | ---------------- | -------------------- | --------------- |
-| Chromium | `153.0.8010.12`  | 1280, 390 e 320 px   | 66/66           |
-| Firefox  | `155.0`          | 1280, 390 e 320 px   | 66/66           |
-| WebKit   | `26.6`           | 1280, 390 e 320 px   | 66/66           |
+| Chromium | `153.0.8010.12`  | 1280, 390 e 320 px   | 67/67           |
+| Firefox  | `155.0`          | 1280, 390 e 320 px   | 67/67           |
+| WebKit   | `26.6`           | 1280, 390 e 320 px   | 67/67           |
 
 O primeiro ensaio encontrou duas falhas. No Firefox, ao escolher “A curadoria” no menu móvel, o diálogo devolvia o foco ao acionador depois da rolagem e a seção saía da viewport. O fechamento agora termina antes de rolar e foca o título de destino. No WebKit, várias execuções encontravam um mesmo `Map` de rate limit local na prévia desativada, causando `429` no teste de validação; a entrega ativada já usa limite distribuído no banco, e a prévia não consome essa janela nem grava contatos.
 

@@ -26,7 +26,7 @@ Node 22.12+ ou 24 LTS recomendado. O projeto usa Next.js 16, React 19 e TypeScri
 - Detalhe rápido, quantidades com mínimo cadastrado e remoção de itens.
 - Briefing com validação e download de arquivo local.
 - Plano interativo com 200 etapas, filtros, progresso local e exportação Markdown.
-- Revisão individual das 200 etapas: **97 critérios comprovados no escopo, 57 entregas parciais e 46 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
+- Revisão individual das 200 etapas: **101 critérios comprovados no escopo, 53 entregas parciais e 46 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
 - Fichas com recomendações publicadas da mesma coleção editorial, sem inferir estoque ou compatibilidade de kit.
 - Metadados Open Graph/Twitter por template, request ID e tempo de servidor no catálogo público.
 - Páginas permanentes de produto, metadados por peça e infraestrutura de sitemap/robots preparada para lançamento autorizado.
@@ -67,6 +67,9 @@ O planejamento é uma ferramenta desta prévia. Antes de lançar a vitrine públ
 - [Inventário reproduzível de componentes e estados](docs/INVENTARIO_DE_COMPONENTES.md)
 - [Política de URLs, facetas e canonical](docs/POLITICA_DE_URLS_E_CANONICAL.md)
 - [Observabilidade, limiares e runbooks](docs/OBSERVABILIDADE_E_ALERTAS.md)
+- [Inventário de privacidade do runtime](docs/INVENTARIO_PRIVACIDADE_RUNTIME.md)
+- [Auditoria de acessibilidade do conteúdo](docs/AUDITORIA_ACESSIBILIDADE_CONTEUDO.md)
+- [Validação do ambiente Vercel e catálogo canônico](docs/audit/2026-09-22-production-environment.md)
 - [Plano de 200 etapas com checklists](docs/PLANO_200_ETAPAS.md)
 - [Plano em CSV](docs/PLANO_200_ETAPAS.csv)
 - [Validação e limitações](docs/VALIDACAO.md)

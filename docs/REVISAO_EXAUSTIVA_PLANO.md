@@ -2,7 +2,7 @@
 
 Revisão: **22/09/2026**, identificador `2026-09-22-audit-1`. Código base examinado: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. Projeto: **Promo_Brindes_Premium_V1**. A referência histórica de `Promo_Gifts_V4` continua sendo a auditoria dirigida do commit `44857d5`.
 
-**Não implementamos todas as melhorias.** Há **97 etapas com o próprio critério comprovado, 57 parciais e 46 sem entrega comprovada**. São **103 etapas abertas**, das quais **76 são P0**. O site tem catálogo curado, descoberta multifacetada, recomendações editoriais, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
+**Não implementamos todas as melhorias.** Há **101 etapas com o próprio critério comprovado, 53 parciais e 46 sem entrega comprovada**. São **99 etapas abertas**, das quais **73 são P0**. O site tem catálogo curado, descoberta multifacetada, recomendações editoriais, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
 
 Esses números contam critérios do plano, não esforço restante ou porcentagem de prontidão comercial. Entrevistas, licenças, homologações e monitoramento têm peso diferente de um componente visual. A conclusão de uma entrega isolada não libera suas dependências nem os gates de lançamento.
 
@@ -11,7 +11,7 @@ Esses números contam critérios do plano, não esforço restante ou porcentagem
 - Foram lidos os **200 títulos, ações, critérios, dependências e estados anteriores**. Cada etapa recebeu uma constatação individual, referências e próxima ação em [`src/lib/plan.json`](../src/lib/plan.json).
 - Foram confrontados componentes, rotas, helpers, configurações, migration, scripts, três arquivos de testes e documentação de pesquisa/arquitetura/validação. Não se atribuiu conclusão apenas à existência de um arquivo.
 - O grafo local orientou o levantamento de relações; arquivos atuais prevaleceram quando houve alteração posterior à extração. Não se confundiu esse grafo com o artefato histórico do aplicativo comercial.
-- Foram executados 43 cenários sintéticos em módulos TypeScript, 13 contratos da biblioteca e 198 execuções E2E nos três motores. Os sintéticos confirmam idempotência concorrente, recuperação de protocolo após retirada, conflito de payload, limite de corpo com cancelamento do fluxo, data, paginação em múltiplos lotes, limite e mudança de total do catálogo, contagem exata, consulta por IDs sem cache, allowlist de host e limite compartilhado entre instâncias. A matriz de browser cobre facetas, histórico, metadados, recomendações, teclado, alvos, reflow, rede lenta e acessibilidade automatizada. Não são uma certificação de produção.
+- Foram executados 43 cenários sintéticos em módulos TypeScript, 53 contratos unitários e 201 execuções E2E nos três motores. Os sintéticos confirmam idempotência concorrente, recuperação de protocolo após retirada, conflito de payload, limite de corpo com cancelamento do fluxo, data, paginação em múltiplos lotes, limite e mudança de total do catálogo, contagem exata, consulta por IDs sem cache, allowlist de host e limite compartilhado entre instâncias. A matriz de browser cobre facetas, histórico, metadados, recomendações, teclado, alvos, reflow, privacidade de runtime, rede lenta e acessibilidade automatizada. Não são uma certificação de produção.
 - O PostgreSQL da vitrine foi consultado para conferir migrations, contagens, RLS e privilégios. As funções de entrega foram exercitadas dentro de uma transação revertida; nenhum dado comercial foi mantido e nenhuma mensagem foi enviada.
 - Referências externas e estudos de mercado foram avaliados como evidência documental histórica de 20/09; não houve nova pesquisa de mercado, entrevistas ou auditoria administrativa do banco operacional nesta revisão.
 
@@ -35,13 +35,13 @@ A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [
 | 12 · Seleção, briefing e conversão             |                   5 |       3 |                      2 |
 | 13 · Contrato público e integração de catálogo |                   4 |       6 |                      0 |
 | 14 · Passagem para o comercial e CRM           |                   1 |       3 |                      6 |
-| 15 · Segurança, privacidade e governança       |                   1 |       6 |                      3 |
-| 16 · Conteúdo, SEO e descoberta orgânica       |                   3 |       5 |                      2 |
+| 15 · Segurança, privacidade e governança       |                   3 |       4 |                      3 |
+| 16 · Conteúdo, SEO e descoberta orgânica       |                   4 |       4 |                      2 |
 | 17 · Desempenho e confiabilidade               |                   8 |       0 |                      2 |
-| 18 · Acessibilidade e inclusão                 |                   8 |       1 |                      1 |
+| 18 · Acessibilidade e inclusão                 |                   9 |       0 |                      1 |
 | 19 · Qualidade, homologação e piloto           |                   4 |       2 |                      4 |
 | 20 · Lançamento, operação e evolução           |                   0 |       2 |                      8 |
-| **Total**                                      |              **97** |  **57** |                 **46** |
+| **Total**                                      |             **101** |  **53** |                 **46** |
 
 A entrega posterior da [biblioteca de catálogos](CATALOGOS.md) concluiu o vínculo estrutural da etapa 053 e tornou a etapa 157 parcial: existem seis páginas editoriais com produtos publicados, mas ainda faltam guias aprofundados com participação comercial. Os totais acima incorporam essa entrega.
 
@@ -90,7 +90,7 @@ Os endpoints foram carregados com `fetch` simulado e as interações de envio fo
 
 Os controles **AUD-07 e AUD-08 passam**: projeto operacional e host semelhante são rejeitados antes da leitura do catálogo.
 
-A validação passa em build, TypeScript, checagem integral do plano, contrato visual, orçamento de imagens, JavaScript, fontes e chunks, 43 cenários sintéticos, 13 contratos da biblioteca e 198 execuções E2E em Chromium, Firefox e WebKit local. A cobertura inclui facetas em OR/AND, recomendações publicadas, metadados, contrato exato, teclado, alvos, reflow, rede lenta, API 503, offline, mídia 403, resposta atrasada, protocolo ausente, seleção retirada ou com mínimo alterado antes do briefing, retry após retirada e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
+A validação passa em build, TypeScript, checagem integral do plano, contrato visual, orçamento de imagens, JavaScript, fontes e chunks, 43 cenários sintéticos, 53 contratos unitários e 201 execuções E2E em Chromium, Firefox e WebKit local. A cobertura inclui facetas em OR/AND, recomendações publicadas, metadados, contrato exato, teclado, alvos, reflow, ausência de cookies/terceiros, rede lenta, API 503, offline, mídia 403, resposta atrasada, protocolo ausente, seleção retirada ou com mínimo alterado antes do briefing, retry após retirada e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
 
 O painel atualizado também foi inspecionado em **390 e 1440 pixels**, com filtro de parciais e critério expandido: sem overflow horizontal e sem violações nas regras axe selecionadas. [Registro da inspeção](audit/plan-dashboard-check.json).
 
@@ -134,9 +134,9 @@ O banco oficial **da vitrine** confirmou **8 produtos publicados**, **0 briefing
 
 Isso comprova schema, dados da curadoria, consumo dinâmico nas jornadas públicas e persistência técnica pronta. Não comprova integração no CRM. A conta da CLI continua sem permissão de Management API para `supabase link`; as migrations foram aplicadas por conexão PostgreSQL autorizada. O banco operacional `doufsxqlfjyuvxuezpln` não recebeu alterações nesta revisão.
 
-Também foi feita comparação exata da chave de servidor e senha atuais contra arquivos candidatos ao Git e os arquivos públicos de `.next/static`: **zero ocorrências**, sem registrar valores. [Evidência da inspeção](audit/plan-secret-scan.json). O scanner automatizado agora cobre código, scripts e build estático; logs operacionais completos ainda não existem para auditoria, por isso a etapa 143 permanece parcial.
+Também foi feita comparação exata da chave de servidor e senha atuais contra arquivos candidatos ao Git e os arquivos públicos de `.next/static`: **zero ocorrências**, sem registrar valores. [Evidência da inspeção](audit/plan-secret-scan.json). O scanner automatizado cobre código, scripts e build estático; os logs de build e runtime do deploy Vercel também foram confrontados com os segredos locais e padrões sensíveis sem ocorrência. A etapa 143 está concluída no escopo técnico, com repetição obrigatória a cada ambiente publicado.
 
-A migration nova foi aplicada ao banco dedicado e uma checagem posterior confirmou que não há migrations pendentes. A publicação do código é conferida pelo commit remoto e CI; ela não significa hospedagem do site em domínio de produção.
+A migration nova foi aplicada ao banco dedicado e uma checagem posterior confirmou que não há migrations pendentes. O commit remoto passou nos dois workflows e foi implantado na Vercel; após corrigir as variáveis de produção/preview, a sonda autenticada confirmou leitura do banco Premium, oito itens, privacidade local e bloqueio de indexação. O ambiente continua protegido por SSO e sem domínio comercial. Evidência: [validação de produção](audit/2026-09-22-production-environment.md).
 
 ## Gates e sequência recomendada
 

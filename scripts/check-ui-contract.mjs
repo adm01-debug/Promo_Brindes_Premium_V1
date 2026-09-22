@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const css = readFileSync("src/app/globals.css", "utf8");
+const catalogCss = readFileSync("src/app/catalogos/catalogs.css", "utf8");
 const root = css.match(/:root\s*\{([\s\S]*?)\}/)?.[1] ?? "";
 const tokens = Object.fromEntries(
   [...root.matchAll(/--([a-z0-9-]+):\s*([^;]+);/g)].map((match) => [
@@ -22,6 +23,7 @@ for (const token of [
   "control-border",
   "product-surface",
   "product-ink",
+  "hero-copy",
   "page-gutter",
   "target-primary",
   "motion-fast",
@@ -57,14 +59,102 @@ const matrix = [
   ["cta-ink", "gold", 4.5],
   ["product-ink", "product-surface", 4.5],
   ["control-border", "black", 3],
+  ["hero-copy", "black", 4.5],
 ];
+const verifiedRatios = [];
 
 for (const [foreground, background, minimum] of matrix) {
   const ratio = contrast(foreground, background);
+  verifiedRatios.push({ label: `--${foreground}/--${background}`, ratio });
   assert.ok(
     ratio >= minimum,
     `Contraste --${foreground}/--${background}: ${ratio.toFixed(2)} < ${minimum}`,
   );
+}
+
+function blockVariable(stylesheet, selector, name) {
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const block = stylesheet.match(
+    new RegExp(`${escaped}\\s*\\{([\\s\\S]*?)\\}`),
+  )?.[1];
+  assert.ok(block, `Bloco CSS ausente: ${selector}`);
+  const value = block.match(
+    new RegExp(`--${name}:\\s*(#[0-9a-f]{6})`, "i"),
+  )?.[1];
+  assert.ok(value, `Token --${name} ausente em ${selector}`);
+  return value;
+}
+
+const coverPairs = [
+  ["capa areia", ".edition-cover"],
+  ["capa floresta", ".edition-cover--forest"],
+  ["capa carvão", ".edition-cover--charcoal"],
+  ["capa vinho", ".edition-cover--wine"],
+].map(([label, selector]) => [
+  label,
+  blockVariable(catalogCss, selector, "cover-ink"),
+  blockVariable(catalogCss, selector, "cover-bg"),
+  4.5,
+]);
+const library = (name) => blockVariable(catalogCss, ".library-section", name);
+const catalogMatrix = [
+  ...coverPairs,
+  ["biblioteca/tinta", library("library-ink"), library("library-surface"), 4.5],
+  [
+    "biblioteca/texto secundário",
+    library("library-muted"),
+    library("library-surface"),
+    4.5,
+  ],
+  [
+    "biblioteca/dourado",
+    library("library-gold"),
+    library("library-surface"),
+    4.5,
+  ],
+  [
+    "biblioteca/dourado forte",
+    library("library-gold-strong"),
+    library("library-surface"),
+    4.5,
+  ],
+  [
+    "biblioteca/placeholder",
+    library("library-placeholder"),
+    library("library-surface"),
+    4.5,
+  ],
+  [
+    "biblioteca/botão",
+    library("library-button-ink"),
+    library("library-button"),
+    4.5,
+  ],
+  [
+    "biblioteca/botão hover",
+    library("library-button-ink"),
+    library("library-button-hover"),
+    4.5,
+  ],
+  [
+    "biblioteca/seleção",
+    library("library-selected-ink"),
+    library("library-button"),
+    4.5,
+  ],
+  [
+    "biblioteca/controle",
+    library("library-control-border"),
+    library("library-surface"),
+    3,
+  ],
+];
+
+for (const [label, foreground, background, minimum] of catalogMatrix) {
+  const values = [luminance(foreground), luminance(background)];
+  const ratio = (Math.max(...values) + 0.05) / (Math.min(...values) + 0.05);
+  verifiedRatios.push({ label, ratio });
+  assert.ok(ratio >= minimum, `${label}: ${ratio.toFixed(2)} < ${minimum}`);
 }
 
 assert.equal(tokens["target-primary"], "44px");
@@ -74,5 +164,5 @@ assert.match(
 );
 assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
 console.log(
-  `UI contract OK: ${matrix.length} contrast pairs and core interaction tokens.`,
+  `UI contract OK: ${matrix.length + catalogMatrix.length} contrast pairs; lowest ${verifiedRatios.sort((a, b) => a.ratio - b.ratio)[0].label} ${verifiedRatios[0].ratio.toFixed(2)}:1.`,
 );

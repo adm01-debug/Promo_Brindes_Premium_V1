@@ -740,6 +740,29 @@ test("templates públicos mantêm landmarks, H1 único e reflow em 320 px", asyn
     await page.goto(path);
     await expect(page.locator("main")).toHaveCount(1);
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    const contentSemantics = await page.evaluate(() => {
+      const headingLevels = [
+        ...document.querySelectorAll("h1,h2,h3,h4,h5,h6"),
+      ].map((heading) => Number(heading.tagName.slice(1)));
+      const headingJumps = headingLevels.filter(
+        (level, index) => index > 0 && level > headingLevels[index - 1] + 1,
+      );
+      const imageFailures = [...document.images].flatMap((image) => {
+        if (!image.hasAttribute("alt")) return ["alt ausente"];
+        if (
+          image.alt === "" &&
+          !image.closest(
+            'a[aria-label], button[aria-label], [aria-hidden="true"]',
+          )
+        )
+          return ["alt vazio fora de controle nomeado"];
+        return [];
+      });
+      return { headingLevels, headingJumps, imageFailures };
+    });
+    expect(contentSemantics.headingLevels[0], path).toBe(1);
+    expect(contentSemantics.headingJumps, path).toEqual([]);
+    expect(contentSemantics.imageFailures, path).toEqual([]);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= window.innerWidth,
@@ -892,6 +915,41 @@ test("rede lenta mantém contexto, anuncia progresso e conclui sem sucesso fict�
   ]);
   await expect(page).toHaveURL(/categoria=Escrita/);
   await expect(page.getByText("Seu briefing está pronto.")).toHaveCount(0);
+});
+
+test("jornada pública não instala cookies nem chama terceiros", async ({
+  page,
+  context,
+}) => {
+  const foreignHosts = new Set<string>();
+  page.on("request", (request) => {
+    const url = new URL(request.url());
+    if (url.protocol.startsWith("http") && url.host !== "localhost:3107")
+      foreignHosts.add(url.host);
+  });
+  await page.goto("/");
+  await page.locator(".product-card .favorite-button").first().click();
+  await page
+    .getByRole("button", {
+      name: "Adicionar Kit executivo à seleção",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Minha seleção, 1 produtos" }),
+  ).toBeVisible();
+  const storage = await page.evaluate(() =>
+    Object.fromEntries(
+      Object.keys(localStorage).map((key) => [key, localStorage.getItem(key)]),
+    ),
+  );
+  expect(Object.keys(storage).sort()).toEqual([
+    "promo-premium-favorites-v1",
+    "promo-premium-selection-v1",
+  ]);
+  expect(JSON.stringify(storage)).not.toMatch(/@|telefone|phone|email/i);
+  expect(await context.cookies()).toEqual([]);
+  expect([...foreignHosts]).toEqual([]);
 });
 
 test("axe: home e diálogo de projeto sem violações automatizadas", async ({

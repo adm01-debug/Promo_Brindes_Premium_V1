@@ -1372,12 +1372,14 @@
       "audit": {
         "previousStatus": "done",
         "kind": "tecnica",
-        "finding": "Cores nucleares, gutter, alvo principal e movimento usam tokens com gate de contraste; espaçamentos e cores locais de ilustração ainda têm literais justificados ou não extraídos.",
+        "finding": "Cores nucleares, biblioteca clara, capas, gutter, alvo principal e movimento usam tokens com gate de 25 pares; espaçamentos e cores locais de ilustração ainda têm literais justificados ou não extraídos.",
         "nextAction": "Extrair os demais espaçamentos estruturais quando houver mudança de layout, sem transformar cores específicas de ilustração em tokens semânticos.",
         "evidence": [
           "src/app/globals.css",
           "scripts/check-ui-contract.mjs",
-          "docs/audit/2026-09-22-design-system-consistency.md"
+          "docs/audit/2026-09-22-design-system-consistency.md",
+          "src/app/catalogos/catalogs.css",
+          "docs/audit/2026-09-22-contrast-matrix.md"
         ]
       }
     },
@@ -1566,7 +1568,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "A auditoria transversal cobre tipografia, cores, alvos, foco, movimento, reflow e justifica as variações editoriais e internas.",
+        "finding": "A auditoria transversal cobre tipografia, cores, 25 pares de contraste, alvos, foco, movimento, reflow e justifica as variações editoriais e internas.",
         "nextAction": "Executar o gate visual e revisar as exceções sempre que a direção de arte mudar.",
         "evidence": [
           "docs/audit/2026-09-22-design-system-consistency.md",
@@ -2812,14 +2814,15 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Consultas gerais usam TTL/SWR; a seleção e a validação do POST de briefing leem o catálogo sem cache. O sitemap consulta a publicação viva. Páginas pré-renderizadas ainda dependem do TTL e não têm invalidação imediata por despublicação.",
+        "finding": "Consultas gerais usam TTL/SWR; seleção e validação do POST leem sem cache. O deploy validado lê o banco Premium e o sitemap consulta publicação viva. Páginas pré-renderizadas ainda dependem do TTL e não têm invalidação imediata por despublicação.",
         "nextAction": "Definir SLA e testar retirada completa, revalidação e cache.",
         "evidence": [
           "src/app/api/catalog/route.ts",
           "src/lib/site-database.ts",
           "src/app/produtos/[slug]/page.tsx",
           "src/app/sitemap.ts",
-          "docs/audit/2026-09-22-server-catalog-and-delivery.md"
+          "docs/audit/2026-09-22-server-catalog-and-delivery.md",
+          "docs/audit/2026-09-22-production-environment.md"
         ]
       }
     },
@@ -3132,18 +3135,22 @@
       "acceptance": "Build público e logs são verificados e não contêm segredos.",
       "owner": "Segurança + jurídico + backend",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "scripts/check-public-secrets.mjs",
       "dependencies": [122],
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Gate percorre código público, scripts e build estático, sem encontrar segredos; logs de uma infraestrutura publicada ainda não existem para inspeção.",
-        "nextAction": "Adicionar logs e revisão de artefatos ao pipeline do ambiente publicado.",
+        "finding": "Credenciais administrativas permanecem exclusivas do servidor; o CI examina código e build público, e o deploy Vercel teve logs de build/runtime confrontados com segredos exatos e padrões sensíveis sem ocorrência.",
+        "nextAction": "Manter o gate de segredos e repetir a inspeção automatizada de artefatos e logs em cada ambiente publicado.",
         "evidence": [
           "scripts/check-public-secrets.mjs",
           "docs/SUPABASE_SITE_DATABASE.md",
-          "docs/audit/plan-secret-scan.json"
+          "docs/audit/plan-secret-scan.json",
+          "docs/audit/2026-09-22-production-environment.md",
+          ".github/workflows/quality.yml",
+          "src/lib/runtime-environment.mjs",
+          "scripts/tests/runtime-environment.test.mjs"
         ]
       }
     },
@@ -3242,15 +3249,20 @@
       "acceptance": "Aceitar, recusar e rever escolha são verificáveis e respeitados pelos scripts.",
       "owner": "Segurança + jurídico + backend",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "src/app/privacidade/page.tsx",
       "dependencies": [146],
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Prévia não instala analytics/publicidade; não há mecanismo de consentimento para eventual adoção.",
-        "nextAction": "Inventariar scripts e decidir escopo; implementar controle se necessário.",
-        "evidence": ["src/app/privacidade/page.tsx"]
+        "finding": "A prévia não instala cookies, analytics ou publicidade; inventário classifica storage e recursos, e E2E rejeita cookie, contato em localStorage ou host de terceiro durante a jornada. Consentimento fictício permanece ausente e qualquer tracker futuro reabre o gate.",
+        "nextAction": "Manter o inventário e o teste; antes de adicionar qualquer recurso não essencial, aprovar base, retenção e escolha aceitar/recusar/rever.",
+        "evidence": [
+          "src/app/privacidade/page.tsx",
+          "docs/INVENTARIO_PRIVACIDADE_RUNTIME.md",
+          "tests/storefront.spec.ts",
+          "next.config.ts"
+        ]
       }
     },
     {
@@ -3466,15 +3478,18 @@
       "acceptance": "Texto alternativo não repete slogans nem omite conteúdo essencial.",
       "owner": "Conteúdo + SEO + frontend",
       "priority": "P1",
-      "status": "partial",
+      "status": "done",
       "evidence": "src/components/Storefront.tsx",
       "dependencies": [157],
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "Alt texts e hierarquia da prévia existem; conteúdo editorial futuro não foi criado/revisado.",
-        "nextAction": "Revisar alternativas, links e títulos em todos os conteúdos aprovados.",
+        "finding": "Todos os templates e conteúdos versionados têm H1 único, hierarquia sem salto, links nomeados e alt obrigatório; alt vazio é permitido apenas quando redundante dentro de controle explicitamente nomeado. A matriz roda nos três motores.",
+        "nextAction": "Repetir a auditoria ao publicar nova mídia, guia editorial ou template.",
         "evidence": [
+          "docs/AUDITORIA_ACESSIBILIDADE_CONTEUDO.md",
+          "tests/storefront.spec.ts",
+          "tests/catalogs.spec.ts",
           "src/components/Storefront.tsx",
           "src/app/produtos/[slug]/page.tsx"
         ]
@@ -3762,19 +3777,19 @@
       "acceptance": "Texto normal atende 4,5:1; grande 3:1; componentes essenciais 3:1 conforme critério aplicável.",
       "owner": "QA acessibilidade + frontend",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "docs/VALIDACAO.md",
       "dependencies": [63, 64, 66],
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "Gate matemático cobre 11 pares nucleares de texto, CTA, borda e foco, e axe cobre os templates; fotografia, estados disabled e todas as cores editoriais locais ainda não têm matriz manual completa.",
-        "nextAction": "Concluir a matriz manual sobre fotografia, capas e estados disabled com a campanha final.",
+        "finding": "Gate deriva 25 pares dos CSS; o menor componente mede 4,22:1 e todo texto normal determinístico supera 4,5:1. Capas medem 9,99–13,38:1; amostragem conservadora do hero final em desktop/mobile mantém texto em pelo menos 4,66:1.",
+        "nextAction": "Reexecutar gate e amostragem sempre que fotografia, overlay, tema de capa ou token nuclear mudar.",
         "evidence": [
           "scripts/check-ui-contract.mjs",
-          "docs/audit/2026-09-22-design-system-consistency.md",
-          "docs/VALIDACAO.md",
-          "src/app/globals.css"
+          "docs/audit/2026-09-22-contrast-matrix.md",
+          "src/app/globals.css",
+          "src/app/catalogos/catalogs.css"
         ]
       }
     },
@@ -4035,7 +4050,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "A matriz local e o CI remoto aprovaram 28 jornadas por Chromium, Firefox e WebKit, com correções de foco e isolamento da prévia. Aparelhos físicos e Safari instalado ainda não foram exercitados.",
+        "finding": "A matriz local e o CI remoto aprovaram 67 jornadas por Chromium, Firefox e WebKit, incluindo teclado, reflow, alvos, metadados, privacidade de runtime, rede limitada e axe. Aparelhos físicos e Safari instalado ainda não foram exercitados.",
         "nextAction": "Testar Safari, teclado virtual e navegação em aparelhos reais.",
         "evidence": [
           "playwright.config.ts",
@@ -4118,9 +4133,13 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "Esta revisão organiza evidências e gaps; ainda faltam testes e operação para fechar gates.",
+        "finding": "Build, testes, banco isolado, contrato visual, segredos e ambiente Vercel têm evidência consolidada; ainda faltam CRM/staging, aparelhos reais, usuários, direitos, operação e rollback.",
         "nextAction": "Completar evidências de segurança, desempenho, acesso, CRM e rollback.",
-        "evidence": ["docs/REVISAO_EXAUSTIVA_PLANO.md", "docs/VALIDACAO.md"]
+        "evidence": [
+          "docs/REVISAO_EXAUSTIVA_PLANO.md",
+          "docs/VALIDACAO.md",
+          "docs/audit/2026-09-22-production-environment.md"
+        ]
       }
     },
     {
@@ -4156,9 +4175,13 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Há .env local e banco dedicado; domínios e ambientes preview/staging/produção não estão configurados.",
+        "finding": "Produção e preview da Vercel receberam variáveis segregadas do Supabase Premium, o deploy está Ready, protegido por SSO e sem indexação; ainda faltam staging independente, domínio comercial e certificados finais.",
         "nextAction": "Configurar ambientes e certificados com segregação de variáveis.",
-        "evidence": ["docs/SUPABASE_SITE_DATABASE.md", "README.md"]
+        "evidence": [
+          "docs/SUPABASE_SITE_DATABASE.md",
+          "README.md",
+          "docs/audit/2026-09-22-production-environment.md"
+        ]
       }
     },
     {
@@ -4175,9 +4198,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Código está versionado no GitHub; não há release de aplicação nem rollback exercitado.",
+        "finding": "O commit 41f2af9 gerou artefato identificável e um redeploy de produção do mesmo SHA foi concluído após corrigir o ambiente; a reversão para uma versão anterior ainda não foi ensaiada em staging.",
         "nextAction": "Criar artefato implantável e ensaiar rollback em staging.",
-        "evidence": ["README.md"]
+        "evidence": [
+          "README.md",
+          "docs/audit/2026-09-22-production-environment.md"
+        ]
       }
     },
     {
@@ -4213,9 +4239,13 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Repositório e schema publicados não equivalem a site comercial implantado; não há smoke de produção.",
-        "nextAction": "Implantar release aprovado e validar catálogo, briefing, CRM e privacidade.",
-        "evidence": ["README.md", "docs/SUPABASE_SITE_DATABASE.md"]
+        "finding": "Uma versão técnica protegida foi implantada na Vercel e o smoke autenticado confirmou catálogo canônico, ficha, privacidade e bloqueio de indexação. Não é publicação comercial: CRM, política aprovada, domínio, direitos e operação permanecem ausentes.",
+        "nextAction": "Implantar como versão comercial somente após a decisão de prontidão e validar catálogo, briefing, CRM, privacidade e domínio no ambiente aprovado.",
+        "evidence": [
+          "README.md",
+          "docs/SUPABASE_SITE_DATABASE.md",
+          "docs/audit/2026-09-22-production-environment.md"
+        ]
       }
     },
     {

@@ -16,6 +16,7 @@
   --product-surface: #eeece6;
   --product-ink: #4f5049;
   --section-surface: #181a16;
+  --hero-copy: #d2d0c9;
   --page-gutter: max(5.5vw, 24px);
   --target-primary: 44px;
   --motion-fast: 0.2s;
@@ -369,7 +370,7 @@ svg {
 }
 .hero-description {
   font-size: 12px;
-  color: #cfccc2;
+  color: var(--hero-copy);
   line-height: 1.95;
   margin-top: 23px;
 }
@@ -392,7 +393,7 @@ svg {
   margin-top: 31px;
   font-size: 9px;
   line-height: 1.8;
-  color: var(--muted);
+  color: var(--hero-copy);
 }
 .hero-signature strong {
   font-weight: 400;

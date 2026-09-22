@@ -7,6 +7,7 @@ import {
   type CatalogQuery,
   type Product,
 } from "@/lib/catalog";
+import { allowsCatalogSnapshotFallback } from "@/lib/runtime-environment.mjs";
 
 const SITE_PROJECT_REF = "whwloseshzraipljisqo";
 const SITE_HOST = `${SITE_PROJECT_REF}.supabase.co`;
@@ -50,7 +51,11 @@ function approvedUrl(rawUrl: string) {
 function siteConfig(): SitePublicConfig | null {
   const rawUrl = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_PUBLISHABLE_KEY;
-  if (!rawUrl && !key) return null;
+  if (!rawUrl && !key) {
+    if (!allowsCatalogSnapshotFallback())
+      throw new Error("Site catalog configuration is required on Vercel.");
+    return null;
+  }
   if (!rawUrl || !key || process.env.SUPABASE_PROJECT_REF !== SITE_PROJECT_REF)
     throw new Error("Site Supabase configuration is incomplete.");
   return { url: approvedUrl(rawUrl), key };

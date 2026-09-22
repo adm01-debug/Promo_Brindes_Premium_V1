@@ -2,7 +2,7 @@
 
 Referência: **2026-09-22** · **20 fases × 10 etapas = 200 etapas**.
 
-Status auditado: **97 concluídas no próprio escopo; 57 parciais; 46 sem entrega comprovada**. São 103 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
+Status auditado: **101 concluídas no próprio escopo; 53 parciais; 46 sem entrega comprovada**. São 99 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
 
 Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatório e prioridades](REVISAO_EXAUSTIVA_PLANO.md).
 
@@ -575,8 +575,8 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **061. Implementar tokens de interface.** Codificar cores, tipografia, espaçamento, bordas e superfícies.
   - **Situação auditada:** Parcial.
   - **Aceite:** Tokens usados na prévia estão centralizados e nomeados por função.
-  - **Constatação:** Cores nucleares, gutter, alvo principal e movimento usam tokens com gate de contraste; espaçamentos e cores locais de ilustração ainda têm literais justificados ou não extraídos.
-  - **Evidências e referências:** `src/app/globals.css`, `scripts/check-ui-contract.mjs`, `docs/audit/2026-09-22-design-system-consistency.md`.
+  - **Constatação:** Cores nucleares, biblioteca clara, capas, gutter, alvo principal e movimento usam tokens com gate de 25 pares; espaçamentos e cores locais de ilustração ainda têm literais justificados ou não extraídos.
+  - **Evidências e referências:** `src/app/globals.css`, `scripts/check-ui-contract.mjs`, `docs/audit/2026-09-22-design-system-consistency.md`, `src/app/catalogos/catalogs.css`, `docs/audit/2026-09-22-contrast-matrix.md`.
   - **Próxima ação:** Extrair os demais espaçamentos estruturais quando houver mudança de layout, sem transformar cores específicas de ilustração em tokens semânticos.
   - **Dependências:** 032 (Concluída no escopo), 033 (Concluída no escopo).
 
@@ -647,7 +647,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [x] **070. Revisar consistência transversal.** Inspecionar tipografia, densidade, ícones e espaçamento entre páginas.
   - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Desvios do sistema de design são corrigidos ou justificados.
-  - **Constatação:** A auditoria transversal cobre tipografia, cores, alvos, foco, movimento, reflow e justifica as variações editoriais e internas.
+  - **Constatação:** A auditoria transversal cobre tipografia, cores, 25 pares de contraste, alvos, foco, movimento, reflow e justifica as variações editoriais e internas.
   - **Evidências e referências:** `docs/audit/2026-09-22-design-system-consistency.md`, `scripts/check-ui-contract.mjs`, `docs/DESIGN_SYSTEM.md`.
   - **Próxima ação:** Executar o gate visual e revisar as exceções sempre que a direção de arte mudar.
   - **Dependências:** 069 (Concluída no escopo).
@@ -1153,8 +1153,8 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **128. Implementar cache e atualização.** Definir TTL e invalidação por mudanças relevantes de produto e publicação.
   - **Situação auditada:** Parcial.
   - **Aceite:** Produto retirado deixa de aparecer dentro do SLA definido.
-  - **Constatação:** Consultas gerais usam TTL/SWR; a seleção e a validação do POST de briefing leem o catálogo sem cache. O sitemap consulta a publicação viva. Páginas pré-renderizadas ainda dependem do TTL e não têm invalidação imediata por despublicação.
-  - **Evidências e referências:** `src/app/api/catalog/route.ts`, `src/lib/site-database.ts`, `src/app/produtos/[slug]/page.tsx`, `src/app/sitemap.ts`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
+  - **Constatação:** Consultas gerais usam TTL/SWR; seleção e validação do POST leem sem cache. O deploy validado lê o banco Premium e o sitemap consulta publicação viva. Páginas pré-renderizadas ainda dependem do TTL e não têm invalidação imediata por despublicação.
+  - **Evidências e referências:** `src/app/api/catalog/route.ts`, `src/lib/site-database.ts`, `src/app/produtos/[slug]/page.tsx`, `src/app/sitemap.ts`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`, `docs/audit/2026-09-22-production-environment.md`.
   - **Próxima ação:** Definir SLA e testar retirada completa, revalidação e cache.
   - **Dependências:** 127 (Concluída no escopo).
 
@@ -1284,12 +1284,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Completar matriz de papéis e cenários no ambiente integrado.
   - **Dependências:** 123 (Parcial).
 
-- [ ] **143. Proteger segredos de servidor.** Manter service role e integrações exclusivamente no servidor.
-  - **Situação auditada:** Parcial.
+- [x] **143. Proteger segredos de servidor.** Manter service role e integrações exclusivamente no servidor.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Build público e logs são verificados e não contêm segredos.
-  - **Constatação:** Gate percorre código público, scripts e build estático, sem encontrar segredos; logs de uma infraestrutura publicada ainda não existem para inspeção.
-  - **Evidências e referências:** `scripts/check-public-secrets.mjs`, `docs/SUPABASE_SITE_DATABASE.md`, `docs/audit/plan-secret-scan.json`.
-  - **Próxima ação:** Adicionar logs e revisão de artefatos ao pipeline do ambiente publicado.
+  - **Constatação:** Credenciais administrativas permanecem exclusivas do servidor; o CI examina código e build público, e o deploy Vercel teve logs de build/runtime confrontados com segredos exatos e padrões sensíveis sem ocorrência.
+  - **Evidências e referências:** `scripts/check-public-secrets.mjs`, `docs/SUPABASE_SITE_DATABASE.md`, `docs/audit/plan-secret-scan.json`, `docs/audit/2026-09-22-production-environment.md`, `.github/workflows/quality.yml`, `src/lib/runtime-environment.mjs`, `scripts/tests/runtime-environment.test.mjs`.
+  - **Próxima ação:** Manter o gate de segredos e repetir a inspeção automatizada de artefatos e logs em cada ambiente publicado.
   - **Dependências:** 122 (Concluída no escopo).
 
 - [ ] **144. Isolar requisições de orçamento.** Validar origem, tamanho, campos e limites; usar proteção conforme arquitetura.
@@ -1324,12 +1324,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Redigir e aprovar texto com controlador e contato reais.
   - **Dependências:** 146 (Sem entrega comprovada).
 
-- [ ] **148. Controlar cookies não essenciais.** Separar preferências necessárias de publicidade e analytics dependentes de consentimento.
-  - **Situação auditada:** Parcial.
+- [x] **148. Controlar cookies não essenciais.** Separar preferências necessárias de publicidade e analytics dependentes de consentimento.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Aceitar, recusar e rever escolha são verificáveis e respeitados pelos scripts.
-  - **Constatação:** Prévia não instala analytics/publicidade; não há mecanismo de consentimento para eventual adoção.
-  - **Evidências e referências:** `src/app/privacidade/page.tsx`.
-  - **Próxima ação:** Inventariar scripts e decidir escopo; implementar controle se necessário.
+  - **Constatação:** A prévia não instala cookies, analytics ou publicidade; inventário classifica storage e recursos, e E2E rejeita cookie, contato em localStorage ou host de terceiro durante a jornada. Consentimento fictício permanece ausente e qualquer tracker futuro reabre o gate.
+  - **Evidências e referências:** `src/app/privacidade/page.tsx`, `docs/INVENTARIO_PRIVACIDADE_RUNTIME.md`, `tests/storefront.spec.ts`, `next.config.ts`.
+  - **Próxima ação:** Manter o inventário e o teste; antes de adicionar qualquer recurso não essencial, aprovar base, retenção e escolha aceitar/recusar/rever.
   - **Dependências:** 146 (Sem entrega comprovada).
 
 - [ ] **149. Definir atendimento a titulares.** Implementar processo de acesso, correção, exclusão e retenção aplicável.
@@ -1346,7 +1346,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Build, dependências e headers têm checks; há falhas de lógica e gates de segurança abertos.
   - **Evidências e referências:** `next.config.ts`, `docs/VALIDACAO.md`, `docs/audit/plan-scenarios.json`.
   - **Próxima ação:** Corrigir achados, testar acesso/logs/recuperação e registrar revisão de abertura.
-  - **Dependências:** 142 (Parcial), 143 (Parcial), 144 (Parcial), 145 (Sem entrega comprovada), 147 (Parcial), 148 (Parcial), 149 (Sem entrega comprovada).
+  - **Dependências:** 142 (Parcial), 143 (Concluída no escopo), 144 (Parcial), 145 (Sem entrega comprovada), 147 (Parcial), 148 (Concluída no escopo), 149 (Sem entrega comprovada).
 
 
 ## Fase 16 — Conteúdo, SEO e descoberta orgânica
@@ -1411,12 +1411,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Desenvolver guias aprofundados a partir de dúvidas reais do comercial e compradores.
   - **Dependências:** 151 (Parcial).
 
-- [ ] **158. Revisar acessibilidade de conteúdo.** Redigir alt texts, links descritivos e títulos com hierarquia.
-  - **Situação auditada:** Parcial.
+- [x] **158. Revisar acessibilidade de conteúdo.** Redigir alt texts, links descritivos e títulos com hierarquia.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Texto alternativo não repete slogans nem omite conteúdo essencial.
-  - **Constatação:** Alt texts e hierarquia da prévia existem; conteúdo editorial futuro não foi criado/revisado.
-  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/produtos/[slug]/page.tsx`.
-  - **Próxima ação:** Revisar alternativas, links e títulos em todos os conteúdos aprovados.
+  - **Constatação:** Todos os templates e conteúdos versionados têm H1 único, hierarquia sem salto, links nomeados e alt obrigatório; alt vazio é permitido apenas quando redundante dentro de controle explicitamente nomeado. A matriz roda nos três motores.
+  - **Evidências e referências:** `docs/AUDITORIA_ACESSIBILIDADE_CONTEUDO.md`, `tests/storefront.spec.ts`, `tests/catalogs.spec.ts`, `src/components/Storefront.tsx`, `src/app/produtos/[slug]/page.tsx`.
+  - **Próxima ação:** Repetir a auditoria ao publicar nova mídia, guia editorial ou template.
   - **Dependências:** 157 (Parcial).
 
 - [ ] **159. Configurar Search Console.** Verificar domínio autorizado e acompanhar rastreamento e indexação.
@@ -1496,7 +1496,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Não há coleta de Web Vitals de usuários reais nem dashboard p75.
   - **Evidências e referências:** `docs/ORCAMENTO_DESEMPENHO.md`.
   - **Próxima ação:** Instrumentar após definição de privacidade e ambiente publicado.
-  - **Dependências:** 148 (Parcial), 194 (Sem entrega comprovada).
+  - **Dependências:** 148 (Concluída no escopo), 194 (Sem entrega comprovada).
 
 - [x] **168. Definir indisponibilidade e retries.** Projetar timeout, circuit breaker e mensagens úteis para falha de catálogo.
   - **Situação auditada:** Concluída no escopo.
@@ -1537,12 +1537,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Repetir a auditoria quando surgir um novo template ou alterar a hierarquia de conteúdo.
   - **Dependências:** 079 (Concluída no escopo), 092 (Concluída no escopo).
 
-- [ ] **172. Auditar contraste.** Medir texto, botões, bordas essenciais e foco em todos os estados.
-  - **Situação auditada:** Parcial.
+- [x] **172. Auditar contraste.** Medir texto, botões, bordas essenciais e foco em todos os estados.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Texto normal atende 4,5:1; grande 3:1; componentes essenciais 3:1 conforme critério aplicável.
-  - **Constatação:** Gate matemático cobre 11 pares nucleares de texto, CTA, borda e foco, e axe cobre os templates; fotografia, estados disabled e todas as cores editoriais locais ainda não têm matriz manual completa.
-  - **Evidências e referências:** `scripts/check-ui-contract.mjs`, `docs/audit/2026-09-22-design-system-consistency.md`, `docs/VALIDACAO.md`, `src/app/globals.css`.
-  - **Próxima ação:** Concluir a matriz manual sobre fotografia, capas e estados disabled com a campanha final.
+  - **Constatação:** Gate deriva 25 pares dos CSS; o menor componente mede 4,22:1 e todo texto normal determinístico supera 4,5:1. Capas medem 9,99–13,38:1; amostragem conservadora do hero final em desktop/mobile mantém texto em pelo menos 4,66:1.
+  - **Evidências e referências:** `scripts/check-ui-contract.mjs`, `docs/audit/2026-09-22-contrast-matrix.md`, `src/app/globals.css`, `src/app/catalogos/catalogs.css`.
+  - **Próxima ação:** Reexecutar gate e amostragem sempre que fotografia, overlay, tema de capa ou token nuclear mudar.
   - **Dependências:** 063 (Concluída no escopo), 064 (Concluída no escopo), 066 (Concluída no escopo).
 
 - [x] **173. Auditar teclado.** Percorrer menu, filtros, favoritos, diálogos, quantidades e formulário.
@@ -1599,7 +1599,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Axe roda na home, formulário, produto, plano e privacidade sem violações nas regras cobertas.
   - **Evidências e referências:** `tests/storefront.spec.ts`, `tests/public-api.spec.ts`, `tests/plan.spec.ts`.
   - **Próxima ação:** Manter automação; não declarar conformidade integral por este resultado.
-  - **Dependências:** 171 (Concluída no escopo), 172 (Parcial), 173 (Concluída no escopo), 174 (Concluída no escopo), 175 (Concluída no escopo), 176 (Concluída no escopo), 177 (Concluída no escopo), 178 (Concluída no escopo).
+  - **Dependências:** 171 (Concluída no escopo), 172 (Concluída no escopo), 173 (Concluída no escopo), 174 (Concluída no escopo), 175 (Concluída no escopo), 176 (Concluída no escopo), 177 (Concluída no escopo), 178 (Concluída no escopo).
 
 - [ ] **180. Validar com pessoas.** Conduzir tarefas com usuários de tecnologia assistiva.
   - **Situação auditada:** Sem entrega comprovada.
@@ -1651,7 +1651,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **185. Testar navegadores e dispositivos.** Verificar Chromium, Safari/WebKit e Firefox em larguras acordadas.
   - **Situação auditada:** Parcial.
   - **Aceite:** Matriz registra versões, tarefas cobertas e falhas corrigidas.
-  - **Constatação:** A matriz local e o CI remoto aprovaram 28 jornadas por Chromium, Firefox e WebKit, com correções de foco e isolamento da prévia. Aparelhos físicos e Safari instalado ainda não foram exercitados.
+  - **Constatação:** A matriz local e o CI remoto aprovaram 67 jornadas por Chromium, Firefox e WebKit, incluindo teclado, reflow, alvos, metadados, privacidade de runtime, rede limitada e axe. Aparelhos físicos e Safari instalado ainda não foram exercitados.
   - **Evidências e referências:** `playwright.config.ts`, `docs/VALIDACAO.md`, `.github/workflows/quality.yml`, `docs/audit/2026-09-22-browser-matrix.md`.
   - **Próxima ação:** Testar Safari, teclado virtual e navegação em aparelhos reais.
   - **Dependências:** 181 (Concluída no escopo).
@@ -1683,8 +1683,8 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **189. Revisar evidências de lançamento.** Consolidar testes, acessibilidade, observabilidade e rollback.
   - **Situação auditada:** Parcial.
   - **Aceite:** Checklist tem evidência por gate e responsáveis para pendências aceitas.
-  - **Constatação:** Esta revisão organiza evidências e gaps; ainda faltam testes e operação para fechar gates.
-  - **Evidências e referências:** `docs/REVISAO_EXAUSTIVA_PLANO.md`, `docs/VALIDACAO.md`.
+  - **Constatação:** Build, testes, banco isolado, contrato visual, segredos e ambiente Vercel têm evidência consolidada; ainda faltam CRM/staging, aparelhos reais, usuários, direitos, operação e rollback.
+  - **Evidências e referências:** `docs/REVISAO_EXAUSTIVA_PLANO.md`, `docs/VALIDACAO.md`, `docs/audit/2026-09-22-production-environment.md`.
   - **Próxima ação:** Completar evidências de segurança, desempenho, acesso, CRM e rollback.
   - **Dependências:** 150 (Parcial), 166 (Concluída no escopo), 170 (Concluída no escopo), 180 (Sem entrega comprovada), 181 (Concluída no escopo), 182 (Concluída no escopo), 183 (Concluída no escopo), 184 (Sem entrega comprovada), 185 (Parcial), 186 (Concluída no escopo), 187 (Sem entrega comprovada), 188 (Sem entrega comprovada).
 
@@ -1706,16 +1706,16 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **191. Preparar domínio e ambientes.** Configurar preview, staging e produção com variáveis distintas.
   - **Situação auditada:** Parcial.
   - **Aceite:** Domínio, certificados e configuração são verificados sem expor staging ao índice.
-  - **Constatação:** Há .env local e banco dedicado; domínios e ambientes preview/staging/produção não estão configurados.
-  - **Evidências e referências:** `docs/SUPABASE_SITE_DATABASE.md`, `README.md`.
+  - **Constatação:** Produção e preview da Vercel receberam variáveis segregadas do Supabase Premium, o deploy está Ready, protegido por SSO e sem indexação; ainda faltam staging independente, domínio comercial e certificados finais.
+  - **Evidências e referências:** `docs/SUPABASE_SITE_DATABASE.md`, `README.md`, `docs/audit/2026-09-22-production-environment.md`.
   - **Próxima ação:** Configurar ambientes e certificados com segregação de variáveis.
   - **Dependências:** 190 (Sem entrega comprovada).
 
 - [ ] **192. Preparar publicação reversível.** Criar release identificável com artefato e versão anterior disponível.
   - **Situação auditada:** Parcial.
   - **Aceite:** Rollback é exercitado em staging e procedimento tem responsável.
-  - **Constatação:** Código está versionado no GitHub; não há release de aplicação nem rollback exercitado.
-  - **Evidências e referências:** `README.md`.
+  - **Constatação:** O commit 41f2af9 gerou artefato identificável e um redeploy de produção do mesmo SHA foi concluído após corrigir o ambiente; a reversão para uma versão anterior ainda não foi ensaiada em staging.
+  - **Evidências e referências:** `README.md`, `docs/audit/2026-09-22-production-environment.md`.
   - **Próxima ação:** Criar artefato implantável e ensaiar rollback em staging.
   - **Dependências:** 191 (Parcial).
 
@@ -1730,9 +1730,9 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **194. Publicar versão comercial.** Implantar somente a versão que passou pelos gates de prontidão.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Smoke de produção confirma catálogo, briefing, CRM e privacidade.
-  - **Constatação:** Repositório e schema publicados não equivalem a site comercial implantado; não há smoke de produção.
-  - **Evidências e referências:** `README.md`, `docs/SUPABASE_SITE_DATABASE.md`.
-  - **Próxima ação:** Implantar release aprovado e validar catálogo, briefing, CRM e privacidade.
+  - **Constatação:** Uma versão técnica protegida foi implantada na Vercel e o smoke autenticado confirmou catálogo canônico, ficha, privacidade e bloqueio de indexação. Não é publicação comercial: CRM, política aprovada, domínio, direitos e operação permanecem ausentes.
+  - **Evidências e referências:** `README.md`, `docs/SUPABASE_SITE_DATABASE.md`, `docs/audit/2026-09-22-production-environment.md`.
+  - **Próxima ação:** Implantar como versão comercial somente após a decisão de prontidão e validar catálogo, briefing, CRM, privacidade e domínio no ambiente aprovado.
   - **Dependências:** 190 (Sem entrega comprovada), 192 (Parcial), 193 (Sem entrega comprovada).
 
 - [ ] **195. Monitorar primeiras 48 horas.** Acompanhar erros, mídia, velocidade e solicitações recebidas.

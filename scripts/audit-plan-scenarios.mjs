@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import { readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
-import { dirname, resolve } from "node:path";
+import { dirname, extname, resolve } from "node:path";
 import vm from "node:vm";
 import ts from "typescript";
 
@@ -24,12 +24,18 @@ function load(file, env = {}, fetcher = async () => new Response("{}")) {
   }).outputText;
   const localRequire = (name) => {
     if (name === "./products.json") return products;
-    if (name.startsWith("@/"))
-      return load(`src/${name.slice(2)}.ts`, env, fetcher);
+    if (name.startsWith("@/")) {
+      const dependency = `src/${name.slice(2)}`;
+      return load(
+        extname(dependency) ? dependency : `${dependency}.ts`,
+        env,
+        fetcher,
+      );
+    }
     if (name.startsWith(".")) {
       const dependency = resolve(dirname(file), name);
       return load(
-        dependency.endsWith(".ts") ? dependency : `${dependency}.ts`,
+        extname(dependency) ? dependency : `${dependency}.ts`,
         env,
         fetcher,
       );

@@ -190,19 +190,30 @@
   z-index: 2;
 }
 .library-section {
-  --gold: #786039;
-  --gold-light: #53401f;
-  --ink: #24271f;
-  background: var(--ivory);
-  color: var(--ink);
+  --library-surface: #f4f0e8;
+  --library-ink: #24271f;
+  --library-muted: #63655b;
+  --library-gold: #786039;
+  --library-gold-strong: #53401f;
+  --library-control-border: #6e7360;
+  --library-placeholder: #66685d;
+  --library-button: #282d23;
+  --library-button-hover: #3b4434;
+  --library-button-ink: #f4f0e8;
+  --library-selected-ink: #fffdf4;
+  --gold: var(--library-gold);
+  --gold-light: var(--library-gold-strong);
+  --ink: var(--library-ink);
+  background: var(--library-surface);
+  color: var(--library-ink);
   padding: 80px max(5.5vw, 24px) 88px;
 }
 .library-section .button-gold {
-  background: #282d23;
-  color: #f4f0e8;
+  background: var(--library-button);
+  color: var(--library-button-ink);
 }
 .library-section .button-gold:hover {
-  background: #3b4434;
+  background: var(--library-button-hover);
 }
 .library-section-heading {
   display: flex;
@@ -216,7 +227,7 @@
 }
 .library-section-heading > p {
   max-width: 330px;
-  color: #63655b;
+  color: var(--library-muted);
   font-size: 13px;
 }
 .library-section-heading h2 {
@@ -240,19 +251,19 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  border-bottom: 1px solid #6e7360;
+  border-bottom: 1px solid var(--library-control-border);
 }
 .library-search input {
   border: 0;
   background: transparent;
-  color: #24271f;
+  color: var(--library-ink);
   width: 100%;
   min-width: 0;
   padding: 14px 0;
   font-size: 13px;
 }
 .library-search input::placeholder {
-  color: #66685d;
+  color: var(--library-placeholder);
 }
 .library-search-submit {
   display: inline-flex;
@@ -270,7 +281,7 @@
   align-items: center;
   gap: 10px;
   font-size: 10px;
-  color: #63655b;
+  color: var(--library-muted);
   margin-bottom: 12px;
 }
 .library-themes > div {
@@ -286,9 +297,9 @@
   font-size: 11px;
 }
 .library-themes button[aria-pressed="true"] {
-  background: #282d23;
-  border-color: #282d23;
-  color: #fffdf4;
+  background: var(--library-button);
+  border-color: var(--library-button);
+  color: var(--library-selected-ink);
 }
 .library-results-bar {
   display: flex;
@@ -301,7 +312,7 @@
 .library-results-bar > span {
   font-size: 8px;
   letter-spacing: 0.16em;
-  color: #63655b;
+  color: var(--library-muted);
 }
 .library-grid {
   display: grid;
@@ -336,7 +347,7 @@
   justify-content: space-between;
   gap: 12px;
   font-size: 10px;
-  color: #63655b;
+  color: var(--library-muted);
   margin-bottom: 18px;
 }
 .library-card-meta > span:first-child {
@@ -347,7 +358,7 @@
 .library-card-eyebrow {
   font-size: 8px;
   letter-spacing: 0.15em;
-  color: #786039;
+  color: var(--library-gold);
   margin: 0 0 10px;
   text-transform: uppercase;
 }
@@ -358,7 +369,7 @@
   margin-bottom: 13px;
 }
 .library-card-description {
-  color: #63655b;
+  color: var(--library-muted);
   font-size: 12px;
   margin-bottom: 18px;
 }
@@ -378,7 +389,7 @@
 .library-piece-count {
   margin-top: auto;
   font-size: 10px;
-  color: #63655b;
+  color: var(--library-muted);
   padding-bottom: 12px;
 }
 .library-card-actions {
@@ -411,8 +422,8 @@
   min-width: 0;
   padding: 8px;
   margin-top: 5px;
-  background: #f4f0e8;
-  color: #24271f;
+  background: var(--library-surface);
+  color: var(--library-ink);
   border: 1px solid #777;
 }
 .library-notice {
@@ -438,7 +449,7 @@
   margin: 20px 0 16px;
 }
 .library-empty p {
-  color: #63655b;
+  color: var(--library-muted);
   margin-bottom: 28px;
 }
 .library-how {
@@ -553,7 +564,7 @@
 }
 .collection-count {
   font-size: 12px;
-  color: #63655b;
+  color: var(--library-muted);
   padding-bottom: 22px;
   border-bottom: 1px solid #73766a44;
   margin-bottom: 30px;
@@ -584,16 +595,16 @@
   left: 18px;
   font-size: 8px;
   letter-spacing: 0.15em;
-  color: #63655b;
+  color: var(--library-muted);
 }
 .collection-product > p:not(.library-card-eyebrow) {
-  color: #63655b;
+  color: var(--library-muted);
   font-size: 12px;
 }
 .collection-product-minimum {
   display: block;
   font-size: 10px;
-  color: #63655b;
+  color: var(--library-muted);
   margin: 14px 0 8px;
 }
 .collection-image-fallback {
@@ -604,7 +615,7 @@
   justify-content: center;
   align-items: center;
   gap: 12px;
-  color: #63655b;
+  color: var(--library-muted);
   font-size: 12px;
 }
 .collection-closing {
