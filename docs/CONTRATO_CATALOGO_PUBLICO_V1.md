@@ -2,7 +2,7 @@
 
 Status: implementado para a tabela pública curada do projeto da vitrine `whwloseshzraipljisqo`, com snapshot editorial apenas como fallback offline. Este contrato não autoriza acesso direto do navegador a tabelas internas, à aplicação comercial ou a campos de custo.
 
-`GET /api/catalog` entrega uma projeção editorial versionada. A resposta carrega `X-Catalog-Contract-Version: 2026-09-21` e usa cache compartilhado de cinco minutos, com `stale-while-revalidate` de dez minutos.
+`GET /api/catalog` entrega uma projeção editorial versionada. A resposta carrega `X-Catalog-Contract-Version: 2026-09-21`. Consultas gerais usam cache compartilhado de cinco minutos, com `stale-while-revalidate` de dez minutos. A consulta por `ids` usa `Cache-Control: no-store` e lê a fonte sem cache para conferir a seleção imediatamente antes do briefing.
 
 ## Parâmetros
 
@@ -13,6 +13,7 @@ Status: implementado para a tabela pública curada do projeto da vitrine `whwlos
 | `page`     | Inteiro positivo; padrão `1`. Acima do total, retorna a última página publicada. |
 | `pageSize` | Inteiro positivo entre `1` e `24`; padrão `12`.                          |
 | `sort`     | `curadoria` (padrão) ou `nome`, ambos com desempate determinístico por ID.   |
+| `ids`      | Até 24 UUIDs públicos separados por vírgula; consulta usada para conferir seleção sem cache. |
 
 ## Resposta de sucesso ou vazia
 
@@ -36,7 +37,7 @@ Cada item pode conter somente `id`, `sku`, `slug`, `name`, `originalName`, `cate
 
 Parâmetro fora da forma pública retorna `400` com `INVALID_CATALOG_QUERY` e não é silenciosamente convertido em outra busca. Uma consulta válida sem peças retorna `200` e `items: []`. Falha ou timeout da fonte canônica retorna `503 CATALOG_UNAVAILABLE` com um estado recuperável na interface, jamais uma lista vazia tratada como sucesso.
 
-Quando a fonte responde `416` para uma página além do total e informa a contagem exata no cabeçalho `Content-Range`, o servidor consulta a última página válida. Um `416` sem essa contagem continua sendo tratado como indisponibilidade, para não inventar resultados.
+Quando a fonte responde `416` para uma página além do total e informa a contagem exata no cabeçalho `Content-Range`, o servidor consulta a última página válida. Um `416` sem essa contagem continua sendo tratado como indisponibilidade, para não inventar resultados. Uma resposta `200` sem contagem exata ou com intervalo incompatível também retorna `503`; o tamanho da página não é uma contagem total válida.
 
 ## Limite atual e migração segura
 

@@ -67,17 +67,22 @@ export async function GET(request: NextRequest) {
       "ids aceita no máximo 24 UUIDs públicos separados por vírgula.",
     );
   try {
-    const result = await getSiteCatalogPage({
-      query: query ?? undefined,
-      category: category ?? undefined,
-      page: page ?? undefined,
-      pageSize: pageSize ?? undefined,
-      sort: sort ?? undefined,
-      ids: selectedIds,
-    });
+    const result = await getSiteCatalogPage(
+      {
+        query: query ?? undefined,
+        category: category ?? undefined,
+        page: page ?? undefined,
+        pageSize: pageSize ?? undefined,
+        sort: sort ?? undefined,
+        ids: selectedIds,
+      },
+      { fresh: selectedIds.length > 0 },
+    );
     return NextResponse.json(result, {
       headers: {
-        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+        "Cache-Control": selectedIds.length
+          ? "no-store"
+          : "public, s-maxage=300, stale-while-revalidate=600",
         "X-Catalog-Contract-Version": result.contractVersion,
         "X-Catalog-Source": process.env.SUPABASE_URL
           ? "site-database"

@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import Modal from "./Modal";
 import {
+  CATALOG_CONTRACT_VERSION,
   categories,
   downloadText,
   readUnverifiedSelection,
@@ -60,6 +61,7 @@ type BriefingDraft = {
   budget: string;
   message: string;
 };
+type VerifiedSelection = { products: Product[]; quantities: Selection };
 type DiscoveryHistoryMode = "push" | "replace";
 const validProtocol = (value: unknown): value is string =>
   typeof value === "string" && /^PB-[A-Z0-9]{12}$/.test(value);
@@ -86,6 +88,9 @@ export default function Storefront({
   const [favorites, setFavorites] = useState<string[]>([]);
   const [onlyFavorites, setOnlyFavorites] = useState(false);
   const [selected, setSelected] = useState<Selection>({});
+  const selectedRef = useRef(selected);
+  selectedRef.current = selected;
+  const [selectionIssue, setSelectionIssue] = useState("");
   const [ready, setReady] = useState(false);
   const [detail, setDetail] = useState<Product | null>(null);
   const [drawer, setDrawer] = useState(false);
@@ -391,6 +396,7 @@ export default function Storefront({
     setStep(1);
     setProtocol(null);
     setDeliveryPending(false);
+    setSelectionIssue("");
     setDrawer(true);
   };
   const addProduct = (p: Product) => {
@@ -411,7 +417,88 @@ export default function Storefront({
     else scrollToCuration();
   };
 
-  function briefingLines(data: FormData, contact: string, company: string) {
+  async function verifySelectedProducts(): Promise<VerifiedSelection | null> {
+    const quantities = { ...selectedRef.current };
+    const ids = Object.keys(quantities);
+    if (!ids.length) return { products: [], quantities };
+    if (ids.length > 24) {
+      setSelectionIssue(
+        "Sua seleção excede 24 peças. Remova algumas para continuar.",
+      );
+      setStep(1);
+      return null;
+    }
+    try {
+      const response = await fetch(
+        `/api/catalog?ids=${ids.join(",")}&pageSize=24`,
+        { cache: "no-store", headers: { Accept: "application/json" } },
+      );
+      if (!response.ok) throw new Error("CATALOG_UNAVAILABLE");
+      const page = (await response.json()) as CatalogPage;
+      if (
+        page.contractVersion !== CATALOG_CONTRACT_VERSION ||
+        page.page !== 1 ||
+        page.total !== page.items?.length ||
+        page.items.some((product) => !ids.includes(product.id)) ||
+        new Set(page.items.map((product) => product.id)).size !==
+          page.items.length
+      )
+        throw new Error("CATALOG_CONTRACT_INVALID");
+      if (JSON.stringify(quantities) !== JSON.stringify(selectedRef.current)) {
+        setSelectionIssue(
+          "Sua seleção mudou durante a conferência. Tente novamente.",
+        );
+        setStep(1);
+        return null;
+      }
+      const byId = new Map(page.items.map((product) => [product.id, product]));
+      const missing = ids.filter((id) => !byId.has(id));
+      const raisedMinimum = ids.filter((id) => {
+        const product = byId.get(id);
+        return product && quantities[id] < product.minimum;
+      });
+      setKnownProducts((current) => ({
+        ...current,
+        ...Object.fromEntries(
+          page.items.map((product) => [product.id, product]),
+        ),
+      }));
+      if (missing.length || raisedMinimum.length) {
+        setSelected((current) => {
+          if (JSON.stringify(current) !== JSON.stringify(quantities))
+            return current;
+          const next = { ...current };
+          missing.forEach((id) => delete next[id]);
+          raisedMinimum.forEach((id) => {
+            next[id] = byId.get(id)!.minimum;
+          });
+          return next;
+        });
+        setSelectionIssue(
+          missing.length
+            ? "Uma peça saiu da curadoria e foi removida. Revise sua seleção antes de continuar."
+            : "O mínimo de uma peça mudou. Ajustamos a quantidade; revise antes de continuar.",
+        );
+        setStep(1);
+        return null;
+      }
+      setSelectionIssue("");
+      return { products: ids.map((id) => byId.get(id)!), quantities };
+    } catch {
+      setSelectionIssue(
+        "Não foi possível conferir sua seleção no catálogo agora. Tente novamente antes de preparar o briefing.",
+      );
+      setStep(1);
+      return null;
+    }
+  }
+
+  function briefingLines(
+    data: FormData,
+    contact: string,
+    company: string,
+    verified: VerifiedSelection,
+  ) {
     return [
       "PROMO BRINDES PREMIUM — BRIEFING DE PROJETO",
       `Preparado em: ${new Date().toLocaleDateString("pt-BR")}`,
@@ -423,18 +510,18 @@ export default function Storefront({
       `Investimento por presente: ${data.get("budget") || "A definir"}`,
       "",
       "SELEÇÃO DE PRODUTOS",
-      ...selection.map(
+      ...verified.products.map(
         (p) =>
-          `${p.originalName} | SKU ${p.sku} | ID ${p.id} | ${selected[p.id]} unidades`,
+          `${p.originalName} | SKU ${p.sku} | ID ${p.id} | ${verified.quantities[p.id]} unidades`,
       ),
-      ...(selection.length
+      ...(verified.products.length
         ? []
         : ["Curadoria aberta: solicitar recomendação de produtos."]),
       "",
       `Mensagem e personalização: ${String(data.get("message") ?? "").trim() || "A definir"}`,
       "",
       "Documento de intenção, sem reserva de estoque ou confirmação de preço, técnica e prazo.",
-      "Produtos consultados no catálogo em 20/09/2026. Revalidar antes de orçar.",
+      "Peças conferidas no catálogo ao preparar este arquivo. Revalidar antes de orçar.",
       "Este briefing foi gerado localmente e não foi enviado à equipe comercial.",
     ];
   }
@@ -448,18 +535,20 @@ export default function Storefront({
       setNotice("Preencha seu nome e empresa.");
       return;
     }
-    const lines = briefingLines(data, contact, company);
-    if (!deliveryConfigured) {
-      downloadText("briefing-promo-premium.txt", lines.join("\n"));
-      setProtocol(null);
-      setStep(3);
-      return;
-    }
-    const requestKey =
-      idempotencyKey ?? `briefing-${crypto.randomUUID().replaceAll("-", "")}`;
-    if (!idempotencyKey) setIdempotencyKey(requestKey);
     setSubmitting(true);
     try {
+      const verified = await verifySelectedProducts();
+      if (!verified) return;
+      const lines = briefingLines(data, contact, company, verified);
+      if (!deliveryConfigured) {
+        downloadText("briefing-promo-premium.txt", lines.join("\n"));
+        setProtocol(null);
+        setStep(3);
+        return;
+      }
+      const requestKey =
+        idempotencyKey ?? `briefing-${crypto.randomUUID().replaceAll("-", "")}`;
+      if (!idempotencyKey) setIdempotencyKey(requestKey);
       const response = await fetch("/api/briefings", {
         method: "POST",
         headers: {
@@ -474,9 +563,9 @@ export default function Storefront({
           date: String(data.get("date") ?? ""),
           budget: String(data.get("budget") ?? ""),
           message: String(data.get("message") ?? ""),
-          items: selection.map((p) => ({
+          items: verified.products.map((p) => ({
             productId: p.id,
-            quantity: selected[p.id],
+            quantity: verified.quantities[p.id],
           })),
         }),
       });
@@ -1333,7 +1422,8 @@ export default function Storefront({
             </Link>
             <p className="fine-print">
               Foto do fornecedor. Condições, materiais, cores e estoque sujeitos
-              à confirmação comercial. Dados consultados em 20.09.2026.
+              à confirmação comercial. Dados editoriais de{" "}
+              {detail.sourceDate.split("-").reverse().join(".")}.
             </p>
           </div>
         </Modal>
@@ -1488,6 +1578,11 @@ export default function Storefront({
                 </span>
                 <strong>Valores sob consulta</strong>
               </div>
+              {selectionIssue && (
+                <p className="selection-alert" role="status">
+                  {selectionIssue}
+                </p>
+              )}
               {selection.length > 0 && (
                 <button
                   className="text-button clear-selection"
@@ -1667,7 +1762,7 @@ export default function Storefront({
                   disabled={submitting}
                 >
                   {submitting
-                    ? "Enviando com segurança…"
+                    ? "Conferindo seleção…"
                     : deliveryConfigured
                       ? "Enviar ao comercial"
                       : "Baixar meu briefing"}

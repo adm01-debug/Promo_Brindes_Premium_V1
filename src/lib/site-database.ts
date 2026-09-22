@@ -113,19 +113,31 @@ function toProduct(row: CatalogRow): Product {
   };
 }
 
-function countFrom(response: Response, fallback: number) {
-  const total = response.headers.get("content-range")?.split("/").at(-1);
-  return total && /^\d+$/.test(total) ? Number(total) : fallback;
+function exactCount(response: Response, rowCount: number, offset: number) {
+  const range = response.headers.get("content-range");
+  if (range === "*/0" && rowCount === 0 && offset === 0) return 0;
+  const match = /^(\d+)-(\d+)\/(\d+)$/.exec(range ?? "");
+  if (!match) throw new Error("Site catalog did not return an exact range.");
+  const [first, last, count] = match.slice(1).map(Number);
+  if (
+    ![first, last, count].every(Number.isSafeInteger) ||
+    first !== offset ||
+    last < first ||
+    last - first + 1 !== rowCount ||
+    count <= last
+  )
+    throw new Error("Site catalog returned an inconsistent range.");
+  return count;
 }
 
-async function fetchCatalogPage(endpoint: URL, key: string) {
+async function fetchCatalogPage(endpoint: URL, key: string, fresh: boolean) {
   return fetch(endpoint, {
     headers: {
       apikey: key,
       Accept: "application/json",
       Prefer: "count=exact",
     },
-    next: { revalidate: 300 },
+    ...(fresh ? { cache: "no-store" as const } : { next: { revalidate: 300 } }),
     signal: AbortSignal.timeout(8000),
   });
 }
@@ -168,12 +180,17 @@ function applyQuery(endpoint: URL, input: CatalogQuery) {
  */
 export async function getSiteCatalogPage(
   input: CatalogQuery = {},
+  options: { fresh?: boolean } = {},
 ): Promise<CatalogPage> {
   const config = siteConfig();
   if (!config) return queryCatalog(input, products);
   const endpoint = new URL("/rest/v1/premium_catalog_items", config.url);
   const resolved = applyQuery(endpoint, input);
-  let response = await fetchCatalogPage(endpoint, config.key);
+  let response = await fetchCatalogPage(
+    endpoint,
+    config.key,
+    options.fresh === true,
+  );
   let resolvedPage = resolved.page;
   if (response.status === 416 && resolved.page > 1) {
     const range = response.headers.get("content-range");
@@ -186,13 +203,21 @@ export async function getSiteCatalogPage(
       "offset",
       String((resolvedPage - 1) * resolved.pageSize),
     );
-    response = await fetchCatalogPage(endpoint, config.key);
+    response = await fetchCatalogPage(
+      endpoint,
+      config.key,
+      options.fresh === true,
+    );
   }
   if (!response.ok) throw new Error("Site catalog is unavailable.");
   const rows: unknown = await response.json();
   if (!Array.isArray(rows) || !rows.every(isCatalogRow))
     throw new Error("Site catalog did not satisfy the public contract.");
-  const total = countFrom(response, rows.length);
+  const total = exactCount(
+    response,
+    rows.length,
+    (resolvedPage - 1) * resolved.pageSize,
+  );
   const totalPages = Math.max(1, Math.ceil(total / resolved.pageSize));
   return {
     contractVersion: CATALOG_CONTRACT_VERSION,

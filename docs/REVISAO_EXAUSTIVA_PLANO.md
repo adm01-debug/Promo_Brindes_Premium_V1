@@ -11,7 +11,7 @@ Esses números contam critérios do plano, não esforço restante ou porcentagem
 - Foram lidos os **200 títulos, ações, critérios, dependências e estados anteriores**. Cada etapa recebeu uma constatação individual, referências e próxima ação em [`src/lib/plan.json`](../src/lib/plan.json).
 - Foram confrontados componentes, rotas, helpers, configurações, migration, scripts, três arquivos de testes e documentação de pesquisa/arquitetura/validação. Não se atribuiu conclusão apenas à existência de um arquivo.
 - O grafo local orientou o levantamento de relações; arquivos atuais prevaleceram quando houve alteração posterior à extração. Não se confundiu esse grafo com o artefato histórico do aplicativo comercial.
-- Foram executados onze cenários sintéticos em módulos TypeScript e cinco em Chromium local. Os sintéticos confirmam idempotência concorrente, conflito de payload, limite de corpo com cancelamento do fluxo, data, paginação, allowlist de host e limite compartilhado entre instâncias; os cinco de browser verificam as correções de jornada. Não são uma certificação de produção.
+- Foram executados quinze cenários sintéticos em módulos TypeScript e cinco em Chromium local. Os sintéticos confirmam idempotência concorrente, conflito de payload, limite de corpo com cancelamento do fluxo, data, paginação, contagem exata, consulta por IDs sem cache, allowlist de host e limite compartilhado entre instâncias; os cinco de browser verificam as correções de jornada. Não são uma certificação de produção.
 - O PostgreSQL da vitrine foi consultado para conferir migrations, contagens, RLS e privilégios. As funções de entrega foram exercitadas dentro de uma transação revertida; nenhum dado comercial foi mantido e nenhuma mensagem foi enviada.
 - Referências externas e estudos de mercado foram avaliados como evidência documental histórica de 20/09; não houve nova pesquisa de mercado, entrevistas ou auditoria administrativa do banco operacional nesta revisão.
 
@@ -82,11 +82,11 @@ Os endpoints foram carregados com `fetch` simulado e as interações de envio fo
 
 Os controles **AUD-07 e AUD-08 passam**: projeto operacional e host semelhante são rejeitados antes da leitura do catálogo.
 
-A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, JavaScript, fontes e chunks, onze cenários sintéticos, cinco sondas de browser e 84 testes E2E em Chromium, Firefox e WebKit local. A cobertura inclui API 503, offline, mídia 403, resposta atrasada, página fora do intervalo, protocolo ausente, remoção de SKU e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
+A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, JavaScript, fontes e chunks, quinze cenários sintéticos, cinco sondas de browser e 96 testes E2E em Chromium, Firefox e WebKit local. A cobertura inclui API 503, offline, mídia 403, resposta atrasada, página fora do intervalo, protocolo ausente, seleção retirada ou com mínimo alterado antes do briefing e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
 
 O painel atualizado também foi inspecionado em **390 e 1440 pixels**, com filtro de parciais e critério expandido: sem overflow horizontal e sem violações nas regras axe selecionadas. [Registro da inspeção](audit/plan-dashboard-check.json).
 
-Resultados brutos: [módulos isolados](audit/plan-scenarios.json), [navegador](audit/plan-browser-scenarios.json) e [cenários adicionais](audit/2026-09-22-regression-scenarios.md). Reprodutores: `node scripts/audit-plan-scenarios.mjs`, `npm run test:e2e` e, com build servido na porta 3111, `node scripts/audit-plan-browser.mjs`. Eles são gates de regressão local, não certificação de CRM, privacidade ou operação.
+Resultados brutos: [módulos isolados](audit/plan-scenarios.json), [navegador](audit/plan-browser-scenarios.json), [cenários adicionais](audit/2026-09-22-regression-scenarios.md) e [conferência pré-briefing](audit/2026-09-22-selection-freshness.md). Reprodutores: `node scripts/audit-plan-scenarios.mjs`, `npm run test:e2e` e, com build servido na porta 3111, `node scripts/audit-plan-browser.mjs`. Eles são gates de regressão local, não certificação de CRM, privacidade ou operação.
 
 ## Lacunas adicionais comprovadas por inspeção
 

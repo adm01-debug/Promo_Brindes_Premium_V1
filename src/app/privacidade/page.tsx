@@ -25,8 +25,11 @@ export default function Privacy() {
       <p>
         A seleção de produtos e os favoritos ficam no armazenamento local do seu
         navegador. São salvos apenas identificadores de produtos e quantidades.
-        Para remover esses registros, limpe os dados deste site nas
-        configurações do navegador.
+        Antes de preparar um briefing com peças selecionadas, seus
+        identificadores são consultados no catálogo deste site para confirmar
+        disponibilidade e quantidade mínima; os dados de contato não fazem parte
+        dessa consulta. Para remover os registros locais, limpe os dados deste
+        site nas configurações do navegador.
       </p>
       <h2>Seu briefing</h2>
       <p>

@@ -1585,7 +1585,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Vazio, armazenamento inválido, indisponibilidade da API, offline e SKU removido têm mensagem e recuperação sem perder a seleção; expiração de conteúdo canônico ainda não está completa.",
+        "finding": "Vazio, armazenamento inválido, indisponibilidade da API, offline e SKU removido têm mensagem e recuperação sem perder a seleção. Antes do briefing, IDs são conferidos sem cache: retirada, mínimo alterado e falha da fonte exigem revisão. A expiração de todas as superfícies publicadas ainda não está completa.",
         "nextAction": "Definir e testar expiração da curadoria publicada.",
         "evidence": [
           "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
@@ -3317,7 +3317,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Cache de API usa TTL/SWR e sitemap consulta a publicação viva; páginas pré-renderizadas ainda dependem do TTL e não têm invalidação imediata por despublicação.",
+        "finding": "Consultas gerais usam TTL/SWR e a seleção é conferida por IDs sem cache; sitemap consulta a publicação viva. Páginas pré-renderizadas ainda dependem do TTL e não têm invalidação imediata por despublicação.",
         "nextAction": "Definir SLA e testar retirada completa, revalidação e cache.",
         "evidence": [
           "src/app/api/catalog/route.ts",
@@ -3370,7 +3370,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "E2E checam subset do DTO e oito produtos; não há staging nem teste de drift completo.",
+        "finding": "E2E checam subset do DTO, oito produtos e IDs sem cache; sondas rejeitam contagem ausente ou inconsistente. Não há staging nem teste de drift completo.",
         "nextAction": "Testar contrato exato, estados, variantes e alteração/despublicação em staging.",
         "evidence": [
           "tests/public-api.spec.ts"

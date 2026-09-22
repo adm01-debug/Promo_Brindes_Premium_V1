@@ -28,6 +28,17 @@ test("catálogo público pagina, preserva o contrato e não expõe campos intern
     expect(body.items[0]).not.toHaveProperty(forbidden);
 });
 
+test("consulta por IDs não é armazenada em cache compartilhado", async ({
+  request,
+}) => {
+  const response = await request.get(
+    "/api/catalog?ids=0144f10f-c311-47eb-afd6-14b9ebef35b6&pageSize=24",
+  );
+  expect(response.status()).toBe(200);
+  expect(response.headers()["cache-control"]).toBe("no-store");
+  expect((await response.json()).total).toBe(1);
+});
+
 test("catálogo rejeita parâmetros inválidos e pagina a ordenação sem repetir SKU", async ({
   request,
 }) => {

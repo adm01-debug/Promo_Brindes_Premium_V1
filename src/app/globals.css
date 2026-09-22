@@ -1238,6 +1238,15 @@ svg {
   color: var(--gold);
   font-weight: 500;
 }
+.selection-alert {
+  margin: -8px 0 20px;
+  padding: 12px 14px;
+  border-left: 2px solid var(--gold);
+  background: #c9b48717;
+  color: var(--ivory);
+  font-size: 12px;
+  line-height: 1.5;
+}
 .clear-selection {
   margin: -8px 0 18px;
   color: var(--muted);

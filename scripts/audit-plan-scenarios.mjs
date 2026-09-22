@@ -335,6 +335,65 @@ await probe("AUD-06-source-pagination-truncation", 30, async () => {
   return (await api.getSiteCatalogPage({ pageSize: 12 })).total;
 });
 
+for (const [id, rows, range] of [
+  ["AUD-17-missing-exact-total", [item], null],
+  ["AUD-18-inconsistent-page-range", [item, item], "0-0/30"],
+]) {
+  await probe(id, true, async () => {
+    const api = load(
+      "src/lib/site-database.ts",
+      {
+        SUPABASE_PROJECT_REF: project,
+        SUPABASE_URL: `https://${project}.supabase.co`,
+        SUPABASE_PUBLISHABLE_KEY: "synthetic",
+      },
+      async () =>
+        new Response(JSON.stringify(rows), {
+          headers: range ? { "content-range": range } : {},
+        }),
+    );
+    try {
+      await api.getSiteCatalogPage();
+      return false;
+    } catch {
+      return true;
+    }
+  });
+}
+
+await probe("AUD-19-empty-exact-total", 0, async () => {
+  const api = load(
+    "src/lib/site-database.ts",
+    {
+      SUPABASE_PROJECT_REF: project,
+      SUPABASE_URL: `https://${project}.supabase.co`,
+      SUPABASE_PUBLISHABLE_KEY: "synthetic",
+    },
+    async () => new Response("[]", { headers: { "content-range": "*/0" } }),
+  );
+  return (await api.getSiteCatalogPage()).total;
+});
+
+await probe("AUD-20-selection-bypasses-source-cache", "no-store", async () => {
+  let cacheMode = "missing";
+  const api = load(
+    "src/lib/site-database.ts",
+    {
+      SUPABASE_PROJECT_REF: project,
+      SUPABASE_URL: `https://${project}.supabase.co`,
+      SUPABASE_PUBLISHABLE_KEY: "synthetic",
+    },
+    async (_input, init) => {
+      cacheMode = init.cache ?? "missing";
+      return new Response(JSON.stringify([item]), {
+        headers: { "content-range": "0-0/1" },
+      });
+    },
+  );
+  await api.getSiteCatalogPage({ ids: [item.id] }, { fresh: true });
+  return cacheMode;
+});
+
 for (const [id, url] of [
   ["AUD-07-reject-legacy-project", "https://doufsxqlfjyuvxuezpln.supabase.co"],
   [

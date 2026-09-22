@@ -1,6 +1,23 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { readFile } from "node:fs/promises";
+
+async function openFilledBriefing(page: Page) {
+  await page.goto("/");
+  await page
+    .getByRole("button", {
+      name: "Adicionar Kit executivo à seleção",
+      exact: true,
+    })
+    .click();
+  await page.getByRole("button", { name: "Minha seleção, 1 produtos" }).click();
+  await page.getByRole("button", { name: "Preparar meu briefing" }).click();
+  await page.getByLabel("Seu nome", { exact: true }).fill("Pessoa de teste");
+  await page.getByLabel("Empresa", { exact: true }).fill("Empresa de teste");
+  await page
+    .getByLabel("E-mail corporativo", { exact: true })
+    .fill("teste@example.com");
+}
 
 test("busca por SKU, recuperação de resultado vazio e filtro por categoria", async ({
   page,
@@ -244,6 +261,70 @@ test("briefing exporta dados reais e não envia formulário a serviço remoto", 
   expect(posts).toEqual([]);
   const local = await page.evaluate(() => JSON.stringify(localStorage));
   expect(local).not.toContain("teste@example.com");
+});
+
+test("peça retirada depois da seleção bloqueia briefing desatualizado", async ({
+  page,
+}) => {
+  await openFilledBriefing(page);
+  const id = "0144f10f-c311-47eb-afd6-14b9ebef35b6";
+  const current = await (
+    await page.request.get(`/api/catalog?ids=${id}&pageSize=24`)
+  ).json();
+  await page.route(/\/api\/catalog\?ids=/, (route) =>
+    route.fulfill({ json: { ...current, items: [], total: 0 } }),
+  );
+  let downloads = 0;
+  page.on("download", () => downloads++);
+  await page.getByRole("button", { name: "Baixar meu briefing" }).click();
+  await expect(
+    page.getByText(
+      "Uma peça saiu da curadoria e foi removida. Revise sua seleção antes de continuar.",
+    ),
+  ).toBeVisible();
+  await expect(page.getByText("Ainda está buscando inspiração?")).toBeVisible();
+  expect(downloads).toBe(0);
+});
+
+test("mínimo atualizado exige revisão antes do briefing", async ({ page }) => {
+  await openFilledBriefing(page);
+  const id = "0144f10f-c311-47eb-afd6-14b9ebef35b6";
+  const current = await (
+    await page.request.get(`/api/catalog?ids=${id}&pageSize=24`)
+  ).json();
+  await page.route(/\/api\/catalog\?ids=/, (route) =>
+    route.fulfill({
+      json: {
+        ...current,
+        items: [{ ...current.items[0], minimum: 10 }],
+      },
+    }),
+  );
+  await page.getByRole("button", { name: "Baixar meu briefing" }).click();
+  await expect(
+    page.getByText(
+      "O mínimo de uma peça mudou. Ajustamos a quantidade; revise antes de continuar.",
+    ),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("Quantidade de Kit executivo", { exact: true }),
+  ).toHaveValue("10");
+});
+
+test("fonte indisponível impede exportar seleção sem conferência", async ({
+  page,
+}) => {
+  await openFilledBriefing(page);
+  await page.route(/\/api\/catalog\?ids=/, (route) =>
+    route.fulfill({ status: 503, json: { error: "CATALOG_UNAVAILABLE" } }),
+  );
+  await page.getByRole("button", { name: "Baixar meu briefing" }).click();
+  await expect(
+    page.getByText(
+      "Não foi possível conferir sua seleção no catálogo agora. Tente novamente antes de preparar o briefing.",
+    ),
+  ).toBeVisible();
+  await expect(page.getByText("Seu briefing está pronto.")).toHaveCount(0);
 });
 
 test("resposta sem protocolo não confirma envio comercial", async ({

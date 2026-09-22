@@ -4,13 +4,13 @@ Data: 22/09/2026. Escopo: aplicação local compilada, oito produtos publicados 
 
 ## Revisão posterior dos critérios
 
-A [revisão individual das 200 etapas](REVISAO_EXAUSTIVA_PLANO.md) registra **81 critérios comprovados no próprio escopo, 67 entregas parciais e 52 sem entrega comprovada**. Oito cenários sintéticos agora passam para concorrência idempotente, conflito de payload, corpo sem `Content-Length`, data inválida, paginação de fonte e validação de host. As sondas de browser cobrem expiração iniciada na ficha, retorno do formulário e movimento reduzido. A suíte também reproduz retorno 503 da curadoria e 403 de mídia, preservando a seleção e exibindo fallback. Os resultados brutos estão em `audit/plan-scenarios.json` e `audit/plan-browser-scenarios.json`.
+A [revisão individual das 200 etapas](REVISAO_EXAUSTIVA_PLANO.md) registra **81 critérios comprovados no próprio escopo, 67 entregas parciais e 52 sem entrega comprovada**. Quinze cenários sintéticos passam para concorrência idempotente, conflito de payload, corpo sem `Content-Length`, data inválida, paginação e contagem exata da fonte, IDs sem cache e validação de host. As sondas de browser cobrem expiração iniciada na ficha, retorno do formulário e movimento reduzido. A suíte também reproduz retorno 503 da curadoria e 403 de mídia, preservando a seleção e exibindo fallback. Os resultados brutos estão em `audit/plan-scenarios.json` e `audit/plan-browser-scenarios.json`.
 
 Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu os defeitos técnicos listados, atualizou as verificações e o painel, mas não habilitou entrega comercial nem integrou CRM. O painel separa situação auditada de marcação pessoal e não reaplica automaticamente a conclusão de uma revisão antiga.
 
 ## Resultados funcionais
 
-**84 execuções E2E locais: 28 jornadas em cada Chromium, Firefox e WebKit** cobrem os fluxos da prévia e a auditoria do plano. A suíte garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. Os cenários incluem:
+**96 execuções E2E locais: 32 jornadas em cada Chromium, Firefox e WebKit** cobrem os fluxos da prévia e a auditoria do plano. A suíte garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. Os cenários incluem:
 
 1. Busca por SKU, resultado vazio, limpeza e filtro de categoria.
 2. Favoritos e seleção após recarregar, mínimo de quantidade e remoção.
@@ -39,10 +39,14 @@ Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu
 25. Resposta atrasada de categoria anterior não substitui o filtro mais recente.
 26. Página acima do total retorna a última página publicada, sem transformar `416` da fonte em `503` público.
 27. Resposta `200` sem protocolo válido não confirma o envio comercial.
+28. A consulta por IDs selecionados informa `Cache-Control: no-store`.
+29. Produto despublicado depois da seleção não entra no briefing; o usuário volta para revisar.
+30. Quantidade mínima alterada ajusta a seleção e exige revisão antes do briefing.
+31. Falha da consulta de conferência impede exportar um briefing de peças cuja situação é desconhecida.
 
 Comandos: `npm run build`, `npm run typecheck`, `npm run check:plan`, `npm run check:public-secrets`, `npm run check:performance-budget` e `npm run test:e2e`. A suíte usa servidor de produção na porta 3107, sem reutilizar processo estranho. A porta 3000 já servia outro aplicativo neste ambiente; o teste inicial foi descartado e a configuração foi corrigida.
 
-O workflow de CI executa instalação limpa, esses gates, cenários isolados e a matriz Chromium/Firefox/WebKit com um worker em push e pull request. `actionlint` validou a sintaxe localmente; a matriz completa foi aprovada localmente e no [run remoto 35740802785](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35740802785). [Matriz e correções](audit/2026-09-22-browser-matrix.md); [cenários adicionais e simulação de indexação](audit/2026-09-22-regression-scenarios.md).
+O workflow de CI executa instalação limpa, esses gates, cenários isolados e a matriz Chromium/Firefox/WebKit com um worker em push e pull request. `actionlint` validou a sintaxe localmente; a matriz anterior foi aprovada no [run remoto 35740802785](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35740802785), e a matriz ampliada passou localmente. [Matriz e correções](audit/2026-09-22-browser-matrix.md); [conferência pré-briefing](audit/2026-09-22-selection-freshness.md).
 
 O teste de teclado encontrou que o diálogo nativo permitia a sequência de Tab sair do ciclo esperado. Foi adicionado tratamento explícito das extremidades, mantendo Escape, inert nativo e restauração de foco. O teste de filtro do plano também foi corrigido para consultar o combobox pelo nome acessível, em vez de considerar todo o texto das opções como label.
 

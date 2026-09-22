@@ -544,7 +544,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **058. Definir estados excepcionais.** Mapear vazio, erro, offline, SKU removido e conteúdo expirado.
   - **Situação auditada:** Parcial.
   - **Aceite:** Cada estado tem mensagem útil e caminho de recuperação.
-  - **Constatação:** Vazio, armazenamento inválido, indisponibilidade da API, offline e SKU removido têm mensagem e recuperação sem perder a seleção; expiração de conteúdo canônico ainda não está completa.
+  - **Constatação:** Vazio, armazenamento inválido, indisponibilidade da API, offline e SKU removido têm mensagem e recuperação sem perder a seleção. Antes do briefing, IDs são conferidos sem cache: retirada, mínimo alterado e falha da fonte exigem revisão. A expiração de todas as superfícies publicadas ainda não está completa.
   - **Evidências e referências:** `docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md`, `src/components/Storefront.tsx`, `src/lib/site-database.ts`, `tests/storefront.spec.ts`.
   - **Próxima ação:** Definir e testar expiração da curadoria publicada.
   - **Dependências:** 054 (Concluída no escopo).
@@ -1153,7 +1153,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **128. Implementar cache e atualização.** Definir TTL e invalidação por mudanças relevantes de produto e publicação.
   - **Situação auditada:** Parcial.
   - **Aceite:** Produto retirado deixa de aparecer dentro do SLA definido.
-  - **Constatação:** Cache de API usa TTL/SWR e sitemap consulta a publicação viva; páginas pré-renderizadas ainda dependem do TTL e não têm invalidação imediata por despublicação.
+  - **Constatação:** Consultas gerais usam TTL/SWR e a seleção é conferida por IDs sem cache; sitemap consulta a publicação viva. Páginas pré-renderizadas ainda dependem do TTL e não têm invalidação imediata por despublicação.
   - **Evidências e referências:** `src/app/api/catalog/route.ts`, `src/lib/site-database.ts`, `src/app/produtos/[slug]/page.tsx`, `src/app/sitemap.ts`.
   - **Próxima ação:** Definir SLA e testar retirada completa, revalidação e cache.
   - **Dependências:** 127 (Concluída no escopo).
@@ -1169,7 +1169,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **130. Testar contrato ponta a ponta.** Conferir nomes, IDs, variantes, preço e resposta pública no staging.
   - **Situação auditada:** Parcial.
   - **Aceite:** Suite rejeita campo sensível e acompanha drift do contrato.
-  - **Constatação:** E2E checam subset do DTO e oito produtos; não há staging nem teste de drift completo.
+  - **Constatação:** E2E checam subset do DTO, oito produtos e IDs sem cache; sondas rejeitam contagem ausente ou inconsistente. Não há staging nem teste de drift completo.
   - **Evidências e referências:** `tests/public-api.spec.ts`.
   - **Próxima ação:** Testar contrato exato, estados, variantes e alteração/despublicação em staging.
   - **Dependências:** 127 (Concluída no escopo), 128 (Parcial), 129 (Concluída no escopo).
