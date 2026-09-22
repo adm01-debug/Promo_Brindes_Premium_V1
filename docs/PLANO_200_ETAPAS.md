@@ -2,7 +2,7 @@
 
 Referência: **2026-09-22** · **20 fases × 10 etapas = 200 etapas**.
 
-Status auditado: **82 concluídas no próprio escopo; 66 parciais; 52 sem entrega comprovada**. São 118 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
+Status auditado: **83 concluídas no próprio escopo; 66 parciais; 51 sem entrega comprovada**. São 117 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
 
 Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatório e prioridades](REVISAO_EXAUSTIVA_PLANO.md).
 
@@ -501,12 +501,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Testar localização de categoria e orçamento.
   - **Dependências:** 051 (Concluída no escopo).
 
-- [ ] **053. Definir taxonomia de ocasiões.** Relacionar cada ocasião a coleções e produtos elegíveis.
-  - **Situação auditada:** Parcial.
+- [x] **053. Definir taxonomia de ocasiões.** Relacionar cada ocasião a coleções e produtos elegíveis.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Uma ocasião não duplica o cadastro do produto nem altera seu SKU.
-  - **Constatação:** Ocasiões são opções do briefing; relação de elegibilidade com produtos não existe.
-  - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md`.
-  - **Próxima ação:** Definir taxonomia e vínculos estáveis sem duplicar SKU.
+  - **Constatação:** Seis coleções por contexto relacionam ocasiões a IDs canônicos únicos, mantendo cadastro e SKU originais. A consulta usa apenas peças publicadas e preserva a ordem editorial.
+  - **Evidências e referências:** `src/lib/catalog-library.ts`, `src/lib/catalog-library-data.ts`, `scripts/tests/catalog-library.test.mjs`, `docs/CATALOGOS.md`.
+  - **Próxima ação:** Manter vínculos por ID e revisar conteúdo com o comercial ao ampliar a curadoria.
   - **Dependências:** 026 (Parcial).
 
 - [x] **054. Definir jornada sem cadastro.** Permitir explorar, favoritar e iniciar briefing antes de autenticação.
@@ -555,7 +555,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Não há teste de árvore ou localização com compradores.
   - **Evidências e referências:** `docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md`.
   - **Próxima ação:** Executar tarefas e registrar taxa de sucesso e alterações.
-  - **Dependências:** 052 (Parcial), 053 (Parcial).
+  - **Dependências:** 052 (Parcial), 053 (Concluída no escopo).
 
 - [ ] **060. Documentar fluxos aprovados.** Produzir wireflows que liguem ações públicas ao atendimento comercial.
   - **Situação auditada:** Parcial.
@@ -694,9 +694,9 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [x] **075. Construir coleções editoriais.** Criar entradas por contexto de presente com imagens e narrativa.
   - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Cliques conduzem à seleção correspondente com filtro aplicado.
-  - **Constatação:** Coleções acionam categorias correspondentes mantendo IDs.
-  - **Evidências e referências:** `src/components/Storefront.tsx`.
-  - **Próxima ação:** Taxonomia real por ocasião permanece na etapa 53.
+  - **Constatação:** Home oferece entradas por categoria; biblioteca de seis coleções tem capas, narrativas, filtros e páginas próprias que conduzem aos produtos publicados correspondentes.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/catalogos/page.tsx`, `src/app/catalogos/[slug]/page.tsx`, `tests/catalogs.spec.ts`.
+  - **Próxima ação:** Ampliar apenas com peças e conteúdo elegíveis, mantendo o contrato público.
   - **Dependências:** 042 (Concluída no escopo), 048 (Concluída no escopo).
 
 - [x] **076. Construir seção de personalização.** Explicar peça, identidade e apresentação com fotografia e texto.
@@ -903,7 +903,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Não há recomendação contextual de complementos ou alternativas.
   - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/produtos/[slug]/page.tsx`.
   - **Próxima ação:** Implementar regras sobre catálogo aprovado e elegibilidade.
-  - **Dependências:** 053 (Parcial), 127 (Concluída no escopo).
+  - **Dependências:** 053 (Concluída no escopo), 127 (Concluída no escopo).
 
 - [ ] **100. Validar decisão de produto.** Testar se comprador entende inclusões, mínimo e próxima ação.
   - **Situação auditada:** Sem entrega comprovada.
@@ -1404,11 +1404,11 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Dependências:** 152 (Parcial), 154 (Parcial).
 
 - [ ] **157. Produzir páginas editoriais úteis.** Escrever guias de ocasião, técnica e planejamento com participação comercial.
-  - **Situação auditada:** Sem entrega comprovada.
+  - **Situação auditada:** Parcial.
   - **Aceite:** Conteúdo responde dúvidas reais e aponta a produtos elegíveis.
-  - **Constatação:** Não há páginas de guias de ocasião, técnicas ou planejamento comercial.
-  - **Evidências e referências:** `docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md`.
-  - **Próxima ação:** Produzir conteúdo com dúvidas reais e produtos elegíveis.
+  - **Constatação:** Seis páginas editoriais por ocasião têm introdução própria, orientação e produtos elegíveis. Ainda faltam guias completos de técnica e planejamento com participação comercial.
+  - **Evidências e referências:** `src/lib/catalog-library.ts`, `src/app/catalogos/[slug]/page.tsx`, `docs/CATALOGOS.md`.
+  - **Próxima ação:** Desenvolver guias aprofundados a partir de dúvidas reais do comercial e compradores.
   - **Dependências:** 151 (Parcial).
 
 - [ ] **158. Revisar acessibilidade de conteúdo.** Redigir alt texts, links descritivos e títulos com hierarquia.
@@ -1417,7 +1417,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Alt texts e hierarquia da prévia existem; conteúdo editorial futuro não foi criado/revisado.
   - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/produtos/[slug]/page.tsx`.
   - **Próxima ação:** Revisar alternativas, links e títulos em todos os conteúdos aprovados.
-  - **Dependências:** 157 (Sem entrega comprovada).
+  - **Dependências:** 157 (Parcial).
 
 - [ ] **159. Configurar Search Console.** Verificar domínio autorizado e acompanhar rastreamento e indexação.
   - **Situação auditada:** Sem entrega comprovada.

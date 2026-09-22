@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getSiteCatalogPage } from "@/lib/site-database";
 import { isIndexableSite, publicSiteOrigin } from "@/lib/publication";
+import { catalogCollections } from "@/lib/catalog-library";
 
 export const revalidate = 300;
 
@@ -8,7 +9,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const origin = publicSiteOrigin();
   if (!origin || !isIndexableSite()) return [];
   try {
-    const entries: MetadataRoute.Sitemap = [{ url: origin }];
+    const entries: MetadataRoute.Sitemap = [
+      { url: origin },
+      { url: `${origin}/catalogos` },
+      ...catalogCollections.map((collection) => ({
+        url: `${origin}/catalogos/${collection.slug}`,
+        lastModified: new Date(collection.editedAt),
+      })),
+    ];
     const seen = new Set<string>();
     let page = 1;
     let totalPages = 1;

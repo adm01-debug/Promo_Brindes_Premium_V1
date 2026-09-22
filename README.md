@@ -20,12 +20,13 @@ Node 22.12+ ou 24 LTS recomendado. O projeto usa Next.js 16, React 19 e TypeScri
 ## O que funciona
 
 - Home responsiva, coleções, personalização, processo e FAQ.
+- Biblioteca `/catalogos` com seis coleções, busca por ocasião, filtros por tema, compartilhamento e páginas próprias com produtos publicados.
 - Oito produtos reais, com IDs e SKUs consultados no sistema comercial em 20/09/2026 e sincronizados no banco dedicado da vitrine em 22/09/2026.
 - Busca por nome/SKU/categoria, filtros, favoritos e seleção persistente.
 - Detalhe rápido, quantidades com mínimo cadastrado e remoção de itens.
 - Briefing com validação e download de arquivo local.
 - Plano interativo com 200 etapas, filtros, progresso local e exportação Markdown.
-- Revisão individual das 200 etapas: **82 critérios comprovados no escopo, 66 entregas parciais e 52 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
+- Revisão individual das 200 etapas: **83 critérios comprovados no escopo, 66 entregas parciais e 51 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
 - Páginas permanentes de produto, metadados por peça e infraestrutura de sitemap/robots preparada para lançamento autorizado.
 - Contrato público do catálogo lido diretamente do Supabase da vitrine, com paginação e validação no servidor; briefing com persistência idempotente e reserva atômica de entrega, mantido desligado até existir receptor comercial homologado.
 
@@ -39,6 +40,7 @@ O planejamento é uma ferramenta desta prévia. Antes de lançar a vitrine públ
 
 ## Documentação
 
+- [Biblioteca de catálogos premium: funcionalidades, dados e verificação](docs/CATALOGOS.md)
 - [Auditoria comparativa do Promo Brindes V1: oportunidades, riscos e 32 recomendações](docs/AUDITORIA_COMPARATIVA_PROMO_BRINDES_V1.md)
 - [Backlog de aproveitamento do V1 em CSV](docs/BACKLOG_APROVEITAMENTO_V1.csv)
 - [Evolução técnica do briefing estruturado e simulações](docs/audit/2026-09-22-briefing-structured.md)

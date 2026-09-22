@@ -33,6 +33,7 @@ jobs:
           npm run check:plan
           npm run check:editorial
           npm run test:catalog-boundary
+          npm run test:catalog-library
       - name: Build production site
         run: npm run build
       - name: Check public assets and isolated scenarios

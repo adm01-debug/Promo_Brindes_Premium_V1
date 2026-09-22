@@ -2,7 +2,7 @@
 
 Revisão: **22/09/2026**, identificador `2026-09-22-audit-1`. Código base examinado: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. Projeto: **Promo_Brindes_Premium_V1**. A referência histórica de `Promo_Gifts_V4` continua sendo a auditoria dirigida do commit `44857d5`.
 
-**Não implementamos todas as melhorias.** Há **82 etapas com o próprio critério comprovado, 66 parciais e 52 sem entrega comprovada**. São **118 etapas abertas**, das quais **89 são P0**. O site tem catálogo curado, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
+**Não implementamos todas as melhorias.** Há **83 etapas com o próprio critério comprovado, 66 parciais e 51 sem entrega comprovada**. São **117 etapas abertas**, das quais **88 são P0**. O site tem catálogo curado, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
 
 Esses números contam critérios do plano, não esforço restante ou porcentagem de prontidão comercial. Entrevistas, licenças, homologações e monitoramento têm peso diferente de um componente visual. A conclusão de uma entrega isolada não libera suas dependências nem os gates de lançamento.
 
@@ -26,7 +26,7 @@ A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [
 | 03 · Posicionamento, descoberta e mensuração | 1 | 7 | 2 |
 | 04 · Identidade, direção de arte e voz | 7 | 2 | 1 |
 | 05 · Curadoria e qualidade do catálogo | 3 | 5 | 2 |
-| 06 · Arquitetura de informação e jornadas | 4 | 5 | 1 |
+| 06 · Arquitetura de informação e jornadas | 5 | 4 | 1 |
 | 07 · Sistema de design e componentes | 7 | 3 | 0 |
 | 08 · Página inicial e narrativa de marca | 8 | 1 | 1 |
 | 09 · Busca, filtros e descoberta | 7 | 0 | 3 |
@@ -36,12 +36,14 @@ A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [
 | 13 · Contrato público e integração de catálogo | 4 | 6 | 0 |
 | 14 · Passagem para o comercial e CRM | 1 | 3 | 6 |
 | 15 · Segurança, privacidade e governança | 0 | 7 | 3 |
-| 16 · Conteúdo, SEO e descoberta orgânica | 1 | 6 | 3 |
+| 16 · Conteúdo, SEO e descoberta orgânica | 1 | 7 | 2 |
 | 17 · Desempenho e confiabilidade | 7 | 0 | 3 |
 | 18 · Acessibilidade e inclusão | 3 | 6 | 1 |
 | 19 · Qualidade, homologação e piloto | 3 | 3 | 4 |
 | 20 · Lançamento, operação e evolução | 0 | 2 | 8 |
-| **Total** | **82** | **66** | **52** |
+| **Total** | **83** | **66** | **51** |
+
+A entrega posterior da [biblioteca de catálogos](CATALOGOS.md) concluiu o vínculo estrutural da etapa 053 e tornou a etapa 157 parcial: existem seis páginas editoriais com produtos publicados, mas ainda faltam guias aprofundados com participação comercial. Os totais acima incorporam essa entrega.
 
 ## Correções do acompanhamento
 

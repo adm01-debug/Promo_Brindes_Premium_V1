@@ -1456,19 +1456,21 @@
       "acceptance": "Uma ocasião não duplica o cadastro do produto nem altera seu SKU.",
       "owner": "UX + conteúdo",
       "priority": "P0",
-      "status": "partial",
-      "evidence": "src/components/Storefront.tsx",
+      "status": "done",
+      "evidence": "src/lib/catalog-library.ts",
       "dependencies": [
         26
       ],
       "audit": {
         "previousStatus": "pending",
-        "kind": "misto",
-        "finding": "Ocasiões são opções do briefing; relação de elegibilidade com produtos não existe.",
-        "nextAction": "Definir taxonomia e vínculos estáveis sem duplicar SKU.",
+        "kind": "entrega",
+        "finding": "Seis coleções por contexto relacionam ocasiões a IDs canônicos únicos, mantendo cadastro e SKU originais. A consulta usa apenas peças publicadas e preserva a ordem editorial.",
+        "nextAction": "Manter vínculos por ID e revisar conteúdo com o comercial ao ampliar a curadoria.",
         "evidence": [
-          "src/components/Storefront.tsx",
-          "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md"
+          "src/lib/catalog-library.ts",
+          "src/lib/catalog-library-data.ts",
+          "scripts/tests/catalog-library.test.mjs",
+          "docs/CATALOGOS.md"
         ]
       }
     },
@@ -2008,10 +2010,13 @@
       "audit": {
         "previousStatus": "done",
         "kind": "entrega",
-        "finding": "Coleções acionam categorias correspondentes mantendo IDs.",
-        "nextAction": "Taxonomia real por ocasião permanece na etapa 53.",
+        "finding": "Home oferece entradas por categoria; biblioteca de seis coleções tem capas, narrativas, filtros e páginas próprias que conduzem aos produtos publicados correspondentes.",
+        "nextAction": "Ampliar apenas com peças e conteúdo elegíveis, mantendo o contrato público.",
         "evidence": [
-          "src/components/Storefront.tsx"
+          "src/components/Storefront.tsx",
+          "src/app/catalogos/page.tsx",
+          "src/app/catalogos/[slug]/page.tsx",
+          "tests/catalogs.spec.ts"
         ]
       }
     },
@@ -4042,18 +4047,20 @@
       "acceptance": "Conteúdo responde dúvidas reais e aponta a produtos elegíveis.",
       "owner": "Conteúdo + SEO + frontend",
       "priority": "P1",
-      "status": "pending",
-      "evidence": "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
+      "status": "partial",
+      "evidence": "src/app/catalogos/[slug]/page.tsx",
       "dependencies": [
         151
       ],
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Não há páginas de guias de ocasião, técnicas ou planejamento comercial.",
-        "nextAction": "Produzir conteúdo com dúvidas reais e produtos elegíveis.",
+        "finding": "Seis páginas editoriais por ocasião têm introdução própria, orientação e produtos elegíveis. Ainda faltam guias completos de técnica e planejamento com participação comercial.",
+        "nextAction": "Desenvolver guias aprofundados a partir de dúvidas reais do comercial e compradores.",
         "evidence": [
-          "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md"
+          "src/lib/catalog-library.ts",
+          "src/app/catalogos/[slug]/page.tsx",
+          "docs/CATALOGOS.md"
         ]
       }
     },

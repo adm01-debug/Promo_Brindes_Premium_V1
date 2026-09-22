@@ -673,6 +673,7 @@ export default function Storefront({
             A curadoria <ChevronDown size={12} />
           </a>
           <a href="#colecoes">Coleções</a>
+          <Link href="/catalogos">Catálogos</Link>
           <a href="#personalizacao">Sua marca, em cada detalhe</a>
         </nav>
         <div className="header-actions">
@@ -1272,6 +1273,7 @@ export default function Storefront({
           </p>
           <nav aria-label="Navegação do rodapé">
             <a href="#curadoria">A curadoria</a>
+            <Link href="/catalogos">Catálogos</Link>
             <a href="#personalizacao">Personalização</a>
             <button onClick={openProject}>Seu projeto</button>
           </nav>
@@ -1324,6 +1326,9 @@ export default function Storefront({
             <a href="#colecoes" onClick={() => setMenuOpen(false)}>
               Coleções <ArrowRight />
             </a>
+            <Link href="/catalogos" onClick={() => setMenuOpen(false)}>
+              Catálogos <ArrowRight />
+            </Link>
             <a href="#personalizacao" onClick={() => setMenuOpen(false)}>
               Personalização <ArrowRight />
             </a>

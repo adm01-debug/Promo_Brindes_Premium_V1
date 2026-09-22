@@ -14,6 +14,7 @@
     "check:editorial:live": "node --env-file=.env.local scripts/check-editorial-live.mjs",
     "check:catalog-source": "node --env-file=.env.local scripts/check-catalog-source.mjs",
     "test:catalog-boundary": "node --test scripts/tests/catalog-boundary.test.mjs",
+    "test:catalog-library": "node --test scripts/tests/catalog-library.test.mjs",
     "check:public-secrets": "node scripts/check-public-secrets.mjs",
     "check:performance-budget": "node scripts/check-performance-budget.mjs",
     "db:migrate": "node --env-file=.env.local scripts/push-site-migrations.mjs",

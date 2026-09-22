@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-09-22T17:42:25.348Z",
+  "scope": "Local production build; no database mutations",
+  "results": [
+    {
+      "path": "/catalogos",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "path": "/catalogos",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "path": "/catalogos/boas-vindas",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "path": "/",
+      "width": 850,
+      "overflow": false
+    },
+    {
+      "path": "/",
+      "width": 1024,
+      "overflow": false
+    },
+    {
+      "path": "/",
+      "width": 1150,
+      "overflow": false
+    },
+    {
+      "path": "/",
+      "width": 1280,
+      "overflow": false
+    }
+  ],
+  "errors": []
+}
