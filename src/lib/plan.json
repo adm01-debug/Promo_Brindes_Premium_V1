@@ -4050,7 +4050,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "A matriz local e o CI remoto aprovaram 67 jornadas por Chromium, Firefox e WebKit, incluindo teclado, reflow, alvos, metadados, privacidade de runtime, rede limitada e axe. Aparelhos físicos e Safari instalado ainda não foram exercitados.",
+        "finding": "A matriz local aprovou 71 jornadas por Chromium, Firefox e WebKit, incluindo teclado, reflow, alvos, metadados, privacidade de runtime, rede limitada e axe. O CI remoto deve confirmar o mesmo conjunto no commit publicado; aparelhos físicos e Safari instalado ainda não foram exercitados.",
         "nextAction": "Testar Safari, teclado virtual e navegação em aparelhos reais.",
         "evidence": [
           "playwright.config.ts",

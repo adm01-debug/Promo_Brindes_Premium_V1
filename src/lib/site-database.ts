@@ -31,6 +31,8 @@ type CatalogRow = {
 
 export type SiteServerConfig = { url: string; secret: string };
 type SitePublicConfig = { url: string; key: string };
+const publishableKeyPattern = /^sb_publishable_[A-Za-z0-9_-]+$/;
+const secretKeyPattern = /^sb_secret_[A-Za-z0-9_-]+$/;
 
 function approvedUrl(rawUrl: string) {
   const url = new URL(rawUrl);
@@ -56,7 +58,12 @@ function siteConfig(): SitePublicConfig | null {
       throw new Error("Site catalog configuration is required on Vercel.");
     return null;
   }
-  if (!rawUrl || !key || process.env.SUPABASE_PROJECT_REF !== SITE_PROJECT_REF)
+  if (
+    !rawUrl ||
+    !key ||
+    !publishableKeyPattern.test(key) ||
+    process.env.SUPABASE_PROJECT_REF !== SITE_PROJECT_REF
+  )
     throw new Error("Site Supabase configuration is incomplete.");
   return { url: approvedUrl(rawUrl), key };
 }
@@ -69,6 +76,7 @@ export function siteServerConfig(): SiteServerConfig | null {
   if (
     !rawUrl ||
     !secret ||
+    !secretKeyPattern.test(secret) ||
     process.env.SUPABASE_PROJECT_REF !== SITE_PROJECT_REF
   )
     throw new Error("Site server database configuration is incomplete.");
@@ -155,6 +163,8 @@ function exactCount(response: Response, rowCount: number, offset: number) {
 
 async function fetchCatalogRows(endpoint: URL, key: string, fresh: boolean) {
   return fetch(endpoint, {
+    method: "GET",
+    redirect: "error",
     headers: {
       apikey: key,
       Accept: "application/json",
@@ -248,6 +258,8 @@ export async function getSiteProductBySlug(
   endpoint.searchParams.set("slug", `eq.${slug}`);
   endpoint.searchParams.set("limit", "1");
   const response = await fetch(endpoint, {
+    method: "GET",
+    redirect: "error",
     headers: { apikey: config.key, Accept: "application/json" },
     next: { revalidate: 300 },
     signal: AbortSignal.timeout(8000),

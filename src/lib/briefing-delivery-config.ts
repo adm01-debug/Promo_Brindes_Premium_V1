@@ -12,27 +12,59 @@ export type BriefingDeliveryConfig = {
   ipHeader: TrustedIpHeader;
 };
 
-function destinationIsSafe(value: string | undefined) {
+const forbiddenDestinationHosts = new Set([
+  "doufsxqlfjyuvxuezpln.supabase.co",
+  "doufsxqlfjyuvxuezpln.functions.supabase.co",
+  "db.doufsxqlfjyuvxuezpln.supabase.co",
+]);
+
+function allowedDestinationHosts(value: string | undefined) {
+  if (!value) return new Set<string>();
+  const hosts = value.split(",").map((host) => host.trim().toLowerCase());
+  if (
+    hosts.length > 10 ||
+    hosts.some(
+      (host) =>
+        !host ||
+        host.length > 253 ||
+        host.startsWith(".") ||
+        host.endsWith(".") ||
+        host.includes("..") ||
+        !/^[a-z0-9.-]+$/.test(host) ||
+        isIP(host) !== 0,
+    )
+  )
+    return null;
+  return new Set(hosts);
+}
+
+function destinationIsSafe(
+  value: string | undefined,
+  allowedHostsValue: string | undefined,
+) {
   if (!value) return false;
   try {
     const url = new URL(value);
+    if (url.username || url.password || url.hash) return false;
+    const isLocalDevelopment =
+      process.env.NODE_ENV === "development" &&
+      url.protocol === "http:" &&
+      ["localhost", "127.0.0.1"].includes(url.hostname);
+    if (isLocalDevelopment) return true;
+    const allowedHosts = allowedDestinationHosts(allowedHostsValue);
     // The operational project is a read-only product source, never a receiver.
     if (
-      url.username ||
-      url.password ||
-      [
-        "doufsxqlfjyuvxuezpln.supabase.co",
-        "doufsxqlfjyuvxuezpln.functions.supabase.co",
-        "db.doufsxqlfjyuvxuezpln.supabase.co",
-      ].includes(url.hostname)
+      url.port ||
+      url.protocol !== "https:" ||
+      isIP(url.hostname) !== 0 ||
+      url.hostname === "localhost" ||
+      url.hostname.endsWith(".localhost") ||
+      url.hostname.endsWith(".local") ||
+      forbiddenDestinationHosts.has(url.hostname) ||
+      !allowedHosts?.has(url.hostname)
     )
       return false;
-    return (
-      url.protocol === "https:" ||
-      (process.env.NODE_ENV === "development" &&
-        url.protocol === "http:" &&
-        ["localhost", "127.0.0.1"].includes(url.hostname))
-    );
+    return true;
   } catch {
     return false;
   }
@@ -42,7 +74,10 @@ function destinationIsSafe(value: string | undefined) {
 export function briefingDeliveryConfig(): BriefingDeliveryConfig | null {
   if (process.env.BRIEFING_DELIVERY_ENABLED !== "true") return null;
   const destination = process.env.BRIEFING_WEBHOOK_URL;
-  if (!destinationIsSafe(destination)) return null;
+  if (
+    !destinationIsSafe(destination, process.env.BRIEFING_WEBHOOK_ALLOWED_HOSTS)
+  )
+    return null;
   const ipHeader = process.env.PROMO_PREMIUM_CLIENT_IP_HEADER;
   if (
     ipHeader !== "x-vercel-forwarded-for" &&

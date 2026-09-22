@@ -58,10 +58,21 @@ type ValidationResult =
 const text = (value: unknown, max: number) => {
   if (typeof value !== "string") return null;
   const result = value.trim();
-  return result.length <= max ? result : null;
+  return result.length <= max && !/[\u0000-\u001f\u007f]/.test(result)
+    ? result
+    : null;
 };
 const optionalText = (value: unknown, max: number) =>
   value === undefined || value === null ? "" : text(value, max);
+const optionalMessage = (value: unknown, max: number) => {
+  if (value === undefined || value === null) return "";
+  if (typeof value !== "string") return null;
+  const result = value.trim();
+  return result.length <= max &&
+    !/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(result)
+    ? result
+    : null;
+};
 function optionalChoice<const T extends readonly string[]>(
   value: unknown,
   choices: T,
@@ -101,7 +112,7 @@ export function parseBriefingInput(input: unknown): ValidationResult {
       ? ""
       : text(rawDate, 10);
   const budget = optionalText(data.budget, 80);
-  const message = optionalText(data.message, 2000);
+  const message = optionalMessage(data.message, 2000);
   const budgetScope = optionalChoice(data.budgetScope, budgetScopes);
   const eventDate = optionalText(data.eventDate, 10);
   const deadlineFlexibility = optionalChoice(
@@ -154,7 +165,11 @@ export function parseBriefingInput(input: unknown): ValidationResult {
     };
   if (phone && !/^[+\d\s()\-.]{10,24}$/.test(phone))
     return { ok: false, message: "Revise o telefone informado." };
-  if (!Array.isArray(data.items) || data.items.length > 24)
+  if (
+    !Array.isArray(data.items) ||
+    data.items.length < 1 ||
+    data.items.length > 24
+  )
     return { ok: false, message: "A seleção de produtos não é válida." };
 
   const seen = new Set<string>();

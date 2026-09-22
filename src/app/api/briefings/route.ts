@@ -33,7 +33,11 @@ type DeliveryClaim = {
   protocol: string;
   claimed: boolean;
   delivery_status: "delivering" | "delivered";
+  delivery_lease_token: string | null;
 };
+const protocolPattern = /^PB-[A-Z0-9]{12}$/;
+const uuidPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function originIsAllowed(request: NextRequest) {
   const origin = request.headers.get("origin");
@@ -61,6 +65,10 @@ async function canAttemptDistributed(
 
 function validIdempotencyKey(value: string | null) {
   return Boolean(value && /^[a-zA-Z0-9_-]{16,128}$/.test(value));
+}
+
+function hasJsonContentType(value: string | null) {
+  return value?.split(";", 1)[0].trim().toLowerCase() === "application/json";
 }
 
 function jsonNoStore(body: object, status = 200) {
@@ -150,7 +158,7 @@ async function lookupBriefing(
   const row = rows[0];
   if (!row) return null;
   if (
-    typeof row.protocol !== "string" ||
+    !protocolPattern.test(row.protocol) ||
     typeof row.payload_conflict !== "boolean" ||
     !["pending", "delivering", "delivered", "failed"].includes(
       row.delivery_status,
@@ -166,11 +174,8 @@ function existingResponse(row: ExistingBriefing | null) {
     return jsonNoStore({ error: "IDEMPOTENCY_PAYLOAD_CONFLICT" }, 409);
   if (row.delivery_status === "delivered")
     return jsonNoStore({ protocol: row.protocol, duplicate: true }, 200);
-  if (row.delivery_status === "delivering")
-    return jsonNoStore(
-      { protocol: row.protocol, duplicate: true, pending: true },
-      202,
-    );
+  // A delivering row may hold an expired lease. Continue to the atomic claim;
+  // it returns 202 for a live lease and issues a new token only after expiry.
   return null;
 }
 
@@ -197,10 +202,12 @@ async function persistBriefing(
       p_items: commercial.items,
     },
   );
+  if (!Array.isArray(rows) || rows.length !== 1)
+    throw new Error("PERSISTED_BRIEFING_INVALID");
   const row = rows[0];
   if (
     !row ||
-    typeof row.protocol !== "string" ||
+    !protocolPattern.test(row.protocol) ||
     typeof row.duplicate !== "boolean" ||
     typeof row.payload_conflict !== "boolean" ||
     !["pending", "delivering", "delivered", "failed"].includes(
@@ -214,19 +221,35 @@ async function persistBriefing(
 async function recordDelivery(
   config: BriefingDeliveryConfig["database"],
   key: string,
+  expectedProtocol: string,
+  leaseToken: string,
   delivered: boolean,
   error?: string,
 ) {
-  const rows = await rpc<{ protocol: string }[]>(
-    config,
-    "record_premium_briefing_delivery",
+  const rows = await rpc<
     {
-      p_idempotency_key: key,
-      p_delivered: delivered,
-      p_error: error || null,
-    },
-  );
-  if (!rows[0]?.protocol) throw new Error("DELIVERY_RECORD_INVALID");
+      protocol: string;
+      delivery_status: "delivered" | "failed";
+      delivery_attempts: number;
+    }[]
+  >(config, "record_premium_briefing_delivery_v2", {
+    p_idempotency_key: key,
+    p_delivery_lease_token: leaseToken,
+    p_delivered: delivered,
+    p_error: error || null,
+  });
+  const row = rows[0];
+  if (
+    !Array.isArray(rows) ||
+    rows.length !== 1 ||
+    !row ||
+    row.protocol !== expectedProtocol ||
+    !protocolPattern.test(row.protocol) ||
+    row.delivery_status !== (delivered ? "delivered" : "failed") ||
+    !Number.isInteger(row.delivery_attempts) ||
+    row.delivery_attempts < 1
+  )
+    throw new Error("DELIVERY_RECORD_INVALID");
 }
 
 async function claimDelivery(
@@ -235,15 +258,22 @@ async function claimDelivery(
 ) {
   const rows = await rpc<DeliveryClaim[]>(
     config,
-    "claim_premium_briefing_delivery",
+    "claim_premium_briefing_delivery_v2",
     { p_idempotency_key: key },
   );
+  if (!Array.isArray(rows) || rows.length !== 1)
+    throw new Error("DELIVERY_CLAIM_INVALID");
   const row = rows[0];
   if (
     !row ||
-    typeof row.protocol !== "string" ||
+    !protocolPattern.test(row.protocol) ||
     typeof row.claimed !== "boolean" ||
-    !["delivering", "delivered"].includes(row.delivery_status)
+    !["delivering", "delivered"].includes(row.delivery_status) ||
+    (row.claimed &&
+      (row.delivery_status !== "delivering" ||
+        !row.delivery_lease_token ||
+        !uuidPattern.test(row.delivery_lease_token))) ||
+    (!row.claimed && row.delivery_lease_token !== null)
   )
     throw new Error("DELIVERY_CLAIM_INVALID");
   return row;
@@ -257,7 +287,7 @@ export function GET() {
 export async function POST(request: NextRequest) {
   if (!originIsAllowed(request))
     return jsonNoStore({ error: "ORIGIN_REJECTED" }, 403);
-  if (!request.headers.get("content-type")?.includes("application/json"))
+  if (!hasJsonContentType(request.headers.get("content-type")))
     return jsonNoStore({ error: "JSON_REQUIRED" }, 415);
   const key = request.headers.get("idempotency-key");
   if (!validIdempotencyKey(key))
@@ -369,6 +399,8 @@ export async function POST(request: NextRequest) {
   } catch {
     return jsonNoStore({ error: "PERSISTENCE_UNAVAILABLE" }, 503);
   }
+  if (claim.protocol !== persisted.row.protocol)
+    return jsonNoStore({ error: "PERSISTENCE_UNAVAILABLE" }, 503);
   if (!claim.claimed)
     return jsonNoStore(
       { protocol: claim.protocol, duplicate: true, pending: true },
@@ -394,7 +426,14 @@ export async function POST(request: NextRequest) {
     if (!response.ok) throw new Error("DESTINATION_FAILED");
   } catch {
     try {
-      await recordDelivery(config.database, key!, false, "destination_failed");
+      await recordDelivery(
+        config.database,
+        key!,
+        persisted.row.protocol,
+        claim.delivery_lease_token!,
+        false,
+        "destination_failed",
+      );
     } catch {
       // The briefing row remains durable and can be reconciled by an operator.
     }
@@ -404,7 +443,13 @@ export async function POST(request: NextRequest) {
     );
   }
   try {
-    await recordDelivery(config.database, key!, true);
+    await recordDelivery(
+      config.database,
+      key!,
+      persisted.row.protocol,
+      claim.delivery_lease_token!,
+      true,
+    );
   } catch {
     // The receiver accepted the request. Do not mislabel it as a failed
     // delivery; a later reconciliation must resolve the uncertain DB state.

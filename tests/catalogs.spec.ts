@@ -108,6 +108,18 @@ test("coleção permite chegar à ficha e incluir a peça no projeto", async ({
   await expect(
     page.getByRole("button", { name: "Incluído na seleção" }),
   ).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const raw = localStorage.getItem("promo-premium-selection-v1");
+        if (!raw) return 0;
+        const value: unknown = JSON.parse(raw);
+        if (!value || typeof value !== "object" || !("items" in value))
+          return 0;
+        return Object.keys((value as { items: object }).items).length;
+      }),
+    )
+    .toBe(1);
   await page.getByRole("link", { name: "Ver toda a curadoria" }).click();
   await expect(
     page.getByRole("button", { name: "Minha seleção, 1 produtos" }),
@@ -211,21 +223,28 @@ test("imagens indisponíveis preservam acesso às peças", async ({ page }) => {
   );
 });
 
-test("biblioteca e coleção funcionam no mobile e em reflow", async ({
-  page,
-}) => {
-  for (const width of [390, 320]) {
-    await page.setViewportSize({ width, height: 844 });
-    for (const path of ["/catalogos", "/catalogos/boas-vindas"]) {
+for (const width of [390, 320]) {
+  for (const path of ["/catalogos", "/catalogos/boas-vindas"]) {
+    test(`${path} não cria rolagem horizontal em ${width}px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 844 });
       await page.goto(path);
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= window.innerWidth,
         ),
       ).toBe(true);
-    }
+    });
   }
+}
+
+test("menu móvel abre a biblioteca de catálogos", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
+  await page.waitForFunction(
+    () => localStorage.getItem("promo-premium-selection-v1") !== null,
+  );
   await page.getByRole("button", { name: "Abrir menu" }).click();
   await page
     .getByRole("navigation", { name: "Menu móvel" })

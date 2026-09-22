@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { readSourceProducts, SOURCE_COLUMNS } from "../lib/catalog-source.mjs";
-import { syncSiteCatalog } from "../sync-site-catalog.mjs";
+import {
+  CATALOG_FIELD_LIMITS,
+  syncSiteCatalog,
+} from "../sync-site-catalog.mjs";
 
 const snapshot = JSON.parse(
   readFileSync(new URL("../../src/lib/products.json", import.meta.url), "utf8"),
@@ -99,6 +102,63 @@ test("dry run performs no writes in either project", async () => {
   assert.equal(h.calls.length, 2);
   assert.ok(h.calls.every(({ init }) => init.method === "GET"));
 });
+
+const mutate = (changes, index = 0) =>
+  snapshot.map((item, itemIndex) =>
+    itemIndex === index ? { ...item, ...changes } : { ...item },
+  );
+
+for (const [name, candidate] of [
+  ["duplicate SKU", mutate({ sku: snapshot[1].sku })],
+  [
+    "case-insensitive duplicate SKU",
+    mutate({ sku: snapshot[1].sku.toLowerCase() }),
+  ],
+  ["duplicate slug", mutate({ slug: snapshot[1].slug })],
+  ["invalid slug", mutate({ slug: "../catalogo-interno" })],
+  ["invalid image path", mutate({ image: "/images/../private.webp" })],
+  ["invalid source date", mutate({ sourceDate: "2026-02-31" })],
+  ["invalid category", mutate({ category: "Interno" })],
+  ["invalid minimum", mutate({ minimum: 0 })],
+  ["invalid personalization", mutate({ personalizable: "yes" })],
+  ["untrimmed public text", mutate({ name: ` ${snapshot[0].name}` })],
+  ["oversized SKU", mutate({ sku: "S".repeat(CATALOG_FIELD_LIMITS.sku + 1) })],
+  [
+    "oversized slug",
+    mutate({ slug: "s".repeat(CATALOG_FIELD_LIMITS.slug + 1) }),
+  ],
+  [
+    "oversized name",
+    mutate({ name: "N".repeat(CATALOG_FIELD_LIMITS.name + 1) }),
+  ],
+  [
+    "oversized original name",
+    mutate({
+      originalName: "O".repeat(CATALOG_FIELD_LIMITS.originalName + 1),
+    }),
+  ],
+  [
+    "oversized tagline",
+    mutate({ tagline: "T".repeat(CATALOG_FIELD_LIMITS.tagline + 1) }),
+  ],
+  [
+    "oversized description",
+    mutate({ description: "D".repeat(CATALOG_FIELD_LIMITS.description + 1) }),
+  ],
+  [
+    "oversized image path",
+    mutate({
+      image: `/images/${"i".repeat(CATALOG_FIELD_LIMITS.image)}.webp`,
+    }),
+  ],
+])
+  test(`${name} is rejected before any database call`, async () => {
+    const h = harness();
+    await assert.rejects(
+      syncSiteCatalog(candidate, { env, fetcher: h.fetcher }),
+    );
+    assert.equal(h.calls.length, 0);
+  });
 
 for (const url of [
   `https://${sourceHost}`,

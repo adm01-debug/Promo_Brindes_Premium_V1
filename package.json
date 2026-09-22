@@ -16,6 +16,7 @@
     "test:catalog-boundary": "node --test scripts/tests/catalog-boundary.test.mjs",
     "test:catalog-library": "node --test scripts/tests/catalog-library.test.mjs",
     "test:runtime-environment": "node --test scripts/tests/runtime-environment.test.mjs",
+    "test:database-concurrency": "node scripts/tests/database-concurrency.mjs",
     "check:public-secrets": "node scripts/check-public-secrets.mjs",
     "check:performance-budget": "node scripts/check-performance-budget.mjs",
     "check:ui-contract": "node scripts/check-ui-contract.mjs",

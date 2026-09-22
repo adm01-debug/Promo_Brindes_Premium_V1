@@ -570,19 +570,18 @@ test("resposta sem protocolo não confirma envio comercial", async ({
           : "{}",
     }),
   );
-  await page.goto("/");
-  await page.getByRole("button", { name: "Minha seleção, 0 produtos" }).click();
+  const configured = page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/api/briefings") &&
+      response.request().method() === "GET",
+  );
+  await openFilledBriefing(page);
+  await configured;
   await expect(
     page.getByText(
-      "O envio registra uma solicitação para análise comercial. Não é um pedido nem reserva estoque.",
+      "Ao enviar, seus dados seguem ao canal comercial configurado para esta solicitação. A confirmação só aparece após a resposta do servidor.",
     ),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Preparar meu briefing" }).click();
-  await page.getByLabel("Seu nome", { exact: true }).fill("Pessoa de teste");
-  await page.getByLabel("Empresa", { exact: true }).fill("Empresa de teste");
-  await page
-    .getByLabel("E-mail corporativo", { exact: true })
-    .fill("teste@example.com");
   await page.getByRole("button", { name: "Enviar ao comercial" }).click();
   await expect(
     page.getByText("Não foi possível confirmar o protocolo. Tente novamente."),

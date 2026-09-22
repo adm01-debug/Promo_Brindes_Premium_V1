@@ -7,6 +7,11 @@ if (
   url.protocol !== "https:" ||
   url.hostname !== approvedHost ||
   url.pathname !== "/" ||
+  url.port ||
+  url.username ||
+  url.password ||
+  url.search ||
+  url.hash ||
   process.env.SUPABASE_PROJECT_REF !== "whwloseshzraipljisqo" ||
   !key
 )
@@ -34,6 +39,9 @@ endpoint.search = new URLSearchParams({
   limit: "100",
 }).toString();
 const response = await fetch(endpoint, {
+  method: "GET",
+  redirect: "error",
+  cache: "no-store",
   headers: { apikey: key, Accept: "application/json", Prefer: "count=exact" },
   signal: AbortSignal.timeout(8000),
 });

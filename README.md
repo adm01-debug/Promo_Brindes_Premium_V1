@@ -34,9 +34,9 @@ Node 22.12+ ou 24 LTS recomendado. O projeto usa Next.js 16, React 19 e TypeScri
 
 ## Limites desta entrega
 
-Nesta instalação, a versão **não envia leads, não registra propostas e não reserva estoque**. O formulário gera um arquivo no navegador e informa isso explicitamente. O endpoint de briefing só habilita entrega quando `BRIEFING_DELIVERY_ENABLED=true`, há um receptor HTTPS aprovado em `BRIEFING_WEBHOOK_URL`, banco dedicado configurado e cabeçalho de IP confiável declarado em `PROMO_PREMIUM_CLIENT_IP_HEADER`; sem essas condições, ele responde indisponibilidade e a interface permanece em download local. A curadoria contém oito peças sincronizadas no banco da vitrine, que alimenta home, fichas e validação de briefing. Valores, condições e disponibilidade devem ser confirmados pelo comercial.
+Nesta instalação, a versão **não envia leads, não registra propostas e não reserva estoque**. O formulário gera um arquivo no navegador e informa isso explicitamente. O endpoint de briefing só habilita entrega quando `BRIEFING_DELIVERY_ENABLED=true`, há um receptor HTTPS aprovado em `BRIEFING_WEBHOOK_URL`, seu hostname exato consta em `BRIEFING_WEBHOOK_ALLOWED_HOSTS`, o banco dedicado está configurado e um cabeçalho de IP confiável foi declarado em `PROMO_PREMIUM_CLIENT_IP_HEADER`; sem essas condições, ele responde indisponibilidade e a interface permanece em download local. A allowlist não aceita IP, localhost, host semelhante, credenciais, fragmento ou porta não padrão em produção, e redirects de rede falham fechados. A curadoria contém oito peças sincronizadas no banco da vitrine, que alimenta home, fichas e validação de briefing. Valores, condições e disponibilidade devem ser confirmados pelo comercial.
 
-A imagem de campanha foi gerada por IA e é conceitual. Os cards usam fotografias reais de fornecedor; direitos de publicação comercial devem ser confirmados. Não foram alterados schema, policies, dados ou serviços do sistema comercial. O site está `noindex` e não foi publicado remotamente.
+A imagem de campanha foi gerada por IA e é conceitual. Os cards usam fotografias reais de fornecedor; direitos de publicação comercial devem ser confirmados. Não foram alterados schema, policies, dados ou serviços do sistema comercial. O site está `noindex` em uma prévia protegida, sem domínio comercial.
 
 O planejamento é uma ferramenta desta prévia. Antes de lançar a vitrine pública, mover `/planejamento` para ambiente interno ou protegê-lo com autenticação apropriada. `noindex` não é controle de acesso.
 
@@ -70,6 +70,7 @@ O planejamento é uma ferramenta desta prévia. Antes de lançar a vitrine públ
 - [Inventário de privacidade do runtime](docs/INVENTARIO_PRIVACIDADE_RUNTIME.md)
 - [Auditoria de acessibilidade do conteúdo](docs/AUDITORIA_ACESSIBILIDADE_CONTEUDO.md)
 - [Validação do ambiente Vercel e catálogo canônico](docs/audit/2026-09-22-production-environment.md)
+- [Auditoria de release, produção e rollback](docs/audit/2026-09-22-release-operations.md)
 - [Plano de 200 etapas com checklists](docs/PLANO_200_ETAPAS.md)
 - [Plano em CSV](docs/PLANO_200_ETAPAS.csv)
 - [Validação e limitações](docs/VALIDACAO.md)

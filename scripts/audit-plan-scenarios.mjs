@@ -13,9 +13,14 @@ const products = JSON.parse(readFileSync("src/lib/products.json", "utf8"));
 const project = "whwloseshzraipljisqo";
 const results = [];
 
-function load(file, env = {}, fetcher = async () => new Response("{}")) {
+function load(
+  file,
+  env = {},
+  fetcher = async () => new Response("{}"),
+  transform = (source) => source,
+) {
   const exports = {};
-  const js = ts.transpileModule(readFileSync(file, "utf8"), {
+  const js = ts.transpileModule(transform(readFileSync(file, "utf8"), file), {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
       target: ts.ScriptTarget.ES2022,
@@ -30,6 +35,7 @@ function load(file, env = {}, fetcher = async () => new Response("{}")) {
         extname(dependency) ? dependency : `${dependency}.ts`,
         env,
         fetcher,
+        transform,
       );
     }
     if (name.startsWith(".")) {
@@ -38,6 +44,7 @@ function load(file, env = {}, fetcher = async () => new Response("{}")) {
         extname(dependency) ? dependency : `${dependency}.ts`,
         env,
         fetcher,
+        transform,
       );
     }
     return require(name);
@@ -54,6 +61,7 @@ function load(file, env = {}, fetcher = async () => new Response("{}")) {
       Response,
       Request,
       TextDecoder,
+      performance,
       setTimeout,
       clearTimeout,
       console,
@@ -107,6 +115,7 @@ function deliveryHarness() {
   const records = new Map();
   const rateAttempts = new Map();
   let webhookCalls = 0;
+  let leaseSequence = 0;
   const fetcher = async (input, init = {}) => {
     const url = new URL(String(input));
     if (url.pathname.endsWith("/allow_premium_briefing_attempt")) {
@@ -163,22 +172,39 @@ function deliveryHarness() {
         },
       ]);
     }
-    if (url.pathname.endsWith("/claim_premium_briefing_delivery")) {
+    if (url.pathname.endsWith("/claim_premium_briefing_delivery_v2")) {
       const { p_idempotency_key: key } = JSON.parse(String(init.body));
       const record = records.get(key);
-      const claimed = record.status === "pending" || record.status === "failed";
+      const claimed =
+        record.status === "pending" ||
+        record.status === "failed" ||
+        (record.status === "delivering" && record.expired);
       if (claimed) {
         record.status = "delivering";
         record.attempts += 1;
+        record.expired = false;
+        leaseSequence += 1;
+        record.leaseToken = `00000000-0000-4000-8000-${String(leaseSequence).padStart(12, "0")}`;
       }
       return Response.json([
-        { protocol: record.protocol, claimed, delivery_status: record.status },
+        {
+          protocol: record.protocol,
+          claimed,
+          delivery_status: record.status,
+          delivery_lease_token: claimed ? record.leaseToken : null,
+        },
       ]);
     }
-    if (url.pathname.endsWith("/record_premium_briefing_delivery")) {
+    if (url.pathname.endsWith("/record_premium_briefing_delivery_v2")) {
       const body = JSON.parse(String(init.body));
       const record = records.get(body.p_idempotency_key);
+      if (
+        record.status !== "delivering" ||
+        record.leaseToken !== body.p_delivery_lease_token
+      )
+        return Response.json([]);
       record.status = body.p_delivered ? "delivered" : "failed";
+      record.leaseToken = null;
       return Response.json([
         {
           protocol: record.protocol,
@@ -194,7 +220,17 @@ function deliveryHarness() {
     }
     throw new Error(`Unexpected synthetic request: ${url}`);
   };
-  return { fetcher, webhookCalls: () => webhookCalls };
+  return {
+    fetcher,
+    webhookCalls: () => webhookCalls,
+    expireLease(key) {
+      const record = records.get(key);
+      if (record) record.expired = true;
+    },
+    deliveryStatus(key) {
+      return records.get(key)?.status;
+    },
+  };
 }
 
 const activeEnv = {
@@ -204,8 +240,8 @@ const activeEnv = {
   PROMO_PREMIUM_CLIENT_IP_HEADER: "x-vercel-forwarded-for",
   SUPABASE_PROJECT_REF: project,
   SUPABASE_URL: `https://${project}.supabase.co`,
-  SUPABASE_PUBLISHABLE_KEY: "synthetic-public",
-  ["SUPABASE" + "_SECRET_KEY"]: "synthetic-service",
+  SUPABASE_PUBLISHABLE_KEY: "sb_publishable_synthetic",
+  ["SUPABASE" + "_SECRET_KEY"]: "sb_secret_synthetic",
 };
 
 await probe("AUD-01-concurrent-idempotency", "201,202;1", async () => {
@@ -567,7 +603,7 @@ await probe("AUD-06-source-pagination-truncation", 530, async () => {
     {
       SUPABASE_PROJECT_REF: project,
       SUPABASE_URL: `https://${project}.supabase.co`,
-      SUPABASE_PUBLISHABLE_KEY: "synthetic",
+      SUPABASE_PUBLISHABLE_KEY: "sb_publishable_synthetic",
     },
     async (input) => {
       const url = new URL(String(input));
@@ -596,7 +632,7 @@ for (const [id, rows, range] of [
       {
         SUPABASE_PROJECT_REF: project,
         SUPABASE_URL: `https://${project}.supabase.co`,
-        SUPABASE_PUBLISHABLE_KEY: "synthetic",
+        SUPABASE_PUBLISHABLE_KEY: "sb_publishable_synthetic",
       },
       async () =>
         new Response(JSON.stringify(rows), {
@@ -618,7 +654,7 @@ await probe("AUD-19-empty-exact-total", 0, async () => {
     {
       SUPABASE_PROJECT_REF: project,
       SUPABASE_URL: `https://${project}.supabase.co`,
-      SUPABASE_PUBLISHABLE_KEY: "synthetic",
+      SUPABASE_PUBLISHABLE_KEY: "sb_publishable_synthetic",
     },
     async () => new Response("[]", { headers: { "content-range": "*/0" } }),
   );
@@ -632,7 +668,7 @@ await probe("AUD-20-selection-bypasses-source-cache", "no-store", async () => {
     {
       SUPABASE_PROJECT_REF: project,
       SUPABASE_URL: `https://${project}.supabase.co`,
-      SUPABASE_PUBLISHABLE_KEY: "synthetic",
+      SUPABASE_PUBLISHABLE_KEY: "sb_publishable_synthetic",
     },
     async (_input, init) => {
       cacheMode = init.cache ?? "missing";
@@ -836,7 +872,7 @@ await probe(
       async (input, init = {}) => {
         if (
           new URL(String(input)).pathname.endsWith(
-            "/record_premium_briefing_delivery",
+            "/record_premium_briefing_delivery_v2",
           )
         ) {
           const body = JSON.parse(String(init.body));
@@ -861,7 +897,7 @@ await probe("AUD-31-rejected-webhook-marked-failed", "503;1", async () => {
       const url = new URL(String(input));
       if (url.hostname === "localhost")
         return new Response("unavailable", { status: 503 });
-      if (url.pathname.endsWith("/record_premium_briefing_delivery")) {
+      if (url.pathname.endsWith("/record_premium_briefing_delivery_v2")) {
         const body = JSON.parse(String(init.body));
         if (!body.p_delivered) falseRecords++;
       }
@@ -886,7 +922,7 @@ for (const [id, url] of [
       {
         SUPABASE_PROJECT_REF: project,
         SUPABASE_URL: url,
-        SUPABASE_PUBLISHABLE_KEY: "synthetic",
+        SUPABASE_PUBLISHABLE_KEY: "sb_publishable_synthetic",
       },
       async () => {
         requested = true;
@@ -974,6 +1010,289 @@ await probe("CAT-READONLY-no-write-redirects", true, async () => {
     writes.every((init) => init.redirect === "error")
   );
 });
+
+await probe(
+  "AUD-39-catalog-read-redirects-disabled",
+  "GET:error,GET:error",
+  async () => {
+    const requests = [];
+    const api = load(
+      "src/lib/site-database.ts",
+      activeEnv,
+      async (_input, init) => {
+        requests.push(`${init.method}:${init.redirect}`);
+        return new Response(JSON.stringify([item]), {
+          headers: { "content-range": "0-0/1" },
+        });
+      },
+    );
+    await api.getSiteCatalogPage();
+    await api.getSiteProductBySlug(item.slug);
+    return requests.join(",");
+  },
+);
+
+await probe("AUD-40-approved-webhook-host", true, async () => {
+  const api = load("src/lib/briefing-delivery-config.ts", {
+    ...activeEnv,
+    NODE_ENV: "production",
+    BRIEFING_WEBHOOK_URL: "https://crm.example.com/v1/briefings?tenant=promo",
+    BRIEFING_WEBHOOK_ALLOWED_HOSTS: "crm.example.com",
+  });
+  return (
+    api.briefingDeliveryConfig()?.destination ===
+    "https://crm.example.com/v1/briefings?tenant=promo"
+  );
+});
+
+await probe("AUD-41-webhook-ssrf-destinations-rejected", true, async () => {
+  const unsafe = [
+    ["https://127.0.0.1/hook", "127.0.0.1"],
+    ["https://2130706433/hook", "2130706433"],
+    ["https://localhost/hook", "localhost"],
+    ["https://receiver.local/hook", "receiver.local"],
+    ["https://crm.example.com.evil.test/hook", "crm.example.com"],
+    ["https://crm.example.com:8443/hook", "crm.example.com"],
+    ["https://crm.example.com/hook#token", "crm.example.com"],
+    ["https://user:password@crm.example.com/hook", "crm.example.com"],
+    ["https://crm.example.com/hook", ""],
+    ["http://user:password@localhost:3999/hook", "", "development"],
+    ["http://localhost:3999/hook#token", "", "development"],
+  ];
+  return unsafe.every(([destination, allowed, nodeEnv = "production"]) => {
+    const api = load("src/lib/briefing-delivery-config.ts", {
+      ...activeEnv,
+      NODE_ENV: nodeEnv,
+      BRIEFING_WEBHOOK_URL: destination,
+      BRIEFING_WEBHOOK_ALLOWED_HOSTS: allowed,
+    });
+    return api.briefingDeliveryConfig() === null;
+  });
+});
+
+await probe("AUD-42-strict-json-content-type", "415,415,201", async () => {
+  const harness = deliveryHarness();
+  const api = load(
+    "src/app/api/briefings/route.ts",
+    activeEnv,
+    harness.fetcher,
+  );
+  const responses = await Promise.all([
+    api.POST(
+      request("audit-content-type-0001", payload, {
+        "Content-Type": "text/plain; application/json",
+      }),
+    ),
+    api.POST(
+      request("audit-content-type-0002", payload, {
+        "Content-Type": "application/json-patch+json",
+      }),
+    ),
+    api.POST(
+      request("audit-content-type-0003", payload, {
+        "Content-Type": "Application/JSON; charset=utf-8",
+      }),
+    ),
+  ]);
+  return responses.map((response) => response.status).join(",");
+});
+
+await probe("AUD-43-empty-selection-rejected", "422;0", async () => {
+  const harness = deliveryHarness();
+  const api = load(
+    "src/app/api/briefings/route.ts",
+    activeEnv,
+    harness.fetcher,
+  );
+  const response = await api.POST(
+    request("audit-empty-items-0001", { ...payload, items: [] }),
+  );
+  return `${response.status};${harness.webhookCalls()}`;
+});
+
+await probe(
+  "AUD-44-claim-protocol-mismatch-fails-closed",
+  "503;0",
+  async () => {
+    const harness = deliveryHarness();
+    const api = load(
+      "src/app/api/briefings/route.ts",
+      activeEnv,
+      async (input, init = {}) => {
+        const response = await harness.fetcher(input, init);
+        if (
+          new URL(String(input)).pathname.endsWith(
+            "/claim_premium_briefing_delivery_v2",
+          )
+        ) {
+          const [claim] = await response.json();
+          return Response.json([{ ...claim, protocol: "PB-OTHERPROTO01" }]);
+        }
+        return response;
+      },
+    );
+    const response = await api.POST(request("audit-claim-mismatch-0001"));
+    return `${response.status};${harness.webhookCalls()}`;
+  },
+);
+
+await probe(
+  "AUD-45-stale-lease-cannot-finalize-new-attempt",
+  "503,200;2;delivered",
+  async () => {
+    const harness = deliveryHarness();
+    const key = "audit-lease-fence-0001";
+    let webhookCalls = 0;
+    let releaseFirst;
+    let notifyFirst;
+    const firstStarted = new Promise((resolve) => {
+      notifyFirst = resolve;
+    });
+    const firstGate = new Promise((resolve) => {
+      releaseFirst = resolve;
+    });
+    const api = load(
+      "src/app/api/briefings/route.ts",
+      activeEnv,
+      async (input, init = {}) => {
+        if (new URL(String(input)).hostname === "localhost") {
+          webhookCalls += 1;
+          if (webhookCalls === 1) {
+            notifyFirst();
+            await firstGate;
+          }
+          return Response.json({ accepted: true });
+        }
+        return harness.fetcher(input, init);
+      },
+    );
+    const attemptA = api.POST(request(key));
+    await firstStarted;
+    harness.expireLease(key);
+    const attemptB = await api.POST(request(key));
+    releaseFirst();
+    const lateAttemptA = await attemptA;
+    return `${lateAttemptA.status},${attemptB.status};${webhookCalls};${harness.deliveryStatus(key)}`;
+  },
+);
+
+await probe(
+  "AUD-46-catalog-parameter-cache-bypass-rejected",
+  "400,400;0",
+  async () => {
+    let databaseCalls = 0;
+    const api = load("src/app/api/catalog/route.ts", activeEnv, async () => {
+      databaseCalls += 1;
+      return new Response(JSON.stringify([item]), {
+        headers: { "content-range": "0-0/1" },
+      });
+    });
+    const unknown = await api.GET(
+      new NextRequest("http://localhost:3111/api/catalog?cache-bust=random"),
+    );
+    const repeated = await api.GET(
+      new NextRequest("http://localhost:3111/api/catalog?page=1&page=2"),
+    );
+    return `${unknown.status},${repeated.status};${databaseCalls}`;
+  },
+);
+
+await probe("AUD-47-database-key-capabilities-fail-closed", true, async () => {
+  let calls = 0;
+  for (const key of ["sb_secret_synthetic", "eyJlegacy", "arbitrary"]) {
+    const api = load(
+      "src/lib/site-database.ts",
+      { ...activeEnv, SUPABASE_PUBLISHABLE_KEY: key },
+      async () => {
+        calls += 1;
+        return Response.json([]);
+      },
+    );
+    try {
+      await api.getSiteCatalogPage();
+      return false;
+    } catch {
+      // Invalid public capabilities must fail before fetch.
+    }
+  }
+  const delivery = load("src/lib/briefing-delivery-config.ts", {
+    ...activeEnv,
+    ["SUPABASE" + "_SECRET_KEY"]: "sb_publishable_synthetic",
+  });
+  return calls === 0 && delivery.briefingDeliveryConfig() === null;
+});
+
+await probe("AUD-48-control-characters-rejected", true, async () => {
+  const api = load("src/lib/briefing.ts");
+  const invalid = [
+    { ...payload, name: "Pessoa\u0000Sintética" },
+    { ...payload, company: "Empresa\nInjetada" },
+    { ...payload, occasion: "Evento\u001fPrivado" },
+    { ...payload, phone: "11999\n998888", contactChannel: "phone" },
+    { ...payload, message: "Texto\u0000oculto" },
+  ];
+  const multiline = api.parseBriefingInput({
+    ...payload,
+    message: "Linha um\nLinha dois",
+  });
+  return (
+    invalid.every((candidate) => !api.parseBriefingInput(candidate).ok) &&
+    multiline.ok
+  );
+});
+
+await probe(
+  "AUD-49-app-before-database-fails-before-webhook",
+  "503;0",
+  async () => {
+    const harness = deliveryHarness();
+    const api = load(
+      "src/app/api/briefings/route.ts",
+      activeEnv,
+      async (input, init = {}) => {
+        if (
+          new URL(String(input)).pathname.endsWith(
+            "/claim_premium_briefing_delivery_v2",
+          )
+        )
+          return new Response("missing RPC", { status: 404 });
+        return harness.fetcher(input, init);
+      },
+    );
+    const response = await api.POST(request("audit-app-first-0001"));
+    return `${response.status};${harness.webhookCalls()}`;
+  },
+);
+
+await probe(
+  "AUD-50-database-before-app-fails-before-webhook",
+  "503;0;1",
+  async () => {
+    const harness = deliveryHarness();
+    let oldRpcCalls = 0;
+    const api = load(
+      "src/app/api/briefings/route.ts",
+      activeEnv,
+      async (input, init = {}) => {
+        const path = new URL(String(input)).pathname;
+        if (path.endsWith("/claim_premium_briefing_delivery")) {
+          oldRpcCalls += 1;
+          return new Response("removed RPC", { status: 404 });
+        }
+        return harness.fetcher(input, init);
+      },
+      (source, file) =>
+        file === "src/app/api/briefings/route.ts"
+          ? source.replaceAll(
+              "_premium_briefing_delivery_v2",
+              "_premium_briefing_delivery",
+            )
+          : source,
+    );
+    const response = await api.POST(request("audit-database-first-0001"));
+    return `${response.status};${harness.webhookCalls()};${oldRpcCalls}`;
+  },
+);
 
 const report = {
   generatedAt: new Date().toISOString(),

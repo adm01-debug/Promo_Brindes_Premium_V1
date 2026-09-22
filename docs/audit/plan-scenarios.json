@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-22T21:11:42.627Z",
+  "generatedAt": "2026-09-22T21:39:35.815Z",
   "scope": "Isolated source modules; synthetic inputs; no external network or database writes",
   "results": [
     {
@@ -259,8 +259,80 @@
       "expected": true,
       "observed": true,
       "passed": true
+    },
+    {
+      "id": "AUD-39-catalog-read-redirects-disabled",
+      "expected": "GET:error,GET:error",
+      "observed": "GET:error,GET:error",
+      "passed": true
+    },
+    {
+      "id": "AUD-40-approved-webhook-host",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "id": "AUD-41-webhook-ssrf-destinations-rejected",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "id": "AUD-42-strict-json-content-type",
+      "expected": "415,415,201",
+      "observed": "415,415,201",
+      "passed": true
+    },
+    {
+      "id": "AUD-43-empty-selection-rejected",
+      "expected": "422;0",
+      "observed": "422;0",
+      "passed": true
+    },
+    {
+      "id": "AUD-44-claim-protocol-mismatch-fails-closed",
+      "expected": "503;0",
+      "observed": "503;0",
+      "passed": true
+    },
+    {
+      "id": "AUD-45-stale-lease-cannot-finalize-new-attempt",
+      "expected": "503,200;2;delivered",
+      "observed": "503,200;2;delivered",
+      "passed": true
+    },
+    {
+      "id": "AUD-46-catalog-parameter-cache-bypass-rejected",
+      "expected": "400,400;0",
+      "observed": "400,400;0",
+      "passed": true
+    },
+    {
+      "id": "AUD-47-database-key-capabilities-fail-closed",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "id": "AUD-48-control-characters-rejected",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "id": "AUD-49-app-before-database-fails-before-webhook",
+      "expected": "503;0",
+      "observed": "503;0",
+      "passed": true
+    },
+    {
+      "id": "AUD-50-database-before-app-fails-before-webhook",
+      "expected": "503;0;1",
+      "observed": "503;0;1",
+      "passed": true
     }
   ],
-  "passed": 43,
+  "passed": 55,
   "failed": 0
 }

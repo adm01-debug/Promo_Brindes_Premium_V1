@@ -1651,7 +1651,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **185. Testar navegadores e dispositivos.** Verificar Chromium, Safari/WebKit e Firefox em larguras acordadas.
   - **Situação auditada:** Parcial.
   - **Aceite:** Matriz registra versões, tarefas cobertas e falhas corrigidas.
-  - **Constatação:** A matriz local e o CI remoto aprovaram 67 jornadas por Chromium, Firefox e WebKit, incluindo teclado, reflow, alvos, metadados, privacidade de runtime, rede limitada e axe. Aparelhos físicos e Safari instalado ainda não foram exercitados.
+  - **Constatação:** A matriz local aprovou 71 jornadas por Chromium, Firefox e WebKit, incluindo teclado, reflow, alvos, metadados, privacidade de runtime, rede limitada e axe. O CI remoto deve confirmar o mesmo conjunto no commit publicado; aparelhos físicos e Safari instalado ainda não foram exercitados.
   - **Evidências e referências:** `playwright.config.ts`, `docs/VALIDACAO.md`, `.github/workflows/quality.yml`, `docs/audit/2026-09-22-browser-matrix.md`.
   - **Próxima ação:** Testar Safari, teclado virtual e navegação em aparelhos reais.
   - **Dependências:** 181 (Concluída no escopo).

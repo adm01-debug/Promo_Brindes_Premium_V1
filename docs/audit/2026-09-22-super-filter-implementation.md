@@ -26,10 +26,11 @@ A resposta `2026-09-22.2` inclui total, página, critérios normalizados, sugest
 | Verificação                                         | Resultado                                             |
 | --------------------------------------------------- | ----------------------------------------------------- |
 | Build de produção e TypeScript                      | Aprovados                                             |
-| Playwright em Chromium, Firefox e WebKit            | 201/201 aprovados                                     |
-| Isolamento de sincronização e fronteira dos bancos  | 35/35 aprovados                                       |
+| Playwright em Chromium, Firefox e WebKit            | 213/213 aprovados                                     |
+| Isolamento de sincronização e fronteira dos bancos  | 52/52 aprovados                                       |
 | Biblioteca de catálogos                             | 13/13 aprovados                                       |
-| Probes sintéticos de catálogo, briefing e segurança | 43/43 aprovados                                       |
+| Ambientes de runtime                                | 5/5 aprovados                                         |
+| Probes sintéticos de catálogo, briefing e segurança | 55/55 aprovados                                       |
 | Plano de 200 etapas                                 | 200 IDs/revisões; Markdown e CSV sincronizados        |
 | Segredos em arquivos públicos/build                 | 70 arquivos verificados; aprovado                     |
 | Orçamento de mídia e build                          | Aprovado                                              |

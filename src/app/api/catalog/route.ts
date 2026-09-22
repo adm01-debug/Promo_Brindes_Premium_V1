@@ -41,6 +41,29 @@ export async function GET(request: NextRequest) {
   const startedAt = performance.now();
   const requestId = randomUUID();
   const search = request.nextUrl.searchParams;
+  const allowedParameters = new Set([
+    "q",
+    "category",
+    "page",
+    "pageSize",
+    "sort",
+    "ids",
+    "occasion",
+    "personalizable",
+    "quantity",
+  ]);
+  const providedParameters = [...new Set(search.keys())];
+  if (
+    providedParameters.some((parameter) => !allowedParameters.has(parameter)) ||
+    providedParameters.some(
+      (parameter) => search.getAll(parameter).length !== 1,
+    )
+  )
+    return invalid(
+      "A consulta contém parâmetros desconhecidos ou repetidos.",
+      startedAt,
+      requestId,
+    );
   const query = search.get("q");
   const category = search.get("category");
   const page = integer(search.get("page"));
@@ -109,6 +132,7 @@ export async function GET(request: NextRequest) {
   const selectedIds = ids ? ids.split(",") : [];
   if (
     selectedIds.length > 24 ||
+    new Set(selectedIds).size !== selectedIds.length ||
     selectedIds.some(
       (id) =>
         !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
