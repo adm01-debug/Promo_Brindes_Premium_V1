@@ -4222,20 +4222,21 @@
       "acceptance": "Visitante da home não carrega ferramentas do backoffice ou integrações administrativas.",
       "owner": "Frontend + SRE + backend",
       "priority": "P0",
-      "status": "partial",
-      "evidence": "src/components/Storefront.tsx",
+      "status": "done",
+      "evidence": "scripts/check-performance-budget.mjs",
       "dependencies": [
         153
       ],
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Planejamento tem rota própria e não há providers do comercial; Storefront ainda concentra a interação.",
-        "nextAction": "Medir JS por rota e separar ilhas conforme custo real.",
+        "finding": "Bundles da home e do planejamento têm chunks exclusivos; gate do build rejeita marcador do painel no JavaScript inicial da home. Não há provider administrativo na vitrine.",
+        "nextAction": "Manter a separação ao adicionar ferramentas comerciais e medir novamente o orçamento por rota.",
         "evidence": [
           "src/components/Storefront.tsx",
           "src/app/layout.tsx",
-          "docs/ORCAMENTO_DESEMPENHO.md"
+          "docs/ORCAMENTO_DESEMPENHO.md",
+          "scripts/check-performance-budget.mjs"
         ]
       }
     },

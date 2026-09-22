@@ -2,7 +2,7 @@
 
 Referência: **2026-09-22** · **20 fases × 10 etapas = 200 etapas**.
 
-Status auditado: **80 concluídas no próprio escopo; 68 parciais; 52 sem entrega comprovada**. São 120 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
+Status auditado: **81 concluídas no próprio escopo; 67 parciais; 52 sem entrega comprovada**. São 119 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
 
 Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatório e prioridades](REVISAO_EXAUSTIVA_PLANO.md).
 
@@ -1474,12 +1474,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Medir orçamento total na etapa 161.
   - **Dependências:** 033 (Concluída no escopo).
 
-- [ ] **165. Separar código por necessidade.** Adiar componentes pesados de configuração e planejamento.
-  - **Situação auditada:** Parcial.
+- [x] **165. Separar código por necessidade.** Adiar componentes pesados de configuração e planejamento.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Visitante da home não carrega ferramentas do backoffice ou integrações administrativas.
-  - **Constatação:** Planejamento tem rota própria e não há providers do comercial; Storefront ainda concentra a interação.
-  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/layout.tsx`, `docs/ORCAMENTO_DESEMPENHO.md`.
-  - **Próxima ação:** Medir JS por rota e separar ilhas conforme custo real.
+  - **Constatação:** Bundles da home e do planejamento têm chunks exclusivos; gate do build rejeita marcador do painel no JavaScript inicial da home. Não há provider administrativo na vitrine.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/layout.tsx`, `docs/ORCAMENTO_DESEMPENHO.md`, `scripts/check-performance-budget.mjs`.
+  - **Próxima ação:** Manter a separação ao adicionar ferramentas comerciais e medir novamente o orçamento por rota.
   - **Dependências:** 153 (Concluída no escopo).
 
 - [ ] **166. Medir laboratório móvel.** Executar Lighthouse repetido com cenário e ambiente registrados.
@@ -1488,7 +1488,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Última coleta válida é única: LCP 3,0 s; repetição posterior falhou no ambiente.
   - **Evidências e referências:** `docs/audit/lighthouse-mobile.json`, `docs/VALIDACAO.md`.
   - **Próxima ação:** Executar rodadas repetidas reproduzíveis e atender orçamento.
-  - **Dependências:** 161 (Concluída no escopo), 162 (Concluída no escopo), 163 (Concluída no escopo), 164 (Concluída no escopo), 165 (Parcial).
+  - **Dependências:** 161 (Concluída no escopo), 162 (Concluída no escopo), 163 (Concluída no escopo), 164 (Concluída no escopo), 165 (Concluída no escopo).
 
 - [ ] **167. Medir Core Web Vitals em campo.** Instrumentar métricas reais conforme decisão de privacidade e consentimento.
   - **Situação auditada:** Sem entrega comprovada.

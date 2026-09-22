@@ -2,7 +2,7 @@
 
 Revisão: **22/09/2026**, identificador `2026-09-22-audit-1`. Código base examinado: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. Projeto: **Promo_Brindes_Premium_V1**. A referência histórica de `Promo_Gifts_V4` continua sendo a auditoria dirigida do commit `44857d5`.
 
-**Não implementamos todas as melhorias.** Há **80 etapas com o próprio critério comprovado, 68 parciais e 52 sem entrega comprovada**. São **120 etapas abertas**, das quais **91 são P0**. O site tem catálogo curado, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
+**Não implementamos todas as melhorias.** Há **81 etapas com o próprio critério comprovado, 67 parciais e 52 sem entrega comprovada**. São **119 etapas abertas**, das quais **90 são P0**. O site tem catálogo curado, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
 
 Esses números contam critérios do plano, não esforço restante ou porcentagem de prontidão comercial. Entrevistas, licenças, homologações e monitoramento têm peso diferente de um componente visual. A conclusão de uma entrega isolada não libera suas dependências nem os gates de lançamento.
 
@@ -37,11 +37,11 @@ A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [
 | 14 · Passagem para o comercial e CRM | 1 | 3 | 6 |
 | 15 · Segurança, privacidade e governança | 0 | 7 | 3 |
 | 16 · Conteúdo, SEO e descoberta orgânica | 1 | 6 | 3 |
-| 17 · Desempenho e confiabilidade | 5 | 2 | 3 |
+| 17 · Desempenho e confiabilidade | 6 | 1 | 3 |
 | 18 · Acessibilidade e inclusão | 3 | 6 | 1 |
 | 19 · Qualidade, homologação e piloto | 3 | 3 | 4 |
 | 20 · Lançamento, operação e evolução | 0 | 2 | 8 |
-| **Total** | **80** | **68** | **52** |
+| **Total** | **81** | **67** | **52** |
 
 ## Correções do acompanhamento
 

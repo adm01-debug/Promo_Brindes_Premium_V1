@@ -40,11 +40,16 @@ if (fontBytes > maxInitialFontBytes)
   failures.push("as fontes WOFF2 excedem 180 KiB");
 
 const routeStats = JSON.parse(await readFile(routeStatsPath, "utf8"));
+const chunkContent = new Map();
 for (const route of routeStats) {
   const chunks = route.firstLoadChunkPaths;
   const jsGzipBytes = (
     await Promise.all(
-      chunks.map(async (chunk) => gzipSync(await readFile(chunk)).byteLength),
+      chunks.map(async (chunk) => {
+        if (!chunkContent.has(chunk))
+          chunkContent.set(chunk, await readFile(chunk));
+        return gzipSync(chunkContent.get(chunk)).byteLength;
+      }),
     )
   ).reduce((total, bytes) => total + bytes, 0);
   if (jsGzipBytes > maxInitialJsGzipBytes)
@@ -52,6 +57,23 @@ for (const route of routeStats) {
   if (chunks.length > maxInitialChunkCount)
     failures.push(
       `${route.route} excede ${maxInitialChunkCount} chunks iniciais`,
+    );
+}
+const home = routeStats.find((route) => route.route === "/");
+const planning = routeStats.find((route) => route.route === "/planejamento");
+if (!home || !planning)
+  failures.push("faltam rotas da home ou do planejamento no build");
+else {
+  const marker = "Filtrar status";
+  const includesMarker = (route) =>
+    route.firstLoadChunkPaths.some((chunk) =>
+      chunkContent.get(chunk).includes(marker),
+    );
+  if (!includesMarker(planning))
+    failures.push("marcador do painel ausente dos chunks do planejamento");
+  if (includesMarker(home))
+    failures.push(
+      "o JavaScript inicial da home contém o painel de planejamento",
     );
 }
 if (failures.length) {
