@@ -1,6 +1,6 @@
 {
   "title": "Promo Brindes Premium — Plano de execução",
-  "version": "2026-09-20",
+  "version": "2026-09-22",
   "total": 200,
   "phases": [
     {
@@ -17,7 +17,9 @@
       "owner": "Pesquisa + UX",
       "priority": "P0",
       "window": "1–2",
-      "dependencies": [1]
+      "dependencies": [
+        1
+      ]
     },
     {
       "id": 3,
@@ -25,7 +27,10 @@
       "owner": "Estratégia + comercial",
       "priority": "P0",
       "window": "2–3",
-      "dependencies": [1, 2]
+      "dependencies": [
+        1,
+        2
+      ]
     },
     {
       "id": 4,
@@ -33,7 +38,10 @@
       "owner": "Direção de arte + conteúdo",
       "priority": "P0",
       "window": "2–4",
-      "dependencies": [2, 3]
+      "dependencies": [
+        2,
+        3
+      ]
     },
     {
       "id": 5,
@@ -41,7 +49,10 @@
       "owner": "Conteúdo + dados + comercial",
       "priority": "P0",
       "window": "3–5",
-      "dependencies": [1, 3]
+      "dependencies": [
+        1,
+        3
+      ]
     },
     {
       "id": 6,
@@ -49,7 +60,10 @@
       "owner": "UX + conteúdo",
       "priority": "P0",
       "window": "3–5",
-      "dependencies": [3, 5]
+      "dependencies": [
+        3,
+        5
+      ]
     },
     {
       "id": 7,
@@ -57,7 +71,10 @@
       "owner": "Design de produto + frontend",
       "priority": "P0",
       "window": "4–6",
-      "dependencies": [4, 6]
+      "dependencies": [
+        4,
+        6
+      ]
     },
     {
       "id": 8,
@@ -65,7 +82,11 @@
       "owner": "Design + frontend + conteúdo",
       "priority": "P0",
       "window": "4–6",
-      "dependencies": [4, 5, 7]
+      "dependencies": [
+        4,
+        5,
+        7
+      ]
     },
     {
       "id": 9,
@@ -73,7 +94,11 @@
       "owner": "UX + frontend + backend",
       "priority": "P0",
       "window": "5–7",
-      "dependencies": [5, 6, 7]
+      "dependencies": [
+        5,
+        6,
+        7
+      ]
     },
     {
       "id": 10,
@@ -81,7 +106,11 @@
       "owner": "UX + conteúdo + frontend",
       "priority": "P0",
       "window": "5–7",
-      "dependencies": [5, 7, 9]
+      "dependencies": [
+        5,
+        7,
+        9
+      ]
     },
     {
       "id": 11,
@@ -89,7 +118,10 @@
       "owner": "Produto + operação + frontend",
       "priority": "P1",
       "window": "6–8",
-      "dependencies": [10, 13]
+      "dependencies": [
+        10,
+        13
+      ]
     },
     {
       "id": 12,
@@ -97,7 +129,11 @@
       "owner": "UX + frontend + comercial",
       "priority": "P0",
       "window": "5–8",
-      "dependencies": [7, 9, 10]
+      "dependencies": [
+        7,
+        9,
+        10
+      ]
     },
     {
       "id": 13,
@@ -105,7 +141,10 @@
       "owner": "Arquitetura + backend + dados",
       "priority": "P0",
       "window": "4–8",
-      "dependencies": [1, 5]
+      "dependencies": [
+        1,
+        5
+      ]
     },
     {
       "id": 14,
@@ -113,7 +152,10 @@
       "owner": "Backend + comercial + operações",
       "priority": "P0",
       "window": "7–9",
-      "dependencies": [12, 13]
+      "dependencies": [
+        12,
+        13
+      ]
     },
     {
       "id": 15,
@@ -121,7 +163,10 @@
       "owner": "Segurança + jurídico + backend",
       "priority": "P0",
       "window": "6–10",
-      "dependencies": [13, 14]
+      "dependencies": [
+        13,
+        14
+      ]
     },
     {
       "id": 16,
@@ -129,7 +174,11 @@
       "owner": "Conteúdo + SEO + frontend",
       "priority": "P1",
       "window": "6–10",
-      "dependencies": [6, 10, 13]
+      "dependencies": [
+        6,
+        10,
+        13
+      ]
     },
     {
       "id": 17,
@@ -137,7 +186,11 @@
       "owner": "Frontend + SRE + backend",
       "priority": "P0",
       "window": "7–10",
-      "dependencies": [8, 9, 13]
+      "dependencies": [
+        8,
+        9,
+        13
+      ]
     },
     {
       "id": 18,
@@ -145,7 +198,13 @@
       "owner": "QA acessibilidade + frontend",
       "priority": "P0",
       "window": "8–10",
-      "dependencies": [7, 8, 9, 10, 12]
+      "dependencies": [
+        7,
+        8,
+        9,
+        10,
+        12
+      ]
     },
     {
       "id": 19,
@@ -153,7 +212,13 @@
       "owner": "QA + produto + comercial",
       "priority": "P0",
       "window": "9–11",
-      "dependencies": [14, 15, 16, 17, 18]
+      "dependencies": [
+        14,
+        15,
+        16,
+        17,
+        18
+      ]
     },
     {
       "id": 20,
@@ -161,7 +226,9 @@
       "owner": "PO + operações + crescimento",
       "priority": "P0/P1",
       "window": "11–12+",
-      "dependencies": [19]
+      "dependencies": [
+        19
+      ]
     }
   ],
   "tasks": [
@@ -175,7 +242,16 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
-      "dependencies": []
+      "dependencies": [],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Objetivo, escopo consultivo e limites de prévia estão documentados.",
+        "nextAction": "Nenhuma ação para este critério documental.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 2,
@@ -187,7 +263,18 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/AUDITORIA_PROJETO_INTERNO.md",
-      "dependencies": [1]
+      "dependencies": [
+        1
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Auditoria fixa o commit 44857d5 do aplicativo comercial e caminhos reproduzíveis.",
+        "nextAction": "Preservar a revisão histórica; não confundir com o commit da vitrine.",
+        "evidence": [
+          "docs/AUDITORIA_PROJETO_INTERNO.md"
+        ]
+      }
     },
     {
       "id": 3,
@@ -199,19 +286,42 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/AUDITORIA_PROJETO_INTERNO.md",
-      "dependencies": [2]
+      "dependencies": [
+        2
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Inventário histórico registra 8.319 arquivos e explicita a leitura dirigida.",
+        "nextAction": "Repetir inventário se houver nova auditoria do aplicativo comercial.",
+        "evidence": [
+          "docs/AUDITORIA_PROJETO_INTERNO.md"
+        ]
+      }
     },
     {
       "id": 4,
       "phase": 1,
       "title": "Confirmar o Supabase canônico",
-      "action": "Confrontar host informado com client.ts, AGENTS.md e SUPABASE_CONNECTION.md.",
-      "acceptance": "A arquitetura adota exclusivamente doufsxqlfjyuvxuezpln para o catálogo canônico.",
+      "action": "Distinguir a fonte operacional de Promo_Gifts_V4 do banco oficial da vitrine informado posteriormente pelo usuário.",
+      "acceptance": "Arquitetura e configuração identificam doufsxqlfjyuvxuezpln como operacional e whwloseshzraipljisqo como banco oficial da vitrine, sem troca implícita de destinos.",
       "owner": "Estratégia + arquitetura",
       "priority": "P0",
       "status": "done",
       "evidence": "docs/ARQUITETURA_E_INTEGRACAO.md",
-      "dependencies": [2]
+      "dependencies": [
+        2
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Identidade de cada banco está documentada; a API confirmou whwloseshzraipljisqo para a vitrine.",
+        "nextAction": "Manter a distinção entre banco da vitrine e banco operacional doufsxqlfjyuvxuezpln.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "docs/audit/plan-database-check.json"
+        ]
+      }
     },
     {
       "id": 5,
@@ -223,19 +333,41 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/AUDITORIA_PROJETO_INTERNO.md",
-      "dependencies": [2]
+      "dependencies": [
+        2
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Rotas públicas e protegidas do comercial estão mapeadas na revisão fixa.",
+        "nextAction": "Revalidar o mapa antes de integrar uma nova revisão do comercial.",
+        "evidence": [
+          "docs/AUDITORIA_PROJETO_INTERNO.md"
+        ]
+      }
     },
     {
       "id": 6,
       "phase": 1,
       "title": "Qualificar o grafo disponível",
       "action": "Checar artefatos graphify e a revisão que originou o relatório existente.",
-      "acceptance": "Fica explícito que graph.json está ausente e o relatório é anterior ao commit auditado.",
+      "acceptance": "Auditoria histórica explicita a ausência de graph.json no comercial e a data anterior do seu relatório; o grafo local da vitrine é tratado separadamente.",
       "owner": "Estratégia + arquitetura",
       "priority": "P0",
       "status": "done",
       "evidence": "docs/AUDITORIA_PROJETO_INTERNO.md",
-      "dependencies": [2]
+      "dependencies": [
+        2
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "A ausência de graph.json refere-se ao repositório comercial na auditoria original; a vitrine tem grafo próprio.",
+        "nextAction": "Usar o grafo como orientação e conferir fontes alteradas depois da extração.",
+        "evidence": [
+          "docs/AUDITORIA_PROJETO_INTERNO.md"
+        ]
+      }
     },
     {
       "id": 7,
@@ -247,7 +379,19 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/audit/catalog-sample.json",
-      "dependencies": [4]
+      "dependencies": [
+        4
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Amostra pública e verificação posterior preservam IDs e campos limitados sem escrita.",
+        "nextAction": "Não extrapolar leitura de oito registros para auditoria administrativa integral.",
+        "evidence": [
+          "docs/audit/catalog-sample.json",
+          "docs/audit/CANONICAL_CATALOG_LIVE_CHECK_2026-09-22.md"
+        ]
+      }
     },
     {
       "id": 8,
@@ -258,8 +402,17 @@
       "owner": "Estratégia + arquitetura",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": []
+      "evidence": "docs/AUDITORIA_PROJETO_INTERNO.md",
+      "dependencies": [],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Não há registros das três sessões de uso real com representantes.",
+        "nextAction": "Agendar três sessões autorizadas e registrar tempos, erros e necessidades.",
+        "evidence": [
+          "docs/AUDITORIA_PROJETO_INTERNO.md"
+        ]
+      }
     },
     {
       "id": 9,
@@ -271,7 +424,18 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/AUDITORIA_PROJETO_INTERNO.md",
-      "dependencies": [7]
+      "dependencies": [
+        7
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Auditoria da amostra identifica conflitos de materiais e mídia e separa hipóteses.",
+        "nextAction": "Manter os conflitos nas etapas de revisão por SKU.",
+        "evidence": [
+          "docs/AUDITORIA_PROJETO_INTERNO.md"
+        ]
+      }
     },
     {
       "id": 10,
@@ -283,7 +447,23 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/AUDITORIA_PROJETO_INTERNO.md",
-      "dependencies": [3, 4, 5, 6, 7, 9]
+      "dependencies": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        9
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Achados têm fonte, impacto e ação proposta; limites de acesso estão explícitos.",
+        "nextAction": "Atualizar achados se o escopo do comercial mudar.",
+        "evidence": [
+          "docs/AUDITORIA_PROJETO_INTERNO.md"
+        ]
+      }
     },
     {
       "id": 11,
@@ -295,7 +475,16 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
-      "dependencies": []
+      "dependencies": [],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Matriz histórica cita Smythson, Burberry e Tiffany e limita a aplicação ao contexto próprio.",
+        "nextAction": "Preservar referências e validar serviço próprio antes de prometer equivalência.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 12,
@@ -307,7 +496,16 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
-      "dependencies": []
+      "dependencies": [],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Pesquisa documental de personalização está registrada com limites por produto.",
+        "nextAction": "Nenhuma ação para este critério de pesquisa documental.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 13,
@@ -319,7 +517,16 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
-      "dependencies": []
+      "dependencies": [],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Direção de linguagem de produto está identificada como interpretação criativa.",
+        "nextAction": "Nenhuma ação para este critério de pesquisa documental.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 14,
@@ -331,7 +538,16 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
-      "dependencies": []
+      "dependencies": [],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Padrões observados na Luminati estão registrados sem métricas inventadas.",
+        "nextAction": "Nenhuma ação para este critério de pesquisa documental.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 15,
@@ -343,7 +559,16 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
-      "dependencies": []
+      "dependencies": [],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Referências NN/g estão ligadas a clareza, navegação e atendimento consultivo.",
+        "nextAction": "Nenhuma ação para este critério documental; teste de usuários segue separado.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 16,
@@ -355,7 +580,16 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
-      "dependencies": []
+      "dependencies": [],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Diretrizes de descoberta incluem filtros aplicados, vazio e comparação.",
+        "nextAction": "Validar implementação completa nas etapas 85–90.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 17,
@@ -367,7 +601,16 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
-      "dependencies": []
+      "dependencies": [],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Documento diferencia AA e preferência interna de alvos de 44 pixels.",
+        "nextAction": "Executar auditorias específicas antes de declarar conformidade.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 18,
@@ -379,7 +622,16 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
-      "dependencies": []
+      "dependencies": [],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Metas de Web Vitals distinguem p75 de campo e laboratório.",
+        "nextAction": "Medir campo somente com ambiente e amostra adequados.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 19,
@@ -391,7 +643,16 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
-      "dependencies": []
+      "dependencies": [],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Pesquisa histórica cita documentação oficial de URLs, renderização e RLS.",
+        "nextAction": "Aplicação e permissões reais continuam sujeitas aos gates próprios.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 20,
@@ -403,7 +664,26 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
-      "dependencies": [11, 12, 13, 14, 15, 16, 17, 18, 19]
+      "dependencies": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Matriz inclui fontes, data e tentativas sem conteúdo suficiente.",
+        "nextAction": "Nenhuma ação para este critério documental.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 21,
@@ -415,7 +695,18 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
-      "dependencies": [20]
+      "dependencies": [
+        20
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Posicionamento está explicitamente tratado como hipótese e limita promessas.",
+        "nextAction": "Validar hipótese nas entrevistas e no piloto.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 22,
@@ -425,9 +716,20 @@
       "acceptance": "Cada segmento tem ocasião, ticket a investigar e contexto de decisão.",
       "owner": "Estratégia + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [21]
+      "status": "partial",
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        21
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Cinco segmentos hipotéticos estão descritos; faltam prioridade e ticket a investigar por segmento.",
+        "nextAction": "Completar contexto, faixa a investigar e prioridade comercial.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 23,
@@ -438,8 +740,19 @@
       "owner": "Estratégia + comercial",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [22]
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        22
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Nenhuma das seis entrevistas com compradores foi realizada ou anexada.",
+        "nextAction": "Recrutar compradores e registrar evidências e síntese.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 24,
@@ -450,8 +763,19 @@
       "owner": "Estratégia + comercial",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [5]
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        5
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Campos foram propostos tecnicamente sem validação de vendedores.",
+        "nextAction": "Entrevistar vendedores e aprovar campos e objeções.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 25,
@@ -461,9 +785,22 @@
       "acceptance": "Mapa identifica pontos de espera, donos e falhas de contexto.",
       "owner": "Estratégia + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [23, 24]
+      "status": "partial",
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        23,
+        24
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Há jornada recomendada; não há mapa observado da operação com esperas e responsáveis.",
+        "nextAction": "Mapear a jornada atual com compradores e vendedores.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 26,
@@ -473,9 +810,21 @@
       "acceptance": "Prioridade é aprovada usando demanda comercial e disponibilidade reais.",
       "owner": "Estratégia + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [25]
+      "status": "partial",
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        25
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Ocasiões aparecem no formulário, sem priorização por demanda e capacidade.",
+        "nextAction": "Aprovar prioridade usando dados comerciais e disponibilidade.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 27,
@@ -485,9 +834,21 @@
       "acceptance": "Critérios de inclusão excluem itens sem informações, imagem ou condições confiáveis.",
       "owner": "Estratégia + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [26]
+      "status": "partial",
+      "evidence": "src/lib/products.json",
+      "dependencies": [
+        26
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Oito peças formam uma amostra, sem oferta inicial homologada pela operação.",
+        "nextAction": "Validar escopo de produtos e serviços entregáveis e exclusões.",
+        "evidence": [
+          "src/lib/products.json",
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 28,
@@ -497,9 +858,20 @@
       "acceptance": "Cada KPI tem fórmula, fonte, janela, responsável e baseline ainda a medir.",
       "owner": "Estratégia + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [25]
+      "status": "partial",
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        25
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "KPIs e fórmulas estão propostos; faltam fontes operacionais, janelas e donos.",
+        "nextAction": "Definir medição, responsáveis e baseline para cada KPI.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 29,
@@ -509,9 +881,20 @@
       "acceptance": "Backlog separa evidência de opinião e inclui método de avaliação.",
       "owner": "Estratégia + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [28]
+      "status": "partial",
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        28
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Existem recomendações de conversão, sem backlog de hipóteses priorizado e método por item.",
+        "nextAction": "Formalizar hipóteses com evidência, impacto esperado e método de avaliação.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 30,
@@ -521,9 +904,22 @@
       "acceptance": "PO e comercial aprovam uma lista de entrada e saída do MVP.",
       "owner": "Estratégia + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [27, 29]
+      "status": "partial",
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        27,
+        29
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "MVP consultivo é recomendado, mas não há aceite documentado de PO e comercial.",
+        "nextAction": "Aprovar escopo de entrada e saída e responsáveis.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "README.md"
+        ]
+      }
     },
     {
       "id": 31,
@@ -535,7 +931,19 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [21]
+      "dependencies": [
+        21
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Assinatura Premium Collection é aplicada como conceito de marca.",
+        "nextAction": "Nenhuma ação para a assinatura conceitual.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "docs/DESIGN_SYSTEM.md"
+        ]
+      }
     },
     {
       "id": 32,
@@ -547,7 +955,19 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/app/globals.css",
-      "dependencies": [31]
+      "dependencies": [
+        31
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Cores centrais e funções visuais estão definidas em CSS e guia.",
+        "nextAction": "Auditoria completa de contraste permanece na etapa 172.",
+        "evidence": [
+          "src/app/globals.css",
+          "docs/DESIGN_SYSTEM.md"
+        ]
+      }
     },
     {
       "id": 33,
@@ -559,7 +979,19 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/app/layout.tsx",
-      "dependencies": [31]
+      "dependencies": [
+        31
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Famílias e seis imports de pesos/estilo locais estão definidos.",
+        "nextAction": "Nenhuma ação para este critério de sistema tipográfico.",
+        "evidence": [
+          "src/app/layout.tsx",
+          "docs/DESIGN_SYSTEM.md"
+        ]
+      }
     },
     {
       "id": 34,
@@ -571,7 +1003,18 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/DESIGN_SYSTEM.md",
-      "dependencies": [21]
+      "dependencies": [
+        21
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Guia documenta voz, CTAs, limites e alegações a evitar.",
+        "nextAction": "Submeter voz final à validação de marca.",
+        "evidence": [
+          "docs/DESIGN_SYSTEM.md"
+        ]
+      }
     },
     {
       "id": 35,
@@ -583,7 +1026,18 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/DESIGN_SYSTEM.md",
-      "dependencies": [11]
+      "dependencies": [
+        11
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Brief diferencia fotos fiéis ao SKU de composições conceituais.",
+        "nextAction": "Nenhuma ação para este critério de direção fotográfica.",
+        "evidence": [
+          "docs/DESIGN_SYSTEM.md"
+        ]
+      }
     },
     {
       "id": 36,
@@ -595,7 +1049,19 @@
       "priority": "P0",
       "status": "done",
       "evidence": "public/images/hero-gifting.webp",
-      "dependencies": [35]
+      "dependencies": [
+        35
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Hero WebP e prompt existem; interface identifica composição conceitual.",
+        "nextAction": "Manter identificação ao reutilizar a imagem.",
+        "evidence": [
+          "public/images/hero-gifting.webp",
+          "docs/DESIGN_SYSTEM.md"
+        ]
+      }
     },
     {
       "id": 37,
@@ -605,9 +1071,20 @@
       "acceptance": "Moodboard identifica acabamentos sugeridos e os ainda não disponíveis.",
       "owner": "Direção de arte + conteúdo",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [35]
+      "status": "partial",
+      "evidence": "docs/DESIGN_SYSTEM.md",
+      "dependencies": [
+        35
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Há referência conceitual de caixa e acabamentos, sem moodboard de opções disponíveis.",
+        "nextAction": "Produzir opções e validar materiais e disponibilidade com fornecedores.",
+        "evidence": [
+          "docs/DESIGN_SYSTEM.md"
+        ]
+      }
     },
     {
       "id": 38,
@@ -619,7 +1096,18 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [31]
+      "dependencies": [
+        31
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Interface usa Lucide com nomes acessíveis nos controles examinados.",
+        "nextAction": "Nenhuma ação para a família de ícones desta prévia.",
+        "evidence": [
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 39,
@@ -630,8 +1118,22 @@
       "owner": "Direção de arte + conteúdo",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [31, 32, 33, 35]
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        31,
+        32,
+        33,
+        35
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Não há comparação de duas direções com compradores.",
+        "nextAction": "Executar avaliação de compreensão, confiança e percepção.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 40,
@@ -641,9 +1143,20 @@
       "acceptance": "Guia passa pela marca e pelo comercial antes de aplicação definitiva.",
       "owner": "Direção de arte + conteúdo",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [39]
+      "status": "partial",
+      "evidence": "docs/DESIGN_SYSTEM.md",
+      "dependencies": [
+        39
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Guia conceitual existe; aprovação de marca e comercial não está registrada.",
+        "nextAction": "Consolidar exemplos aprovados após a etapa 39.",
+        "evidence": [
+          "docs/DESIGN_SYSTEM.md"
+        ]
+      }
     },
     {
       "id": 41,
@@ -653,9 +1166,21 @@
       "acceptance": "Cada produto candidato recebe justificativa e status de validação comercial.",
       "owner": "Conteúdo + dados + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [27]
+      "status": "partial",
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        27
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Valor percebido e utilidade são diretrizes gerais; faltam fichas de avaliação por candidato.",
+        "nextAction": "Pontuar cada produto e registrar validação comercial.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "src/lib/products.json"
+        ]
+      }
     },
     {
       "id": 42,
@@ -667,7 +1192,19 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/lib/products.json",
-      "dependencies": [7]
+      "dependencies": [
+        7
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Oito IDs, SKUs e nomes originais estão preservados e sincronizados.",
+        "nextAction": "Nenhuma ação para a seleção da amostra.",
+        "evidence": [
+          "src/lib/products.json",
+          "docs/audit/plan-database-check.json"
+        ]
+      }
     },
     {
       "id": 43,
@@ -677,9 +1214,21 @@
       "acceptance": "Conflitos de couro, PET, plástico ou capacidade ficam resolvidos antes de publicação.",
       "owner": "Conteúdo + dados + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [42]
+      "status": "partial",
+      "evidence": "docs/AUDITORIA_PROJETO_INTERNO.md",
+      "dependencies": [
+        42
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Conflitos de materiais foram identificados; descrições ainda dependem de confirmação.",
+        "nextAction": "Resolver divergências com ficha e fornecedor por SKU.",
+        "evidence": [
+          "docs/AUDITORIA_PROJETO_INTERNO.md",
+          "src/lib/products.json"
+        ]
+      }
     },
     {
       "id": 44,
@@ -689,9 +1238,21 @@
       "acceptance": "Produto, variante e imagem exibem a mesma capacidade e versão.",
       "owner": "Conteúdo + dados + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [42]
+      "status": "partial",
+      "evidence": "src/lib/products.json",
+      "dependencies": [
+        42
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Capacidades constam de textos de origem; não existe homologação de dimensões e variantes.",
+        "nextAction": "Normalizar unidades e confirmar versão de cada peça.",
+        "evidence": [
+          "src/lib/products.json",
+          "docs/AUDITORIA_PROJETO_INTERNO.md"
+        ]
+      }
     },
     {
       "id": 45,
@@ -701,9 +1262,22 @@
       "acceptance": "Contrato explicita cada restrição e o front valida combinações corretamente.",
       "owner": "Conteúdo + dados + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [42, 24]
+      "status": "partial",
+      "evidence": "src/lib/catalog.ts",
+      "dependencies": [
+        42,
+        24
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Mínimo cadastrado é aplicado na UI; mínimos de gravação, embalagem e múltiplos não são modelados.",
+        "nextAction": "Confirmar regras e implementar restrições combinadas.",
+        "evidence": [
+          "src/lib/catalog.ts",
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 46,
@@ -713,9 +1287,22 @@
       "acceptance": "Toda oferta pública informa sua base; preço sem contexto permanece sob consulta.",
       "owner": "Conteúdo + dados + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [42, 24]
+      "status": "partial",
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        42,
+        24
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "A UI mantém valores sob consulta, mas não existe tabela de faixas e condições aprovada.",
+        "nextAction": "Validar composição, quantidade, impostos, frete e validade.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "src/app/produtos/[slug]/page.tsx"
+        ]
+      }
     },
     {
       "id": 47,
@@ -727,7 +1314,18 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/audit/media-check.json",
-      "dependencies": [7]
+      "dependencies": [
+        7
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Amostra registra falha de mídia principal e alternativas disponíveis.",
+        "nextAction": "Nenhuma ação para a verificação histórica por amostragem.",
+        "evidence": [
+          "docs/audit/media-check.json"
+        ]
+      }
     },
     {
       "id": 48,
@@ -739,7 +1337,19 @@
       "priority": "P0",
       "status": "done",
       "evidence": "public/images/",
-      "dependencies": [47]
+      "dependencies": [
+        47
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Oito fotos locais otimizadas estão presentes e carregam nos testes.",
+        "nextAction": "Licenciamento comercial continua pendente na etapa 49.",
+        "evidence": [
+          "public/images/",
+          "docs/audit/responsive-check.json"
+        ]
+      }
     },
     {
       "id": 49,
@@ -750,8 +1360,19 @@
       "owner": "Conteúdo + dados + comercial",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [48]
+      "evidence": "docs/DESIGN_SYSTEM.md",
+      "dependencies": [
+        48
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Não há registro de licenças de fotos, marcas ou comprovações de sustentabilidade.",
+        "nextAction": "Obter e anexar direitos e comprovações por ativo.",
+        "evidence": [
+          "docs/DESIGN_SYSTEM.md"
+        ]
+      }
     },
     {
       "id": 50,
@@ -762,8 +1383,23 @@
       "owner": "Conteúdo + dados + comercial",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [43, 44, 45, 46, 49]
+      "evidence": "docs/ARQUITETURA_E_INTEGRACAO.md",
+      "dependencies": [
+        43,
+        44,
+        45,
+        46,
+        49
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Não há responsável editorial nomeado nem SLA acordado de retirada.",
+        "nextAction": "Designar responsáveis e aprovar revisão e retirada.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 51,
@@ -773,9 +1409,20 @@
       "acceptance": "Sitemap diferencia rotas MVP, futuras e privadas.",
       "owner": "UX + conteúdo",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [30]
+      "status": "done",
+      "evidence": "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
+      "dependencies": [
+        30
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "entrega",
+        "finding": "Mapa documenta rotas da prévia, futuras, estados locais e planejamento interno.",
+        "nextAction": "Revisar mapa após aprovação do escopo comercial.",
+        "evidence": [
+          "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md"
+        ]
+      }
     },
     {
       "id": 52,
@@ -785,9 +1432,21 @@
       "acceptance": "Tree test confirma que usuários encontram categoria e pedido de orçamento.",
       "owner": "UX + conteúdo",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [51]
+      "status": "partial",
+      "evidence": "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
+      "dependencies": [
+        51
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Rótulos de navegação existem, sem tree test com compradores.",
+        "nextAction": "Testar localização de categoria e orçamento.",
+        "evidence": [
+          "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 53,
@@ -797,9 +1456,21 @@
       "acceptance": "Uma ocasião não duplica o cadastro do produto nem altera seu SKU.",
       "owner": "UX + conteúdo",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [26]
+      "status": "partial",
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        26
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Ocasiões são opções do briefing; relação de elegibilidade com produtos não existe.",
+        "nextAction": "Definir taxonomia e vínculos estáveis sem duplicar SKU.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md"
+        ]
+      }
     },
     {
       "id": 54,
@@ -809,9 +1480,21 @@
       "acceptance": "Roteiro de teste chega ao briefing sem conta obrigatória.",
       "owner": "UX + conteúdo",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [51]
+      "status": "done",
+      "evidence": "tests/storefront.spec.ts",
+      "dependencies": [
+        51
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "entrega",
+        "finding": "Navegação, favoritos e briefing funcionam sem autenticação nos E2E.",
+        "nextAction": "Nenhuma ação para a jornada sem conta da prévia.",
+        "evidence": [
+          "tests/storefront.spec.ts",
+          "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md"
+        ]
+      }
     },
     {
       "id": 55,
@@ -821,9 +1504,21 @@
       "acceptance": "Textos e estados deixam clara a natureza consultiva de cada etapa.",
       "owner": "UX + conteúdo",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [54]
+      "status": "done",
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        54
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "entrega",
+        "finding": "Textos separam seleção, intenção, proposta e reserva de estoque.",
+        "nextAction": "Manter distinção ao ativar a integração comercial.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 56,
@@ -833,9 +1528,22 @@
       "acceptance": "Política cobre dispositivo compartilhado, expiração e limpeza da seleção.",
       "owner": "UX + conteúdo",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [55]
+      "status": "partial",
+      "evidence": "src/components/ProductDetailActions.tsx",
+      "dependencies": [
+        55
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Home usa envelope com validade; ficha permanente grava formato sem savedAt e contorna expiração.",
+        "nextAction": "Unificar serialização e testar expiração iniciada em cada rota.",
+        "evidence": [
+          "src/components/ProductDetailActions.tsx",
+          "src/lib/catalog.ts",
+          "docs/audit/plan-browser-scenarios.json"
+        ]
+      }
     },
     {
       "id": 57,
@@ -845,9 +1553,21 @@
       "acceptance": "Protótipo cobre 360 pixels e teclado virtual sem perder ações principais.",
       "owner": "UX + conteúdo",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [54]
+      "status": "partial",
+      "evidence": "tests/storefront.spec.ts",
+      "dependencies": [
+        54
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Há testes móveis em Chromium; teclado virtual real não foi exercitado.",
+        "nextAction": "Validar preenchimento e ações com teclado virtual em aparelhos reais.",
+        "evidence": [
+          "tests/storefront.spec.ts",
+          "docs/audit/responsive-check.json"
+        ]
+      }
     },
     {
       "id": 58,
@@ -857,9 +1577,22 @@
       "acceptance": "Cada estado tem mensagem útil e caminho de recuperação.",
       "owner": "UX + conteúdo",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [54]
+      "status": "partial",
+      "evidence": "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
+      "dependencies": [
+        54
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Vazio e armazenamento inválido têm recuperação; remoção canônica, offline e expiração de conteúdo não estão completos.",
+        "nextAction": "Implementar e testar mensagens e recuperação para todos os estados.",
+        "evidence": [
+          "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
+          "src/components/Storefront.tsx",
+          "src/lib/site-database.ts"
+        ]
+      }
     },
     {
       "id": 59,
@@ -870,8 +1603,20 @@
       "owner": "UX + conteúdo",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [52, 53]
+      "evidence": "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
+      "dependencies": [
+        52,
+        53
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Não há teste de árvore ou localização com compradores.",
+        "nextAction": "Executar tarefas e registrar taxa de sucesso e alterações.",
+        "evidence": [
+          "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md"
+        ]
+      }
     },
     {
       "id": 60,
@@ -881,9 +1626,21 @@
       "acceptance": "Cada transição tem entrada, saída, erro e responsável.",
       "owner": "UX + conteúdo",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [59]
+      "status": "partial",
+      "evidence": "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
+      "dependencies": [
+        59
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Fluxos da prévia estão escritos; faltam wireflows aprovados com dono e erro por transição.",
+        "nextAction": "Completar fluxos integrados e aprová-los com comercial.",
+        "evidence": [
+          "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 61,
@@ -893,9 +1650,22 @@
       "acceptance": "Tokens usados na prévia estão centralizados e nomeados por função.",
       "owner": "Design de produto + frontend",
       "priority": "P0",
-      "status": "done",
+      "status": "partial",
       "evidence": "src/app/globals.css",
-      "dependencies": [32, 33]
+      "dependencies": [
+        32,
+        33
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "tecnica",
+        "finding": "Cores e fontes usam variáveis; espaçamento, bordas e raios permanecem majoritariamente literais.",
+        "nextAction": "Completar tokens semânticos e aplicar nos componentes.",
+        "evidence": [
+          "src/app/globals.css",
+          "docs/DESIGN_SYSTEM.md"
+        ]
+      }
     },
     {
       "id": 62,
@@ -906,8 +1676,20 @@
       "owner": "Design de produto + frontend",
       "priority": "P0",
       "status": "done",
-      "evidence": "docs/VALIDACAO.md",
-      "dependencies": [61]
+      "evidence": "docs/audit/responsive-check.json",
+      "dependencies": [
+        61
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Evidência de 360, 390, 768 e 1440 pixels sem overflow está preservada.",
+        "nextAction": "Repetir ao alterar layouts; não equivale a QA de todos os navegadores.",
+        "evidence": [
+          "docs/audit/responsive-check.json",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 63,
@@ -919,7 +1701,19 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/app/globals.css",
-      "dependencies": [61]
+      "dependencies": [
+        61
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Estados de hover, foco, disabled e nomes estão presentes e cobertos nos controles principais.",
+        "nextAction": "Manter revisão de novos controles.",
+        "evidence": [
+          "src/app/globals.css",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 64,
@@ -931,7 +1725,20 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [42, 61]
+      "dependencies": [
+        42,
+        61
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Card separa detalhe, favorito e seleção; E2E exercitam ações.",
+        "nextAction": "Nenhuma ação para o card da prévia.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 65,
@@ -942,8 +1749,20 @@
       "owner": "Design de produto + frontend",
       "priority": "P0",
       "status": "done",
-      "evidence": "docs/VALIDACAO.md",
-      "dependencies": [61]
+      "evidence": "src/components/Modal.tsx",
+      "dependencies": [
+        61
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Diálogo contém foco e restaura acionador nos casos exercitados.",
+        "nextAction": "Ampliar cobertura de tecnologias assistivas nas etapas 173–180.",
+        "evidence": [
+          "src/components/Modal.tsx",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 66,
@@ -955,7 +1774,19 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [61]
+      "dependencies": [
+        61
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Labels, obrigatoriedade e validação nativa identificam erros sem depender só de cor.",
+        "nextAction": "Validação com leitor de tela permanece na etapa 177.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 67,
@@ -967,7 +1798,19 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [61]
+      "dependencies": [
+        61
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Toast usa região de status e feedback não captura foco.",
+        "nextAction": "Validar anúncios com leitores reais antes do lançamento.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 68,
@@ -977,9 +1820,22 @@
       "acceptance": "Preferência de movimento reduzido desativa transições e rolagem suave.",
       "owner": "Design de produto + frontend",
       "priority": "P0",
-      "status": "done",
+      "status": "partial",
       "evidence": "src/app/globals.css",
-      "dependencies": [61]
+      "dependencies": [
+        61
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "tecnica",
+        "finding": "CSS reduz movimento, mas scrollIntoView com smooth ainda anima sob reduced-motion.",
+        "nextAction": "Respeitar preferência também nas chamadas JavaScript.",
+        "evidence": [
+          "src/app/globals.css",
+          "src/components/Storefront.tsx",
+          "docs/audit/plan-browser-scenarios.json"
+        ]
+      }
     },
     {
       "id": 69,
@@ -989,9 +1845,28 @@
       "acceptance": "Biblioteca permite reproduzir todas as páginas MVP sem improvisos.",
       "owner": "Design de produto + frontend",
       "priority": "P0",
-      "status": "done",
+      "status": "partial",
       "evidence": "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
-      "dependencies": [61, 62, 63, 64, 65, 66, 67, 68]
+      "dependencies": [
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "tecnica",
+        "finding": "Inventário descritivo existe; faltam exemplos reproduzíveis e variantes completas da biblioteca.",
+        "nextAction": "Documentar estados e exemplos de todos os templates e componentes.",
+        "evidence": [
+          "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
+          "docs/DESIGN_SYSTEM.md"
+        ]
+      }
     },
     {
       "id": 70,
@@ -1001,9 +1876,21 @@
       "acceptance": "Desvios do sistema de design são corrigidos ou justificados.",
       "owner": "Design de produto + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [69]
+      "status": "partial",
+      "evidence": "docs/VALIDACAO.md",
+      "dependencies": [
+        69
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Há revisão e capturas de algumas telas; não há inventário transversal de desvios da revisão atual.",
+        "nextAction": "Comparar todas as rotas e estados com o sistema visual.",
+        "evidence": [
+          "docs/VALIDACAO.md",
+          "docs/DESIGN_SYSTEM.md"
+        ]
+      }
     },
     {
       "id": 71,
@@ -1015,7 +1902,19 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [63]
+      "dependencies": [
+        63
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Cabeçalho e menu executam navegação, busca, favoritos e seleção na prévia.",
+        "nextAction": "Nenhuma ação para o cabeçalho no escopo atual.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 72,
@@ -1027,7 +1926,20 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [36, 61]
+      "dependencies": [
+        36,
+        61
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Hero prioriza imagem, mantém título e CTAs e tem evidência responsiva.",
+        "nextAction": "Desempenho global permanece separado da implementação visual.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "docs/audit/responsive-check.json"
+        ]
+      }
     },
     {
       "id": 73,
@@ -1039,7 +1951,18 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [21]
+      "dependencies": [
+        21
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Proposta de valor é apresentada sem selos, números ou garantias operacionais inventadas.",
+        "nextAction": "Aprovar promessa de serviço com operação.",
+        "evidence": [
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 74,
@@ -1051,7 +1974,21 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [42, 48, 64]
+      "dependencies": [
+        42,
+        48,
+        64
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Curadoria expande de quatro para oito peças locais.",
+        "nextAction": "Integração dinâmica permanece nas etapas 127–128.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 75,
@@ -1063,7 +2000,19 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [42, 48]
+      "dependencies": [
+        42,
+        48
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Coleções acionam categorias correspondentes mantendo IDs.",
+        "nextAction": "Taxonomia real por ocasião permanece na etapa 53.",
+        "evidence": [
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 76,
@@ -1075,7 +2024,18 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [35]
+      "dependencies": [
+        35
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Seção explica possibilidades e informa consulta por peça.",
+        "nextAction": "Conteúdo técnico por produto permanece na etapa 98.",
+        "evidence": [
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 77,
@@ -1085,9 +2045,20 @@
       "acceptance": "Comprador consegue descrever o próximo passo após ler a seção.",
       "owner": "Design + frontend + conteúdo",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [21]
+      "status": "partial",
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        21
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Seção de três passos existe; compreensão do próximo passo não foi testada com compradores.",
+        "nextAction": "Executar teste de compreensão sem orientação.",
+        "evidence": [
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 78,
@@ -1099,7 +2070,18 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [21]
+      "dependencies": [
+        21
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "FAQ usa details/summary nativos e respostas condicionam condições comerciais.",
+        "nextAction": "Nenhuma ação para a FAQ da prévia.",
+        "evidence": [
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 79,
@@ -1111,7 +2093,18 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [71]
+      "dependencies": [
+        71
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Rodapé tem destinos reais e privacidade sem contatos fictícios.",
+        "nextAction": "Adicionar contatos somente após definição comercial.",
+        "evidence": [
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 80,
@@ -1122,8 +2115,27 @@
       "owner": "Design + frontend + conteúdo",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [71, 72, 73, 74, 75, 76, 77, 78, 79]
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Não houve teste da home com cinco compradores.",
+        "nextAction": "Executar tarefas e registrar compreensão e caminhos escolhidos.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 81,
@@ -1134,8 +2146,20 @@
       "owner": "UX + frontend + backend",
       "priority": "P0",
       "status": "done",
-      "evidence": "docs/VALIDACAO.md",
-      "dependencies": [42]
+      "evidence": "src/lib/catalog.ts",
+      "dependencies": [
+        42
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Busca normaliza acentos e encontra nome, SKU e categoria na amostra.",
+        "nextAction": "Relevância de catálogo amplo permanece na etapa 90.",
+        "evidence": [
+          "src/lib/catalog.ts",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 82,
@@ -1147,7 +2171,19 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [42]
+      "dependencies": [
+        42
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Categorias filtram a amostra e indicam estado ativo.",
+        "nextAction": "Nenhuma ação para filtros simples existentes.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 83,
@@ -1158,8 +2194,20 @@
       "owner": "UX + frontend + backend",
       "priority": "P0",
       "status": "done",
-      "evidence": "docs/VALIDACAO.md",
-      "dependencies": [64]
+      "evidence": "tests/storefront.spec.ts",
+      "dependencies": [
+        64
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Favoritos válidos persistem e entradas corrompidas são descartadas.",
+        "nextAction": "Definir política de retenção antes de ampliar persistência.",
+        "evidence": [
+          "tests/storefront.spec.ts",
+          "src/lib/catalog.ts"
+        ]
+      }
     },
     {
       "id": 84,
@@ -1171,7 +2219,19 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [81]
+      "dependencies": [
+        81
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Estado vazio oferece limpeza de filtros em uma ação.",
+        "nextAction": "Correção da URL ao limpar a barra de busca pertence à etapa 88.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 85,
@@ -1182,8 +2242,21 @@
       "owner": "UX + frontend + backend",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [45, 46]
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        45,
+        46
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Não existem filtros de material, investimento, prazo ou mínimo.",
+        "nextAction": "Homologar atributos e implementar filtros úteis.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "src/lib/products.json"
+        ]
+      }
     },
     {
       "id": 86,
@@ -1194,8 +2267,20 @@
       "owner": "UX + frontend + backend",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [85]
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        85
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Não há multisseleção de facetas nem semântica OR/AND contratada.",
+        "nextAction": "Implementar facetas e contagens após aprovação dos atributos.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "docs/CONTRATO_CATALOGO_PUBLICO_V1.md"
+        ]
+      }
     },
     {
       "id": 87,
@@ -1205,9 +2290,21 @@
       "acceptance": "Paginação não repete nem perde produtos ao mudar ordenação.",
       "owner": "UX + frontend + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [126]
+      "status": "partial",
+      "evidence": "src/lib/catalog.ts",
+      "dependencies": [
+        126
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "API ordena por nome; UI não oferece ordenação e não há desempate explícito por ID.",
+        "nextAction": "Unificar ordenação da UI e servidor e testar empates.",
+        "evidence": [
+          "src/lib/catalog.ts",
+          "tests/public-api.spec.ts"
+        ]
+      }
     },
     {
       "id": 88,
@@ -1217,9 +2314,21 @@
       "acceptance": "Navegação e política de indexação tratam parâmetros consistentemente.",
       "owner": "UX + frontend + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [86]
+      "status": "partial",
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        86
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "URL inicial aceita busca/categoria; limpar não remove q, falta popstate e estado de página.",
+        "nextAction": "Sincronizar todos os controles, voltar/avançar, facetas e paginação.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "docs/audit/plan-browser-scenarios.json"
+        ]
+      }
     },
     {
       "id": 89,
@@ -1229,9 +2338,22 @@
       "acceptance": "Nenhuma jornada pública baixa milhares de registros para filtrar no cliente.",
       "owner": "UX + frontend + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [127]
+      "status": "partial",
+      "evidence": "src/app/api/catalog/route.ts",
+      "dependencies": [
+        127
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "API pagina em memória só os primeiros 24 itens lidos; UI usa todos os oito do snapshot.",
+        "nextAction": "Paginar e contar no banco, preservar filtros e cancelamento; testar mais de 24.",
+        "evidence": [
+          "src/app/api/catalog/route.ts",
+          "src/lib/site-database.ts",
+          "docs/audit/plan-scenarios.json"
+        ]
+      }
     },
     {
       "id": 90,
@@ -1242,8 +2364,23 @@
       "owner": "UX + frontend + backend",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [81, 86, 87, 88, 89]
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        81,
+        86,
+        87,
+        88,
+        89
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Não há conjunto de consultas reais, sinônimos e ranking esperado.",
+        "nextAction": "Construir referência com comercial e medir acerto.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 91,
@@ -1255,7 +2392,20 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [42, 48]
+      "dependencies": [
+        42,
+        48
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Detalhes rápidos das oito peças incluem foto, SKU, descrição e mínimo.",
+        "nextAction": "Dados comerciais revisados dependem das etapas 43–46.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 92,
@@ -1265,9 +2415,22 @@
       "acceptance": "Link direto e navegação sem JavaScript preservam conteúdo principal.",
       "owner": "UX + conteúdo + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [91, 126]
+      "status": "done",
+      "evidence": "src/app/produtos/[slug]/page.tsx",
+      "dependencies": [
+        91,
+        126
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "entrega",
+        "finding": "Rotas por slug entregam conteúdo e links no HTML inicial; noindex da prévia é intencional.",
+        "nextAction": "Conectar fichas à fonte publicada antes da abertura comercial.",
+        "evidence": [
+          "src/app/produtos/[slug]/page.tsx",
+          "tests/public-api.spec.ts"
+        ]
+      }
     },
     {
       "id": 93,
@@ -1277,9 +2440,21 @@
       "acceptance": "Imagens não misturam variantes ou sugerem componentes não inclusos.",
       "owner": "UX + conteúdo + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [49]
+      "status": "partial",
+      "evidence": "src/lib/products.json",
+      "dependencies": [
+        49
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Há uma foto por SKU; não existe galeria de ângulos, escala e embalagem homologada.",
+        "nextAction": "Obter mídia autorizada e construir galeria fiel.",
+        "evidence": [
+          "src/lib/products.json",
+          "src/app/produtos/[slug]/page.tsx"
+        ]
+      }
     },
     {
       "id": 94,
@@ -1290,8 +2465,20 @@
       "owner": "UX + conteúdo + frontend",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [124]
+      "evidence": "src/lib/products.json",
+      "dependencies": [
+        124
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Modelo e UI não oferecem variantes de cor/tamanho com SKU e disponibilidade.",
+        "nextAction": "Homologar variantes e implementar seleção sincronizada.",
+        "evidence": [
+          "src/lib/products.json",
+          "src/app/produtos/[slug]/page.tsx"
+        ]
+      }
     },
     {
       "id": 95,
@@ -1301,9 +2488,22 @@
       "acceptance": "Conteúdo coincide com ficha validada e resolve ambiguidades da importação.",
       "owner": "UX + conteúdo + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [43, 44]
+      "status": "partial",
+      "evidence": "src/lib/products.json",
+      "dependencies": [
+        43,
+        44
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Descrições de origem são exibidas sem quadro técnico revisado por SKU.",
+        "nextAction": "Aprovar materiais, medidas e inclusões e estruturar apresentação.",
+        "evidence": [
+          "src/lib/products.json",
+          "src/app/produtos/[slug]/page.tsx"
+        ]
+      }
     },
     {
       "id": 96,
@@ -1313,9 +2513,21 @@
       "acceptance": "Qualquer preço de entrada tem quantidade de referência e validade explícitas.",
       "owner": "UX + conteúdo + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [46]
+      "status": "partial",
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        46
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Valores estão sob consulta e FAQ cita fatores; preço contextual por produto não está definido.",
+        "nextAction": "Validar condições e apresentá-las junto da oferta quando houver preço.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "src/app/produtos/[slug]/page.tsx"
+        ]
+      }
     },
     {
       "id": 97,
@@ -1325,9 +2537,21 @@
       "acceptance": "Consulta de estoque não é apresentada como reserva garantida.",
       "owner": "UX + conteúdo + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [124]
+      "status": "partial",
+      "evidence": "src/app/produtos/[slug]/page.tsx",
+      "dependencies": [
+        124
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Aviso impede promessa de estoque, mas não há consulta nem estimativa por etapas reais.",
+        "nextAction": "Implementar disponibilidade e prazos confirmáveis com a operação.",
+        "evidence": [
+          "src/app/produtos/[slug]/page.tsx",
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 98,
@@ -1337,9 +2561,21 @@
       "acceptance": "Informações são consistentes com áreas e técnicas aprovadas no sistema.",
       "owner": "UX + conteúdo + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [101]
+      "status": "partial",
+      "evidence": "src/lib/products.json",
+      "dependencies": [
+        101
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Apenas booleano personalizable e texto genérico; técnicas e áreas por peça estão ausentes.",
+        "nextAction": "Vincular técnicas, áreas e limites homologados por SKU.",
+        "evidence": [
+          "src/lib/products.json",
+          "src/app/produtos/[slug]/page.tsx"
+        ]
+      }
     },
     {
       "id": 99,
@@ -1350,8 +2586,21 @@
       "owner": "UX + conteúdo + frontend",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [53, 127]
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        53,
+        127
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Não há recomendação contextual de complementos ou alternativas.",
+        "nextAction": "Implementar regras sobre catálogo aprovado e elegibilidade.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "src/app/produtos/[slug]/page.tsx"
+        ]
+      }
     },
     {
       "id": 100,
@@ -1362,8 +2611,26 @@
       "owner": "UX + conteúdo + frontend",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [92, 93, 94, 95, 96, 97, 98, 99]
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Não existe teste de decisão de produto com compradores.",
+        "nextAction": "Validar compreensão de inclusões, mínimo e próxima ação.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 101,
@@ -1373,9 +2640,22 @@
       "acceptance": "Não há enumeração de técnica universal sem elegibilidade por produto.",
       "owner": "Produto + operação + frontend",
       "priority": "P1",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [123, 124]
+      "status": "partial",
+      "evidence": "docs/AUDITORIA_PROJETO_INTERNO.md",
+      "dependencies": [
+        123,
+        124
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Auditoria interna localiza recursos de personalização; vitrine não mapeia técnicas e áreas.",
+        "nextAction": "Inspecionar dados autorizados e publicar elegibilidade por produto.",
+        "evidence": [
+          "docs/AUDITORIA_PROJETO_INTERNO.md",
+          "src/lib/products.json"
+        ]
+      }
     },
     {
       "id": 102,
@@ -1386,8 +2666,19 @@
       "owner": "Produto + operação + frontend",
       "priority": "P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [101]
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        101
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "UI não permite escolher posição, técnica ou cores de gravação.",
+        "nextAction": "Desenhar e implementar combinações válidas.",
+        "evidence": [
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 103,
@@ -1397,9 +2688,21 @@
       "acceptance": "Contrato exige validação de conteúdo e armazenamento privado.",
       "owner": "Produto + operação + frontend",
       "priority": "P1",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [141]
+      "status": "partial",
+      "evidence": "docs/ARQUITETURA_E_INTEGRACAO.md",
+      "dependencies": [
+        141
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Arquitetura exige storage privado e validação; tipos, tamanho e retenção não estão fechados.",
+        "nextAction": "Especificar limites, validação de conteúdo, retenção e acesso.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "docs/MODELO_DE_AMEACAS_PREVIA.md"
+        ]
+      }
     },
     {
       "id": 104,
@@ -1410,8 +2713,20 @@
       "owner": "Produto + operação + frontend",
       "priority": "P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [103, 145]
+      "evidence": "docs/MODELO_DE_AMEACAS_PREVIA.md",
+      "dependencies": [
+        103,
+        145
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Não há endpoint, storage ou UI de upload.",
+        "nextAction": "Implementar upload validado após contrato e autorização de acesso.",
+        "evidence": [
+          "docs/MODELO_DE_AMEACAS_PREVIA.md"
+        ]
+      }
     },
     {
       "id": 105,
@@ -1422,8 +2737,20 @@
       "owner": "Produto + operação + frontend",
       "priority": "P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [102]
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        102
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Não existe simulação de arte nem fluxo de prova final; imagem de campanha não é esse recurso.",
+        "nextAction": "Projetar aviso e aprovação versionada da arte.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 106,
@@ -1434,8 +2761,20 @@
       "owner": "Produto + operação + frontend",
       "priority": "P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [101]
+      "evidence": "src/lib/catalog.ts",
+      "dependencies": [
+        101
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Seleção de peças não modela kit, componentes, múltiplos e compatibilidade.",
+        "nextAction": "Definir composição estruturada com regras aprovadas.",
+        "evidence": [
+          "src/lib/catalog.ts",
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 107,
@@ -1446,8 +2785,19 @@
       "owner": "Produto + operação + frontend",
       "priority": "P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [106]
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        106
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Embalagem só aparece como intenção em texto livre.",
+        "nextAction": "Modelar opções com capacidade, dimensão e disponibilidade.",
+        "evidence": [
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 108,
@@ -1458,8 +2808,19 @@
       "owner": "Produto + operação + frontend",
       "priority": "P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [107]
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        107
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Textarea genérico não equivale a cartão com limites e revisão de produção.",
+        "nextAction": "Definir e implementar mensagem e aprovação do cartão.",
+        "evidence": [
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 109,
@@ -1470,8 +2831,21 @@
       "owner": "Produto + operação + frontend",
       "priority": "P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [106, 136]
+      "evidence": "docs/ARQUITETURA_E_INTEGRACAO.md",
+      "dependencies": [
+        106,
+        136
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Não há adaptador de cálculo público para peça e personalização.",
+        "nextAction": "Integrar cálculo validado sem expor custos e margens.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "docs/AUDITORIA_PROJETO_INTERNO.md"
+        ]
+      }
     },
     {
       "id": 110,
@@ -1482,8 +2856,23 @@
       "owner": "Produto + operação + frontend",
       "priority": "P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [104, 105, 107, 108, 109]
+      "evidence": "docs/ARQUITETURA_E_INTEGRACAO.md",
+      "dependencies": [
+        104,
+        105,
+        107,
+        108,
+        109
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Não há jornada testada de arte/kit até produção.",
+        "nextAction": "Simular e homologar o fluxo completo com a operação.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 111,
@@ -1494,8 +2883,20 @@
       "owner": "UX + frontend + comercial",
       "priority": "P0",
       "status": "done",
-      "evidence": "docs/VALIDACAO.md",
-      "dependencies": [42]
+      "evidence": "src/lib/catalog.ts",
+      "dependencies": [
+        42
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Seleção de IDs e quantidades persiste e rejeita IDs desconhecidos na amostra.",
+        "nextAction": "Expiração em todas as rotas continua aberta na etapa 56.",
+        "evidence": [
+          "src/lib/catalog.ts",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 112,
@@ -1506,8 +2907,20 @@
       "owner": "UX + frontend + comercial",
       "priority": "P0",
       "status": "done",
-      "evidence": "docs/VALIDACAO.md",
-      "dependencies": [111]
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        111
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Editar, aumentar, diminuir e remover respeitam limites da prévia.",
+        "nextAction": "Aplicar regras comerciais novas quando homologadas.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 113,
@@ -1519,7 +2932,18 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [111]
+      "dependencies": [
+        111
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Briefing sem peças gera pedido explícito de recomendação.",
+        "nextAction": "Nenhuma ação para o briefing aberto local.",
+        "evidence": [
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 114,
@@ -1529,9 +2953,21 @@
       "acceptance": "Contato obrigatório e campos opcionais têm labels e validação clara.",
       "owner": "UX + frontend + comercial",
       "priority": "P0",
-      "status": "done",
+      "status": "partial",
       "evidence": "src/components/Storefront.tsx",
-      "dependencies": [66]
+      "dependencies": [
+        66
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "tecnica",
+        "finding": "Formulário em duas etapas funciona, mas Voltar apaga os contatos preenchidos.",
+        "nextAction": "Manter rascunho em memória entre etapas sem persistir PII no navegador.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "docs/audit/plan-browser-scenarios.json"
+        ]
+      }
     },
     {
       "id": 115,
@@ -1542,8 +2978,22 @@
       "owner": "UX + frontend + comercial",
       "priority": "P0",
       "status": "done",
-      "evidence": "src/components/Storefront.tsx",
-      "dependencies": [112, 113, 114]
+      "evidence": "tests/storefront.spec.ts",
+      "dependencies": [
+        112,
+        113,
+        114
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Download inclui IDs, SKUs e quantidades corretos e informa não envio.",
+        "nextAction": "Nenhuma ação para a exportação local testada.",
+        "evidence": [
+          "tests/storefront.spec.ts",
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 116,
@@ -1553,9 +3003,22 @@
       "acceptance": "Solicitação de marketing fica separada do atendimento quando aplicável.",
       "owner": "UX + frontend + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [24, 146]
+      "status": "partial",
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        24,
+        146
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Campos iniciais e aviso local existem; finalidade e dados de produção não foram aprovados.",
+        "nextAction": "Homologar formulário e política com responsáveis comercial e jurídico.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "src/app/privacidade/page.tsx"
+        ]
+      }
     },
     {
       "id": 117,
@@ -1565,9 +3028,24 @@
       "acceptance": "Duplo clique e retry não geram oportunidades duplicadas.",
       "owner": "UX + frontend + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [116, 126, 134]
+      "status": "partial",
+      "evidence": "src/app/api/briefings/route.ts",
+      "dependencies": [
+        116,
+        126,
+        134
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Há endpoint e caminho de envio opcional; receptor vazio e retries geram novas chaves.",
+        "nextAction": "Integrar persistência e destino aprovados com chave estável e controles distribuídos.",
+        "evidence": [
+          "src/app/api/briefings/route.ts",
+          "src/components/Storefront.tsx",
+          "docs/audit/plan-browser-scenarios.json"
+        ]
+      }
     },
     {
       "id": 118,
@@ -1577,9 +3055,21 @@
       "acceptance": "Falha permite tentar novamente e sucesso nunca é simulado por temporizador.",
       "owner": "UX + frontend + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [117]
+      "status": "partial",
+      "evidence": "src/app/api/briefings/route.ts",
+      "dependencies": [
+        117
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Protocolo nasce após 2xx do webhook, sem prova de commit persistido no banco/CRM.",
+        "nextAction": "Vincular protocolo ao registro transacional e validar resposta do receptor.",
+        "evidence": [
+          "src/app/api/briefings/route.ts",
+          "docs/audit/plan-database-check.json"
+        ]
+      }
     },
     {
       "id": 119,
@@ -1590,8 +3080,19 @@
       "owner": "UX + frontend + comercial",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [118]
+      "evidence": "docs/CONTRATO_BRIEFING_V1.md",
+      "dependencies": [
+        118
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Não existe canal de confirmação transacional implementado ou teste de entrega.",
+        "nextAction": "Escolher canal e template e testar com destino autorizado.",
+        "evidence": [
+          "docs/CONTRATO_BRIEFING_V1.md"
+        ]
+      }
     },
     {
       "id": 120,
@@ -1602,8 +3103,22 @@
       "owner": "UX + frontend + comercial",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [118, 119, 133]
+      "evidence": "docs/audit/plan-database-check.json",
+      "dependencies": [
+        118,
+        119,
+        133
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Não há briefing do navegador localizado por vendedor no CRM.",
+        "nextAction": "Executar jornada integrada com dados sintéticos autorizados.",
+        "evidence": [
+          "docs/audit/plan-database-check.json",
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 121,
@@ -1615,7 +3130,20 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/ARQUITETURA_E_INTEGRACAO.md",
-      "dependencies": [4, 10]
+      "dependencies": [
+        4,
+        10
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Allowlist pública mínima está documentada e API omite campos internos.",
+        "nextAction": "Contratos avançados serão versionados ao incluir variantes e preços.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "tests/public-api.spec.ts"
+        ]
+      }
     },
     {
       "id": 122,
@@ -1625,9 +3153,21 @@
       "acceptance": "Configuração de projeto legado ou host parecido é rejeitada.",
       "owner": "Arquitetura + backend + dados",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [4]
+      "status": "done",
+      "evidence": "src/lib/site-database.ts",
+      "dependencies": [
+        4
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "entrega",
+        "finding": "Servidor rejeita projeto operacional e host semelhante antes de buscar dados.",
+        "nextAction": "Manter testes da allowlist em futuras mudanças de configuração.",
+        "evidence": [
+          "src/lib/site-database.ts",
+          "docs/audit/plan-scenarios.json"
+        ]
+      }
     },
     {
       "id": 123,
@@ -1637,9 +3177,21 @@
       "acceptance": "Inventário de grants, views, políticas e funções tem data e identidade comprovadas.",
       "owner": "Arquitetura + backend + dados",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [4]
+      "status": "partial",
+      "evidence": "docs/audit/plan-database-check.json",
+      "dependencies": [
+        4
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "pg_catalog, grants e RLS da vitrine foram inspecionados; inventário administrativo do comercial não existe.",
+        "nextAction": "Concluir inventário autorizado de views/funções operacionais necessárias à integração.",
+        "evidence": [
+          "docs/audit/plan-database-check.json",
+          "docs/audit/CANONICAL_CATALOG_LIVE_CHECK_2026-09-22.md"
+        ]
+      }
     },
     {
       "id": 124,
@@ -1649,9 +3201,21 @@
       "acceptance": "Diferenças são explicadas; SECURITY DEFINER não é alterado por suposição.",
       "owner": "Arquitetura + backend + dados",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [123]
+      "status": "partial",
+      "evidence": "docs/audit/CANONICAL_CATALOG_LIVE_CHECK_2026-09-22.md",
+      "dependencies": [
+        123
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "View operacional teve leitura pública limitada; definições e políticas efetivas não foram revalidadas administrativamente.",
+        "nextAction": "Comparar definições reais das views com contratos antes de criar adaptador.",
+        "evidence": [
+          "docs/audit/CANONICAL_CATALOG_LIVE_CHECK_2026-09-22.md",
+          "docs/AUDITORIA_PROJETO_INTERNO.md"
+        ]
+      }
     },
     {
       "id": 125,
@@ -1661,9 +3225,23 @@
       "acceptance": "Modelo não duplica o catálogo operacional e suporta despublicação.",
       "owner": "Arquitetura + backend + dados",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [41, 124]
+      "status": "partial",
+      "evidence": "supabase/migrations/20260922110900_create_premium_site_core.sql",
+      "dependencies": [
+        41,
+        124
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Tabela curada mantém IDs, ordem e published; faltam governança e sincronização de ciclo de vida.",
+        "nextAction": "Definir fonte de cada campo, edição autorizada e retirada em todas as superfícies.",
+        "evidence": [
+          "supabase/migrations/20260922110900_create_premium_site_core.sql",
+          "scripts/sync-site-catalog.mjs",
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 126,
@@ -1673,9 +3251,24 @@
       "acceptance": "Contrato revisado inclui exemplos de sucesso, vazio, inválido e indisponível.",
       "owner": "Arquitetura + backend + dados",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [121, 122, 124]
+      "status": "partial",
+      "evidence": "docs/CONTRATO_CATALOGO_PUBLICO_V1.md",
+      "dependencies": [
+        121,
+        122,
+        124
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Contrato v1 e exemplos existem, mas cobrem curadoria limitada e não disponibilidade/variantes aprovadas.",
+        "nextAction": "Corrigir semântica de catálogo vazio, paginação integral e documentar contrato integrado.",
+        "evidence": [
+          "docs/CONTRATO_CATALOGO_PUBLICO_V1.md",
+          "src/app/api/catalog/route.ts",
+          "src/lib/site-database.ts"
+        ]
+      }
     },
     {
       "id": 127,
@@ -1685,9 +3278,23 @@
       "acceptance": "Dados reais são validados e erros não viram listagens vazias silenciosas.",
       "owner": "Arquitetura + backend + dados",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [125, 126]
+      "status": "partial",
+      "evidence": "src/lib/site-database.ts",
+      "dependencies": [
+        125,
+        126
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "GET /api/catalog lê banco; home, fichas e validação de briefing leem snapshot.",
+        "nextAction": "Unificar leitura publicada em todas as jornadas e validar exclusões e falhas.",
+        "evidence": [
+          "src/lib/site-database.ts",
+          "src/components/Storefront.tsx",
+          "src/lib/briefing.ts"
+        ]
+      }
     },
     {
       "id": 128,
@@ -1697,9 +3304,22 @@
       "acceptance": "Produto retirado deixa de aparecer dentro do SLA definido.",
       "owner": "Arquitetura + backend + dados",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [127]
+      "status": "partial",
+      "evidence": "src/app/api/catalog/route.ts",
+      "dependencies": [
+        127
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Cache de API usa TTL/SWR; snapshot das páginas não é invalidado por despublicação.",
+        "nextAction": "Definir SLA e testar retirada completa, revalidação e cache.",
+        "evidence": [
+          "src/app/api/catalog/route.ts",
+          "src/lib/site-database.ts",
+          "src/app/produtos/[slug]/page.tsx"
+        ]
+      }
     },
     {
       "id": 129,
@@ -1709,9 +3329,22 @@
       "acceptance": "CDN com 403 aciona fallback observável e não quebra a apresentação.",
       "owner": "Arquitetura + backend + dados",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [47, 127]
+      "status": "partial",
+      "evidence": "docs/audit/media-check.json",
+      "dependencies": [
+        47,
+        127
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Fotos locais evitam o CDN com falha; não há fallback observável nem monitoramento de mídia.",
+        "nextAction": "Implementar fallback e diagnóstico de falha de imagem.",
+        "evidence": [
+          "docs/audit/media-check.json",
+          "src/components/Storefront.tsx"
+        ]
+      }
     },
     {
       "id": 130,
@@ -1721,9 +3354,22 @@
       "acceptance": "Suite rejeita campo sensível e acompanha drift do contrato.",
       "owner": "Arquitetura + backend + dados",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [127, 128, 129]
+      "status": "partial",
+      "evidence": "tests/public-api.spec.ts",
+      "dependencies": [
+        127,
+        128,
+        129
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "E2E checam subset do DTO e oito produtos; não há staging nem teste de drift completo.",
+        "nextAction": "Testar contrato exato, estados, variantes e alteração/despublicação em staging.",
+        "evidence": [
+          "tests/public-api.spec.ts"
+        ]
+      }
     },
     {
       "id": 131,
@@ -1734,8 +3380,20 @@
       "owner": "Backend + comercial + operações",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [24]
+      "evidence": "docs/ARQUITETURA_E_INTEGRACAO.md",
+      "dependencies": [
+        24
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Nenhum CRM/receptor e dono de oportunidade foi formalizado.",
+        "nextAction": "Definir destino canônico, organização e proprietário de cada briefing.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "docs/SUPABASE_SITE_DATABASE.md"
+        ]
+      }
     },
     {
       "id": 132,
@@ -1745,9 +3403,21 @@
       "acceptance": "Regras não excluem oportunidades por inferências opacas sobre o comprador.",
       "owner": "Backend + comercial + operações",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [131]
+      "status": "partial",
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        131
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Ocasião, orçamento e data são coletados; regras de qualificação não foram aprovadas.",
+        "nextAction": "Definir critérios auditáveis com comercial.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "docs/CONTRATO_BRIEFING_V1.md"
+        ]
+      }
     },
     {
       "id": 133,
@@ -1757,9 +3427,23 @@
       "acceptance": "Contrato é consumível pelo comercial sem recuperar dados de texto livre.",
       "owner": "Backend + comercial + operações",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [126, 131, 132]
+      "status": "partial",
+      "evidence": "src/lib/briefing.ts",
+      "dependencies": [
+        126,
+        131,
+        132
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Payload básico preserva ID/SKU/quantidade; variantes, arte e consumidor comercial faltam.",
+        "nextAction": "Homologar contrato e adaptar o receptor sem redigitação.",
+        "evidence": [
+          "src/lib/briefing.ts",
+          "docs/CONTRATO_BRIEFING_V1.md"
+        ]
+      }
     },
     {
       "id": 134,
@@ -1769,9 +3453,22 @@
       "acceptance": "Retentativas não criam duplicatas nem fundem empresas distintas indevidamente.",
       "owner": "Backend + comercial + operações",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [133]
+      "status": "partial",
+      "evidence": "src/app/api/briefings/route.ts",
+      "dependencies": [
+        133
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Map em memória aceita concorrência duplicada e replay de payload diferente; tabela única não é usada.",
+        "nextAction": "Persistir atomicamente chave e hash; testar concorrência, reinício e resposta perdida.",
+        "evidence": [
+          "src/app/api/briefings/route.ts",
+          "supabase/migrations/20260922110900_create_premium_site_core.sql",
+          "docs/audit/plan-scenarios.json"
+        ]
+      }
     },
     {
       "id": 135,
@@ -1782,8 +3479,19 @@
       "owner": "Backend + comercial + operações",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [131]
+      "evidence": "docs/ARQUITETURA_E_INTEGRACAO.md",
+      "dependencies": [
+        131
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Não existem regras ou implementação de atribuição de vendedor.",
+        "nextAction": "Aprovar carteira/região/distribuição e fallback.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 136,
@@ -1794,8 +3502,22 @@
       "owner": "Backend + comercial + operações",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [133, 134, 135]
+      "evidence": "docs/AUDITORIA_PROJETO_INTERNO.md",
+      "dependencies": [
+        133,
+        134,
+        135
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Capacidade transacional foi localizada no comercial, sem adaptador na vitrine.",
+        "nextAction": "Integrar criação/aprovação autorizadas e testar atomicidade.",
+        "evidence": [
+          "docs/AUDITORIA_PROJETO_INTERNO.md",
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 137,
@@ -1805,9 +3527,20 @@
       "acceptance": "Cliente vê apenas estados úteis sem expor notas internas ou margem.",
       "owner": "Backend + comercial + operações",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [136]
+      "status": "partial",
+      "evidence": "supabase/migrations/20260922110900_create_premium_site_core.sql",
+      "dependencies": [
+        136
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Tabela tem received/qualified/closed, sem workflow ou acompanhamento implementado.",
+        "nextAction": "Definir estados e autorização antes de expor acompanhamento.",
+        "evidence": [
+          "supabase/migrations/20260922110900_create_premium_site_core.sql"
+        ]
+      }
     },
     {
       "id": 138,
@@ -1818,8 +3551,20 @@
       "owner": "Backend + comercial + operações",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [137]
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        137
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Não há medição de recebimento, resposta, horário útil ou proposta.",
+        "nextAction": "Instrumentar eventos e dashboard de SLA.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 139,
@@ -1830,8 +3575,19 @@
       "owner": "Backend + comercial + operações",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [136]
+      "evidence": "src/app/api/briefings/route.ts",
+      "dependencies": [
+        136
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Timeout não equivale a fila: não existe outbox, retry persistente ou conciliação.",
+        "nextAction": "Persistir envio e reprocessamento com rastreabilidade e sem perda.",
+        "evidence": [
+          "src/app/api/briefings/route.ts"
+        ]
+      }
     },
     {
       "id": 140,
@@ -1842,8 +3598,21 @@
       "owner": "Backend + comercial + operações",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [138, 139, 120]
+      "evidence": "docs/ARQUITETURA_E_INTEGRACAO.md",
+      "dependencies": [
+        138,
+        139,
+        120
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Não houve piloto de solicitações com vendedores.",
+        "nextAction": "Executar piloto após fluxo CRM e conciliação funcionarem.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 141,
@@ -1853,9 +3622,22 @@
       "acceptance": "Modelo tem responsáveis e controles proporcionais ao risco observado.",
       "owner": "Segurança + jurídico + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [126, 133]
+      "status": "partial",
+      "evidence": "docs/MODELO_DE_AMEACAS_PREVIA.md",
+      "dependencies": [
+        126,
+        133
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Modelo de ameaças da prévia existe; integrações finais, responsáveis nomeados e controles efetivos faltam.",
+        "nextAction": "Atualizar modelo com achados desta auditoria e aprovar riscos operacionais.",
+        "evidence": [
+          "docs/MODELO_DE_AMEACAS_PREVIA.md",
+          "docs/audit/plan-scenarios.json"
+        ]
+      }
     },
     {
       "id": 142,
@@ -1865,9 +3647,21 @@
       "acceptance": "Custos e PII permanecem protegidos; nenhum grant amplo é adicionado para destravar UI.",
       "owner": "Segurança + jurídico + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [123]
+      "status": "partial",
+      "evidence": "docs/audit/plan-database-check.json",
+      "dependencies": [
+        123
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Banco da vitrine nega escrita anon e acesso a briefings; acesso cruzado e escopo operacional não foram testados.",
+        "nextAction": "Completar matriz de papéis e cenários no ambiente integrado.",
+        "evidence": [
+          "docs/audit/plan-database-check.json",
+          "supabase/migrations/20260922110900_create_premium_site_core.sql"
+        ]
+      }
     },
     {
       "id": 143,
@@ -1877,9 +3671,22 @@
       "acceptance": "Build público e logs são verificados e não contêm segredos.",
       "owner": "Segurança + jurídico + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [122]
+      "status": "partial",
+      "evidence": "scripts/check-public-secrets.mjs",
+      "dependencies": [
+        122
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Inspeção exata não encontrou os segredos atuais no Git candidato nem no build público; scanner geral e logs ainda têm cobertura incompleta.",
+        "nextAction": "Ampliar verificação automatizada e registrar inspeção de artefatos e logs.",
+        "evidence": [
+          "scripts/check-public-secrets.mjs",
+          "docs/SUPABASE_SITE_DATABASE.md",
+          "docs/audit/plan-secret-scan.json"
+        ]
+      }
     },
     {
       "id": 144,
@@ -1889,9 +3696,22 @@
       "acceptance": "Abuso, payload inesperado e repetição recebem respostas controladas.",
       "owner": "Segurança + jurídico + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [141]
+      "status": "partial",
+      "evidence": "src/app/api/briefings/route.ts",
+      "dependencies": [
+        141
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Há controles de origem/JSON; limite de corpo confia em Content-Length e data é truncada antes de validar.",
+        "nextAction": "Limitar bytes reais, validar sem truncar e aplicar rate limit confiável/distribuído.",
+        "evidence": [
+          "src/app/api/briefings/route.ts",
+          "src/lib/briefing.ts",
+          "docs/audit/plan-scenarios.json"
+        ]
+      }
     },
     {
       "id": 145,
@@ -1902,8 +3722,21 @@
       "owner": "Segurança + jurídico + backend",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [103, 141]
+      "evidence": "docs/MODELO_DE_AMEACAS_PREVIA.md",
+      "dependencies": [
+        103,
+        141
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Arquivos privados e links por cliente não existem; isolamento ainda não foi implementado/testado.",
+        "nextAction": "Implementar autorização, expiração e negativas entre clientes ao criar uploads.",
+        "evidence": [
+          "docs/MODELO_DE_AMEACAS_PREVIA.md",
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 146,
@@ -1914,8 +3747,21 @@
       "owner": "Segurança + jurídico + backend",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [24, 131]
+      "evidence": "src/app/privacidade/page.tsx",
+      "dependencies": [
+        24,
+        131
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Não há controlador identificado, mapa de tratamento aprovado ou política de retenção comercial.",
+        "nextAction": "Obter definições dos responsáveis e mapear o fluxo real.",
+        "evidence": [
+          "src/app/privacidade/page.tsx",
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 147,
@@ -1925,9 +3771,20 @@
       "acceptance": "Texto aprovado descreve coleta real sem promessas impossíveis de cumprir.",
       "owner": "Segurança + jurídico + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [146]
+      "status": "partial",
+      "evidence": "src/app/privacidade/page.tsx",
+      "dependencies": [
+        146
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Página de privacidade descreve a prévia; não é política comercial aprovada.",
+        "nextAction": "Redigir e aprovar texto com controlador e contato reais.",
+        "evidence": [
+          "src/app/privacidade/page.tsx"
+        ]
+      }
     },
     {
       "id": 148,
@@ -1937,9 +3794,20 @@
       "acceptance": "Aceitar, recusar e rever escolha são verificáveis e respeitados pelos scripts.",
       "owner": "Segurança + jurídico + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [146]
+      "status": "partial",
+      "evidence": "src/app/privacidade/page.tsx",
+      "dependencies": [
+        146
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Prévia não instala analytics/publicidade; não há mecanismo de consentimento para eventual adoção.",
+        "nextAction": "Inventariar scripts e decidir escopo; implementar controle se necessário.",
+        "evidence": [
+          "src/app/privacidade/page.tsx"
+        ]
+      }
     },
     {
       "id": 149,
@@ -1950,8 +3818,19 @@
       "owner": "Segurança + jurídico + backend",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [146]
+      "evidence": "src/app/privacidade/page.tsx",
+      "dependencies": [
+        146
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Não existe canal/processo testado para acesso, correção e exclusão.",
+        "nextAction": "Definir responsável, procedimento e evidência de solicitação teste.",
+        "evidence": [
+          "src/app/privacidade/page.tsx"
+        ]
+      }
     },
     {
       "id": 150,
@@ -1961,9 +3840,28 @@
       "acceptance": "Não há vulnerabilidade crítica aberta sem decisão formal e controle adequado.",
       "owner": "Segurança + jurídico + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [142, 143, 144, 145, 147, 148, 149]
+      "status": "partial",
+      "evidence": "next.config.ts",
+      "dependencies": [
+        142,
+        143,
+        144,
+        145,
+        147,
+        148,
+        149
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Build, dependências e headers têm checks; há falhas de lógica e gates de segurança abertos.",
+        "nextAction": "Corrigir achados, testar acesso/logs/recuperação e registrar revisão de abertura.",
+        "evidence": [
+          "next.config.ts",
+          "docs/VALIDACAO.md",
+          "docs/audit/plan-scenarios.json"
+        ]
+      }
     },
     {
       "id": 151,
@@ -1973,9 +3871,22 @@
       "acceptance": "Não há páginas em massa criadas apenas por variações de palavra-chave.",
       "owner": "Conteúdo + SEO + frontend",
       "priority": "P1",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [23, 26]
+      "status": "partial",
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        23,
+        26
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Categorias e ocasiões são propostas; mapa de intenção não foi pesquisado com compradores.",
+        "nextAction": "Definir páginas por demanda real e intenção distinta.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md"
+        ]
+      }
     },
     {
       "id": 152,
@@ -1985,9 +3896,23 @@
       "acceptance": "Uma entidade não compete com múltiplas URLs indexáveis equivalentes.",
       "owner": "Conteúdo + SEO + frontend",
       "priority": "P1",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [51, 151]
+      "status": "partial",
+      "evidence": "src/app/layout.tsx",
+      "dependencies": [
+        51,
+        151
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Slugs e canonical existem; privacidade herda canonical da home e falta política de redirects.",
+        "nextAction": "Corrigir canonical por rota e documentar redirects/facetas.",
+        "evidence": [
+          "src/app/layout.tsx",
+          "src/app/privacidade/page.tsx",
+          "src/app/produtos/[slug]/page.tsx"
+        ]
+      }
     },
     {
       "id": 153,
@@ -1997,9 +3922,22 @@
       "acceptance": "Conteúdo principal existe no HTML sem depender da hidratação.",
       "owner": "Conteúdo + SEO + frontend",
       "priority": "P1",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [71, 92]
+      "status": "done",
+      "evidence": "tests/public-api.spec.ts",
+      "dependencies": [
+        71,
+        92
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "entrega",
+        "finding": "Home e fichas entregam conteúdo principal no HTML inicial, verificado por E2E.",
+        "nextAction": "Manter renderização ao integrar catálogo vivo.",
+        "evidence": [
+          "tests/public-api.spec.ts",
+          "src/app/produtos/[slug]/page.tsx"
+        ]
+      }
     },
     {
       "id": 154,
@@ -2009,9 +3947,23 @@
       "acceptance": "Não aparecem placeholders, números de estoque inventados ou títulos duplicados críticos.",
       "owner": "Conteúdo + SEO + frontend",
       "priority": "P1",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [152, 153]
+      "status": "partial",
+      "evidence": "src/app/layout.tsx",
+      "dependencies": [
+        152,
+        153
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Títulos/descrições e imagem de produto existem; metadados sociais e canonical ainda não são específicos em todas as rotas.",
+        "nextAction": "Completar e verificar metadados por template.",
+        "evidence": [
+          "src/app/layout.tsx",
+          "src/app/produtos/[slug]/page.tsx",
+          "src/app/privacidade/page.tsx"
+        ]
+      }
     },
     {
       "id": 155,
@@ -2021,9 +3973,23 @@
       "acceptance": "Não há avaliação, disponibilidade ou Offer fictício para obter destaque.",
       "owner": "Conteúdo + SEO + frontend",
       "priority": "P1",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [94, 95, 96]
+      "status": "partial",
+      "evidence": "src/app/produtos/[slug]/page.tsx",
+      "dependencies": [
+        94,
+        95,
+        96
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "JSON-LD evita Offer/avaliação fictícios; conteúdo técnico e atribuição da marca exigem revisão.",
+        "nextAction": "Validar schema com dados homologados e marca correta por SKU.",
+        "evidence": [
+          "src/app/produtos/[slug]/page.tsx",
+          "src/lib/products.json"
+        ]
+      }
     },
     {
       "id": 156,
@@ -2033,9 +3999,23 @@
       "acceptance": "Staging permanece noindex e domínio final é validado antes de liberar indexação.",
       "owner": "Conteúdo + SEO + frontend",
       "priority": "P1",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [152, 154]
+      "status": "partial",
+      "evidence": "src/app/robots.ts",
+      "dependencies": [
+        152,
+        154
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Prévia bloqueia índice; flag true pode liberar robots sem domínio válido, e sitemap é snapshot.",
+        "nextAction": "Validar domínio junto da flag e usar apenas URLs efetivamente publicadas.",
+        "evidence": [
+          "src/app/robots.ts",
+          "src/app/sitemap.ts",
+          "src/app/layout.tsx"
+        ]
+      }
     },
     {
       "id": 157,
@@ -2046,8 +4026,19 @@
       "owner": "Conteúdo + SEO + frontend",
       "priority": "P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [151]
+      "evidence": "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
+      "dependencies": [
+        151
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Não há páginas de guias de ocasião, técnicas ou planejamento comercial.",
+        "nextAction": "Produzir conteúdo com dúvidas reais e produtos elegíveis.",
+        "evidence": [
+          "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md"
+        ]
+      }
     },
     {
       "id": 158,
@@ -2057,9 +4048,21 @@
       "acceptance": "Texto alternativo não repete slogans nem omite conteúdo essencial.",
       "owner": "Conteúdo + SEO + frontend",
       "priority": "P1",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [157]
+      "status": "partial",
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        157
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Alt texts e hierarquia da prévia existem; conteúdo editorial futuro não foi criado/revisado.",
+        "nextAction": "Revisar alternativas, links e títulos em todos os conteúdos aprovados.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "src/app/produtos/[slug]/page.tsx"
+        ]
+      }
     },
     {
       "id": 159,
@@ -2070,8 +4073,20 @@
       "owner": "Conteúdo + SEO + frontend",
       "priority": "P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [156, 194]
+      "evidence": "README.md",
+      "dependencies": [
+        156,
+        194
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Não há domínio verificado ou configuração de Search Console.",
+        "nextAction": "Configurar após domínio e publicação aprovados.",
+        "evidence": [
+          "README.md"
+        ]
+      }
     },
     {
       "id": 160,
@@ -2082,8 +4097,19 @@
       "owner": "Conteúdo + SEO + frontend",
       "priority": "P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [159]
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        159
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Não há tráfego orgânico medido ou associação com briefings qualificados.",
+        "nextAction": "Instrumentar relatório após lançamento e decisão de privacidade.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 161,
@@ -2093,9 +4119,21 @@
       "acceptance": "Orçamento está associado a páginas e condições de medição reproduzíveis.",
       "owner": "Frontend + SRE + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [30]
+      "status": "partial",
+      "evidence": "docs/ORCAMENTO_DESEMPENHO.md",
+      "dependencies": [
+        30
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Orçamento documenta JS, fontes e imagens; script só mede imagens e falta limite verificável de requisições.",
+        "nextAction": "Completar orçamento por rota e medições de JS/fontes/requisições.",
+        "evidence": [
+          "docs/ORCAMENTO_DESEMPENHO.md",
+          "scripts/check-performance-budget.mjs"
+        ]
+      }
     },
     {
       "id": 162,
@@ -2105,9 +4143,22 @@
       "acceptance": "Hero carrega sem salto e sem baixar a versão máxima em todo dispositivo.",
       "owner": "Frontend + SRE + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [72]
+      "status": "done",
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        72
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "entrega",
+        "finding": "Hero usa WebP, sizes, srcset e prioridade; dimensões reservadas e CLS local zero.",
+        "nextAction": "Meta global de LCP continua aberta nas etapas 166–167.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "docs/audit/lighthouse-mobile.json",
+          "scripts/check-performance-budget.mjs"
+        ]
+      }
     },
     {
       "id": 163,
@@ -2117,9 +4168,21 @@
       "acceptance": "Cards fora da tela não competem desnecessariamente com conteúdo inicial.",
       "owner": "Frontend + SRE + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [74]
+      "status": "done",
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        74
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "entrega",
+        "finding": "Cards usam dimensões reservadas, sizes e lazy loading; orçamento dos oito assets passa.",
+        "nextAction": "Manter otimização ao ampliar catálogo.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "scripts/check-performance-budget.mjs"
+        ]
+      }
     },
     {
       "id": 164,
@@ -2131,7 +4194,18 @@
       "priority": "P0",
       "status": "done",
       "evidence": "src/app/layout.tsx",
-      "dependencies": [33]
+      "dependencies": [
+        33
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Fontes são locais com imports dos pesos usados; nenhuma fonte de terceiros é necessária.",
+        "nextAction": "Medir orçamento total na etapa 161.",
+        "evidence": [
+          "src/app/layout.tsx"
+        ]
+      }
     },
     {
       "id": 165,
@@ -2141,9 +4215,22 @@
       "acceptance": "Visitante da home não carrega ferramentas do backoffice ou integrações administrativas.",
       "owner": "Frontend + SRE + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [153]
+      "status": "partial",
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        153
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Planejamento tem rota própria e não há providers do comercial; Storefront ainda concentra a interação.",
+        "nextAction": "Medir JS por rota e separar ilhas conforme custo real.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "src/app/layout.tsx",
+          "docs/ORCAMENTO_DESEMPENHO.md"
+        ]
+      }
     },
     {
       "id": 166,
@@ -2153,9 +4240,25 @@
       "acceptance": "Resultados não são apresentados como percentil real de usuários.",
       "owner": "Frontend + SRE + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [161, 162, 163, 164, 165]
+      "status": "partial",
+      "evidence": "docs/audit/lighthouse-mobile.json",
+      "dependencies": [
+        161,
+        162,
+        163,
+        164,
+        165
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Última coleta válida é única: LCP 3,0 s; repetição posterior falhou no ambiente.",
+        "nextAction": "Executar rodadas repetidas reproduzíveis e atender orçamento.",
+        "evidence": [
+          "docs/audit/lighthouse-mobile.json",
+          "docs/VALIDACAO.md"
+        ]
+      }
     },
     {
       "id": 167,
@@ -2166,8 +4269,20 @@
       "owner": "Frontend + SRE + backend",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [148, 194]
+      "evidence": "docs/ORCAMENTO_DESEMPENHO.md",
+      "dependencies": [
+        148,
+        194
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Não há coleta de Web Vitals de usuários reais nem dashboard p75.",
+        "nextAction": "Instrumentar após definição de privacidade e ambiente publicado.",
+        "evidence": [
+          "docs/ORCAMENTO_DESEMPENHO.md"
+        ]
+      }
     },
     {
       "id": 168,
@@ -2177,9 +4292,21 @@
       "acceptance": "Erro do upstream não transforma indisponibilidade em falsa ausência de produtos.",
       "owner": "Frontend + SRE + backend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [127]
+      "status": "partial",
+      "evidence": "src/lib/site-database.ts",
+      "dependencies": [
+        127
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "API tem timeout e 503; catálogo realmente vazio também vira erro, e UI não trata upstream.",
+        "nextAction": "Distinguir vazio de falha, definir recuperação e circuit breaker proporcional.",
+        "evidence": [
+          "src/lib/site-database.ts",
+          "src/app/api/catalog/route.ts"
+        ]
+      }
     },
     {
       "id": 169,
@@ -2190,8 +4317,19 @@
       "owner": "Frontend + SRE + backend",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [168]
+      "evidence": "docs/ARQUITETURA_E_INTEGRACAO.md",
+      "dependencies": [
+        168
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Não há ambiente de staging ou teste de carga autorizado registrado.",
+        "nextAction": "Definir orçamento e executar carga controlada em staging.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 170,
@@ -2202,8 +4340,20 @@
       "owner": "Frontend + SRE + backend",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [138, 168]
+      "evidence": "docs/ARQUITETURA_E_INTEGRACAO.md",
+      "dependencies": [
+        138,
+        168
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Não existem alertas, limiares, donos ou runbook de resposta.",
+        "nextAction": "Instrumentar disponibilidade, mídia e entrega de briefings.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 171,
@@ -2213,9 +4363,23 @@
       "acceptance": "Cada página tem H1 e estrutura compreensível por tecnologia assistiva.",
       "owner": "QA acessibilidade + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [79, 92]
+      "status": "partial",
+      "evidence": "tests/storefront.spec.ts",
+      "dependencies": [
+        79,
+        92
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Semântica básica e axe cobrem páginas representativas; falta revisão completa de sequência e estados.",
+        "nextAction": "Auditar todos os templates e transições com tecnologia assistiva.",
+        "evidence": [
+          "tests/storefront.spec.ts",
+          "tests/public-api.spec.ts",
+          "tests/plan.spec.ts"
+        ]
+      }
     },
     {
       "id": 172,
@@ -2225,9 +4389,23 @@
       "acceptance": "Texto normal atende 4,5:1; grande 3:1; componentes essenciais 3:1 conforme critério aplicável.",
       "owner": "QA acessibilidade + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [63, 64, 66]
+      "status": "partial",
+      "evidence": "docs/VALIDACAO.md",
+      "dependencies": [
+        63,
+        64,
+        66
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Axe não detectou violações nos cenários cobertos; não há matriz manual de todos os pares/estados.",
+        "nextAction": "Medir fotografia, bordas, foco, disabled e texto em cada superfície.",
+        "evidence": [
+          "docs/VALIDACAO.md",
+          "src/app/globals.css"
+        ]
+      }
     },
     {
       "id": 173,
@@ -2237,9 +4415,24 @@
       "acceptance": "Nenhuma tarefa exige ponteiro e foco nunca fica oculto ou sem saída.",
       "owner": "QA acessibilidade + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [65, 71, 81, 112, 114]
+      "status": "partial",
+      "evidence": "tests/storefront.spec.ts",
+      "dependencies": [
+        65,
+        71,
+        81,
+        112,
+        114
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Teste de teclado cobre ciclo do diálogo, não toda a jornada de menu/filtros/quantidade/formulário.",
+        "nextAction": "Executar percurso completo só com teclado e registrar foco.",
+        "evidence": [
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 174,
@@ -2250,8 +4443,20 @@
       "owner": "QA acessibilidade + frontend",
       "priority": "P0",
       "status": "done",
-      "evidence": "docs/VALIDACAO.md",
-      "dependencies": [65]
+      "evidence": "tests/storefront.spec.ts",
+      "dependencies": [
+        65
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Teste cobre Escape, contenção e retorno ao acionador no diálogo exercitado.",
+        "nextAction": "Validar demais combinações de leitor/navegador na homologação.",
+        "evidence": [
+          "tests/storefront.spec.ts",
+          "src/components/Modal.tsx"
+        ]
+      }
     },
     {
       "id": 175,
@@ -2261,9 +4466,21 @@
       "acceptance": "Conteúdo permanece funcional sem rolagem em duas dimensões indevida.",
       "owner": "QA acessibilidade + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [62]
+      "status": "partial",
+      "evidence": "tests/storefront.spec.ts",
+      "dependencies": [
+        62
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "E2E cobre 320 CSS px; zoom real 200/400% não tem evidência completa.",
+        "nextAction": "Testar zoom e reflow em todos os templates e diálogos.",
+        "evidence": [
+          "tests/storefront.spec.ts",
+          "docs/VALIDACAO.md"
+        ]
+      }
     },
     {
       "id": 176,
@@ -2273,9 +4490,22 @@
       "acceptance": "Atende WCAG 2.2 AA com exceções documentadas; busca-se 44 px para ações principais.",
       "owner": "QA acessibilidade + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [63, 64]
+      "status": "partial",
+      "evidence": "src/app/globals.css",
+      "dependencies": [
+        63,
+        64
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Dimensões de controles existem e axe cobre parte dos critérios; inventário móvel de exceções falta.",
+        "nextAction": "Medir alvos e espaçamento em todos os estados móveis.",
+        "evidence": [
+          "src/app/globals.css",
+          "docs/VALIDACAO.md"
+        ]
+      }
     },
     {
       "id": 177,
@@ -2285,9 +4515,22 @@
       "acceptance": "Leitor de tela consegue localizar e corrigir campos inválidos.",
       "owner": "QA acessibilidade + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [66, 114]
+      "status": "partial",
+      "evidence": "src/components/Storefront.tsx",
+      "dependencies": [
+        66,
+        114
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Validação nativa existe; Voltar perde dados válidos e não houve teste com leitor de tela.",
+        "nextAction": "Preservar rascunho e testar identificação/correção de erros.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "docs/audit/plan-browser-scenarios.json"
+        ]
+      }
     },
     {
       "id": 178,
@@ -2297,9 +4540,23 @@
       "acceptance": "Nenhuma informação depende de animação, cor isolada ou imagem sem alternativa.",
       "owner": "QA acessibilidade + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [68, 93]
+      "status": "partial",
+      "evidence": "docs/audit/plan-browser-scenarios.json",
+      "dependencies": [
+        68,
+        93
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Alt e identificação conceitual existem; movimento reduzido falha na rolagem explícita.",
+        "nextAction": "Corrigir chamadas JavaScript e testar mídia/movimento em todas as rotas.",
+        "evidence": [
+          "docs/audit/plan-browser-scenarios.json",
+          "src/components/Storefront.tsx",
+          "src/app/globals.css"
+        ]
+      }
     },
     {
       "id": 179,
@@ -2309,9 +4566,29 @@
       "acceptance": "Violações são corrigidas ou avaliadas; automação não equivale a certificação AA.",
       "owner": "QA acessibilidade + frontend",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [171, 172, 173, 174, 175, 176, 177, 178]
+      "status": "done",
+      "evidence": "tests/storefront.spec.ts",
+      "dependencies": [
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177,
+        178
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "entrega",
+        "finding": "Axe roda na home, formulário, produto, plano e privacidade sem violações nas regras cobertas.",
+        "nextAction": "Manter automação; não declarar conformidade integral por este resultado.",
+        "evidence": [
+          "tests/storefront.spec.ts",
+          "tests/public-api.spec.ts",
+          "tests/plan.spec.ts"
+        ]
+      }
     },
     {
       "id": 180,
@@ -2322,8 +4599,19 @@
       "owner": "QA acessibilidade + frontend",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [179]
+      "evidence": "docs/VALIDACAO.md",
+      "dependencies": [
+        179
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Não há sessões com usuários de tecnologia assistiva.",
+        "nextAction": "Recrutar participantes e resolver achados manuais.",
+        "evidence": [
+          "docs/VALIDACAO.md"
+        ]
+      }
     },
     {
       "id": 181,
@@ -2335,7 +4623,20 @@
       "priority": "P0",
       "status": "done",
       "evidence": "docs/VALIDACAO.md",
-      "dependencies": [79, 91, 115]
+      "dependencies": [
+        79,
+        91,
+        115
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "Build de produção e TypeScript passaram, inclusive após a revisão do painel e do plano.",
+        "nextAction": "Manter compilação e tipos como gates a cada alteração de aplicação.",
+        "evidence": [
+          "docs/VALIDACAO.md"
+        ]
+      }
     },
     {
       "id": 182,
@@ -2346,8 +4647,24 @@
       "owner": "QA + produto + comercial",
       "priority": "P0",
       "status": "done",
-      "evidence": "docs/VALIDACAO.md",
-      "dependencies": [81, 82, 83, 84, 111, 112]
+      "evidence": "tests/storefront.spec.ts",
+      "dependencies": [
+        81,
+        82,
+        83,
+        84,
+        111,
+        112
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "E2E exercitam busca, vazio, favoritos, persistência, mínimos e remoção.",
+        "nextAction": "Ampliar cenários de regressão para lacunas identificadas sem apagar a cobertura existente.",
+        "evidence": [
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 183,
@@ -2358,8 +4675,19 @@
       "owner": "QA + produto + comercial",
       "priority": "P0",
       "status": "done",
-      "evidence": "docs/VALIDACAO.md",
-      "dependencies": [115]
+      "evidence": "tests/storefront.spec.ts",
+      "dependencies": [
+        115
+      ],
+      "audit": {
+        "previousStatus": "done",
+        "kind": "entrega",
+        "finding": "E2E verificam download, seleção correta e ausência de envio/PII no localStorage.",
+        "nextAction": "Manter essa cobertura quando o modo comercial for habilitado.",
+        "evidence": [
+          "tests/storefront.spec.ts"
+        ]
+      }
     },
     {
       "id": 184,
@@ -2370,8 +4698,20 @@
       "owner": "QA + produto + comercial",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [120, 140]
+      "evidence": "docs/ARQUITETURA_E_INTEGRACAO.md",
+      "dependencies": [
+        120,
+        140
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Não existe teste integrado em staging com persistência e CRM.",
+        "nextAction": "Validar sucesso, falha, concorrência, reinício e reconciliação.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 185,
@@ -2381,9 +4721,21 @@
       "acceptance": "Matriz registra versões, tarefas cobertas e falhas corrigidas.",
       "owner": "QA + produto + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [181]
+      "status": "partial",
+      "evidence": "playwright.config.ts",
+      "dependencies": [
+        181
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Configuração e resultados cobrem Chromium; WebKit, Firefox e aparelhos reais faltam.",
+        "nextAction": "Completar matriz com versões, tarefas e correções.",
+        "evidence": [
+          "playwright.config.ts",
+          "docs/VALIDACAO.md"
+        ]
+      }
     },
     {
       "id": 186,
@@ -2393,9 +4745,20 @@
       "acceptance": "Feedback mantém contexto e oferece recuperação sem sucesso fictício.",
       "owner": "QA + produto + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [168]
+      "status": "partial",
+      "evidence": "tests/public-api.spec.ts",
+      "dependencies": [
+        168
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Há testes de negativa sem destino; offline, lentidão e imagem/API quebrada não têm jornada completa.",
+        "nextAction": "Executar cenários de rede e recuperação com contexto preservado.",
+        "evidence": [
+          "tests/public-api.spec.ts"
+        ]
+      }
     },
     {
       "id": 187,
@@ -2406,8 +4769,23 @@
       "owner": "QA + produto + comercial",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [50, 95, 96, 97, 98]
+      "evidence": "README.md",
+      "dependencies": [
+        50,
+        95,
+        96,
+        97,
+        98
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Não há aceite comercial por peça e por promessa pública.",
+        "nextAction": "Homologar dados, técnicas, condições e textos com responsáveis.",
+        "evidence": [
+          "README.md"
+        ]
+      }
     },
     {
       "id": 188,
@@ -2418,8 +4796,21 @@
       "owner": "QA + produto + comercial",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [80, 100, 120]
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        80,
+        100,
+        120
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Não houve piloto com compradores.",
+        "nextAction": "Conduzir tarefas representativas após sanar bloqueadores.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 189,
@@ -2429,11 +4820,32 @@
       "acceptance": "Checklist tem evidência por gate e responsáveis para pendências aceitas.",
       "owner": "QA + produto + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "",
+      "status": "partial",
+      "evidence": "docs/REVISAO_EXAUSTIVA_PLANO.md",
       "dependencies": [
-        150, 166, 170, 180, 181, 182, 183, 184, 185, 186, 187, 188
-      ]
+        150,
+        166,
+        170,
+        180,
+        181,
+        182,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Esta revisão organiza evidências e gaps; ainda faltam testes e operação para fechar gates.",
+        "nextAction": "Completar evidências de segurança, desempenho, acesso, CRM e rollback.",
+        "evidence": [
+          "docs/REVISAO_EXAUSTIVA_PLANO.md",
+          "docs/VALIDACAO.md"
+        ]
+      }
     },
     {
       "id": 190,
@@ -2444,8 +4856,19 @@
       "owner": "QA + produto + comercial",
       "priority": "P0",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [189]
+      "evidence": "src/lib/plan.json",
+      "dependencies": [
+        189
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Não existe decisão formal de prontidão por negócio e tecnologia.",
+        "nextAction": "Registrar liberar, adiar ou reduzir escopo após revisão dos P0.",
+        "evidence": [
+          "src/lib/plan.json"
+        ]
+      }
     },
     {
       "id": 191,
@@ -2455,9 +4878,21 @@
       "acceptance": "Domínio, certificados e configuração são verificados sem expor staging ao índice.",
       "owner": "PO + operações + crescimento",
       "priority": "P0/P1",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [190]
+      "status": "partial",
+      "evidence": "docs/SUPABASE_SITE_DATABASE.md",
+      "dependencies": [
+        190
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Há .env local e banco dedicado; domínios e ambientes preview/staging/produção não estão configurados.",
+        "nextAction": "Configurar ambientes e certificados com segregação de variáveis.",
+        "evidence": [
+          "docs/SUPABASE_SITE_DATABASE.md",
+          "README.md"
+        ]
+      }
     },
     {
       "id": 192,
@@ -2467,9 +4902,20 @@
       "acceptance": "Rollback é exercitado em staging e procedimento tem responsável.",
       "owner": "PO + operações + crescimento",
       "priority": "P0/P1",
-      "status": "pending",
-      "evidence": "",
-      "dependencies": [191]
+      "status": "partial",
+      "evidence": "README.md",
+      "dependencies": [
+        191
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Código está versionado no GitHub; não há release de aplicação nem rollback exercitado.",
+        "nextAction": "Criar artefato implantável e ensaiar rollback em staging.",
+        "evidence": [
+          "README.md"
+        ]
+      }
     },
     {
       "id": 193,
@@ -2480,8 +4926,19 @@
       "owner": "PO + operações + crescimento",
       "priority": "P0/P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [140]
+      "evidence": "docs/ARQUITETURA_E_INTEGRACAO.md",
+      "dependencies": [
+        140
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Não há treinamento ou exercício de atendimento de solicitação teste.",
+        "nextAction": "Preparar equipe, horários e expectativa de resposta.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md"
+        ]
+      }
     },
     {
       "id": 194,
@@ -2492,8 +4949,22 @@
       "owner": "PO + operações + crescimento",
       "priority": "P0/P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [190, 192, 193]
+      "evidence": "README.md",
+      "dependencies": [
+        190,
+        192,
+        193
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "tecnica",
+        "finding": "Repositório e schema publicados não equivalem a site comercial implantado; não há smoke de produção.",
+        "nextAction": "Implantar release aprovado e validar catálogo, briefing, CRM e privacidade.",
+        "evidence": [
+          "README.md",
+          "docs/SUPABASE_SITE_DATABASE.md"
+        ]
+      }
     },
     {
       "id": 195,
@@ -2504,8 +4975,19 @@
       "owner": "PO + operações + crescimento",
       "priority": "P0/P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [194]
+      "evidence": "src/lib/plan.json",
+      "dependencies": [
+        194
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Não ocorreu lançamento comercial nem monitoramento das primeiras 48 horas.",
+        "nextAction": "Monitorar e reconciliar solicitações após publicação.",
+        "evidence": [
+          "src/lib/plan.json"
+        ]
+      }
     },
     {
       "id": 196,
@@ -2516,8 +4998,19 @@
       "owner": "PO + operações + crescimento",
       "priority": "P0/P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [195]
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        195
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Não existe baseline do funil real.",
+        "nextAction": "Medir eventos e qualificação após operação iniciada.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 197,
@@ -2528,8 +5021,19 @@
       "owner": "PO + operações + crescimento",
       "priority": "P0/P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [196]
+      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "dependencies": [
+        196
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "validacao",
+        "finding": "Não houve experimento de melhoria com resultado medido no funil.",
+        "nextAction": "Priorizar atrito observado e medir intervenção adequada ao volume.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md"
+        ]
+      }
     },
     {
       "id": 198,
@@ -2540,8 +5044,21 @@
       "owner": "PO + operações + crescimento",
       "priority": "P0/P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [50, 196]
+      "evidence": "src/lib/products.json",
+      "dependencies": [
+        50,
+        196
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "misto",
+        "finding": "Catálogo permanece com oito peças, sem expansão homologada.",
+        "nextAction": "Aprovar novos produtos e mídia e testar escala antes de expandir.",
+        "evidence": [
+          "src/lib/products.json",
+          "docs/audit/plan-database-check.json"
+        ]
+      }
     },
     {
       "id": 199,
@@ -2552,8 +5069,19 @@
       "owner": "PO + operações + crescimento",
       "priority": "P0/P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [195]
+      "evidence": "src/lib/plan.json",
+      "dependencies": [
+        195
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Não há calendário trimestral com donos e indicadores.",
+        "nextAction": "Estabelecer revisão e processo de correção de drift.",
+        "evidence": [
+          "src/lib/plan.json"
+        ]
+      }
     },
     {
       "id": 200,
@@ -2564,8 +5092,31 @@
       "owner": "PO + operações + crescimento",
       "priority": "P0/P1",
       "status": "pending",
-      "evidence": "",
-      "dependencies": [197, 198, 199]
+      "evidence": "src/lib/plan.json",
+      "dependencies": [
+        197,
+        198,
+        199
+      ],
+      "audit": {
+        "previousStatus": "pending",
+        "kind": "negocio",
+        "finding": "Relatório de revisão não encerra ciclo comercial; metas e resultados de operação faltam.",
+        "nextAction": "Consolidar aprendizados após os marcos 197–199.",
+        "evidence": [
+          "src/lib/plan.json"
+        ]
+      }
     }
-  ]
+  ],
+  "review": {
+    "id": "2026-09-22-audit-1",
+    "reviewedCommit": "0e6d5d0793e9b50d3ece235d7b1a00394d28b18a",
+    "baseline": {
+      "done": 63,
+      "pending": 137
+    },
+    "scope": "200 critérios individuais; código, documentação, testes e banco dedicado. Pesquisa externa histórica, operação comercial e evidências humanas não foram reexecutadas.",
+    "statusMeaning": "done: critério próprio comprovado no escopo declarado; partial: artefato ou implementação existe com lacuna; pending: entrega exigida sem evidência. Dependências abertas bloqueiam prontidão integrada e são exibidas separadamente."
+  }
 }

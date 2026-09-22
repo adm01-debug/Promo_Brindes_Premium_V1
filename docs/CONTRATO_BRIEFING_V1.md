@@ -2,6 +2,8 @@
 
 Status: endpoint implementado, receptor comercial não configurado. O banco dedicado da vitrine já possui a tabela privada `premium_briefings`, mas esta prévia não escreve nela. Enquanto `BRIEFING_WEBHOOK_URL` estiver vazio, a interface mantém download local e `POST /api/briefings` responde `503 DESTINATION_UNAVAILABLE`; ela não simula sucesso.
 
+**Revisão de 22/09:** a tabela abaixo descreve o contrato pretendido, com lacunas comprovadas na implementação. O limite de 16 KiB só é verificado pelo cabeçalho `Content-Length`; concorrência envia duas vezes a mesma chave; payload diferente reutiliza protocolo; o cliente troca a chave em retries. Data com sufixo inválido é truncada e aceita. Os controles ainda não atendem ao critério de ativação comercial. Evidências e condições de correção: [revisão do plano](REVISAO_EXAUSTIVA_PLANO.md#defeitos-reproduzidos).
+
 ## Entrada
 
 `POST /api/briefings` requer `Content-Type: application/json`, origem igual a `PROMO_PREMIUM_SITE_ORIGIN` (ou à própria origem quando a variável não existe) e cabeçalho `Idempotency-Key` com 16 a 128 caracteres alfanuméricos, `_` ou `-`.
@@ -38,4 +40,4 @@ O servidor ignora qualquer SKU, preço, fornecedor, status de estoque ou regra c
 
 ## Limite deliberado antes de produção
 
-O receptor deve usar HTTPS, exceto `localhost` em desenvolvimento. O rate limit e a deduplicação atuais vivem na memória do processo. Eles evitam erro de interface e repetição durante uma instância da prévia, mas não são armazenamento transacional entre réplicas ou reinicializações. Antes de habilitar o receptor, trocar os dois por persistência idempotente no sistema canônico aprovado, registrar tentativas sem conteúdo sensível, definir conciliação e validar a passagem ao CRM com vendedores. O webhook é uma porta de adaptação; não substitui a criação transacional de proposta do projeto comercial.
+O receptor deve usar HTTPS; a exceção para `localhost` ainda não verifica o ambiente e precisa ser restrita ao desenvolvimento. O rate limit e a deduplicação vivem na memória do processo; replay sequencial idêntico pode reutilizar protocolo, mas os cenários de concorrência, payload conflitante e retry do cliente falham. Antes de habilitar o receptor, usar persistência idempotente no sistema aprovado, registrar tentativas sem conteúdo sensível, definir conciliação e validar a passagem ao CRM com vendedores. O webhook é uma porta de adaptação; não substitui a criação transacional de proposta do projeto comercial.

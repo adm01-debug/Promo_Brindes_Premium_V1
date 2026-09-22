@@ -2155,9 +2155,20 @@ svg {
   transform: rotate(180deg);
 }
 .task-body {
+  overflow-wrap: anywhere;
   padding: 0 40px 22px 35px;
   color: var(--muted);
   font-size: 12px;
+}
+.task-audit-status {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.task-audit-status.audit-partial {
+  color: var(--gold-light);
 }
 .task-body > p {
   margin-top: 15px;

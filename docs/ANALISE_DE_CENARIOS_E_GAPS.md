@@ -2,6 +2,8 @@
 
 Data da revisão: 21/09/2026. Esta análise foi executada antes da expansão técnica para não transformar hipóteses de negócio em funcionalidades definitivas.
 
+**Atualização de 22/09:** a [revisão exaustiva das 200 etapas](REVISAO_EXAUSTIVA_PLANO.md) substitui a classificação de conclusão anterior. Foram reproduzidos onze defeitos que a matriz inicial não validava, inclusive idempotência concorrente, limite real de corpo, validade da seleção entre rotas e retorno do formulário. Os controles abaixo são a proposta inicial; não devem ser tratados como aceites já atendidos.
+
 | Cenário simulado | Falha que seria inaceitável | Controle implementado | Evidência a executar |
 |---|---|---|---|
 | Catálogo retorna zero, campo muda ou mídia falha | Vitrine vazia parecer falta de produtos ou expor coluna interna | Snapshot tipado, projeção allowlist, paginação determinística e páginas por slug | Validar `v_products_public` viva, mídia autorizada e contrato em staging |

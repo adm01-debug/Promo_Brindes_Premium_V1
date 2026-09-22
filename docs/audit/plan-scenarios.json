@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-09-22T11:28:52.399Z",
+  "scope": "Isolated source modules; synthetic inputs; no external network or database writes",
+  "results": [
+    {
+      "id": "AUD-01-concurrent-idempotency",
+      "expected": 1,
+      "observed": 2,
+      "passed": false
+    },
+    {
+      "id": "AUD-02-key-payload-conflict",
+      "expected": 409,
+      "observed": 200,
+      "passed": false
+    },
+    {
+      "id": "AUD-03-body-without-content-length",
+      "expected": 413,
+      "observed": 201,
+      "passed": false
+    },
+    {
+      "id": "AUD-04-invalid-destination-capability",
+      "expected": false,
+      "observed": true,
+      "passed": false
+    },
+    {
+      "id": "AUD-05-invalid-date-suffix",
+      "expected": false,
+      "observed": true,
+      "passed": false
+    },
+    {
+      "id": "AUD-06-source-pagination-truncation",
+      "expected": 30,
+      "observed": 24,
+      "passed": false
+    },
+    {
+      "id": "AUD-07-reject-legacy-project",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "id": "AUD-08-reject-lookalike-host",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    }
+  ],
+  "passed": 2,
+  "failed": 6
+}

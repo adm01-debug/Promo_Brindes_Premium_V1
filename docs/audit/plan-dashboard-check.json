@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-09-22T11:44:58.470Z",
+  "scope": "Plan dashboard, partial filter, phase 7, first detail expanded; local Chromium",
+  "results": [
+    {
+      "width": 390,
+      "overflow": false,
+      "violations": [],
+      "metrics": [
+        "68/ 200",
+        "80",
+        "52"
+      ]
+    },
+    {
+      "width": 1440,
+      "overflow": false,
+      "violations": [],
+      "metrics": [
+        "68/ 200",
+        "80",
+        "52"
+      ]
+    }
+  ]
+}

@@ -2,6 +2,8 @@
 
 Data: 22/09/2026. Escopo: snapshot local, APIs `/api/catalog` e `/api/briefings`, e eventual adaptador de entrega. Este documento é uma análise técnica; jurídico, DPO e operação precisam aprovar o modelo final antes de qualquer publicação.
 
+**Revisão posterior:** os controles da tabela são iniciais e não satisfazem todos os critérios. Os [cenários diagnósticos](REVISAO_EXAUSTIVA_PLANO.md#defeitos-reproduzidos) reproduziram falhas de concorrência, replay com payload diferente, retry com nova chave e limite de corpo dependente do cabeçalho. A RLS do banco dedicado da vitrine foi verificada em `audit/plan-database-check.json`; a auditoria administrativa do banco operacional e o fluxo de acesso entre clientes permanecem abertos.
+
 | Ativo ou fluxo   | Ameaça                                                    | Controle local                                                                     | Dono do gate de produção       |
 | ---------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------ |
 | Catálogo público | Vazamento de custo, fornecedor, margem ou estoque         | DTO com allowlist e teste que rejeita campos internos                              | Arquitetura + dados            |

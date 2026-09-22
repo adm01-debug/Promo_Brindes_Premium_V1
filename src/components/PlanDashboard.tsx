@@ -15,6 +15,15 @@ import { downloadText, normalize } from "@/lib/catalog";
 const baseline = Object.fromEntries(
   plan.tasks.map((t) => [t.id, t.status === "done"]),
 );
+const storageKey = "promo-premium-plan-v2";
+const statusLabels: Record<string, string> = {
+  done: "Concluída no escopo",
+  partial: "Parcial",
+  pending: "Sem entrega comprovada",
+};
+const auditedDone = plan.tasks.filter((t) => t.status === "done").length;
+const auditedPartial = plan.tasks.filter((t) => t.status === "partial").length;
+const auditedPending = plan.tasks.filter((t) => t.status === "pending").length;
 export default function PlanDashboard() {
   const [checked, setChecked] = useState<Record<string, boolean>>(baseline);
   const [phase, setPhase] = useState(0);
@@ -24,13 +33,22 @@ export default function PlanDashboard() {
   useEffect(() => {
     try {
       const value: unknown = JSON.parse(
-        localStorage.getItem("promo-premium-plan-v1") ?? "null",
+        localStorage.getItem(storageKey) ?? "null",
       );
       if (value && typeof value === "object" && !Array.isArray(value)) {
-        const state = { ...baseline };
-        for (const [id, done] of Object.entries(value))
-          if (id in baseline && typeof done === "boolean") state[id] = done;
-        setChecked(state);
+        const saved = value as Record<string, unknown>;
+        if (
+          saved.review === plan.review.id &&
+          saved.overrides &&
+          typeof saved.overrides === "object" &&
+          !Array.isArray(saved.overrides)
+        ) {
+          const state = { ...baseline };
+          for (const [id, done] of Object.entries(saved.overrides))
+            if (Object.hasOwn(baseline, id) && typeof done === "boolean")
+              state[id] = done;
+          setChecked(state);
+        }
       }
     } catch {
       /* Local state is optional. */
@@ -40,7 +58,13 @@ export default function PlanDashboard() {
   useEffect(() => {
     if (!loaded) return;
     try {
-      localStorage.setItem("promo-premium-plan-v1", JSON.stringify(checked));
+      const overrides = Object.fromEntries(
+        Object.entries(checked).filter(([id, done]) => done !== baseline[id]),
+      );
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify({ review: plan.review.id, overrides }),
+      );
     } catch {
       /* Storage may be disabled. */
     }
@@ -51,19 +75,19 @@ export default function PlanDashboard() {
       plan.tasks.filter(
         (t) =>
           (!phase || t.phase === phase) &&
-          (status === "all" ||
-            (status === "done" ? checked[t.id] : !checked[t.id])) &&
-          normalize(`${t.id} ${t.title} ${t.action} ${t.acceptance}`).includes(
-            normalize(search),
-          ),
+          (status === "all" || status === t.status) &&
+          normalize(
+            `${t.id} ${t.title} ${t.action} ${t.acceptance} ${t.audit.finding} ${t.audit.nextAction}`,
+          ).includes(normalize(search)),
       ),
-    [phase, status, search, checked],
+    [phase, status, search],
   );
   function exportPlan() {
     const lines = [
       "# Promo Brindes Premium — 200 etapas",
       "",
       `Referência: ${plan.version}. Progresso deste navegador: ${count}/200.`,
+      `Auditoria: ${auditedDone} concluídas no escopo, ${auditedPartial} parciais, ${auditedPending} sem entrega comprovada.`,
       "",
       "Marcações locais não substituem evidências de aceite.",
     ];
@@ -79,7 +103,11 @@ export default function PlanDashboard() {
         lines.push(
           `- [${checked[t.id] ? "x" : " "}] **${String(t.id).padStart(3, "0")}. ${t.title}** — ${t.action}`,
           `  - Aceite: ${t.acceptance}`,
-          `  - Evidência de referência: ${t.evidence || "Pendente de execução."}`,
+          `  - Situação auditada: ${statusLabels[t.status]}`,
+          `  - Constatação: ${t.audit.finding}`,
+          `  - Referências: ${t.audit.evidence.join(", ")}`,
+          `  - Próxima ação: ${t.audit.nextAction}`,
+          `  - Dependências: ${t.dependencies.map((id) => `#${id} (${statusLabels[plan.tasks[id - 1].status]})`).join(", ") || "Nenhuma"}`,
         );
     }
     downloadText(
@@ -113,33 +141,42 @@ export default function PlanDashboard() {
         <div className="plan-metrics">
           <div>
             <strong>
-              {count}
+              {auditedDone}
               <span>/ 200</span>
             </strong>
-            <p>etapas marcadas</p>
+            <p>concluídas no escopo auditado</p>
           </div>
           <div>
-            <strong>20</strong>
-            <p>fases de trabalho</p>
+            <strong>{auditedPartial}</strong>
+            <p>parcialmente implementadas</p>
           </div>
           <div>
-            <strong>
-              {Math.round(count / 2)}
-              <span>%</span>
-            </strong>
-            <p>progresso deste navegador</p>
+            <strong>{auditedPending}</strong>
+            <p>sem entrega comprovada</p>
           </div>
         </div>
         <progress
-          value={count}
+          value={auditedDone}
           max={200}
-          aria-label={`${count} de 200 etapas marcadas`}
+          aria-label={`${auditedDone} de 200 critérios comprovados no próprio escopo`}
         />
         <p className="plan-note">
-          Referência de 20.09.2026. Marcações adicionais ficam apenas neste
-          navegador. Uma etapa concluída na prévia não significa integração ou
-          lançamento em produção.
+          Revisão de {plan.version.split("-").reverse().join(".")}. Cada
+          situação auditada corresponde ao critério próprio da etapa.
+          Dependências abertas ainda impedem a prontidão integrada. Os filtros
+          usam a auditoria; marcações locais não alteram estes resultados nem
+          aprovam lançamento.
         </p>
+        <p className="plan-note" data-testid="local-plan-progress">
+          Acompanhamento deste navegador: {count}/200 marcadas. Marcações de
+          revisões anteriores não são reaplicadas automaticamente.
+        </p>
+        <button
+          className="text-button"
+          onClick={() => setChecked({ ...baseline })}
+        >
+          Restaurar acompanhamento da auditoria
+        </button>
       </section>
       <div className="plan-filters">
         <label className="plan-search">
@@ -170,8 +207,9 @@ export default function PlanDashboard() {
           <span className="sr-only">Filtrar status</span>
           <select value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="all">Todos os status</option>
-            <option value="pending">A concluir</option>
-            <option value="done">Concluídas</option>
+            <option value="done">Concluídas no escopo</option>
+            <option value="partial">Parciais</option>
+            <option value="pending">Sem entrega comprovada</option>
           </select>
         </label>
       </div>
@@ -205,8 +243,9 @@ export default function PlanDashboard() {
               </div>
               <span className="phase-completion">
                 {
-                  plan.tasks.filter((t) => t.phase === p.id && checked[t.id])
-                    .length
+                  plan.tasks.filter(
+                    (t) => t.phase === p.id && t.status === "done",
+                  ).length
                 }
                 /10
               </span>
@@ -216,7 +255,7 @@ export default function PlanDashboard() {
                 .filter((t) => t.phase === p.id)
                 .map((t) => (
                   <div
-                    className={`plan-task ${checked[t.id] ? "completed" : ""}`}
+                    className={`plan-task ${t.status === "done" ? "completed" : ""}`}
                     key={t.id}
                   >
                     <label className="task-checkbox">
@@ -240,7 +279,14 @@ export default function PlanDashboard() {
                         <span className="task-number">
                           {String(t.id).padStart(3, "0")}
                         </span>
-                        <strong>{t.title}</strong>
+                        <strong>
+                          {t.title}
+                          <span
+                            className={`task-audit-status audit-${t.status}`}
+                          >
+                            {statusLabels[t.status]}
+                          </span>
+                        </strong>
                         <ChevronDown size={17} />
                       </summary>
                       <div className="task-body">
@@ -250,15 +296,25 @@ export default function PlanDashboard() {
                           {t.acceptance}
                         </p>
                         <p>
-                          <b>Evidência de referência</b>
-                          {t.evidence ||
-                            "A produzir durante a execução. Não marcar como concluída sem verificar o aceite."}
+                          <b>Constatação da auditoria</b>
+                          {t.audit.finding}
+                        </p>
+                        <p>
+                          <b>Evidências e referências</b>
+                          {t.audit.evidence.join(" · ")}
+                        </p>
+                        <p>
+                          <b>Próxima ação</b>
+                          {t.audit.nextAction}
                         </p>
                         {t.dependencies.length > 0 && (
                           <p>
                             <b>Dependências de etapa</b>
                             {t.dependencies
-                              .map((i) => `#${String(i).padStart(3, "0")}`)
+                              .map(
+                                (i) =>
+                                  `#${String(i).padStart(3, "0")} (${statusLabels[plan.tasks[i - 1].status]})`,
+                              )
                               .join(", ")}
                           </p>
                         )}

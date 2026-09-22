@@ -2,9 +2,15 @@
 
 Data: 22/09/2026. Escopo: aplicação local compilada, oito produtos de snapshot, catálogo público versionado, briefing com contrato de entrega e painel de planejamento. As evidências não certificam a integração futura, a qualidade de todo o catálogo nem a conformidade integral WCAG.
 
+## Revisão posterior dos critérios
+
+A [revisão individual das 200 etapas](REVISAO_EXAUSTIVA_PLANO.md) encontrou **68 critérios comprovados no próprio escopo, 80 entregas parciais e 52 sem entrega comprovada**. Treze cenários diagnósticos adicionais reproduziram onze falhas e confirmaram dois controles de host. A suíte regular abaixo não cobria esses casos: concorrência, conflito de payload, corpo sem Content-Length, retry, expiração iniciada na ficha, retorno do formulário e movimento reduzido por JavaScript. Os resultados brutos estão em `audit/plan-scenarios.json` e `audit/plan-browser-scenarios.json`.
+
+Os defeitos permanecem documentados como abertos. Esta revisão alterou o acompanhamento, suas verificações e o painel; não habilitou entrega comercial nem integrou o CRM. O painel separa situação auditada de marcação pessoal e não reaplica automaticamente a conclusão de uma revisão antiga.
+
 ## Resultados funcionais
 
-**18 testes E2E passaram em Chromium** na rodada final (6,7 segundos de execução da suíte). A suíte cobre:
+**19 testes E2E passaram em Chromium** após a revisão do painel (8,8 segundos nesta rodada). O novo cenário garante que marcação local não altera o status auditado e que revisão antiga não mascara etapa reaberta. A suíte cobre:
 
 1. Busca por SKU, resultado vazio, limpeza e filtro de categoria.
 2. Favoritos e seleção após recarregar, mínimo de quantidade e remoção.
@@ -24,6 +30,7 @@ Data: 22/09/2026. Escopo: aplicação local compilada, oito produtos de snapshot
 16. Expiração em 14 dias e limpeza explícita da seleção local.
 17. Reflow operável em 320 CSS pixels e abertura da seleção nessa largura.
 18. Proposta e link de produto no HTML inicial; canonical e JSON-LD de produto sem `Offer` fictício.
+19. Três estados auditados, exportação das constatações e próximas ações, progresso comprovado imutável por checkbox e descarte de marcações de revisão antiga.
 
 Comandos: `npm run build`, `npm run typecheck`, `npm run check:plan`, `npm run check:public-secrets`, `npm run check:performance-budget` e `npm run test:e2e`. A suíte usa servidor de produção na porta 3107, sem reutilizar processo estranho. A porta 3000 já servia outro aplicativo neste ambiente; o teste inicial foi descartado e a configuração foi corrigida.
 
@@ -51,7 +58,7 @@ O briefing preserva o download local quando não há destino configurado. O endp
 
 ## Integridade do plano
 
-`npm run check:plan` verifica 200 IDs únicos e sequenciais, 20 fases, 10 etapas por fase, títulos únicos, critérios e responsáveis preenchidos, evidência existente para toda conclusão, referências válidas, ausência de ciclos e 200 checkboxes no Markdown. CSV e Markdown são gerados da mesma fonte JSON.
+`npm run check:plan` verifica 200 IDs únicos e sequenciais, 20 fases, 10 etapas por fase, títulos únicos, critérios e responsáveis preenchidos, revisão individual em todas as etapas, referências existentes, ausência de ciclos e igualdade integral dos exports com o JSON. Conclusão isolada e dependências abertas são exibidas separadamente. A checagem não certifica o conteúdo de uma evidência apenas por encontrar seu arquivo.
 
 Marcações no painel web representam acompanhamento local. Um checkbox manual não produz evidência técnica nem altera automaticamente o status do documento versionado.
 

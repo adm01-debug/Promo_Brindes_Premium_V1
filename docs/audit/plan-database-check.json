@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-09-22T11:29:17.793Z",
+  "project": "whwloseshzraipljisqo",
+  "scope": "Read-only dedicated storefront project; operational database not administratively audited",
+  "publicApiStatus": 200,
+  "reportedProject": "whwloseshzraipljisqo",
+  "migrations": [
+    "20260922110900"
+  ],
+  "catalogCount": 8,
+  "publishedCount": 8,
+  "briefingCount": 0,
+  "tables": [
+    {
+      "table": "premium_briefings",
+      "rls": true,
+      "anonSelect": false,
+      "anonInsert": false,
+      "anonUpdate": false,
+      "anonDelete": false
+    },
+    {
+      "table": "premium_catalog_items",
+      "rls": true,
+      "anonSelect": true,
+      "anonInsert": false,
+      "anonUpdate": false,
+      "anonDelete": false
+    }
+  ],
+  "policies": [
+    {
+      "table": "premium_catalog_items",
+      "command": "SELECT",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "condition": "(published = true)"
+    }
+  ]
+}

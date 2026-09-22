@@ -25,8 +25,9 @@ Node 22.12+ ou 24 LTS recomendado. O projeto usa Next.js 16, React 19 e TypeScri
 - Detalhe rápido, quantidades com mínimo cadastrado e remoção de itens.
 - Briefing com validação e download de arquivo local.
 - Plano interativo com 200 etapas, filtros, progresso local e exportação Markdown.
+- Revisão individual das 200 etapas: **68 critérios comprovados no escopo, 80 entregas parciais e 52 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
 - Páginas permanentes de produto, metadados por peça e infraestrutura de sitemap/robots preparada para lançamento autorizado.
-- Contrato público do catálogo lido do Supabase da vitrine quando configurado; endpoint de briefing com validação, limite de tentativas, idempotência por processo e falha explícita quando não há receptor comercial.
+- Contrato público do catálogo lido do Supabase da vitrine quando configurado; endpoint de briefing com controles iniciais e falha explícita quando não há receptor comercial. A deduplicação atual tem falhas de concorrência e retry registradas na revisão.
 
 ## Limites desta entrega
 
@@ -38,6 +39,7 @@ O planejamento é uma ferramenta desta prévia. Antes de lançar a vitrine públ
 
 ## Documentação
 
+- [Revisão exaustiva das 200 etapas, lacunas e prioridades](docs/REVISAO_EXAUSTIVA_PLANO.md)
 - [Pesquisa, posicionamento e referências](docs/ESTRATEGIA_E_PESQUISA.md)
 - [Auditoria dirigida de Promo_Gifts_V4](docs/AUDITORIA_PROJETO_INTERNO.md)
 - [Verificação ao vivo do catálogo canônico](docs/audit/CANONICAL_CATALOG_LIVE_CHECK_2026-09-22.md)
@@ -74,7 +76,7 @@ Para o banco dedicado da vitrine, preencha `.env.local` com as credenciais do pr
 
 Os testes iniciam o servidor de produção na porta 3107, que deve estar livre. Execute o build antes dos testes. Se necessário, instale o navegador com `npx playwright install chromium`.
 
-O plano tem fonte única em `src/lib/plan.json`. Após atualizar status/evidências, execute `node scripts/generate-plan.mjs` e `npm run check:plan`. Os checkboxes do navegador salvam um acompanhamento local separado; não alteram o arquivo do repositório nem validam entregas automaticamente.
+O plano tem fonte única em `src/lib/plan.json`, com constatação, evidências e próxima ação por etapa. Após atualizar status/evidências, execute `node scripts/generate-plan.mjs` e `npm run check:plan`. O check confere também igualdade completa de Markdown/CSV com a fonte. Os checkboxes salvam acompanhamento local separado e identificado pela revisão; não alteram o status auditado. Dependências abertas continuam bloqueando prontidão integrada mesmo quando uma entrega isolada atende ao próprio critério.
 
 ## Estrutura
 

@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-09-22T11:40:19.978Z",
+  "scope": "Local Chromium; synthetic data; mocked delivery; no remote writes",
+  "results": [
+    {
+      "id": "AUD-09-product-selection-expiry",
+      "expected": true,
+      "observed": false,
+      "passed": false
+    },
+    {
+      "id": "AUD-10-clear-search-url",
+      "expected": false,
+      "observed": true,
+      "passed": false
+    },
+    {
+      "id": "AUD-11-browser-retry-key",
+      "expected": true,
+      "observed": false,
+      "passed": false
+    },
+    {
+      "id": "AUD-12-form-back-preserves-contact",
+      "expected": "Teste local",
+      "observed": "",
+      "passed": false
+    },
+    {
+      "id": "AUD-13-reduced-motion-explicit-scroll",
+      "expected": false,
+      "observed": true,
+      "passed": false
+    }
+  ]
+}
