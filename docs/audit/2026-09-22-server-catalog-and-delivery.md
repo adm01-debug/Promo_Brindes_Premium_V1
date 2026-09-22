@@ -11,7 +11,7 @@
 | Receptor responde com sucesso, mas o banco falha ao registrar esse sucesso | A falha de confirmação caía no mesmo bloco de erro do webhook e tentava marcar a entrega como rejeitada. | O servidor mantém o estado incerto e responde `BRIEFING_PENDING`; não grava rejeição falsa. |
 | Receptor responde com falha | A tentativa precisa continuar registrada como falha recuperável. | O servidor registra falha de entrega e preserva o protocolo. |
 
-`node scripts/audit-plan-scenarios.mjs` reproduz **27 casos sintéticos**, incluindo `AUD-21` a `AUD-32` para os cenários acima. O build de produção consulta o catálogo real e concluiu com os oito produtos publicados. A suíte E2E local mantém **99 aprovações** nos três motores.
+`node scripts/audit-plan-scenarios.mjs` reproduz **27 casos sintéticos**, incluindo `AUD-21` a `AUD-32` para os cenários acima. O build de produção consulta o catálogo real e concluiu com os oito produtos publicados. A suíte E2E local mantém **102 aprovações** nos três motores.
 
 ## Limite operacional
 

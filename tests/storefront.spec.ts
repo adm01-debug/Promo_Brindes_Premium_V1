@@ -45,7 +45,9 @@ test("busca por SKU, recuperação de resultado vazio e filtro por categoria", a
     page.getByText("Vamos encontrar outra possibilidade."),
   ).toBeVisible();
   await page.getByRole("button", { name: "Explorar todas as peças" }).click();
+  await expect(page.locator(".product-card")).toHaveCount(8);
   await page.getByRole("button", { name: "Escrita", exact: true }).click();
+  await expect(page).toHaveURL(/categoria=Escrita/);
   await expect(page.locator(".product-card")).toHaveCount(2);
 });
 
@@ -104,6 +106,34 @@ test("resposta atrasada não substitui o filtro mais recente", async ({
   await expect(page.locator(".product-card h3")).toHaveText([
     "Mochila executive 22 L",
   ]);
+});
+
+test("categoria escolhida durante recuperação substitui a resposta anterior", async ({
+  page,
+}) => {
+  let releaseRecovery!: () => void;
+  let recoveryStarted!: () => void;
+  const release = new Promise<void>((resolve) => (releaseRecovery = resolve));
+  const started = new Promise<void>((resolve) => (recoveryStarted = resolve));
+  await page.route(/\/api\/catalog\?/, async (route) => {
+    const url = new URL(route.request().url());
+    if (url.searchParams.has("category")) {
+      await route.continue();
+      return;
+    }
+    const response = await route.fetch();
+    recoveryStarted();
+    await release;
+    await route.fulfill({ response }).catch(() => undefined);
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Todos", exact: true }).click();
+  await started;
+  await page.getByRole("button", { name: "Escrita", exact: true }).click();
+  await expect(page).toHaveURL(/categoria=Escrita/);
+  await expect(page.locator(".product-card")).toHaveCount(2);
+  releaseRecovery();
+  await expect(page.locator(".product-card")).toHaveCount(2);
 });
 
 test("falha da curadoria preserva o contexto e permite recuperar", async ({
