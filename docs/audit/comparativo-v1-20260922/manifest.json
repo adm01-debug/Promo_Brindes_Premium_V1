@@ -1,0 +1,89 @@
+{
+  "date": "2026-09-22",
+  "sourceRepository": "https://github.com/adm01-debug/Promo_Brindes_V1",
+  "sourceCommit": "b211c2ba11b47c212166db7786a9703e2cfd0329",
+  "premiumBaseCommit": "7489e171d8beefeacc07eab60c0397655951671d",
+  "liveUrl": "https://promo-brindes-v1.vercel.app",
+  "liveDeployCommitVerified": false,
+  "node": "22.13.1",
+  "trackedFiles": 424,
+  "migrations": 44,
+  "pgTapFiles": 17,
+  "graph": {
+    "codeFiles": 231,
+    "nodes": 1497,
+    "edges": 2942,
+    "communities": 172,
+    "semanticExtractionTokens": 0
+  },
+  "baselineTests": {
+    "files": 41,
+    "passed": 247
+  },
+  "e2e": {
+    "passed": 154,
+    "skipped": 14,
+    "total": 168,
+    "skipReason": "viewport or engine specific"
+  },
+  "auditProbes": {
+    "passed": 4,
+    "meaning": "3 observed risky behaviors and 1 control, not fixes",
+    "realDatabase": false
+  },
+  "checksPassed": [
+    "lint",
+    "typecheck",
+    "ledger",
+    "build",
+    "performance-budget"
+  ],
+  "originalCi": {
+    "quality": "https://github.com/adm01-debug/Promo_Brindes_V1/actions/runs/35742007524",
+    "database": "https://github.com/adm01-debug/Promo_Brindes_V1/actions/runs/35742007549",
+    "graphify": "https://github.com/adm01-debug/Promo_Brindes_V1/actions/runs/35742007437",
+    "codeql": "https://github.com/adm01-debug/Promo_Brindes_V1/actions/runs/35742007444"
+  },
+  "remoteWrites": false,
+  "databaseMigrationApplied": false,
+  "donorRepositoryChangedUpstream": false,
+  "recommendations": 32,
+  "files": {
+    "README.md": "ddc5f3ef6320a0bb661bde7fc042a9c0e7c75e3b88a45c43d3836bf328179cbb",
+    "backlog.json": "04bd5d8b63f8a346ac4c777279a6111261a8eda0a5dc05132574c7c3c506abbc",
+    "browser-audit.cjs": "3ca2fc18647b260b3a30fb99431fc73b46c4ae81a5e59c1f40f25e6bfa63d378",
+    "browser.json": "72d1c9f1ede95ef08f3e3744212d543a727678a344e91ff10cf4bca7bb40f158",
+    "catalog-mobile.png": "2af1f1ed95d72a474460c0a317d3947ed56fd1c5f11605c92eaee53316898a4d",
+    "comparative-gaps.audit.test.ts.txt": "84464a5737074bcd9c655549efb15c2004a1f0d6e88982ac101cad52daf25c17",
+    "e2e.log": "ce155de1979fb1a21d56d474bf7df683b6f444dd8111de68782cf06393f842b3",
+    "gap-probes.log": "c55275306c1dee3ddf89537c35e90975ef757fc284c80429e71a442581cc950a",
+    "home-desktop.png": "6375c33a184d4e3f1c9eb20ad9fafae40346b03865145bf98bb7ca051e34ab62",
+    "node-tests.log": "7267a9a1bba30e83741abf3bf24455de0a8b68e0cf450e48ca92eba06cd5c1eb",
+    "product-quote-audit.cjs": "a5e9f59dcbde02ad1053c3eb3e80a61377680ed3c3ccb94023af4b622da6b716",
+    "product-quote.json": "cdc073bff5806d14a214d1d94653e5cb30fcb48be7d785b4ec2b692220b03d52",
+    "quality.log": "05b0183bfbd1986a0a525e9f26373b07637a72e8b51bc6e3959508bda2054e4f"
+  },
+  "nodeTests": {
+    "passed": 33,
+    "failed": 0
+  },
+  "publicAxe": {
+    "surfaces": 6,
+    "surfacesWithoutSelectedViolations": 5,
+    "findings": [
+      {
+        "surface": "product-mobile",
+        "rule": "aria-required-children",
+        "impact": "critical",
+        "selector": ".product-gallery__thumbs"
+      }
+    ]
+  },
+  "localArtifactValidation": {
+    "reportLinksVerified": 26,
+    "csvMatchesJson": true,
+    "planStatusUnchanged": true,
+    "exactConfiguredSecretsFound": 0,
+    "typescript": "passed"
+  }
+}

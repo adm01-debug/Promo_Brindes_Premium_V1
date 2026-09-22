@@ -1,0 +1,175 @@
+TAP version 13
+# Subtest: falha com mensagem clara quando SITE_SUPABASE_JWT_SECRET não está definido
+ok 1 - falha com mensagem clara quando SITE_SUPABASE_JWT_SECRET não está definido
+  ---
+  duration_ms: 24.848509
+  ...
+# Subtest: gera um JWT HS256 válido com role:site_api, verificável com o mesmo segredo (nunca um segredo real: fixture de teste)
+ok 2 - gera um JWT HS256 válido com role:site_api, verificável com o mesmo segredo (nunca um segredo real: fixture de teste)
+  ---
+  duration_ms: 23.435309
+  ...
+# Subtest: segredos diferentes produzem assinaturas diferentes para o mesmo payload (não é uma constante disfarçada)
+ok 3 - segredos diferentes produzem assinaturas diferentes para o mesmo payload (não é uma constante disfarçada)
+  ---
+  duration_ms: 47.572694
+  ...
+# Subtest: extrai de objeto {"rows": [...]} (formato local, com boundary/warning)
+ok 4 - extrai de objeto {"rows": [...]} (formato local, com boundary/warning)
+  ---
+  duration_ms: 1.056911
+  ...
+# Subtest: extrai de array top-level sem wrapper (formato observado no CI)
+ok 5 - extrai de array top-level sem wrapper (formato observado no CI)
+  ---
+  duration_ms: 0.212074
+  ...
+# Subtest: ignora banner de conexão (texto solto) antes do JSON
+ok 6 - ignora banner de conexão (texto solto) antes do JSON
+  ---
+  duration_ms: 0.167176
+  ...
+# Subtest: ignora banner de conexão antes de um array top-level
+ok 7 - ignora banner de conexão antes de um array top-level
+  ---
+  duration_ms: 0.134028
+  ...
+# Subtest: ignora objeto JSON de aviso de versão quando vem ANTES do resultado
+ok 8 - ignora objeto JSON de aviso de versão quando vem ANTES do resultado
+  ---
+  duration_ms: 0.167754
+  ...
+# Subtest: ignora objeto JSON de aviso de versão quando vem DEPOIS do resultado (caso do CI)
+ok 9 - ignora objeto JSON de aviso de versão quando vem DEPOIS do resultado (caso do CI)
+  ---
+  duration_ms: 0.095767
+  ...
+# Subtest: não se confunde com chaves/colchetes dentro de strings (comentários de coluna etc.)
+ok 10 - não se confunde com chaves/colchetes dentro de strings (comentários de coluna etc.)
+  ---
+  duration_ms: 0.138588
+  ...
+# Subtest: não se confunde com aspas escapadas dentro de strings
+ok 11 - não se confunde com aspas escapadas dentro de strings
+  ---
+  duration_ms: 0.08531
+  ...
+# Subtest: lança erro descritivo quando nenhum candidato é array ou tem "rows"
+ok 12 - lança erro descritivo quando nenhum candidato é array ou tem "rows"
+  ---
+  duration_ms: 0.56649
+  ...
+# Subtest: lança erro descritivo quando não há JSON na saída
+ok 13 - lança erro descritivo quando não há JSON na saída
+  ---
+  duration_ms: 0.271748
+  ...
+# Subtest: ignora chave solta que nunca fecha e segue procurando o valor válido
+ok 14 - ignora chave solta que nunca fecha e segue procurando o valor válido
+  ---
+  duration_ms: 0.174523
+  ...
+# Subtest: nenhuma comparação de segredo em api/ usa === fora dos helpers timing-safe estabelecidos
+ok 15 - nenhuma comparação de segredo em api/ usa === fora dos helpers timing-safe estabelecidos
+  ---
+  duration_ms: 5.233397
+  ...
+# Subtest: a heurística do teste acima realmente detecta uma comparação insegura (não é sempre-verde)
+ok 16 - a heurística do teste acima realmente detecta uma comparação insegura (não é sempre-verde)
+  ---
+  duration_ms: 0.164198
+  ...
+# Subtest: extrai mensagens literais (message = 'token')
+ok 17 - extrai mensagens literais (message = 'token')
+  ---
+  duration_ms: 1.27945
+  ...
+# Subtest: extrai o prefixo de mensagens via format() (message = format('token...)
+ok 18 - extrai o prefixo de mensagens via format() (message = format('token...)
+  ---
+  duration_ms: 0.305041
+  ...
+# Subtest: ignora texto solto que não segue nenhum dos dois padrões (acentos/espaços quebram o casamento)
+ok 19 - ignora texto solto que não segue nenhum dos dois padrões (acentos/espaços quebram o casamento)
+  ---
+  duration_ms: 0.159754
+  ...
+# Subtest: acusa mensagem de migration que não está no catálogo
+ok 20 - acusa mensagem de migration que não está no catálogo
+  ---
+  duration_ms: 0.22024
+  ...
+# Subtest: não acusa nada quando a mensagem já está documentada (com prefixo format())
+ok 21 - não acusa nada quando a mensagem já está documentada (com prefixo format())
+  ---
+  duration_ms: 0.09608
+  ...
+# Subtest: varredura real do repositório não acusa nenhuma mensagem sem documentação (guarda contra regressão)
+ok 22 - varredura real do repositório não acusa nenhuma mensagem sem documentação (guarda contra regressão)
+  ---
+  duration_ms: 2.618084
+  ...
+# Subtest: aceita nomes de 14 dígitos em ordem estritamente crescente
+ok 23 - aceita nomes de 14 dígitos em ordem estritamente crescente
+  ---
+  duration_ms: 1.826056
+  ...
+# Subtest: rejeita o formato antigo com underscore no timestamp (regressão do incidente de 15/09)
+ok 24 - rejeita o formato antigo com underscore no timestamp (regressão do incidente de 15/09)
+  ---
+  duration_ms: 0.228088
+  ...
+# Subtest: rejeita data de calendário inválida
+ok 25 - rejeita data de calendário inválida
+  ---
+  duration_ms: 0.093291
+  ...
+# Subtest: rejeita versão duplicada dentro do mesmo diretório
+ok 26 - rejeita versão duplicada dentro do mesmo diretório
+  ---
+  duration_ms: 0.190831
+  ...
+# Subtest: rejeita ordem não estritamente crescente entre arquivos
+ok 27 - rejeita ordem não estritamente crescente entre arquivos
+  ---
+  duration_ms: 0.092143
+  ...
+# Subtest: isValidCalendarTimestamp rejeita mês, dia, hora, minuto e segundo fora do intervalo
+ok 28 - isValidCalendarTimestamp rejeita mês, dia, hora, minuto e segundo fora do intervalo
+  ---
+  duration_ms: 0.108583
+  ...
+# Subtest: ignora arquivos que não terminam em .sql e diretórios ausentes
+ok 29 - ignora arquivos que não terminam em .sql e diretórios ausentes
+  ---
+  duration_ms: 0.13571
+  ...
+# Subtest: varredura real do repositório não acusa nenhum erro (guarda contra regressão)
+ok 30 - varredura real do repositório não acusa nenhum erro (guarda contra regressão)
+  ---
+  duration_ms: 0.247304
+  ...
+# Subtest: rejeita a existência de supabase/migrations no topo do repositório (Etapa 45)
+ok 31 - rejeita a existência de supabase/migrations no topo do repositório (Etapa 45)
+  ---
+  duration_ms: 0.335419
+  ...
+# Subtest: não acusa nada quando supabase/migrations no topo não existe
+ok 32 - não acusa nada quando supabase/migrations no topo não existe
+  ---
+  duration_ms: 0.316616
+  ...
+# Subtest: varredura real do repositório confirma que supabase/migrations no topo não existe (guarda contra regressão)
+ok 33 - varredura real do repositório confirma que supabase/migrations no topo não existe (guarda contra regressão)
+  ---
+  duration_ms: 0.131696
+  ...
+1..33
+# tests 33
+# suites 0
+# pass 33
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 136.834227

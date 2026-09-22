@@ -1,0 +1,44 @@
+
+ RUN  v5.0.1 /tmp/promo-brindes-v1-audit-bcGnQi
+
+stdout | tests/api/comparative-gaps.audit.test.ts > Comparative audit: independently reproduced gaps > GAP-01: saved request becomes 422 after catalog withdrawal
+site_lead_request_persisted {
+  kind: 'quote',
+  requestId: '11111111-1111-4111-8111-111111111111',
+  duplicate: false,
+  correlationId: 'ab7528c0-c7af-4718-b721-9f7624f1480c'
+}
+
+stdout | tests/api/comparative-gaps.audit.test.ts > Comparative audit: independently reproduced gaps > GAP-02: unchanged customer intent conflicts after editorial image change
+site_lead_request_persisted {
+  kind: 'quote',
+  requestId: '11111111-1111-4111-8111-111111111111',
+  duplicate: false,
+  correlationId: 'ddfeb2f6-33be-49c9-8cc8-adb5d5adf8dd'
+}
+
+stdout | tests/api/comparative-gaps.audit.test.ts > Comparative audit: independently reproduced gaps > CONTROL: unchanged intent and catalog recover duplicate successfully
+site_lead_request_persisted {
+  kind: 'quote',
+  requestId: '11111111-1111-4111-8111-111111111111',
+  duplicate: false,
+  correlationId: '8c079b79-d52e-46b6-aed3-1a6f4cede355'
+}
+
+stdout | tests/api/comparative-gaps.audit.test.ts > Comparative audit: independently reproduced gaps > CONTROL: unchanged intent and catalog recover duplicate successfully
+site_lead_request_persisted {
+  kind: 'quote',
+  requestId: '11111111-1111-4111-8111-111111111111',
+  duplicate: true,
+  correlationId: 'ccfc00e1-3709-46c4-ae49-2ffa6664a98c'
+}
+
+ ✓ tests/api/comparative-gaps.audit.test.ts > Comparative audit: independently reproduced gaps > GAP-01: saved request becomes 422 after catalog withdrawal 9ms
+ ✓ tests/api/comparative-gaps.audit.test.ts > Comparative audit: independently reproduced gaps > GAP-02: unchanged customer intent conflicts after editorial image change 2ms
+ ✓ tests/api/comparative-gaps.audit.test.ts > Comparative audit: independently reproduced gaps > CONTROL: unchanged intent and catalog recover duplicate successfully 3ms
+ ✓ tests/api/comparative-gaps.audit.test.ts > Comparative audit: independently reproduced gaps > GAP-03: proposal signing uses site_api credential despite separate Storage secret 1ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  13:09:12
+   Duration  592ms (environment 70%, transform 16%, setup 8%, tests 3%, import 2%, worker 1%)

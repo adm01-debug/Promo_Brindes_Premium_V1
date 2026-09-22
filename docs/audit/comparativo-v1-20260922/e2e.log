@@ -1,0 +1,179 @@
+[WebServer] (node:2096877) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:2096949) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 168 tests using 2 workers
+
+[1/168] [desktop-chromium] › e2e/smoke.spec.ts:107:1 › headline principal usa Fold Text sem perder acessibilidade
+[2/168] [desktop-chromium] › e2e/smoke.spec.ts:132:1 › rotas públicas essenciais não introduzem violações automáticas de acessibilidade
+[3/168] [desktop-chromium] › e2e/smoke.spec.ts:150:1 › manifesto transforma as frases da marca em uma narrativa com próximo passo
+[4/168] [desktop-chromium] › e2e/smoke.spec.ts:170:1 › biblioteca de catálogos transforma contexto em coleções compartilháveis
+[5/168] [desktop-chromium] › e2e/smoke.spec.ts:209:1 › seleção compartilhada copia o link e anuncia o resultado
+[6/168] [desktop-chromium] › e2e/smoke.spec.ts:222:1 › seleção compartilhada não perde variantes removidas nem permite duplicação silenciosa
+[7/168] [desktop-chromium] › e2e/smoke.spec.ts:235:1 › link persistente espera a consulta e confirma antes de substituir a seleção local
+[8/168] [desktop-chromium] › e2e/smoke.spec.ts:272:1 › soluções editoriais levam a uma curadoria explícita, não a uma promessa de estoque
+[9/168] [desktop-chromium] › e2e/smoke.spec.ts:280:1 › ache pelo briefing transforma intenção em filtros explicáveis e compartilháveis
+[10/168] [desktop-chromium] › e2e/smoke.spec.ts:302:1 › briefing tech espera a taxonomia antes de consultar produtos
+[11/168] [desktop-chromium] › e2e/smoke.spec.ts:335:1 › briefing tech falha fechado quando a taxonomia está indisponível
+[12/168] [desktop-chromium] › e2e/smoke.spec.ts:352:1 › busca sugere linguagem do comprador e aceita teclado
+[13/168] [desktop-chromium] › e2e/smoke.spec.ts:362:1 › mostra produto sem estoque confiável e leva o cliente ao briefing sem checkout
+[14/168] [desktop-chromium] › e2e/smoke.spec.ts:402:1 › envio confirmado remove contato e consentimento do rascunho da aba
+[15/168] [desktop-chromium] › e2e/smoke.spec.ts:460:1 › logout em outra aba invalida contato e consentimento do briefing aberto
+[16/168] [desktop-chromium] › e2e/smoke.spec.ts:493:1 › sair encerra a sessão e o próximo briefing aberto começa limpo
+[17/168] [desktop-chromium] › e2e/smoke.spec.ts:526:1 › logout durante envio em andamento não mostra sucesso nem erro de outra pessoa
+[18/168] [desktop-chromium] › e2e/smoke.spec.ts:567:1 › evento passado recebe erro no campo e não chama a API
+[19/168] [desktop-chromium] › e2e/smoke.spec.ts:590:1 › card exibe somente o badge de maior prioridade
+[20/168] [desktop-chromium] › e2e/smoke.spec.ts:619:1 › comparação mantém no máximo três referências e não sugere preço ou estoque
+[21/168] [desktop-chromium] › e2e/smoke.spec.ts:642:1 › FAQ contextual esclarece limites sem inventar preço ou estoque
+[22/168] [desktop-chromium] › e2e/smoke.spec.ts:653:1 › menu e busca permanecem utilizáveis em tela móvel
+[23/168] [desktop-chromium] › e2e/smoke.spec.ts:667:1 › convite editorial de contato valida o essencial sem esconder labels
+[24/168] [desktop-chromium] › e2e/smoke.spec.ts:679:1 › limpeza da seleção oferece uma recuperação reversível
+[25/168] [desktop-chromium] › e2e/smoke.spec.ts:694:1 › seleção com cinquenta produtos bloqueia a próxima inclusão de forma visível
+[26/168] [desktop-chromium] › e2e/smoke.spec.ts:714:1 › superfiltro móvel combina critérios, preserva a URL e devolve o foco
+[27/168] [desktop-chromium] › e2e/smoke.spec.ts:748:1 › templates principais não apresentam violações automáticas WCAG A/AA
+[28/168] [desktop-chromium] › e2e/smoke.spec.ts:759:1 › agenda transforma uma data em oportunidade salvável e exportável
+[29/168] [desktop-chromium] › e2e/smoke.spec.ts:784:1 › mudança de rota posiciona o foco no conteúdo principal
+[30/168] [desktop-chromium] › e2e/smoke.spec.ts:792:1 › rodapé apresenta redes sociais acessíveis e seguras
+[31/168] [desktop-chromium] › e2e/smoke.spec.ts:803:1 › área do cliente protege histórico e oferece autenticação acessível
+[32/168] [desktop-chromium] › e2e/smoke.spec.ts:817:1 › histórico recupera de uma falha temporária sem exigir mudança de filtro
+[33/168] [desktop-chromium] › e2e/smoke.spec.ts:839:1 › callback de acesso inválido falha de forma recuperável e privada
+[34/168] [desktop-chromium] › e2e/smoke.spec.ts:846:1 › cliente autenticado confirma antes de substituir a seleção ao reutilizar o orçamento
+[35/168] [desktop-chromium] › e2e/smoke.spec.ts:881:1 › falha ao abrir proposta fica visível e permite nova tentativa
+[36/168] [desktop-chromium] › e2e/smoke.spec.ts:903:1 › detalhe do orçamento recupera de indisponibilidade temporária
+[37/168] [desktop-chromium] › e2e/smoke.spec.ts:925:1 › falha ao trocar de orçamento nunca mantém dados e ações da rota anterior
+[38/168] [desktop-chromium] › e2e/smoke.spec.ts:952:1 › produto com identificador inválido falha fechado e não pode ser indexado
+[39/168] [desktop-chromium] › e2e/smoke.spec.ts:959:1 › limpar a busca remove também seu estado compartilhável da URL
+[40/168] [desktop-chromium] › e2e/smoke.spec.ts:967:1 › falha temporária no detalhe oferece retry e recupera o produto
+[41/168] [desktop-chromium] › e2e/smoke.spec.ts:983:1 › galeria com muitas fotos mantém o documento dentro da viewport móvel
+[42/168] [desktop-chromium] › e2e/smoke.spec.ts:999:1 › navegação de catálogo por query fecha menu e reposiciona resultados
+[43/168] [mobile-chromium] › e2e/smoke.spec.ts:107:1 › headline principal usa Fold Text sem perder acessibilidade
+[44/168] [mobile-chromium] › e2e/smoke.spec.ts:132:1 › rotas públicas essenciais não introduzem violações automáticas de acessibilidade
+[45/168] [mobile-chromium] › e2e/smoke.spec.ts:150:1 › manifesto transforma as frases da marca em uma narrativa com próximo passo
+[46/168] [mobile-chromium] › e2e/smoke.spec.ts:170:1 › biblioteca de catálogos transforma contexto em coleções compartilháveis
+[47/168] [mobile-chromium] › e2e/smoke.spec.ts:209:1 › seleção compartilhada copia o link e anuncia o resultado
+[48/168] [mobile-chromium] › e2e/smoke.spec.ts:222:1 › seleção compartilhada não perde variantes removidas nem permite duplicação silenciosa
+[49/168] [mobile-chromium] › e2e/smoke.spec.ts:235:1 › link persistente espera a consulta e confirma antes de substituir a seleção local
+[50/168] [mobile-chromium] › e2e/smoke.spec.ts:272:1 › soluções editoriais levam a uma curadoria explícita, não a uma promessa de estoque
+[51/168] [mobile-chromium] › e2e/smoke.spec.ts:280:1 › ache pelo briefing transforma intenção em filtros explicáveis e compartilháveis
+[52/168] [mobile-chromium] › e2e/smoke.spec.ts:302:1 › briefing tech espera a taxonomia antes de consultar produtos
+[53/168] [mobile-chromium] › e2e/smoke.spec.ts:335:1 › briefing tech falha fechado quando a taxonomia está indisponível
+[54/168] [mobile-chromium] › e2e/smoke.spec.ts:352:1 › busca sugere linguagem do comprador e aceita teclado
+[55/168] [mobile-chromium] › e2e/smoke.spec.ts:362:1 › mostra produto sem estoque confiável e leva o cliente ao briefing sem checkout
+[56/168] [mobile-chromium] › e2e/smoke.spec.ts:402:1 › envio confirmado remove contato e consentimento do rascunho da aba
+[57/168] [mobile-chromium] › e2e/smoke.spec.ts:460:1 › logout em outra aba invalida contato e consentimento do briefing aberto
+[58/168] [mobile-chromium] › e2e/smoke.spec.ts:493:1 › sair encerra a sessão e o próximo briefing aberto começa limpo
+[59/168] [mobile-chromium] › e2e/smoke.spec.ts:526:1 › logout durante envio em andamento não mostra sucesso nem erro de outra pessoa
+[60/168] [mobile-chromium] › e2e/smoke.spec.ts:567:1 › evento passado recebe erro no campo e não chama a API
+[61/168] [mobile-chromium] › e2e/smoke.spec.ts:590:1 › card exibe somente o badge de maior prioridade
+[62/168] [mobile-chromium] › e2e/smoke.spec.ts:619:1 › comparação mantém no máximo três referências e não sugere preço ou estoque
+[63/168] [mobile-chromium] › e2e/smoke.spec.ts:642:1 › FAQ contextual esclarece limites sem inventar preço ou estoque
+[64/168] [mobile-chromium] › e2e/smoke.spec.ts:653:1 › menu e busca permanecem utilizáveis em tela móvel
+[65/168] [mobile-chromium] › e2e/smoke.spec.ts:667:1 › convite editorial de contato valida o essencial sem esconder labels
+[66/168] [mobile-chromium] › e2e/smoke.spec.ts:679:1 › limpeza da seleção oferece uma recuperação reversível
+[67/168] [mobile-chromium] › e2e/smoke.spec.ts:694:1 › seleção com cinquenta produtos bloqueia a próxima inclusão de forma visível
+[68/168] [mobile-chromium] › e2e/smoke.spec.ts:714:1 › superfiltro móvel combina critérios, preserva a URL e devolve o foco
+[69/168] [mobile-chromium] › e2e/smoke.spec.ts:748:1 › templates principais não apresentam violações automáticas WCAG A/AA
+[70/168] [mobile-chromium] › e2e/smoke.spec.ts:759:1 › agenda transforma uma data em oportunidade salvável e exportável
+[71/168] [mobile-chromium] › e2e/smoke.spec.ts:784:1 › mudança de rota posiciona o foco no conteúdo principal
+[72/168] [mobile-chromium] › e2e/smoke.spec.ts:792:1 › rodapé apresenta redes sociais acessíveis e seguras
+[73/168] [mobile-chromium] › e2e/smoke.spec.ts:803:1 › área do cliente protege histórico e oferece autenticação acessível
+[74/168] [mobile-chromium] › e2e/smoke.spec.ts:817:1 › histórico recupera de uma falha temporária sem exigir mudança de filtro
+[75/168] [mobile-chromium] › e2e/smoke.spec.ts:839:1 › callback de acesso inválido falha de forma recuperável e privada
+[76/168] [mobile-chromium] › e2e/smoke.spec.ts:846:1 › cliente autenticado confirma antes de substituir a seleção ao reutilizar o orçamento
+[77/168] [mobile-chromium] › e2e/smoke.spec.ts:881:1 › falha ao abrir proposta fica visível e permite nova tentativa
+[78/168] [mobile-chromium] › e2e/smoke.spec.ts:903:1 › detalhe do orçamento recupera de indisponibilidade temporária
+[79/168] [mobile-chromium] › e2e/smoke.spec.ts:925:1 › falha ao trocar de orçamento nunca mantém dados e ações da rota anterior
+[80/168] [mobile-chromium] › e2e/smoke.spec.ts:952:1 › produto com identificador inválido falha fechado e não pode ser indexado
+[81/168] [mobile-chromium] › e2e/smoke.spec.ts:959:1 › limpar a busca remove também seu estado compartilhável da URL
+[82/168] [mobile-chromium] › e2e/smoke.spec.ts:967:1 › falha temporária no detalhe oferece retry e recupera o produto
+[83/168] [mobile-chromium] › e2e/smoke.spec.ts:983:1 › galeria com muitas fotos mantém o documento dentro da viewport móvel
+[84/168] [mobile-chromium] › e2e/smoke.spec.ts:999:1 › navegação de catálogo por query fecha menu e reposiciona resultados
+[85/168] [desktop-firefox] › e2e/smoke.spec.ts:107:1 › headline principal usa Fold Text sem perder acessibilidade
+[86/168] [desktop-firefox] › e2e/smoke.spec.ts:132:1 › rotas públicas essenciais não introduzem violações automáticas de acessibilidade
+[87/168] [desktop-firefox] › e2e/smoke.spec.ts:150:1 › manifesto transforma as frases da marca em uma narrativa com próximo passo
+[88/168] [desktop-firefox] › e2e/smoke.spec.ts:170:1 › biblioteca de catálogos transforma contexto em coleções compartilháveis
+[89/168] [desktop-firefox] › e2e/smoke.spec.ts:209:1 › seleção compartilhada copia o link e anuncia o resultado
+[90/168] [desktop-firefox] › e2e/smoke.spec.ts:222:1 › seleção compartilhada não perde variantes removidas nem permite duplicação silenciosa
+[91/168] [desktop-firefox] › e2e/smoke.spec.ts:235:1 › link persistente espera a consulta e confirma antes de substituir a seleção local
+[92/168] [desktop-firefox] › e2e/smoke.spec.ts:272:1 › soluções editoriais levam a uma curadoria explícita, não a uma promessa de estoque
+[93/168] [desktop-firefox] › e2e/smoke.spec.ts:280:1 › ache pelo briefing transforma intenção em filtros explicáveis e compartilháveis
+[94/168] [desktop-firefox] › e2e/smoke.spec.ts:302:1 › briefing tech espera a taxonomia antes de consultar produtos
+[95/168] [desktop-firefox] › e2e/smoke.spec.ts:335:1 › briefing tech falha fechado quando a taxonomia está indisponível
+[96/168] [desktop-firefox] › e2e/smoke.spec.ts:352:1 › busca sugere linguagem do comprador e aceita teclado
+[97/168] [desktop-firefox] › e2e/smoke.spec.ts:362:1 › mostra produto sem estoque confiável e leva o cliente ao briefing sem checkout
+[98/168] [desktop-firefox] › e2e/smoke.spec.ts:402:1 › envio confirmado remove contato e consentimento do rascunho da aba
+[99/168] [desktop-firefox] › e2e/smoke.spec.ts:460:1 › logout em outra aba invalida contato e consentimento do briefing aberto
+[100/168] [desktop-firefox] › e2e/smoke.spec.ts:493:1 › sair encerra a sessão e o próximo briefing aberto começa limpo
+[101/168] [desktop-firefox] › e2e/smoke.spec.ts:526:1 › logout durante envio em andamento não mostra sucesso nem erro de outra pessoa
+[102/168] [desktop-firefox] › e2e/smoke.spec.ts:567:1 › evento passado recebe erro no campo e não chama a API
+[103/168] [desktop-firefox] › e2e/smoke.spec.ts:590:1 › card exibe somente o badge de maior prioridade
+[104/168] [desktop-firefox] › e2e/smoke.spec.ts:619:1 › comparação mantém no máximo três referências e não sugere preço ou estoque
+[105/168] [desktop-firefox] › e2e/smoke.spec.ts:642:1 › FAQ contextual esclarece limites sem inventar preço ou estoque
+[106/168] [desktop-firefox] › e2e/smoke.spec.ts:653:1 › menu e busca permanecem utilizáveis em tela móvel
+[107/168] [desktop-firefox] › e2e/smoke.spec.ts:667:1 › convite editorial de contato valida o essencial sem esconder labels
+[108/168] [desktop-firefox] › e2e/smoke.spec.ts:679:1 › limpeza da seleção oferece uma recuperação reversível
+[109/168] [desktop-firefox] › e2e/smoke.spec.ts:694:1 › seleção com cinquenta produtos bloqueia a próxima inclusão de forma visível
+[110/168] [desktop-firefox] › e2e/smoke.spec.ts:714:1 › superfiltro móvel combina critérios, preserva a URL e devolve o foco
+[111/168] [desktop-firefox] › e2e/smoke.spec.ts:748:1 › templates principais não apresentam violações automáticas WCAG A/AA
+[112/168] [desktop-firefox] › e2e/smoke.spec.ts:759:1 › agenda transforma uma data em oportunidade salvável e exportável
+[113/168] [desktop-firefox] › e2e/smoke.spec.ts:784:1 › mudança de rota posiciona o foco no conteúdo principal
+[114/168] [desktop-firefox] › e2e/smoke.spec.ts:792:1 › rodapé apresenta redes sociais acessíveis e seguras
+[115/168] [desktop-firefox] › e2e/smoke.spec.ts:803:1 › área do cliente protege histórico e oferece autenticação acessível
+[116/168] [desktop-firefox] › e2e/smoke.spec.ts:817:1 › histórico recupera de uma falha temporária sem exigir mudança de filtro
+[117/168] [desktop-firefox] › e2e/smoke.spec.ts:839:1 › callback de acesso inválido falha de forma recuperável e privada
+[118/168] [desktop-firefox] › e2e/smoke.spec.ts:846:1 › cliente autenticado confirma antes de substituir a seleção ao reutilizar o orçamento
+[119/168] [desktop-firefox] › e2e/smoke.spec.ts:881:1 › falha ao abrir proposta fica visível e permite nova tentativa
+[120/168] [desktop-firefox] › e2e/smoke.spec.ts:903:1 › detalhe do orçamento recupera de indisponibilidade temporária
+[121/168] [desktop-firefox] › e2e/smoke.spec.ts:925:1 › falha ao trocar de orçamento nunca mantém dados e ações da rota anterior
+[122/168] [desktop-firefox] › e2e/smoke.spec.ts:952:1 › produto com identificador inválido falha fechado e não pode ser indexado
+[123/168] [desktop-firefox] › e2e/smoke.spec.ts:959:1 › limpar a busca remove também seu estado compartilhável da URL
+[124/168] [desktop-firefox] › e2e/smoke.spec.ts:967:1 › falha temporária no detalhe oferece retry e recupera o produto
+[125/168] [desktop-firefox] › e2e/smoke.spec.ts:983:1 › galeria com muitas fotos mantém o documento dentro da viewport móvel
+[126/168] [desktop-firefox] › e2e/smoke.spec.ts:999:1 › navegação de catálogo por query fecha menu e reposiciona resultados
+[127/168] [desktop-webkit] › e2e/smoke.spec.ts:107:1 › headline principal usa Fold Text sem perder acessibilidade
+[128/168] [desktop-webkit] › e2e/smoke.spec.ts:132:1 › rotas públicas essenciais não introduzem violações automáticas de acessibilidade
+[129/168] [desktop-webkit] › e2e/smoke.spec.ts:150:1 › manifesto transforma as frases da marca em uma narrativa com próximo passo
+[130/168] [desktop-webkit] › e2e/smoke.spec.ts:170:1 › biblioteca de catálogos transforma contexto em coleções compartilháveis
+[131/168] [desktop-webkit] › e2e/smoke.spec.ts:209:1 › seleção compartilhada copia o link e anuncia o resultado
+[132/168] [desktop-webkit] › e2e/smoke.spec.ts:222:1 › seleção compartilhada não perde variantes removidas nem permite duplicação silenciosa
+[133/168] [desktop-webkit] › e2e/smoke.spec.ts:235:1 › link persistente espera a consulta e confirma antes de substituir a seleção local
+[134/168] [desktop-webkit] › e2e/smoke.spec.ts:272:1 › soluções editoriais levam a uma curadoria explícita, não a uma promessa de estoque
+[135/168] [desktop-webkit] › e2e/smoke.spec.ts:280:1 › ache pelo briefing transforma intenção em filtros explicáveis e compartilháveis
+[136/168] [desktop-webkit] › e2e/smoke.spec.ts:302:1 › briefing tech espera a taxonomia antes de consultar produtos
+[137/168] [desktop-webkit] › e2e/smoke.spec.ts:335:1 › briefing tech falha fechado quando a taxonomia está indisponível
+[138/168] [desktop-webkit] › e2e/smoke.spec.ts:352:1 › busca sugere linguagem do comprador e aceita teclado
+[139/168] [desktop-webkit] › e2e/smoke.spec.ts:362:1 › mostra produto sem estoque confiável e leva o cliente ao briefing sem checkout
+[140/168] [desktop-webkit] › e2e/smoke.spec.ts:402:1 › envio confirmado remove contato e consentimento do rascunho da aba
+[141/168] [desktop-webkit] › e2e/smoke.spec.ts:460:1 › logout em outra aba invalida contato e consentimento do briefing aberto
+[142/168] [desktop-webkit] › e2e/smoke.spec.ts:493:1 › sair encerra a sessão e o próximo briefing aberto começa limpo
+[143/168] [desktop-webkit] › e2e/smoke.spec.ts:526:1 › logout durante envio em andamento não mostra sucesso nem erro de outra pessoa
+[144/168] [desktop-webkit] › e2e/smoke.spec.ts:567:1 › evento passado recebe erro no campo e não chama a API
+[145/168] [desktop-webkit] › e2e/smoke.spec.ts:590:1 › card exibe somente o badge de maior prioridade
+[146/168] [desktop-webkit] › e2e/smoke.spec.ts:619:1 › comparação mantém no máximo três referências e não sugere preço ou estoque
+[147/168] [desktop-webkit] › e2e/smoke.spec.ts:642:1 › FAQ contextual esclarece limites sem inventar preço ou estoque
+[148/168] [desktop-webkit] › e2e/smoke.spec.ts:653:1 › menu e busca permanecem utilizáveis em tela móvel
+[149/168] [desktop-webkit] › e2e/smoke.spec.ts:667:1 › convite editorial de contato valida o essencial sem esconder labels
+[150/168] [desktop-webkit] › e2e/smoke.spec.ts:679:1 › limpeza da seleção oferece uma recuperação reversível
+[151/168] [desktop-webkit] › e2e/smoke.spec.ts:694:1 › seleção com cinquenta produtos bloqueia a próxima inclusão de forma visível
+[152/168] [desktop-webkit] › e2e/smoke.spec.ts:714:1 › superfiltro móvel combina critérios, preserva a URL e devolve o foco
+[153/168] [desktop-webkit] › e2e/smoke.spec.ts:748:1 › templates principais não apresentam violações automáticas WCAG A/AA
+[154/168] [desktop-webkit] › e2e/smoke.spec.ts:759:1 › agenda transforma uma data em oportunidade salvável e exportável
+[155/168] [desktop-webkit] › e2e/smoke.spec.ts:784:1 › mudança de rota posiciona o foco no conteúdo principal
+[156/168] [desktop-webkit] › e2e/smoke.spec.ts:792:1 › rodapé apresenta redes sociais acessíveis e seguras
+[157/168] [desktop-webkit] › e2e/smoke.spec.ts:803:1 › área do cliente protege histórico e oferece autenticação acessível
+[158/168] [desktop-webkit] › e2e/smoke.spec.ts:817:1 › histórico recupera de uma falha temporária sem exigir mudança de filtro
+[159/168] [desktop-webkit] › e2e/smoke.spec.ts:839:1 › callback de acesso inválido falha de forma recuperável e privada
+[160/168] [desktop-webkit] › e2e/smoke.spec.ts:846:1 › cliente autenticado confirma antes de substituir a seleção ao reutilizar o orçamento
+[161/168] [desktop-webkit] › e2e/smoke.spec.ts:881:1 › falha ao abrir proposta fica visível e permite nova tentativa
+[162/168] [desktop-webkit] › e2e/smoke.spec.ts:903:1 › detalhe do orçamento recupera de indisponibilidade temporária
+[163/168] [desktop-webkit] › e2e/smoke.spec.ts:925:1 › falha ao trocar de orçamento nunca mantém dados e ações da rota anterior
+[164/168] [desktop-webkit] › e2e/smoke.spec.ts:952:1 › produto com identificador inválido falha fechado e não pode ser indexado
+[165/168] [desktop-webkit] › e2e/smoke.spec.ts:959:1 › limpar a busca remove também seu estado compartilhável da URL
+[166/168] [desktop-webkit] › e2e/smoke.spec.ts:967:1 › falha temporária no detalhe oferece retry e recupera o produto
+[167/168] [desktop-webkit] › e2e/smoke.spec.ts:983:1 › galeria com muitas fotos mantém o documento dentro da viewport móvel
+[168/168] [desktop-webkit] › e2e/smoke.spec.ts:999:1 › navegação de catálogo por query fecha menu e reposiciona resultados
+  14 skipped
+  154 passed (1.6m)

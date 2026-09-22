@@ -1,0 +1,602 @@
+[
+  {
+    "id": "APV1-01",
+    "titulo": "Briefing estruturado",
+    "prioridade": "P1",
+    "etapas": [
+      114,
+      116,
+      132,
+      133
+    ],
+    "origem": "src/lib/quoteBriefing.ts",
+    "lacuna_premium": "Campos comerciais pouco estruturados",
+    "adaptacao": "Verba e escopo; evento e recebimento; flexibilidade; canal; logo",
+    "dependencias": "Contrato comercial e faixas aprovados",
+    "aceitacao": "Cliente e servidor validam datas e escopo; export e receptor recebem os mesmos campos; retry continua idempotente",
+    "responsavel_sugerido": "Produto + comercial + engenharia",
+    "onda": 1,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-02",
+    "titulo": "Elegibilidade editorial premium",
+    "prioridade": "P0",
+    "etapas": [
+      41,
+      45,
+      48,
+      125,
+      198
+    ],
+    "origem": "src/lib/campaignPresets.ts",
+    "lacuna_premium": "Critérios editoriais ainda incompletos",
+    "adaptacao": "Separar destaque de qualidade; atributos e aprovação por SKU",
+    "dependencias": "Curador e critérios de publicação",
+    "aceitacao": "Peça sem aprovação ou evidência não entra em coleção premium; revisão tem responsável e data",
+    "responsavel_sugerido": "Curadoria + comercial",
+    "onda": 1,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-03",
+    "titulo": "Curadoria guiada",
+    "prioridade": "P1",
+    "etapas": [
+      53,
+      85,
+      90
+    ],
+    "origem": "src/components/CampaignFinder.tsx",
+    "lacuna_premium": "Descoberta por contexto incompleta",
+    "adaptacao": "Perguntas opcionais sobre destinatário; ocasião; intenção; investimento",
+    "dependencias": "APV1-02 e taxonomia revisada",
+    "aceitacao": "Escolhas geram produtos elegíveis; zero resultado tem saída útil; usuário pula etapas e ajusta filtros",
+    "responsavel_sugerido": "UX + engenharia",
+    "onda": 2,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-04",
+    "titulo": "Busca com sinônimos",
+    "prioridade": "P1",
+    "etapas": [
+      85,
+      86
+    ],
+    "origem": "src/lib/search.ts",
+    "lacuna_premium": "Vocabulário e tolerância incompletos",
+    "adaptacao": "Sinônimos premium e correção sem alterar intenção silenciosamente",
+    "dependencias": "Termos reais de compradores",
+    "aceitacao": "Consultas compostas preservam grupos; erro ambíguo não corrige automaticamente; relevância avaliada em amostra",
+    "responsavel_sugerido": "Conteúdo + engenharia",
+    "onda": 2,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-05",
+    "titulo": "Facetas comerciais na URL",
+    "prioridade": "P1",
+    "etapas": [
+      85,
+      88,
+      95,
+      123
+    ],
+    "origem": "src/lib/catalogFilters.ts",
+    "lacuna_premium": "Faltam atributos consistentes",
+    "adaptacao": "Material; acabamento; embalagem; ocasião apenas quando cadastrados",
+    "dependencias": "APV1-02; contrato de catálogo",
+    "aceitacao": "Voltar restaura facetas; limpar limpa URL; total vem da fonte; ausência de dado não vira atributo positivo",
+    "responsavel_sugerido": "Dados + engenharia",
+    "onda": 2,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-06",
+    "titulo": "Biblioteca de coleções",
+    "prioridade": "P2",
+    "etapas": [
+      53,
+      75,
+      151,
+      157
+    ],
+    "origem": "src/pages/CatalogsPage.tsx",
+    "lacuna_premium": "Biblioteca editorial incompleta",
+    "adaptacao": "Coleções por contexto com formato e data claros",
+    "dependencias": "Conteúdo; direitos; catálogo elegível",
+    "aceitacao": "Links resolvem; online e PDF são diferenciados; coleção vazia ou desatualizada é tratada",
+    "responsavel_sugerido": "Conteúdo + design",
+    "onda": 4,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-07",
+    "titulo": "Galeria de detalhes",
+    "prioridade": "P1",
+    "etapas": [
+      93,
+      162,
+      163,
+      173
+    ],
+    "origem": "src/pages/ProductPage.tsx",
+    "lacuna_premium": "Uma imagem por produto",
+    "adaptacao": "Fotos de acabamento; escala; embalagem e zoom acessível",
+    "dependencias": "Fotografia aprovada e direitos",
+    "aceitacao": "Teclado; zoom; alt; falha de mídia e mobile funcionam; orçamento de imagem respeitado; Axe inclui produto com múltiplas imagens e semântica correta das miniaturas",
+    "responsavel_sugerido": "Design + conteúdo + engenharia",
+    "onda": 2,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-08",
+    "titulo": "Variantes e personalização válidas",
+    "prioridade": "P1",
+    "etapas": [
+      94,
+      98,
+      103,
+      123
+    ],
+    "origem": "api/_lib/catalogValidation.ts",
+    "lacuna_premium": "Variantes não estruturadas",
+    "adaptacao": "Cor e técnica compatível por SKU; indicação de confirmação comercial",
+    "dependencias": "Contrato público versionado",
+    "aceitacao": "API rejeita variação de outro produto ou retirada; seleção e export mantêm escolha inequívoca",
+    "responsavel_sugerido": "Dados + engenharia",
+    "onda": 2,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-09",
+    "titulo": "Ficha técnica e condições",
+    "prioridade": "P0",
+    "etapas": [
+      95,
+      96,
+      97,
+      125
+    ],
+    "origem": "src/lib/catalog.ts",
+    "lacuna_premium": "Condições e mínimos parcialmente revisados",
+    "adaptacao": "Material; medidas; mínimo conhecido; embalagem; restrições",
+    "dependencias": "Validação por curadoria e operação",
+    "aceitacao": "Dado ausente aparece a confirmar; promessa de prazo e material tem fonte; claims e textos revisados",
+    "responsavel_sugerido": "Comercial + curadoria",
+    "onda": 1,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-10",
+    "titulo": "Comparação para decisão",
+    "prioridade": "P1",
+    "etapas": [
+      90,
+      95,
+      120
+    ],
+    "origem": "src/components/CatalogComparisonTray.tsx",
+    "lacuna_premium": "Comparador ausente; extensão proposta",
+    "adaptacao": "Comparar até três presentes e destacar diferenças úteis",
+    "dependencias": "APV1-09 e APV1-07",
+    "aceitacao": "Funciona mobile/teclado; ausência de dados explícita; catálogo revalidado antes de enviar",
+    "responsavel_sugerido": "UX + engenharia",
+    "onda": 2,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-11",
+    "titulo": "Seleção compartilhável revogável",
+    "prioridade": "P1",
+    "etapas": [
+      120,
+      137,
+      144,
+      147
+    ],
+    "origem": "api/shared-selections.ts",
+    "lacuna_premium": "Colaboração externa ausente; extensão proposta",
+    "adaptacao": "Somente IDs; quantidades e variantes; token opaco e expiração",
+    "dependencias": "Migration própria; política de exposição",
+    "aceitacao": "Expiração e revogação impedem leitura; token de gestão separado; nenhum contato ou texto livre público",
+    "responsavel_sugerido": "Engenharia + produto",
+    "onda": 2,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-12",
+    "titulo": "Apresentação imprimível da seleção",
+    "prioridade": "P1",
+    "etapas": [
+      115,
+      120
+    ],
+    "origem": "src/pages/QuotePage.tsx",
+    "lacuna_premium": "Download existe sem apresentação executiva",
+    "adaptacao": "Documento visual com fotos; quantidades; alternativas e ressalvas",
+    "dependencias": "Dados e imagens aprovados",
+    "aceitacao": "Export corresponde à seleção; sem preço fictício; dados privados não entram em link público",
+    "responsavel_sugerido": "Design + engenharia",
+    "onda": 2,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-13",
+    "titulo": "Opção principal e alternativa",
+    "prioridade": "P2",
+    "etapas": [
+      106,
+      112,
+      120,
+      133
+    ],
+    "origem": "src/pages/QuotePage.tsx",
+    "lacuna_premium": "Grupos de decisão ausentes; extensão proposta",
+    "adaptacao": "Separar alternativa de item adicional no briefing",
+    "dependencias": "Receptor entende grupos; APV1-01",
+    "aceitacao": "Somatório não conta alternativas como compra cumulativa; export e CRM preservam relação",
+    "responsavel_sugerido": "Comercial + engenharia",
+    "onda": 2,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-14",
+    "titulo": "Continuidade do rascunho",
+    "prioridade": "P2",
+    "etapas": [
+      114,
+      146,
+      147
+    ],
+    "origem": "src/lib/quoteDraft.ts",
+    "lacuna_premium": "Preservação apenas em memória",
+    "adaptacao": "Manter memória; sessão opcional só após política definida",
+    "dependencias": "Duração; campos; limpeza e aviso definidos",
+    "aceitacao": "Limpeza após envio/logout/troca de titular; expiração; browser sem storage continua usável",
+    "responsavel_sugerido": "Produto + privacidade + engenharia",
+    "onda": 3,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-15",
+    "titulo": "Confirmação confiável de recebimento",
+    "prioridade": "P0",
+    "etapas": [
+      118,
+      119,
+      131,
+      138
+    ],
+    "origem": "api/_lib/leadHandler.ts",
+    "lacuna_premium": "Confirmação comercial ainda não homologada",
+    "adaptacao": "Distinguir protocolo salvo de oportunidade entregue e atendimento",
+    "dependencias": "Receptor CRM e responsável aprovados",
+    "aceitacao": "Pedido aparece uma vez no CRM com dono; resposta perdida recupera protocolo; mensagem reflete estado real",
+    "responsavel_sugerido": "Comercial + integração",
+    "onda": 3,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-16",
+    "titulo": "Fila e recuperação operacional",
+    "prioridade": "P0",
+    "etapas": [
+      118,
+      139,
+      169,
+      170
+    ],
+    "origem": "api/notifications.ts",
+    "lacuna_premium": "Conciliação e fila comercial incompletas",
+    "adaptacao": "Outbox para integração; lease; backoff; teto; consulta antes de retry incerto",
+    "dependencias": "Contrato idempotente e consulta no receptor",
+    "aceitacao": "Concorrência não duplica; 429 respeitado; timeout reconciliado; esgotamento tem dono e alerta",
+    "responsavel_sugerido": "Integração + operações",
+    "onda": 3,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-17",
+    "titulo": "Webhooks e estados de confirmação",
+    "prioridade": "P1",
+    "etapas": [
+      119,
+      137,
+      139
+    ],
+    "origem": "api/_lib/webhookSignature.ts",
+    "lacuna_premium": "Status por provedor ausente",
+    "adaptacao": "Assinatura; dedup; precedência e rastreio",
+    "dependencias": "Provedor escolhido e credenciais isoladas",
+    "aceitacao": "Evento repetido ou fora de ordem não duplica nem regride estado; assinatura inválida recusada",
+    "responsavel_sugerido": "Integração + segurança",
+    "onda": 3,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-18",
+    "titulo": "Portal opcional e histórico",
+    "prioridade": "P2",
+    "etapas": [
+      120,
+      137,
+      142,
+      145
+    ],
+    "origem": "src/lib/customerAccount.ts",
+    "lacuna_premium": "Portal ausente; extensão de escopo",
+    "adaptacao": "Consulta após e-mail confirmado; primeira solicitação sem conta",
+    "dependencias": "CRM; identidade; ownership e retenção",
+    "aceitacao": "Dois usuários não veem registros entre si; troca de conta limpa dados; histórico nunca força cadastro inicial",
+    "responsavel_sugerido": "Produto + segurança + engenharia",
+    "onda": 4,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-19",
+    "titulo": "Propostas privadas e versões",
+    "prioridade": "P2",
+    "etapas": [
+      136,
+      137,
+      145
+    ],
+    "origem": "api/customer-proposals.ts",
+    "lacuna_premium": "Documentos privados ausentes",
+    "adaptacao": "Autorização atual; assinatura curta; versão e validade",
+    "dependencias": "APV1-18; correção V1-G03; Storage homologado",
+    "aceitacao": "Documento de terceiro negado; URL expira; papel limitado validado no banco e Storage separadamente",
+    "responsavel_sugerido": "Comercial + segurança + engenharia",
+    "onda": 4,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-20",
+    "titulo": "Ajustes e recompra",
+    "prioridade": "P2",
+    "etapas": [
+      120,
+      136,
+      137
+    ],
+    "origem": "src/pages/CustomerQuotePage.tsx",
+    "lacuna_premium": "Continuidade comercial ausente",
+    "adaptacao": "Nova intenção a partir do histórico com revalidação",
+    "dependencias": "APV1-18 e estados comerciais",
+    "aceitacao": "Item retirado explicado; quantidade atual validada; preço/prazo antigo não reaproveitado como promessa",
+    "responsavel_sugerido": "Produto + engenharia",
+    "onda": 4,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-21",
+    "titulo": "Retenção e pedido de exclusão",
+    "prioridade": "P0",
+    "etapas": [
+      146,
+      147,
+      149
+    ],
+    "origem": "api/retention.ts",
+    "lacuna_premium": "Política e execução incompletas",
+    "adaptacao": "Processo de arquivos e registros rastreável com retry",
+    "dependencias": "Responsável; prazos e exceções definidos",
+    "aceitacao": "Falha ao excluir blob não declara conclusão; titular correto verificado; evidência sem conteúdo pessoal desnecessário",
+    "responsavel_sugerido": "Operações + privacidade + engenharia",
+    "onda": 3,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-22",
+    "titulo": "Privilégios por capacidade",
+    "prioridade": "P0",
+    "etapas": [
+      142,
+      143,
+      145,
+      150
+    ],
+    "origem": "docs/RUNBOOK_SITE_API_CUTOVER.md",
+    "lacuna_premium": "Revisão de permissões por fluxo incompleta",
+    "adaptacao": "Separar catálogo; escrita; worker; leitura autenticada e Storage",
+    "dependencias": "Matriz de operações e schema premium",
+    "aceitacao": "Papel indevido não lê/escreve; testes cobrem autorização negativa; corte e rollback documentados",
+    "responsavel_sugerido": "Segurança + dados",
+    "onda": 1,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-23",
+    "titulo": "Testes SQL e drift em CI",
+    "prioridade": "P0",
+    "etapas": [
+      130,
+      142,
+      150,
+      184
+    ],
+    "origem": ".github/workflows/database.yml",
+    "lacuna_premium": "Testes isolados de banco ampliáveis",
+    "adaptacao": "Reconstrução descartável; pgTAP; concorrência; tipos e schema gerados",
+    "dependencias": "Ambiente local/CI isolado com guard de host",
+    "aceitacao": "CI executa migrations do zero e nega acessos; nenhuma conexão de teste usa banco real",
+    "responsavel_sugerido": "Dados + engenharia",
+    "onda": 1,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-24",
+    "titulo": "Métricas sem dados pessoais",
+    "prioridade": "P1",
+    "etapas": [
+      167,
+      170,
+      196
+    ],
+    "origem": "src/lib/analytics.ts",
+    "lacuna_premium": "Funil produtivo ainda não instrumentado",
+    "adaptacao": "Eventos mínimos; URL redigida em todos os SDKs",
+    "dependencias": "Finalidade; ferramenta e política aprovadas",
+    "aceitacao": "Captura de tráfego sintético não contém texto livre; contato; token ou protocolo; eventos de sucesso são verdadeiros",
+    "responsavel_sugerido": "Produto + dados + privacidade",
+    "onda": 3,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-25",
+    "titulo": "Saúde e alertas operacionais",
+    "prioridade": "P0",
+    "etapas": [
+      138,
+      139,
+      170,
+      193,
+      195
+    ],
+    "origem": "api/_lib/operationalAlerts.ts",
+    "lacuna_premium": "Monitoramento real e cobertura pendentes",
+    "adaptacao": "Fila; idade da pendência; falhas por estágio e responsável",
+    "dependencias": "SLA e destinatários internos definidos",
+    "aceitacao": "Alerta simulado chega ao canal de teste; escalonamento documentado; logs não expõem PII",
+    "responsavel_sugerido": "Operações + engenharia",
+    "onda": 3,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-26",
+    "titulo": "SSR e orçamento por rota",
+    "prioridade": "P1",
+    "etapas": [
+      153,
+      161,
+      165,
+      167
+    ],
+    "origem": "src/App.tsx",
+    "lacuna_premium": "Portal futuro pode aumentar custo global",
+    "adaptacao": "Preservar Next SSR; auth isolada na área de conta; animação mínima",
+    "dependencias": "Orçamento vigente e baseline por rota",
+    "aceitacao": "HTML inicial mantém conteúdo; vitrine não baixa SDK de auth sem necessidade; gates de performance passam",
+    "responsavel_sugerido": "Engenharia + UX",
+    "onda": 2,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-27",
+    "titulo": "Primeiro resultado no mobile",
+    "prioridade": "P1",
+    "etapas": [
+      83,
+      90,
+      172,
+      185
+    ],
+    "origem": "src/pages/CatalogPage.tsx",
+    "lacuna_premium": "Risco de excesso de introdução ao ampliar catálogo",
+    "adaptacao": "Topo compacto; filtros em painel; contagem próxima dos produtos",
+    "dependencias": "Conteúdo e viewport alvo",
+    "aceitacao": "Tarefa de encontrar item melhora no piloto; zoom não corta conteúdo; ausência de overflow",
+    "responsavel_sugerido": "UX + engenharia",
+    "onda": 2,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-28",
+    "titulo": "Conteúdo por intenção e ocasiões",
+    "prioridade": "P2",
+    "etapas": [
+      151,
+      154,
+      157,
+      158
+    ],
+    "origem": "src/pages/IdeaLandingPage.tsx",
+    "lacuna_premium": "Conteúdo orgânico incompleto",
+    "adaptacao": "Páginas úteis sobre relacionamento; reconhecimento e liderança",
+    "dependencias": "Direitos; autoria; catálogo; domínio",
+    "aceitacao": "Páginas têm conteúdo próprio; canonical/SSR/sitemap corretos; nenhuma promessa de prazo automático",
+    "responsavel_sugerido": "Conteúdo + SEO",
+    "onda": 4,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-29",
+    "titulo": "Governança de documentação",
+    "prioridade": "P1",
+    "etapas": [
+      189,
+      198,
+      199,
+      200
+    ],
+    "origem": "docs/GOVERNANCA_FECHAMENTO.md",
+    "lacuna_premium": "Manter evidências atualizadas com evolução",
+    "adaptacao": "Ligação entre requisito; código; teste; status e dono",
+    "dependencias": "Processo de revisão e responsáveis",
+    "aceitacao": "Nenhum checklist fecha por arquivo existir; divergência gera ação; métricas não somam critérios incompatíveis",
+    "responsavel_sugerido": "Produto + engenharia",
+    "onda": 1,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-30",
+    "titulo": "Arquivo de marca e prova final",
+    "prioridade": "P0",
+    "etapas": [
+      104,
+      105,
+      145,
+      150
+    ],
+    "origem": "src/lib/quoteBriefing.ts",
+    "lacuna_premium": "Upload e aprovação de personalização ausentes; V1 só informa prontidão do logo",
+    "adaptacao": "Armazenamento privado; validação; análise de arquivo; prova versionada",
+    "dependencias": "Técnicas; Storage; política; operação de aprovação",
+    "aceitacao": "Arquivo inválido recusado; terceiro sem acesso; aprovação rastreável e distinta de mockup ilustrativo",
+    "responsavel_sugerido": "Comercial + segurança + engenharia",
+    "onda": 3,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-31",
+    "titulo": "Staging e piloto comercial",
+    "prioridade": "P0",
+    "etapas": [
+      140,
+      180,
+      184,
+      187,
+      188,
+      192
+    ],
+    "origem": "e2e/smoke.spec.ts",
+    "lacuna_premium": "Testes locais ainda não homologam operação",
+    "adaptacao": "Cenários sintéticos completos; vendedores e compradores; rollback",
+    "dependencias": "CRM de teste; conteúdo; responsáveis",
+    "aceitacao": "Selecionar; enviar; receber; atribuir; responder e reconciliar comprovados; nenhum cliente real usado em testes",
+    "responsavel_sugerido": "Comercial + QA + operações",
+    "onda": 3,
+    "status": "recomendado — não implementado nesta auditoria"
+  },
+  {
+    "id": "APV1-32",
+    "titulo": "Preservar idempotência premium",
+    "prioridade": "P0",
+    "etapas": [
+      117,
+      118,
+      134,
+      139
+    ],
+    "origem": "api/_lib/siteDatabase.ts",
+    "lacuna_premium": "Risco de regressão ao reutilizar V1; premium já corrigido",
+    "adaptacao": "Manter lookup pré-catálogo e hash da intenção; versionar novos campos",
+    "dependencias": "APV1-01 e contrato de reenvio",
+    "aceitacao": "Retirada recupera protocolo; imagem alterada não conflita; quantidade alterada conflita; concorrência não duplica",
+    "responsavel_sugerido": "Engenharia + integração",
+    "onda": 1,
+    "status": "recomendado — não implementado nesta auditoria"
+  }
+]
