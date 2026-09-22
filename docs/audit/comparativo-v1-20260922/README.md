@@ -49,4 +49,4 @@ node /caminho/para/browser-audit.cjs
 
 As strings `innerText`/`textContent` nos resultados são observações do DOM, não transcrições da árvore de acessibilidade. A duplicação visual oculta do título animado não foi classificada como defeito de leitura. A falha de ARIA da galeria foi identificada pelo Axe e conferida na fonte.
 
-Os arquivos `.log` preservam saídas originais de build/testes, podendo conter cores ANSI, caminhos temporários, IDs sintéticos e tempos variáveis. Não contêm credenciais reais. `backlog.json` é a fonte do CSV; todos os itens estão como recomendações, não implementações nesta auditoria. O estado real do plano premium permanece em `src/lib/plan.json`.
+Os arquivos `.log` preservam saídas originais de build/testes, podendo conter cores ANSI, caminhos temporários, IDs sintéticos e tempos variáveis. Não contêm credenciais reais. `backlog.json` é a fonte do CSV. Atualizações posteriores marcaram `APV1-01` e `APV1-23` como implementações técnicas parciais; os demais itens seguem como recomendações. O estado real do plano premium permanece em `src/lib/plan.json`.

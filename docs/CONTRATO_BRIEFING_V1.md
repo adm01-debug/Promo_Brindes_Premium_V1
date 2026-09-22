@@ -16,6 +16,11 @@ O servidor normaliza a intenção do cliente e consulta primeiro um protocolo ex
   "occasion": "Relacionamento com clientes",
   "date": "2026-12-01",
   "budget": "R$ 100 a R$ 250",
+  "budgetScope": "per-gift",
+  "eventDate": "2026-12-15",
+  "deadlineFlexibility": "fixed",
+  "contactChannel": "email",
+  "logoStatus": "ready",
   "message": "Observações de personalização",
   "items": [{ "productId": "uuid-canônico", "quantity": 5 }]
 }
@@ -23,26 +28,30 @@ O servidor normaliza a intenção do cliente e consulta primeiro um protocolo ex
 
 O corpo é limitado a 16 KiB medidos nos bytes recebidos. O servidor rejeita datas inexistentes, textos acima do limite e quantidades abaixo do mínimo publicado. SKU, preço, fornecedor, estoque e regras enviados pelo navegador são ignorados: os dados de item são resolvidos novamente no catálogo publicado.
 
+Os campos adicionais são opcionais para clientes anteriores. `budgetScope` aceita `per-gift` ou `total` e é exigido quando um cliente novo o envia explicitamente junto da verba; pedidos antigos com verba e sem escopo continuam interpretados como **por presente** no payload comercial. `eventDate` deve ser uma data válida e não pode anteceder `date`, a data desejada de recebimento. `deadlineFlexibility` aceita `flexible` ou `fixed`; `contactChannel` aceita `email`, `whatsapp`, `phone` ou `undecided`; `logoStatus` aceita `ready`, `in-progress` ou `need-help`. `phone` é obrigatório para `whatsapp` e `phone`, validado e limitado a 24 caracteres. A versão do payload comercial é `2026-09-22`.
+
+O banco continua recebendo a observação original acrescida de um resumo legível dos campos novos; o servidor rejeita mensagens que excederiam os 2.000 caracteres permitidos após o acréscimo. Campos novos vazios são omitidos da intenção normalizada, mantendo o hash de reenvio de payloads antigos. Nenhum PDF ou preço final é gerado por esses campos.
+
 ## Saídas
 
-| Estado | Resposta |
-| --- | --- |
-| Receptor confirmou uma nova entrega | `201` com `protocol` e `duplicate:false`. |
-| Repetição após entrega concluída | `200` com o mesmo `protocol` e `duplicate:true`. |
-| Repetição pendente com produto retirado | `503 BRIEFING_PENDING` com o mesmo protocolo, sem reenvio. |
+| Estado                                                | Resposta                                                         |
+| ----------------------------------------------------- | ---------------------------------------------------------------- |
+| Receptor confirmou uma nova entrega                   | `201` com `protocol` e `duplicate:false`.                        |
+| Repetição após entrega concluída                      | `200` com o mesmo `protocol` e `duplicate:true`.                 |
+| Repetição pendente com produto retirado               | `503 BRIEFING_PENDING` com o mesmo protocolo, sem reenvio.       |
 | Outra solicitação usa a mesma chave durante a reserva | `202` com o mesmo `protocol`, `duplicate:true` e `pending:true`. |
-| Mesma chave com conteúdo diferente | `409 IDEMPOTENCY_PAYLOAD_CONFLICT`. |
-| Receptor falha ou expira | `503 BRIEFING_PENDING` com protocolo para acompanhamento. |
-| Receptor aceitou, mas a confirmação no banco falhou | `503 BRIEFING_PENDING`; estado incerto exige conciliação. |
-| Entrada inválida | `422 INVALID_BRIEFING`. |
-| Chave ausente ou inválida | `400 IDEMPOTENCY_KEY_REQUIRED`. |
-| Origem não autorizada | `403 ORIGIN_REJECTED`. |
-| Corpo que não é JSON | `415 JSON_REQUIRED`. |
-| Corpo acima de 16 KiB | `413 PAYLOAD_TOO_LARGE`. |
-| Mais de cinco tentativas por endereço em dez minutos | `429 RATE_LIMITED`. |
-| Proxy não fornece um único endereço IP válido | `503 CLIENT_ADDRESS_UNAVAILABLE`. |
-| Limite distribuído indisponível | `503 RATE_LIMIT_UNAVAILABLE`. |
-| Entrega não ativada ou receptor inválido | `503 DESTINATION_UNAVAILABLE`. |
+| Mesma chave com conteúdo diferente                    | `409 IDEMPOTENCY_PAYLOAD_CONFLICT`.                              |
+| Receptor falha ou expira                              | `503 BRIEFING_PENDING` com protocolo para acompanhamento.        |
+| Receptor aceitou, mas a confirmação no banco falhou   | `503 BRIEFING_PENDING`; estado incerto exige conciliação.        |
+| Entrada inválida                                      | `422 INVALID_BRIEFING`.                                          |
+| Chave ausente ou inválida                             | `400 IDEMPOTENCY_KEY_REQUIRED`.                                  |
+| Origem não autorizada                                 | `403 ORIGIN_REJECTED`.                                           |
+| Corpo que não é JSON                                  | `415 JSON_REQUIRED`.                                             |
+| Corpo acima de 16 KiB                                 | `413 PAYLOAD_TOO_LARGE`.                                         |
+| Mais de cinco tentativas por endereço em dez minutos  | `429 RATE_LIMITED`.                                              |
+| Proxy não fornece um único endereço IP válido         | `503 CLIENT_ADDRESS_UNAVAILABLE`.                                |
+| Limite distribuído indisponível                       | `503 RATE_LIMIT_UNAVAILABLE`.                                    |
+| Entrega não ativada ou receptor inválido              | `503 DESTINATION_UNAVAILABLE`.                                   |
 
 ## Persistência e operação
 

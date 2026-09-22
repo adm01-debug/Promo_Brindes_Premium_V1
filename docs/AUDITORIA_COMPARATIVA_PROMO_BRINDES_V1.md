@@ -4,7 +4,9 @@ Data: **22/09/2026**. Referência examinada: [`Promo_Brindes_V1@b211c2b`](https:
 
 **O maior patrimônio reutilizável do V1 está na jornada de decisão e na operação do atendimento.** A vitrine premium deve absorver briefing estruturado, comparação, colaboração e rastreabilidade, preservando sua curadoria, arquitetura e linguagem. A aparência do V1 atende a outra proposta: comunicação expressiva para campanhas, exploração ampla e referências rápidas. Copiar essa aparência ou publicar todo o catálogo enfraqueceria o posicionamento premium.
 
-Esta entrega é uma auditoria e um backlog de aproveitamento. Não instala funcionalidades, não altera os bancos e não transforma funcionalidades observadas em critérios concluídos do plano premium. A revisão vigente continua em **82 critérios comprovados, 66 parciais e 52 pendentes**. As recomendações abaixo têm critérios próprios e precisam de implementação e validação.
+O retrato original deste documento é uma auditoria e um backlog de aproveitamento. Ele não transforma funcionalidades observadas em critérios concluídos do plano premium. A revisão vigente continua em **82 critérios comprovados, 66 parciais e 52 pendentes**. As recomendações abaixo têm critérios próprios e precisam de implementação e validação.
+
+**Atualização posterior à auditoria:** o item `APV1-01` recebeu [implementação técnica parcial e simulações](audit/2026-09-22-briefing-structured.md); `APV1-23` recebeu [testes SQL isolados](audit/2026-09-22-database-contracts.md). Os requisitos de homologação comercial e operação continuam abertos; o retrato e os testes desta auditoria permanecem datados do commit de referência acima.
 
 ## 1. Método, cobertura e limites
 

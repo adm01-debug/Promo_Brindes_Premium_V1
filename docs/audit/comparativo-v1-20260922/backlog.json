@@ -16,7 +16,7 @@
     "aceitacao": "Cliente e servidor validam datas e escopo; export e receptor recebem os mesmos campos; retry continua idempotente",
     "responsavel_sugerido": "Produto + comercial + engenharia",
     "onda": 1,
-    "status": "recomendado — não implementado nesta auditoria"
+    "status": "parcial — campos e contrato implementados; falta homologação comercial, staging e piloto"
   },
   {
     "id": "APV1-02",
@@ -424,7 +424,7 @@
     "aceitacao": "CI executa migrations do zero e nega acessos; nenhuma conexão de teste usa banco real",
     "responsavel_sugerido": "Dados + engenharia",
     "onda": 1,
-    "status": "recomendado — não implementado nesta auditoria"
+    "status": "parcial — 13 contratos pgTAP locais e CI isolada; falta CI remota e cobertura operacional completa"
   },
   {
     "id": "APV1-24",

@@ -24,6 +24,11 @@ import {
 } from "lucide-react";
 import Modal from "./Modal";
 import {
+  briefingContextLabels,
+  parseBriefingInput,
+  type BriefingPayload,
+} from "@/lib/briefing";
+import {
   CATALOG_CONTRACT_VERSION,
   categories,
   downloadText,
@@ -59,6 +64,12 @@ type BriefingDraft = {
   email: string;
   date: string;
   budget: string;
+  budgetScope: "per-gift" | "total";
+  eventDate: string;
+  deadlineFlexibility: string;
+  contactChannel: string;
+  phone: string;
+  logoStatus: string;
   message: string;
 };
 type VerifiedSelection = { products: Product[]; quantities: Selection };
@@ -72,6 +83,12 @@ const emptyBriefingDraft: BriefingDraft = {
   email: "",
   date: "",
   budget: "",
+  budgetScope: "per-gift",
+  eventDate: "",
+  deadlineFlexibility: "",
+  contactChannel: "",
+  phone: "",
+  logoStatus: "",
   message: "",
 };
 
@@ -496,20 +513,25 @@ export default function Storefront({
   }
 
   function briefingLines(
-    data: FormData,
-    contact: string,
-    company: string,
+    briefing: BriefingPayload,
     verified: VerifiedSelection,
   ) {
     return [
       "PROMO BRINDES PREMIUM — BRIEFING DE PROJETO",
       `Preparado em: ${new Date().toLocaleDateString("pt-BR")}`,
-      `Responsável: ${contact}`,
-      `Empresa: ${company}`,
-      `E-mail: ${String(data.get("email") ?? "").trim()}`,
-      `Ocasião: ${occasion}`,
-      `Data desejada: ${data.get("date") || "A definir"}`,
-      `Investimento por presente: ${data.get("budget") || "A definir"}`,
+      `Responsável: ${briefing.name}`,
+      `Empresa: ${briefing.company}`,
+      `E-mail: ${briefing.email}`,
+      `Ocasião: ${briefing.occasion}`,
+      `Recebimento desejado: ${briefing.date || "A definir"}`,
+      `Data do evento: ${briefing.eventDate || "A definir"}`,
+      `Flexibilidade no recebimento: ${briefing.deadlineFlexibility ? briefingContextLabels.deadlineFlexibility[briefing.deadlineFlexibility] : "A definir"}`,
+      briefing.budget
+        ? `Investimento ${briefing.budgetScope === "total" ? "total da ação" : "por presente"}: ${briefing.budget}`
+        : "Investimento: A definir",
+      `Canal de retorno: ${briefing.contactChannel ? briefingContextLabels.contactChannel[briefing.contactChannel] : "A definir"}`,
+      `Telefone: ${briefing.phone || "Não informado"}`,
+      `Identidade visual: ${briefing.logoStatus ? briefingContextLabels.logoStatus[briefing.logoStatus] : "A definir"}`,
       "",
       "SELEÇÃO DE PRODUTOS",
       ...verified.products.map(
@@ -520,7 +542,7 @@ export default function Storefront({
         ? []
         : ["Curadoria aberta: solicitar recomendação de produtos."]),
       "",
-      `Mensagem e personalização: ${String(data.get("message") ?? "").trim() || "A definir"}`,
+      `Mensagem e personalização: ${briefing.message || "A definir"}`,
       "",
       "Documento de intenção, sem reserva de estoque ou confirmação de preço, técnica e prazo.",
       "Peças conferidas no catálogo ao preparar este arquivo. Revalidar antes de orçar.",
@@ -541,7 +563,33 @@ export default function Storefront({
     try {
       const verified = await verifySelectedProducts();
       if (!verified) return;
-      const lines = briefingLines(data, contact, company, verified);
+      const candidate = {
+        name: contact,
+        company,
+        email: String(data.get("email") ?? ""),
+        occasion,
+        date: String(data.get("date") ?? ""),
+        budget: String(data.get("budget") ?? ""),
+        budgetScope: data.get("budget")
+          ? String(data.get("budgetScope") ?? "")
+          : "",
+        eventDate: String(data.get("eventDate") ?? ""),
+        deadlineFlexibility: String(data.get("deadlineFlexibility") ?? ""),
+        contactChannel: String(data.get("contactChannel") ?? ""),
+        phone: String(data.get("phone") ?? ""),
+        logoStatus: String(data.get("logoStatus") ?? ""),
+        message: String(data.get("message") ?? ""),
+        items: verified.products.map((p) => ({
+          productId: p.id,
+          quantity: verified.quantities[p.id],
+        })),
+      };
+      const parsed = parseBriefingInput(candidate);
+      if (!parsed.ok) {
+        setNotice(parsed.message);
+        return;
+      }
+      const lines = briefingLines(parsed.value, verified);
       if (!deliveryConfigured) {
         downloadText("briefing-promo-premium.txt", lines.join("\n"));
         setProtocol(null);
@@ -557,19 +605,7 @@ export default function Storefront({
           "Content-Type": "application/json",
           "Idempotency-Key": requestKey,
         },
-        body: JSON.stringify({
-          name: contact,
-          company,
-          email: String(data.get("email") ?? "").trim(),
-          occasion,
-          date: String(data.get("date") ?? ""),
-          budget: String(data.get("budget") ?? ""),
-          message: String(data.get("message") ?? ""),
-          items: verified.products.map((p) => ({
-            productId: p.id,
-            quantity: verified.quantities[p.id],
-          })),
-        }),
+        body: JSON.stringify(parsed.value),
       });
       const result: {
         protocol?: string;
@@ -1686,7 +1722,7 @@ export default function Storefront({
               </label>
               <div className="form-row">
                 <label>
-                  Data desejada <small>(opcional)</small>
+                  Quando precisa receber? <small>(opcional)</small>
                   <input
                     type="date"
                     name="date"
@@ -1708,23 +1744,157 @@ export default function Storefront({
                   />
                 </label>
                 <label>
-                  Por presente <small>(opcional)</small>
-                  <select
-                    name="budget"
-                    value={briefingDraft.budget}
+                  Data do evento <small>(opcional)</small>
+                  <input
+                    type="date"
+                    name="eventDate"
+                    value={briefingDraft.eventDate}
                     onChange={(event) => {
                       setBriefingDraft((draft) => ({
                         ...draft,
-                        budget: event.target.value,
+                        eventDate: event.target.value,
+                      }));
+                      setIdempotencyKey(null);
+                    }}
+                  />
+                </label>
+              </div>
+              <div className="form-row">
+                <label>
+                  Investimento considerado <small>(opcional)</small>
+                  {briefingDraft.budgetScope === "total" ? (
+                    <input
+                      name="budget"
+                      inputMode="text"
+                      maxLength={80}
+                      placeholder="Ex.: R$ 15.000 para toda a ação"
+                      value={briefingDraft.budget}
+                      onChange={(event) => {
+                        setBriefingDraft((draft) => ({
+                          ...draft,
+                          budget: event.target.value,
+                        }));
+                        setIdempotencyKey(null);
+                      }}
+                    />
+                  ) : (
+                    <select
+                      name="budget"
+                      value={briefingDraft.budget}
+                      onChange={(event) => {
+                        setBriefingDraft((draft) => ({
+                          ...draft,
+                          budget: event.target.value,
+                        }));
+                        setIdempotencyKey(null);
+                      }}
+                    >
+                      <option value="">A definir</option>
+                      <option>Até R$ 100</option>
+                      <option>R$ 100 a R$ 250</option>
+                      <option>R$ 250 a R$ 500</option>
+                      <option>Acima de R$ 500</option>
+                    </select>
+                  )}
+                </label>
+                <label>
+                  Esse valor é para <small>(opcional)</small>
+                  <select
+                    name="budgetScope"
+                    value={briefingDraft.budgetScope}
+                    onChange={(event) => {
+                      setBriefingDraft((draft) => ({
+                        ...draft,
+                        budgetScope: event.target
+                          .value as BriefingDraft["budgetScope"],
+                        budget: "",
                       }));
                       setIdempotencyKey(null);
                     }}
                   >
-                    <option value="">A definir</option>
-                    <option>Até R$ 100</option>
-                    <option>R$ 100 a R$ 250</option>
-                    <option>R$ 250 a R$ 500</option>
-                    <option>Acima de R$ 500</option>
+                    <option value="per-gift">Cada presente</option>
+                    <option value="total">Toda a ação</option>
+                  </select>
+                </label>
+              </div>
+              <div className="form-row">
+                <label>
+                  Flexibilidade de recebimento <small>(opcional)</small>
+                  <select
+                    name="deadlineFlexibility"
+                    value={briefingDraft.deadlineFlexibility}
+                    onChange={(event) => {
+                      setBriefingDraft((draft) => ({
+                        ...draft,
+                        deadlineFlexibility: event.target.value,
+                      }));
+                      setIdempotencyKey(null);
+                    }}
+                  >
+                    <option value="">Ainda vou confirmar</option>
+                    <option value="flexible">Data flexível</option>
+                    <option value="fixed">Data fixa</option>
+                  </select>
+                </label>
+                <label>
+                  Como prefere o retorno? <small>(opcional)</small>
+                  <select
+                    name="contactChannel"
+                    value={briefingDraft.contactChannel}
+                    onChange={(event) => {
+                      setBriefingDraft((draft) => ({
+                        ...draft,
+                        contactChannel: event.target.value,
+                      }));
+                      setIdempotencyKey(null);
+                    }}
+                  >
+                    <option value="">Sem preferência</option>
+                    <option value="email">E-mail</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="phone">Telefone</option>
+                  </select>
+                </label>
+              </div>
+              <div className="form-row">
+                <label>
+                  Telefone <small>(necessário para WhatsApp ou ligação)</small>
+                  <input
+                    type="tel"
+                    name="phone"
+                    autoComplete="tel"
+                    maxLength={24}
+                    required={
+                      briefingDraft.contactChannel === "whatsapp" ||
+                      briefingDraft.contactChannel === "phone"
+                    }
+                    value={briefingDraft.phone}
+                    onChange={(event) => {
+                      setBriefingDraft((draft) => ({
+                        ...draft,
+                        phone: event.target.value,
+                      }));
+                      setIdempotencyKey(null);
+                    }}
+                  />
+                </label>
+                <label>
+                  Sua identidade visual <small>(opcional)</small>
+                  <select
+                    name="logoStatus"
+                    value={briefingDraft.logoStatus}
+                    onChange={(event) => {
+                      setBriefingDraft((draft) => ({
+                        ...draft,
+                        logoStatus: event.target.value,
+                      }));
+                      setIdempotencyKey(null);
+                    }}
+                  >
+                    <option value="">Ainda vou definir</option>
+                    <option value="ready">Logo pronto</option>
+                    <option value="in-progress">Identidade em criação</option>
+                    <option value="need-help">Quero orientação visual</option>
                   </select>
                 </label>
               </div>

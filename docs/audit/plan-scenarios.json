@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-22T15:50:21.881Z",
+  "generatedAt": "2026-09-22T16:29:50.651Z",
   "scope": "Isolated source modules; synthetic inputs; no external network or database writes",
   "results": [
     {
@@ -72,6 +72,36 @@
       "id": "AUD-05-invalid-date-suffix",
       "expected": false,
       "observed": false,
+      "passed": true
+    },
+    {
+      "id": "APV1-01-event-before-receipt",
+      "expected": false,
+      "observed": false,
+      "passed": true
+    },
+    {
+      "id": "APV1-01-phone-required-for-whatsapp",
+      "expected": false,
+      "observed": false,
+      "passed": true
+    },
+    {
+      "id": "APV1-01-structured-project-and-legacy-hash",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "id": "APV1-01-message-limit-with-context",
+      "expected": false,
+      "observed": false,
+      "passed": true
+    },
+    {
+      "id": "APV1-01-commercial-payload-and-retry",
+      "expected": "201,200,409;true",
+      "observed": "201,200,409;true",
       "passed": true
     },
     {
@@ -189,6 +219,6 @@
       "passed": true
     }
   ],
-  "passed": 31,
+  "passed": 36,
   "failed": 0
 }

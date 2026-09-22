@@ -293,6 +293,45 @@ test("briefing exporta dados reais e não envia formulário a serviço remoto", 
   expect(local).not.toContain("teste@example.com");
 });
 
+test("briefing estruturado preserva dados e exporta escopo correto", async ({
+  page,
+}) => {
+  await openFilledBriefing(page);
+  await page.getByLabel("Quando precisa receber?").fill("2026-12-01");
+  await page.getByLabel("Data do evento").fill("2026-11-30");
+  await page
+    .getByRole("button", { name: "Baixar meu briefing", exact: true })
+    .click();
+  await expect(
+    page.getByText("A data de recebimento não pode ser posterior à do evento."),
+  ).toBeVisible();
+  await page.getByLabel("Data do evento").fill("2026-12-10");
+  await page.getByLabel("Esse valor é para").selectOption("total");
+  await page.getByLabel("Investimento considerado").fill("R$ 15.000");
+  await page.getByLabel("Flexibilidade de recebimento").selectOption("fixed");
+  await page.getByLabel("Como prefere o retorno?").selectOption("whatsapp");
+  await page.getByRole("textbox", { name: /^Telefone/ }).fill("11999998888");
+  await page.getByLabel("Sua identidade visual").selectOption("ready");
+  await page.getByRole("button", { name: "Voltar", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Preparar meu briefing", exact: true })
+    .click();
+  await expect(page.getByLabel("Investimento considerado")).toHaveValue(
+    "R$ 15.000",
+  );
+  const downloadPromise = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "Baixar meu briefing", exact: true })
+    .click();
+  const download = await downloadPromise;
+  const body = await readFile((await download.path())!, "utf8");
+  expect(body).toContain("Investimento total da ação: R$ 15.000");
+  expect(body).toContain("Data do evento: 2026-12-10");
+  expect(body).toContain("Canal de retorno: WhatsApp");
+  expect(body).toContain("Identidade visual: logo pronto");
+  expect(body).toContain("Telefone: 11999998888");
+});
+
 test("peça retirada depois da seleção bloqueia briefing desatualizado", async ({
   page,
 }) => {

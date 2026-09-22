@@ -440,6 +440,104 @@ await probe("AUD-05-invalid-date-suffix", false, async () => {
   return api.validateBriefing({ ...payload, date: "2026-12-01invalid" }).ok;
 });
 
+await probe("APV1-01-event-before-receipt", false, async () => {
+  const api = load("src/lib/briefing.ts");
+  return api.parseBriefingInput({
+    ...payload,
+    date: "2026-12-10",
+    eventDate: "2026-12-01",
+  }).ok;
+});
+
+await probe("APV1-01-phone-required-for-whatsapp", false, async () => {
+  const api = load("src/lib/briefing.ts");
+  return api.parseBriefingInput({ ...payload, contactChannel: "whatsapp" }).ok;
+});
+
+await probe("APV1-01-structured-project-and-legacy-hash", true, async () => {
+  const api = load("src/lib/briefing.ts");
+  const legacy = api.parseBriefingInput(payload);
+  const structured = api.parseBriefingInput({
+    ...payload,
+    budget: "R$ 15.000",
+    budgetScope: "total",
+    eventDate: "2026-12-15",
+    deadlineFlexibility: "fixed",
+    contactChannel: "whatsapp",
+    phone: "11999998888",
+    logoStatus: "ready",
+  });
+  if (!legacy.ok || !structured.ok) return false;
+  const commercial = api.toCommercialPayload(structured.value);
+  return (
+    !Object.hasOwn(legacy.value, "budgetScope") &&
+    commercial.project.budgetScope === "total" &&
+    commercial.project.eventDate === "2026-12-15" &&
+    commercial.contact.phone === "11999998888" &&
+    api
+      .briefingDatabaseMessage(structured.value)
+      .includes("Data do evento: 2026-12-15")
+  );
+});
+
+await probe("APV1-01-message-limit-with-context", false, async () => {
+  const api = load("src/lib/briefing.ts");
+  return api.parseBriefingInput({
+    ...payload,
+    message: "A".repeat(2000),
+    eventDate: "2026-12-15",
+  }).ok;
+});
+
+await probe(
+  "APV1-01-commercial-payload-and-retry",
+  "201,200,409;true",
+  async () => {
+    const harness = deliveryHarness();
+    let storedMessage = "";
+    let commercial = null;
+    const api = load(
+      "src/app/api/briefings/route.ts",
+      activeEnv,
+      async (input, init = {}) => {
+        const path = new URL(String(input)).pathname;
+        if (path.endsWith("/persist_premium_briefing"))
+          storedMessage = JSON.parse(String(init.body)).p_message;
+        if (path === "/mock") commercial = JSON.parse(String(init.body));
+        return harness.fetcher(input, init);
+      },
+    );
+    const details = {
+      ...payload,
+      budget: "R$ 15.000",
+      budgetScope: "total",
+      date: "2026-12-01",
+      eventDate: "2026-12-15",
+      contactChannel: "whatsapp",
+      phone: "11999998888",
+    };
+    const first = await api.POST(
+      request("audit-structured-briefing-0001", details),
+    );
+    const retry = await api.POST(
+      request("audit-structured-briefing-0001", details),
+    );
+    const changed = await api.POST(
+      request("audit-structured-briefing-0001", {
+        ...details,
+        eventDate: "2026-12-16",
+      }),
+    );
+    const correct =
+      storedMessage.includes("Data do evento: 2026-12-15") &&
+      commercial?.project.eventDate === "2026-12-15" &&
+      commercial?.project.budgetScope === "total" &&
+      commercial?.contact.phone === "11999998888" &&
+      harness.webhookCalls() === 1;
+    return `${first.status},${retry.status},${changed.status};${correct}`;
+  },
+);
+
 await probe("AUD-06-source-pagination-truncation", 30, async () => {
   const rows = Array.from({ length: 30 }, (_, index) => ({
     ...item,

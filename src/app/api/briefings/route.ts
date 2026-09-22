@@ -2,6 +2,7 @@ import { createHash, createHmac } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import {
   BRIEFING_CONTRACT_VERSION,
+  briefingDatabaseMessage,
   parseBriefingInput,
   toCommercialPayload,
   validateBriefing,
@@ -191,7 +192,7 @@ async function persistBriefing(
       p_occasion: body.occasion,
       p_desired_date: body.date || null,
       p_budget: body.budget || null,
-      p_message: body.message || null,
+      p_message: briefingDatabaseMessage(body),
       p_items: commercial.items,
     },
   );

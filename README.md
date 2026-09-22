@@ -41,6 +41,8 @@ O planejamento é uma ferramenta desta prévia. Antes de lançar a vitrine públ
 
 - [Auditoria comparativa do Promo Brindes V1: oportunidades, riscos e 32 recomendações](docs/AUDITORIA_COMPARATIVA_PROMO_BRINDES_V1.md)
 - [Backlog de aproveitamento do V1 em CSV](docs/BACKLOG_APROVEITAMENTO_V1.csv)
+- [Evolução técnica do briefing estruturado e simulações](docs/audit/2026-09-22-briefing-structured.md)
+- [Testes SQL isolados de permissões e idempotência](docs/audit/2026-09-22-database-contracts.md)
 - [Revisão exaustiva das 200 etapas, lacunas e prioridades](docs/REVISAO_EXAUSTIVA_PLANO.md)
 - [Pesquisa, posicionamento e referências](docs/ESTRATEGIA_E_PESQUISA.md)
 - [Auditoria dirigida de Promo_Gifts_V4](docs/AUDITORIA_PROJETO_INTERNO.md)

@@ -34,8 +34,8 @@ export default function Privacy() {
       <h2>Seu briefing</h2>
       <p>
         {deliveryActive
-          ? "Nome, empresa, e-mail e observações são enviados ao canal comercial configurado somente quando você aciona o envio. O protocolo aparece após a confirmação do servidor. A versão comercial deve substituir esta página por política aprovada que identifique controlador, finalidade, retenção e canais de atendimento."
-          : "Nome, empresa, e-mail e observações informados no formulário são utilizados no seu navegador para gerar o arquivo que você solicita baixar. A aplicação não transmite esses campos ao servidor nem os persiste em armazenamento local."}
+          ? "Nome, empresa, e-mail, telefone opcional, ocasião, datas, faixa de investimento, preferência de contato, situação da identidade visual e observações são enviados ao canal comercial configurado somente quando você aciona o envio. O telefone é necessário se você pedir retorno por WhatsApp ou ligação. O protocolo aparece após a confirmação do servidor. A versão comercial deve substituir esta página por política aprovada que identifique controlador, finalidade, retenção e canais de atendimento."
+          : "Nome, empresa, e-mail, telefone opcional e os detalhes do projeto informados no formulário são utilizados no seu navegador para gerar o arquivo que você solicita baixar. A aplicação não transmite esses campos ao servidor nem os persiste em armazenamento local."}
       </p>
       <h2>Imagens e serviços</h2>
       <p>
