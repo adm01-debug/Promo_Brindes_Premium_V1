@@ -58,6 +58,16 @@ test("catálogo rejeita parâmetros inválidos e pagina a ordenação sem repeti
   expect((await accentInsensitive.json()).total).toBe(3);
 });
 
+test("página acima do total retorna a última página publicada", async ({
+  request,
+}) => {
+  const response = await request.get("/api/catalog?page=999&pageSize=3");
+  expect(response.status()).toBe(200);
+  const body = await response.json();
+  expect(body).toMatchObject({ page: 3, pageSize: 3, total: 8, totalPages: 3 });
+  expect(body.items).toHaveLength(2);
+});
+
 test("endpoint de briefing falha de forma explícita sem destinatário comercial", async ({
   request,
 }) => {

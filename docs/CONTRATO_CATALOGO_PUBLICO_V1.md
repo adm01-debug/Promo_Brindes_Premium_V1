@@ -10,7 +10,7 @@ Status: implementado para a tabela pública curada do projeto da vitrine `whwlos
 | ---------- | ------------------------------------------------------------------------ |
 | `q`        | Texto de até 100 caracteres; busca normalizada sem distinção de acento em nome, nome original, SKU e categoria. |
 | `category` | `Todos`, `Kits & experiências`, `Escrita`, `Lifestyle` ou `Viagem`.      |
-| `page`     | Inteiro positivo; padrão `1`.                                            |
+| `page`     | Inteiro positivo; padrão `1`. Acima do total, retorna a última página publicada. |
 | `pageSize` | Inteiro positivo entre `1` e `24`; padrão `12`.                          |
 | `sort`     | `curadoria` (padrão) ou `nome`, ambos com desempate determinístico por ID.   |
 
@@ -35,6 +35,8 @@ Cada item pode conter somente `id`, `sku`, `slug`, `name`, `originalName`, `cate
 ## Erros e indisponibilidade
 
 Parâmetro fora da forma pública retorna `400` com `INVALID_CATALOG_QUERY` e não é silenciosamente convertido em outra busca. Uma consulta válida sem peças retorna `200` e `items: []`. Falha ou timeout da fonte canônica retorna `503 CATALOG_UNAVAILABLE` com um estado recuperável na interface, jamais uma lista vazia tratada como sucesso.
+
+Quando a fonte responde `416` para uma página além do total e informa a contagem exata no cabeçalho `Content-Range`, o servidor consulta a última página válida. Um `416` sem essa contagem continua sendo tratado como indisponibilidade, para não inventar resultados.
 
 ## Limite atual e migração segura
 

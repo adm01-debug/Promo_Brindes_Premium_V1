@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { products } from "@/lib/catalog";
 import { getSiteProductBySlug } from "@/lib/site-database";
+import { publicSiteOrigin } from "@/lib/publication";
 import ProductDetailActions from "@/components/ProductDetailActions";
 import { notFound } from "next/navigation";
 
@@ -22,7 +23,11 @@ export async function generateMetadata({
   const { slug } = await params;
   try {
     const product = await getSiteProductBySlug(slug);
-    if (!product) return {};
+    if (!product)
+      return {
+        alternates: { canonical: `/produtos/${slug}` },
+        robots: { index: false, follow: false },
+      };
     return {
       title: `${product.name} | Promo Brindes Premium`,
       description: product.description
@@ -35,7 +40,10 @@ export async function generateMetadata({
       alternates: { canonical: `/produtos/${product.slug}` },
     };
   } catch {
-    return {};
+    return {
+      alternates: { canonical: `/produtos/${slug}` },
+      robots: { index: false, follow: false },
+    };
   }
 }
 
@@ -61,7 +69,7 @@ export default async function ProductPage({
   }
   if (!product) notFound();
   const minimum = Math.max(1, product.minimum ?? 1);
-  const siteUrl = process.env.PROMO_PREMIUM_SITE_URL?.replace(/\/$/, "");
+  const siteUrl = publicSiteOrigin();
   const schema = {
     "@context": "https://schema.org",
     "@type": "Product",

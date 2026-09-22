@@ -51,6 +51,44 @@ test("histórico restaura a consulta compartilhável", async ({ page }) => {
   await expect(page.locator(".product-card")).toHaveCount(1);
 });
 
+test("resposta atrasada não substitui o filtro mais recente", async ({
+  page,
+}) => {
+  let releaseSlowRequest!: () => void;
+  let slowRequestStarted!: () => void;
+  const slowRequestGate = new Promise<void>((resolve) => {
+    releaseSlowRequest = resolve;
+  });
+  const slowRequest = new Promise<void>((resolve) => {
+    slowRequestStarted = resolve;
+  });
+  await page.route(/\/api\/catalog\?/, async (route) => {
+    const category = new URL(route.request().url()).searchParams.get(
+      "category",
+    );
+    if (category !== "Escrita") {
+      await route.continue();
+      return;
+    }
+    const response = await route.fetch();
+    slowRequestStarted();
+    await slowRequestGate;
+    await route.fulfill({ response }).catch(() => undefined);
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Escrita", exact: true }).click();
+  await slowRequest;
+  await page.getByRole("button", { name: "Viagem", exact: true }).click();
+  await expect(page.locator(".product-card h3")).toHaveText([
+    "Mochila executive 22 L",
+  ]);
+  releaseSlowRequest();
+  await expect(page).toHaveURL(/categoria=Viagem/);
+  await expect(page.locator(".product-card h3")).toHaveText([
+    "Mochila executive 22 L",
+  ]);
+});
+
 test("falha da curadoria preserva o contexto e permite recuperar", async ({
   page,
 }) => {
@@ -108,7 +146,9 @@ test("modo offline explica a falha e recupera a curadoria após reconexão", asy
 test("imagem indisponível mostra fallback sem quebrar a peça", async ({
   page,
 }) => {
-  await page.route(/executivo\.webp/, (route) => route.fulfill({ status: 403 }));
+  await page.route(/executivo\.webp/, (route) =>
+    route.fulfill({ status: 403 }),
+  );
   await page.goto("/");
   await expect(
     page.getByRole("img", {
@@ -204,6 +244,42 @@ test("briefing exporta dados reais e não envia formulário a serviço remoto", 
   expect(posts).toEqual([]);
   const local = await page.evaluate(() => JSON.stringify(localStorage));
   expect(local).not.toContain("teste@example.com");
+});
+
+test("resposta sem protocolo não confirma envio comercial", async ({
+  page,
+}) => {
+  await page.route("**/api/briefings", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body:
+        route.request().method() === "GET"
+          ? JSON.stringify({ configured: true })
+          : "{}",
+    }),
+  );
+  await page.goto("/");
+  await page.getByRole("button", { name: "Minha seleção, 0 produtos" }).click();
+  await expect(
+    page.getByText(
+      "O envio registra uma solicitação para análise comercial. Não é um pedido nem reserva estoque.",
+    ),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Preparar meu briefing" }).click();
+  await page.getByLabel("Seu nome", { exact: true }).fill("Pessoa de teste");
+  await page.getByLabel("Empresa", { exact: true }).fill("Empresa de teste");
+  await page
+    .getByLabel("E-mail corporativo", { exact: true })
+    .fill("teste@example.com");
+  await page.getByRole("button", { name: "Enviar ao comercial" }).click();
+  await expect(
+    page.getByText("Não foi possível confirmar o protocolo. Tente novamente."),
+  ).toBeVisible();
+  await expect(page.getByLabel("Seu nome", { exact: true })).toHaveValue(
+    "Pessoa de teste",
+  );
+  await expect(page.getByText("Seu briefing está pronto.")).toHaveCount(0);
 });
 
 test("diálogo contém foco e Escape restaura o acionador", async ({ page }) => {

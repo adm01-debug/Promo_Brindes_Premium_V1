@@ -1,6 +1,6 @@
 # Validação da prévia
 
-Data: 22/09/2026. Escopo: aplicação local compilada, oito produtos de snapshot, catálogo público versionado, briefing com contrato de entrega e painel de planejamento. As evidências não certificam a integração futura, a qualidade de todo o catálogo nem a conformidade integral WCAG.
+Data: 22/09/2026. Escopo: aplicação local compilada, oito produtos publicados no banco da vitrine, catálogo público versionado, briefing com contrato de entrega e painel de planejamento. As evidências não certificam a integração futura, a qualidade de todo o catálogo nem a conformidade integral WCAG.
 
 ## Revisão posterior dos critérios
 
@@ -10,7 +10,7 @@ Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu
 
 ## Resultados funcionais
 
-**25 testes E2E passaram em Chromium** após a revisão (8,3 segundos nesta rodada). O cenário garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. A suíte cobre:
+**28 testes E2E em Chromium** cobrem os fluxos da prévia e a auditoria do plano. A suíte garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. Os cenários incluem:
 
 1. Busca por SKU, resultado vazio, limpeza e filtro de categoria.
 2. Favoritos e seleção após recarregar, mínimo de quantidade e remoção.
@@ -36,8 +36,13 @@ Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu
 22. Resposta `403` da mídia mostra alternativa acessível e mantém o detalhe da peça utilizável.
 23. SKU removido da curadoria é retirado da seleção com explicação visível, sem descartar a seleção por falha de rede.
 24. Offline de navegador preserva a seleção, explica a indisponibilidade e recupera a curadoria após reconexão.
+25. Resposta atrasada de categoria anterior não substitui o filtro mais recente.
+26. Página acima do total retorna a última página publicada, sem transformar `416` da fonte em `503` público.
+27. Resposta `200` sem protocolo válido não confirma o envio comercial.
 
 Comandos: `npm run build`, `npm run typecheck`, `npm run check:plan`, `npm run check:public-secrets`, `npm run check:performance-budget` e `npm run test:e2e`. A suíte usa servidor de produção na porta 3107, sem reutilizar processo estranho. A porta 3000 já servia outro aplicativo neste ambiente; o teste inicial foi descartado e a configuração foi corrigida.
+
+O workflow de CI executa instalação limpa, esses gates, cenários isolados e Chromium com um worker em push e pull request. `actionlint` validou a sintaxe localmente; a execução remota precisa ser conferida no GitHub. [Cenários adicionais e simulação de indexação](audit/2026-09-22-regression-scenarios.md).
 
 O teste de teclado encontrou que o diálogo nativo permitia a sequência de Tab sair do ciclo esperado. Foi adicionado tratamento explícito das extremidades, mantendo Escape, inert nativo e restauração de foco. O teste de filtro do plano também foi corrigido para consultar o combobox pelo nome acessível, em vez de considerar todo o texto das opções como label.
 
@@ -93,4 +98,4 @@ A coleta identificou divergência entre nomes acessíveis e texto visível em do
 
 ## Limitações para lançamento
 
-Faltam integração viva e governança editorial, aprovação de marca/mídia/conteúdo, preço e disponibilidade contextualizados, validação no CRM, privacidade comercial, domínio, monitoramento em produção, métricas de campo, testes com compradores e QA multiplataforma. O painel de planejamento deve ficar em ambiente interno antes de abrir a vitrine pública.
+Faltam integração viva e governança editorial, aprovação de marca/mídia/conteúdo, preço e disponibilidade contextualizados, validação no CRM, privacidade comercial, domínio, monitoramento em produção, métricas de campo, testes com compradores e QA multiplataforma. A rota de planejamento retorna 404 na configuração indexável; na prévia ela permanece pública e deve ficar em ambiente interno se a prévia for compartilhada amplamente.

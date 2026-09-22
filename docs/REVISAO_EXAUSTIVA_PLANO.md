@@ -82,40 +82,40 @@ Os endpoints foram carregados com `fetch` simulado e as interações de envio fo
 
 Os controles **AUD-07 e AUD-08 passam**: projeto operacional e host semelhante são rejeitados antes da leitura do catálogo.
 
-A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, JavaScript, fontes e chunks, oito cenários sintéticos, cinco sondas de browser e **25 testes E2E**. A cobertura reproduz recuperação de API 503 e offline, fallback de mídia 403, retorno de navegação, remoção canônica de SKU e garante que marcação local não modifica a auditoria nem reaplica uma conclusão antiga. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
+A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, JavaScript, fontes e chunks, oito cenários sintéticos, cinco sondas de browser e testes E2E em Chromium. A cobertura inclui API 503, offline, mídia 403, resposta atrasada, página fora do intervalo, protocolo ausente e remoção de SKU. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
 
 O painel atualizado também foi inspecionado em **390 e 1440 pixels**, com filtro de parciais e critério expandido: sem overflow horizontal e sem violações nas regras axe selecionadas. [Registro da inspeção](audit/plan-dashboard-check.json).
 
-Resultados brutos: [módulos isolados](audit/plan-scenarios.json) e [navegador](audit/plan-browser-scenarios.json). Reprodutores: `node scripts/audit-plan-scenarios.mjs` e, com build servido na porta 3111, `node scripts/audit-plan-browser.mjs`. Eles são gates de regressão local, não certificação de CRM, privacidade ou operação.
+Resultados brutos: [módulos isolados](audit/plan-scenarios.json), [navegador](audit/plan-browser-scenarios.json) e [cenários adicionais](audit/2026-09-22-regression-scenarios.md). Reprodutores: `node scripts/audit-plan-scenarios.mjs`, `npm run test:e2e` e, com build servido na porta 3111, `node scripts/audit-plan-browser.mjs`. Eles são gates de regressão local, não certificação de CRM, privacidade ou operação.
 
 ## Lacunas adicionais comprovadas por inspeção
 
 | Lacuna | Evidência | Etapas e efeito |
 |---|---|---|
 | Facetas futuras de busca | Busca, categoria, página e ordenação sincronizam URL e histórico. | 088 está concluída; incluir novas facetas no contrato de URL ao criá-las. |
-| Ordenação/facetas incompletas | UI não oferece sort, facetas ou paginação de servidor; comparador por nome não declara desempate por ID. | 085–090: testes com oito nomes distintos não cobrem empates ou escala. |
+| Facetas comerciais incompletas | UI oferece ordenação e paginação na fonte, com ID como desempate; atributos comerciais ainda não estão aprovados para facetas combináveis. | 085–086 e 090: projetar e testar relevância/facetas com dados e compradores. |
 | Passagem comercial sem homologação | O protocolo é persistido e a entrega é reservada, mas não há receptor/CRM configurado. | 117–118, 139, 184: falta contrato vivo, conciliação operacional e aceite de vendedores. |
 | Controles locais de abuso | Rate limit depende de `x-forwarded-for` e de Maps na instância. | 144: contrato com proxy confiável, limite distribuído e resistência a reinício não estão implementados. |
-| Resposta de sucesso pouco validada | Cliente aceita qualquer `2xx` mesmo sem protocolo; texto inicial ainda promete não envio quando receptor é ativado. | 117–118: contrato e mensagens de modo comercial precisam de teste completo. |
-| Scanner de segredos limitado | Percorre `src`/`public`; não cobre diretamente literal `sb_secret_`, build e logs completos. | 143: check aprovado não prova todas as superfícies do critério. Não foi constatado vazamento real nesta revisão. |
-| Metadados e liberação do índice | Privacidade herda canonical `/`; layout/robots aceitam flag de indexação sem domínio validado; sitemap usa snapshot. | 152–156: corrigir identidade por rota e configuração de lançamento. |
-| Planejamento sem controle de acesso | `/planejamento` é rota pública; `noindex` não restringe leitura. | 145, 191, 194: proteger ou mover para ambiente interno antes da abertura. |
-| Ausência de pipeline/deploy | Repositório versionado não fornece neste estado uma implantação comercial com rollback testado. | 185, 191–195: falta CI dos gates, staging, domínio, release e monitoramento. |
+| Retorno do CRM ainda não homologado | Cliente rejeita `2xx` sem protocolo válido e mantém o formulário; não há receptor comercial aprovado para testar confirmação real. | 117–118: homologar contrato, erro e conciliação do receptor. |
+| Logs publicados ainda não inspecionados | Scanner cobre código público, scripts e build estático; não existe infraestrutura publicada com logs completos para revisar. | 143: incluir inspeção de logs no ambiente comercial. |
+| Domínio e SEO comercial sem aprovação | Canonical é específico por rota; a indexação exige URL HTTPS e catálogo configurado, e o sitemap lê itens publicados. A posse do domínio e redirects não foram homologados. | 152–156: aprovar domínio, slugs finais, redirects e conteúdo. |
+| Planejamento acessível na prévia | `/planejamento` continua acessível sem autenticação na prévia; configuração indexável retorna 404 para a rota. | 191, 194: manter o painel em ambiente interno ao expor a vitrine comercial. |
+| Deploy comercial ainda ausente | CI versionado executa os gates em push/PR; staging, domínio, release reversível e monitoramento não estão configurados. | 185, 191–195: executar pipeline remoto e preparar ambientes e operação. |
 | Medição de experiência | Gate mede imagens, fontes WOFF2, JavaScript gzip e chunks por rota; a última coleta válida registra LCP 3,0 s. | 166–170: repetir laboratório, medir campo e instrumentar alertas. |
 
-Esses achados continuam abertos nesta revisão. As alterações realizadas aqui corrigem o diagnóstico, as evidências e o acompanhamento; não transformam funções futuras em funções implementadas.
+Essas lacunas ainda exigem decisões, ambiente e evidências próprias. As correções técnicas reproduzidas nesta rodada constam no registro de cenários adicionais.
 
 ## Funções sugeridas ainda ausentes ou incompletas
 
 | Frente | O que funciona hoje | O que falta para a função desejada |
 |---|---|---|
-| Descoberta | Busca simples, quatro categorias, favoritos e oito peças locais. | Atributos comerciais, facetas combináveis, ordenação na UI, sinônimos, relevância e paginação real. |
+| Descoberta | Busca, quatro categorias, favoritos, ordenação e paginação consultam oito peças publicadas na fonte. | Atributos comerciais, facetas combináveis, sinônimos e relevância validada com compradores. |
 | Produto | Modal e ficha permanente com uma foto, descrição, SKU e mínimo cadastrado. | Galeria, variantes, ficha revisada, condições contextualizadas e recomendações elegíveis. |
 | Personalização e kits | Conteúdo explicativo e observações livres. | Técnicas/áreas por SKU, upload seguro, simulação, prova final, kit estruturado, embalagem, cartão e cálculo. |
 | Conversão | Seleção, download local e entrega opcional persistida/idempotente. | CRM homologado, confirmação comercial, atendimento e conciliação efetiva. |
 | Operação | Schema privado preparado e código publicado no GitHub. | Dono do lead, qualificação aprovada, distribuição, orçamento transacional, estados, SLA, fila e conciliação. |
 | Conteúdo/SEO | Home editorial, metadados iniciais, robots e sitemap condicionais. | Direitos, conteúdo aprovado, guias, redirects/canonical completos, domínio e Search Console. |
-| Qualidade | Build, tipos, E2E Chromium e axe em cenários representativos. | Casos negativos ampliados, Firefox/WebKit, aparelhos reais, leitores de tela, carga, rede limitada e pilotos. |
+| Qualidade | CI de build/tipos/checks, E2E Chromium e axe em cenários representativos. | Firefox/WebKit, aparelhos reais, leitores de tela, carga, rede limitada e pilotos. |
 | Governança | Papéis sugeridos e avisos de prévia. | Pessoas responsáveis, controlador/canais reais, política comercial, retenção e processo de direitos. |
 | Crescimento | Métricas propostas em documento. | Instrumentação aprovada, baseline real, monitoramento, experimentos e revisão periódica. |
 
@@ -125,9 +125,9 @@ O banco oficial **da vitrine** confirmou **8 produtos publicados**, **0 briefing
 
 Isso comprova schema, dados da curadoria, consumo dinâmico nas jornadas públicas e persistência técnica pronta. Não comprova integração no CRM. A conta da CLI continua sem permissão de Management API para `supabase link`; as migrations foram aplicadas por conexão PostgreSQL autorizada. O banco operacional `doufsxqlfjyuvxuezpln` não recebeu alterações nesta revisão.
 
-Também foi feita comparação exata da chave de servidor e senha atuais contra arquivos candidatos ao Git e os arquivos públicos de `.next/static`: **zero ocorrências**, sem registrar valores. [Evidência da inspeção](audit/plan-secret-scan.json). O scanner geral continua limitado e logs operacionais completos não foram auditados, por isso a etapa 143 permanece parcial.
+Também foi feita comparação exata da chave de servidor e senha atuais contra arquivos candidatos ao Git e os arquivos públicos de `.next/static`: **zero ocorrências**, sem registrar valores. [Evidência da inspeção](audit/plan-secret-scan.json). O scanner automatizado agora cobre código, scripts e build estático; logs operacionais completos ainda não existem para auditoria, por isso a etapa 143 permanece parcial.
 
-GitHub e banco estavam sincronizados no commit base antes desta auditoria. O novo trabalho inclui código, scripts diagnósticos, documentação e quatro migrations no banco dedicado; a publicação final no GitHub será feita depois das verificações. Publicação do código no GitHub não significa hospedagem do site em domínio de produção.
+O código anterior está sincronizado no GitHub e as migrations do banco dedicado estão atualizadas. As correções desta rodada não exigem nova migration. Publicação do código no GitHub não significa hospedagem do site em domínio de produção.
 
 ## Gates e sequência recomendada
 

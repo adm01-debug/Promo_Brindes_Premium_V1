@@ -532,6 +532,12 @@ svg {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px;
 }
+.catalog-loading {
+  color: var(--gold);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  margin: 18px 0;
+}
 .product-visual {
   height: auto;
   aspect-ratio: 1/0.99;

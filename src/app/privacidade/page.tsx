@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Privacidade da prévia | Promo Brindes Premium",
+  alternates: { canonical: "/privacidade" },
+  robots: { index: false, follow: false },
 };
 export default function Privacy() {
   const deliveryActive =

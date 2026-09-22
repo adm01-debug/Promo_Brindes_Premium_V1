@@ -1,13 +1,14 @@
 import type { MetadataRoute } from "next";
+import { isIndexableSite, publicSiteOrigin } from "@/lib/publication";
 
 export default function robots(): MetadataRoute.Robots {
-  const indexable = process.env.PROMO_PREMIUM_INDEXABLE === "true";
+  const indexable = isIndexableSite();
   return {
     rules: {
       userAgent: "*",
       allow: indexable ? "/" : [],
       disallow: indexable ? ["/planejamento"] : "/",
     },
-    sitemap: indexable ? "/sitemap.xml" : undefined,
+    sitemap: indexable ? `${publicSiteOrigin()}/sitemap.xml` : undefined,
   };
 }

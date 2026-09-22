@@ -13,6 +13,8 @@ Data da revisão: 21/09/2026. Esta análise foi executada antes da expansão té
 | Origem externa ou abuso automatizado | Spam, exfiltração ou sobrecarga | Verificação de origem, limite por endereço, timeout e CSP | WAF/rate limit distribuído, logs e modelo de ameaça aprovado |
 | Catálogo/briefing em ambiente de preview | Indexação ou dado comercial público | `noindex` padrão, robots bloqueado e indexação exige variável explícita | Domínio, política, consentimento e release aprovados |
 | Múltiplas réplicas ou reinicialização | Cache de idempotência perdido | Registro e lease no banco sobrevivem ao processo; o rate limit local não é suficiente | WAF/rate limit distribuído, conciliação e rollback operacional exercitados |
+| Filtros rápidos, link para página inexistente e resposta de envio malformada | Resultado antigo substituir consulta nova, `416` parecer indisponibilidade ou `200` sem protocolo parecer sucesso | Cancelamento da consulta antiga, normalização pela contagem da fonte e confirmação apenas com protocolo válido | [Cenários reproduzidos](audit/2026-09-22-regression-scenarios.md) e homologação do receptor comercial |
+| Flag de indexação em ambiente errado | Preview ser indexado ou plano interno ficar público | HTTPS e catálogo da vitrine são pré-condições; sitemap lê peças publicadas; planejamento retorna 404 quando a configuração libera índice | Confirmar domínio próprio, conteúdo, direitos e release antes de ativar a flag |
 
 ## Leitura honesta do plano de 200 etapas
 

@@ -1,0 +1,44 @@
+name: Quality gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CI: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - name: Install dependencies
+        run: npm ci
+      - name: Check types and plan
+        run: |
+          npm run typecheck
+          npm run check:plan
+      - name: Build production site
+        run: npm run build
+      - name: Check public assets and isolated scenarios
+        run: |
+          npm run check:public-secrets
+          npm run check:performance-budget
+          node scripts/audit-plan-scenarios.mjs
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Test browser journeys
+        run: npm run test:e2e

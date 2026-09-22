@@ -805,7 +805,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [x] **088. Implementar URLs de busca.** Manter consulta, filtros e página ao compartilhar ou usar voltar.
   - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Navegação e política de indexação tratam parâmetros consistentemente.
-  - **Constatação:** Busca, categoria, página e ordenação sincronizam URL; os controles criam histórico e popstate restaura a consulta na fonte.
+  - **Constatação:** Busca, categoria, página e ordenação sincronizam URL; popstate restaura a consulta e respostas antigas não sobrescrevem o filtro mais recente.
   - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`, `tests/storefront.spec.ts`.
   - **Próxima ação:** Incluir facetas futuras no mesmo contrato de URL.
   - **Dependências:** 086 (Sem entrega comprovada).
@@ -813,7 +813,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [x] **089. Implementar paginação de servidor.** Buscar apenas o conjunto necessário com cancelamento e limites.
   - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Nenhuma jornada pública baixa milhares de registros para filtrar no cliente.
-  - **Constatação:** A fonte aplica filtro, ordenação, contagem e offset antes de devolver uma página; a UI consulta apenas a página necessária.
+  - **Constatação:** A fonte aplica filtro, ordenação, contagem e offset antes de devolver uma página; uma página acima do total é normalizada para a última página publicada.
   - **Evidências e referências:** `src/app/api/catalog/route.ts`, `src/lib/site-database.ts`, `docs/audit/plan-scenarios.json`.
   - **Próxima ação:** Monitorar a contagem e manter o limite de 24 ao ampliar a curadoria.
   - **Dependências:** 127 (Concluída no escopo).
@@ -1066,8 +1066,8 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **118. Implementar resposta confiável.** Apresentar protocolo somente após confirmação persistida no servidor.
   - **Situação auditada:** Parcial.
   - **Aceite:** Falha permite tentar novamente e sucesso nunca é simulado por temporizador.
-  - **Constatação:** Protocolo é persistido antes da entrega e o estado pendente é recuperável; falta validar o commit e o retorno do CRM homologado.
-  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `docs/audit/plan-database-check.json`.
+  - **Constatação:** Protocolo é persistido antes da entrega; a interface rejeita 2xx sem protocolo válido e mantém o formulário. Falta validar retorno e conciliação do CRM homologado.
+  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `docs/audit/plan-database-check.json`, `tests/storefront.spec.ts`.
   - **Próxima ação:** Testar resposta, erro e conciliação com o receptor comercial aprovado.
   - **Dependências:** 117 (Parcial).
 
@@ -1153,8 +1153,8 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **128. Implementar cache e atualização.** Definir TTL e invalidação por mudanças relevantes de produto e publicação.
   - **Situação auditada:** Parcial.
   - **Aceite:** Produto retirado deixa de aparecer dentro do SLA definido.
-  - **Constatação:** Cache de API usa TTL/SWR; snapshot das páginas não é invalidado por despublicação.
-  - **Evidências e referências:** `src/app/api/catalog/route.ts`, `src/lib/site-database.ts`, `src/app/produtos/[slug]/page.tsx`.
+  - **Constatação:** Cache de API usa TTL/SWR e sitemap consulta a publicação viva; páginas pré-renderizadas ainda dependem do TTL e não têm invalidação imediata por despublicação.
+  - **Evidências e referências:** `src/app/api/catalog/route.ts`, `src/lib/site-database.ts`, `src/app/produtos/[slug]/page.tsx`, `src/app/sitemap.ts`.
   - **Próxima ação:** Definir SLA e testar retirada completa, revalidação e cache.
   - **Dependências:** 127 (Concluída no escopo).
 
@@ -1366,9 +1366,9 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **152. Definir URLs e canonical.** Estabelecer slugs estáveis, redirects e política de facetas.
   - **Situação auditada:** Parcial.
   - **Aceite:** Uma entidade não compete com múltiplas URLs indexáveis equivalentes.
-  - **Constatação:** Slugs e canonical existem; privacidade herda canonical da home e falta política de redirects.
+  - **Constatação:** Home, privacidade, planejamento e fichas têm canonical próprio; falta política de redirects para migrações de slug e aprovação das URLs comerciais.
   - **Evidências e referências:** `src/app/layout.tsx`, `src/app/privacidade/page.tsx`, `src/app/produtos/[slug]/page.tsx`.
-  - **Próxima ação:** Corrigir canonical por rota e documentar redirects/facetas.
+  - **Próxima ação:** Documentar e testar redirects/facetas após aprovar domínio e slugs finais.
   - **Dependências:** 051 (Concluída no escopo), 151 (Parcial).
 
 - [x] **153. Renderizar conteúdo no servidor.** Gerar HTML inicial com proposta, produtos e links úteis.
@@ -1382,9 +1382,9 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **154. Implementar metadados de páginas.** Criar títulos, descrições e imagens sociais específicas.
   - **Situação auditada:** Parcial.
   - **Aceite:** Não aparecem placeholders, números de estoque inventados ou títulos duplicados críticos.
-  - **Constatação:** Títulos/descrições e imagem de produto existem; metadados sociais e canonical ainda não são específicos em todas as rotas.
+  - **Constatação:** Títulos e canonical são específicos por rota; ficha usa descrição e imagem da peça. Metadados sociais dos templates internos e revisão editorial final ainda faltam.
   - **Evidências e referências:** `src/app/layout.tsx`, `src/app/produtos/[slug]/page.tsx`, `src/app/privacidade/page.tsx`.
-  - **Próxima ação:** Completar e verificar metadados por template.
+  - **Próxima ação:** Revisar descrições e metadados sociais por template com conteúdo aprovado.
   - **Dependências:** 152 (Parcial), 153 (Concluída no escopo).
 
 - [ ] **155. Implementar dados estruturados fiéis.** Usar schemas compatíveis com conteúdo real e preço confirmado.
@@ -1398,9 +1398,9 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **156. Implementar sitemap e robots.** Incluir apenas URLs canônicas publicáveis e manter preview fora do índice.
   - **Situação auditada:** Parcial.
   - **Aceite:** Staging permanece noindex e domínio final é validado antes de liberar indexação.
-  - **Constatação:** Prévia bloqueia índice; flag true pode liberar robots sem domínio válido, e sitemap é snapshot.
-  - **Evidências e referências:** `src/app/robots.ts`, `src/app/sitemap.ts`, `src/app/layout.tsx`.
-  - **Próxima ação:** Validar domínio junto da flag e usar apenas URLs efetivamente publicadas.
+  - **Constatação:** Indexação exige flag, URL HTTPS de domínio e configuração da fonte pública; sitemap consulta peças publicadas e planejamento retorna 404 nessa configuração. Posse do domínio e liberação comercial ainda não foram validadas.
+  - **Evidências e referências:** `src/app/robots.ts`, `src/app/sitemap.ts`, `src/app/layout.tsx`, `src/lib/publication.ts`, `docs/audit/2026-09-22-regression-scenarios.md`.
+  - **Próxima ação:** Confirmar posse do domínio, conteúdo, direitos e gates comerciais antes de ativar a flag em produção.
   - **Dependências:** 152 (Parcial), 154 (Parcial).
 
 - [ ] **157. Produzir páginas editoriais úteis.** Escrever guias de ocasião, técnica e planejamento com participação comercial.
@@ -1651,15 +1651,15 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **185. Testar navegadores e dispositivos.** Verificar Chromium, Safari/WebKit e Firefox em larguras acordadas.
   - **Situação auditada:** Parcial.
   - **Aceite:** Matriz registra versões, tarefas cobertas e falhas corrigidas.
-  - **Constatação:** Configuração e resultados cobrem Chromium; WebKit, Firefox e aparelhos reais faltam.
-  - **Evidências e referências:** `playwright.config.ts`, `docs/VALIDACAO.md`.
+  - **Constatação:** CI executa Chromium serialmente em push/PR; WebKit, Firefox e aparelhos reais ainda faltam na matriz.
+  - **Evidências e referências:** `playwright.config.ts`, `docs/VALIDACAO.md`, `.github/workflows/quality.yml`.
   - **Próxima ação:** Completar matriz com versões, tarefas e correções.
   - **Dependências:** 181 (Concluída no escopo).
 
 - [ ] **186. Testar jornadas com rede limitada.** Simular lentidão, offline e falha de imagem ou API.
   - **Situação auditada:** Parcial.
   - **Aceite:** Feedback mantém contexto e oferece recuperação sem sucesso fictício.
-  - **Constatação:** A jornada E2E cobre API 503 e offline com seleção preservada, além de mídia 403 com fallback; ainda falta perfil de lentidão em navegadores e dispositivos representativos.
+  - **Constatação:** A jornada E2E cobre API 503, offline, resposta atrasada e mídia 403 com contexto preservado; ainda falta perfil de rede limitada em navegadores e dispositivos representativos.
   - **Evidências e referências:** `tests/public-api.spec.ts`, `tests/storefront.spec.ts`.
   - **Próxima ação:** Executar cenários de lentidão em navegadores e dispositivos representativos.
   - **Dependências:** 168 (Concluída no escopo).

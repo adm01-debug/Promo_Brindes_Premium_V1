@@ -1,15 +1,39 @@
 import type { MetadataRoute } from "next";
-import { products } from "@/lib/catalog";
+import { getSiteCatalogPage } from "@/lib/site-database";
+import { isIndexableSite, publicSiteOrigin } from "@/lib/publication";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const siteUrl = process.env.PROMO_PREMIUM_SITE_URL;
-  if (process.env.PROMO_PREMIUM_INDEXABLE !== "true" || !siteUrl) return [];
-  const base = siteUrl.replace(/\/$/, "");
-  return [
-    { url: base, lastModified: new Date("2026-09-21") },
-    ...products.map((product) => ({
-      url: `${base}/produtos/${product.slug}`,
-      lastModified: new Date(product.sourceDate),
-    })),
-  ];
+export const revalidate = 300;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const origin = publicSiteOrigin();
+  if (!origin || !isIndexableSite()) return [];
+  try {
+    const entries: MetadataRoute.Sitemap = [{ url: origin }];
+    const seen = new Set<string>();
+    let page = 1;
+    let totalPages = 1;
+    let publishedTotal = 0;
+    do {
+      const result = await getSiteCatalogPage({ page, pageSize: 24 });
+      if (result.page !== page || (result.total > 0 && !result.items.length))
+        return [];
+      totalPages = result.totalPages;
+      publishedTotal = result.total;
+      for (const product of result.items) {
+        if (seen.has(product.slug)) return [];
+        const lastModified = new Date(product.sourceDate);
+        if (Number.isNaN(lastModified.getTime())) return [];
+        seen.add(product.slug);
+        entries.push({
+          url: `${origin}/produtos/${product.slug}`,
+          lastModified,
+        });
+      }
+      page++;
+    } while (page <= totalPages);
+    if (seen.size !== publishedTotal) return [];
+    return entries;
+  } catch {
+    return [];
+  }
 }

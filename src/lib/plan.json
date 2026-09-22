@@ -2324,7 +2324,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Busca, categoria, página e ordenação sincronizam URL; os controles criam histórico e popstate restaura a consulta na fonte.",
+        "finding": "Busca, categoria, página e ordenação sincronizam URL; popstate restaura a consulta e respostas antigas não sobrescrevem o filtro mais recente.",
         "nextAction": "Incluir facetas futuras no mesmo contrato de URL.",
         "evidence": [
           "src/components/Storefront.tsx",
@@ -2349,7 +2349,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "A fonte aplica filtro, ordenação, contagem e offset antes de devolver uma página; a UI consulta apenas a página necessária.",
+        "finding": "A fonte aplica filtro, ordenação, contagem e offset antes de devolver uma página; uma página acima do total é normalizada para a última página publicada.",
         "nextAction": "Monitorar a contagem e manter o limite de 24 ao ampliar a curadoria.",
         "evidence": [
           "src/app/api/catalog/route.ts",
@@ -3066,11 +3066,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Protocolo é persistido antes da entrega e o estado pendente é recuperável; falta validar o commit e o retorno do CRM homologado.",
+        "finding": "Protocolo é persistido antes da entrega; a interface rejeita 2xx sem protocolo válido e mantém o formulário. Falta validar retorno e conciliação do CRM homologado.",
         "nextAction": "Testar resposta, erro e conciliação com o receptor comercial aprovado.",
         "evidence": [
           "src/app/api/briefings/route.ts",
-          "docs/audit/plan-database-check.json"
+          "docs/audit/plan-database-check.json",
+          "tests/storefront.spec.ts"
         ]
       }
     },
@@ -3315,12 +3316,13 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Cache de API usa TTL/SWR; snapshot das páginas não é invalidado por despublicação.",
+        "finding": "Cache de API usa TTL/SWR e sitemap consulta a publicação viva; páginas pré-renderizadas ainda dependem do TTL e não têm invalidação imediata por despublicação.",
         "nextAction": "Definir SLA e testar retirada completa, revalidação e cache.",
         "evidence": [
           "src/app/api/catalog/route.ts",
           "src/lib/site-database.ts",
-          "src/app/produtos/[slug]/page.tsx"
+          "src/app/produtos/[slug]/page.tsx",
+          "src/app/sitemap.ts"
         ]
       }
     },
@@ -3908,8 +3910,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Slugs e canonical existem; privacidade herda canonical da home e falta política de redirects.",
-        "nextAction": "Corrigir canonical por rota e documentar redirects/facetas.",
+        "finding": "Home, privacidade, planejamento e fichas têm canonical próprio; falta política de redirects para migrações de slug e aprovação das URLs comerciais.",
+        "nextAction": "Documentar e testar redirects/facetas após aprovar domínio e slugs finais.",
         "evidence": [
           "src/app/layout.tsx",
           "src/app/privacidade/page.tsx",
@@ -3959,8 +3961,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Títulos/descrições e imagem de produto existem; metadados sociais e canonical ainda não são específicos em todas as rotas.",
-        "nextAction": "Completar e verificar metadados por template.",
+        "finding": "Títulos e canonical são específicos por rota; ficha usa descrição e imagem da peça. Metadados sociais dos templates internos e revisão editorial final ainda faltam.",
+        "nextAction": "Revisar descrições e metadados sociais por template com conteúdo aprovado.",
         "evidence": [
           "src/app/layout.tsx",
           "src/app/produtos/[slug]/page.tsx",
@@ -4011,12 +4013,14 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Prévia bloqueia índice; flag true pode liberar robots sem domínio válido, e sitemap é snapshot.",
-        "nextAction": "Validar domínio junto da flag e usar apenas URLs efetivamente publicadas.",
+        "finding": "Indexação exige flag, URL HTTPS de domínio e configuração da fonte pública; sitemap consulta peças publicadas e planejamento retorna 404 nessa configuração. Posse do domínio e liberação comercial ainda não foram validadas.",
+        "nextAction": "Confirmar posse do domínio, conteúdo, direitos e gates comerciais antes de ativar a flag em produção.",
         "evidence": [
           "src/app/robots.ts",
           "src/app/sitemap.ts",
-          "src/app/layout.tsx"
+          "src/app/layout.tsx",
+          "src/lib/publication.ts",
+          "docs/audit/2026-09-22-regression-scenarios.md"
         ]
       }
     },
@@ -4732,11 +4736,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "Configuração e resultados cobrem Chromium; WebKit, Firefox e aparelhos reais faltam.",
+        "finding": "CI executa Chromium serialmente em push/PR; WebKit, Firefox e aparelhos reais ainda faltam na matriz.",
         "nextAction": "Completar matriz com versões, tarefas e correções.",
         "evidence": [
           "playwright.config.ts",
-          "docs/VALIDACAO.md"
+          "docs/VALIDACAO.md",
+          ".github/workflows/quality.yml"
         ]
       }
     },
@@ -4756,7 +4761,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "A jornada E2E cobre API 503 e offline com seleção preservada, além de mídia 403 com fallback; ainda falta perfil de lentidão em navegadores e dispositivos representativos.",
+        "finding": "A jornada E2E cobre API 503, offline, resposta atrasada e mídia 403 com contexto preservado; ainda falta perfil de rede limitada em navegadores e dispositivos representativos.",
         "nextAction": "Executar cenários de lentidão em navegadores e dispositivos representativos.",
         "evidence": [
           "tests/public-api.spec.ts",

@@ -118,6 +118,18 @@ function countFrom(response: Response, fallback: number) {
   return total && /^\d+$/.test(total) ? Number(total) : fallback;
 }
 
+async function fetchCatalogPage(endpoint: URL, key: string) {
+  return fetch(endpoint, {
+    headers: {
+      apikey: key,
+      Accept: "application/json",
+      Prefer: "count=exact",
+    },
+    next: { revalidate: 300 },
+    signal: AbortSignal.timeout(8000),
+  });
+}
+
 function safeSearch(value: string) {
   return value
     .normalize("NFD")
@@ -161,15 +173,21 @@ export async function getSiteCatalogPage(
   if (!config) return queryCatalog(input, products);
   const endpoint = new URL("/rest/v1/premium_catalog_items", config.url);
   const resolved = applyQuery(endpoint, input);
-  const response = await fetch(endpoint, {
-    headers: {
-      apikey: config.key,
-      Accept: "application/json",
-      Prefer: "count=exact",
-    },
-    next: { revalidate: 300 },
-    signal: AbortSignal.timeout(8000),
-  });
+  let response = await fetchCatalogPage(endpoint, config.key);
+  let resolvedPage = resolved.page;
+  if (response.status === 416 && resolved.page > 1) {
+    const range = response.headers.get("content-range");
+    const match = /^\*\/(\d+)$/.exec(range ?? "");
+    const total = match ? Number(match[1]) : NaN;
+    if (!Number.isSafeInteger(total))
+      throw new Error("Site catalog did not return an exact total.");
+    resolvedPage = Math.max(1, Math.ceil(total / resolved.pageSize));
+    endpoint.searchParams.set(
+      "offset",
+      String((resolvedPage - 1) * resolved.pageSize),
+    );
+    response = await fetchCatalogPage(endpoint, config.key);
+  }
   if (!response.ok) throw new Error("Site catalog is unavailable.");
   const rows: unknown = await response.json();
   if (!Array.isArray(rows) || !rows.every(isCatalogRow))
@@ -179,7 +197,7 @@ export async function getSiteCatalogPage(
   return {
     contractVersion: CATALOG_CONTRACT_VERSION,
     items: rows.map(toProduct),
-    page: Math.min(resolved.page, totalPages),
+    page: Math.min(resolvedPage, totalPages),
     pageSize: resolved.pageSize,
     total,
     totalPages,

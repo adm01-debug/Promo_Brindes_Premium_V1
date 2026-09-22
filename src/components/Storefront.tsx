@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -61,6 +61,8 @@ type BriefingDraft = {
   message: string;
 };
 type DiscoveryHistoryMode = "push" | "replace";
+const validProtocol = (value: unknown): value is string =>
+  typeof value === "string" && /^PB-[A-Z0-9]{12}$/.test(value);
 
 const emptyBriefingDraft: BriefingDraft = {
   name: "",
@@ -101,6 +103,8 @@ export default function Storefront({
   const [catalog, setCatalog] = useState<CatalogPage | null>(initialCatalog);
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [catalogError, setCatalogError] = useState(!initialCatalog);
+  const catalogRequestId = useRef(0);
+  const catalogRequestController = useRef<AbortController | null>(null);
   const [networkOnline, setNetworkOnline] = useState(true);
   const [unavailableImages, setUnavailableImages] = useState<Set<string>>(
     () => new Set(),
@@ -224,7 +228,10 @@ export default function Storefront({
     readDiscoveryUrl();
     const onPopState = () => readDiscoveryUrl(true);
     window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+      catalogRequestController.current?.abort();
+    };
     // The URL is the source of truth for this one-time listener.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -271,6 +278,7 @@ export default function Storefront({
       ),
     [catalog, onlyFavorites, favorites],
   );
+  const resultCount = onlyFavorites ? filtered.length : (catalog?.total ?? 0);
   const visible =
     expanded || category !== "Todos" || search || onlyFavorites
       ? filtered
@@ -318,6 +326,10 @@ export default function Storefront({
     nextSort = sort,
     historyMode: DiscoveryHistoryMode = "push",
   ) {
+    const requestId = ++catalogRequestId.current;
+    catalogRequestController.current?.abort();
+    const controller = new AbortController();
+    catalogRequestController.current = controller;
     const params = new URLSearchParams({ page: String(Math.max(1, nextPage)) });
     if (nextSearch.trim()) params.set("q", nextSearch.trim());
     if (nextCategory !== "Todos") params.set("category", nextCategory);
@@ -339,9 +351,11 @@ export default function Storefront({
     try {
       const response = await fetch(`/api/catalog?${params}`, {
         headers: { Accept: "application/json" },
+        signal: controller.signal,
       });
       if (!response.ok) throw new Error("Catalog request failed");
       const next = (await response.json()) as CatalogPage;
+      if (requestId !== catalogRequestId.current) return;
       setCatalog(next);
       setKnownProducts((current) => ({
         ...current,
@@ -358,9 +372,12 @@ export default function Storefront({
         "replace",
       );
     } catch {
-      setCatalogError(true);
+      if (requestId === catalogRequestId.current) setCatalogError(true);
     } finally {
-      setCatalogLoading(false);
+      if (requestId === catalogRequestId.current) {
+        catalogRequestController.current = null;
+        setCatalogLoading(false);
+      }
     }
   }
   const openProject = () => {
@@ -470,7 +487,10 @@ export default function Storefront({
           setStep(3);
           return;
         }
-        if (result.error === "BRIEFING_PENDING" && result.protocol) {
+        if (
+          result.error === "BRIEFING_PENDING" &&
+          validProtocol(result.protocol)
+        ) {
           setProtocol(result.protocol);
           setDeliveryPending(true);
           setStep(3);
@@ -478,12 +498,16 @@ export default function Storefront({
         }
         throw new Error(result.message || result.error || "Falha ao enviar");
       }
-      setProtocol(result.protocol ?? null);
+      if (!validProtocol(result.protocol))
+        throw new Error("BRIEFING_PROTOCOL_INVALID");
+      setProtocol(result.protocol);
       setDeliveryPending(result.pending === true);
       setStep(3);
-    } catch {
+    } catch (error) {
       setNotice(
-        "Não foi possível enviar agora. Revise sua conexão e tente novamente.",
+        error instanceof Error && error.message === "BRIEFING_PROTOCOL_INVALID"
+          ? "Não foi possível confirmar o protocolo. Tente novamente."
+          : "Não foi possível enviar agora. Revise sua conexão e tente novamente.",
       );
     } finally {
       setSubmitting(false);
@@ -560,7 +584,10 @@ export default function Storefront({
       <main id="conteudo">
         <section className="hero" aria-labelledby="hero-title">
           {imageIsUnavailable("/images/hero-gifting.webp") ? (
-            <div className="media-fallback hero-media-fallback" aria-hidden="true" />
+            <div
+              className="media-fallback hero-media-fallback"
+              aria-hidden="true"
+            />
           ) : (
             <Image
               className="hero-image"
@@ -703,8 +730,11 @@ export default function Storefront({
             <div className="active-filters">
               <span>
                 {onlyFavorites ? "Seus favoritos" : `Busca: “${search}”`} ·{" "}
-                {catalog?.total ?? 0}{" "}
-                {(catalog?.total ?? 0) === 1 ? "peça" : "peças"}
+                {catalogLoading
+                  ? "atualizando…"
+                  : catalogError
+                    ? "contagem indisponível"
+                    : `${resultCount} ${resultCount === 1 ? "peça" : "peças"}`}
               </span>
               <button
                 onClick={() => {
@@ -716,85 +746,96 @@ export default function Storefront({
               </button>
             </div>
           )}
-          <div className="product-grid">
-            {visible.map((p) => (
-              <article className="product-card" key={p.id}>
-                <div className="product-visual">
-                  <button
-                    className="product-image-button"
-                    onClick={() => setDetail(p)}
-                    aria-label={`Conhecer ${p.name}`}
-                  >
-                    {imageIsUnavailable(p.image) ? (
-                      <span
-                        className="media-fallback product-media-fallback"
-                        data-testid="media-fallback"
-                        role="img"
-                        aria-label={`Imagem de ${p.name} temporariamente indisponível`}
-                      >
-                        <Gift aria-hidden="true" size={22} />
-                        <span>Imagem indisponível</span>
-                      </span>
-                    ) : (
-                      <Image
-                        src={p.image}
-                        alt={p.originalName}
-                        fill
-                        sizes="(max-width: 850px) 45vw, 23vw"
-                        onError={() => markImageUnavailable(p.image)}
-                      />
-                    )}
-                  </button>
-                  <span className="product-tag">
-                    {p.category === "Kits & experiências"
-                      ? "O GESTO COMPLETO"
-                      : p.category.toUpperCase()}
-                  </span>
-                  <button
-                    className={`favorite-button ${favorites.includes(p.id) ? "is-favorite" : ""}`}
-                    aria-label={`${favorites.includes(p.id) ? "Remover" : "Adicionar"} ${p.name} ${favorites.includes(p.id) ? "dos" : "aos"} favoritos`}
-                    aria-pressed={favorites.includes(p.id)}
-                    onClick={() => toggleFavorite(p)}
-                  >
-                    <Heart size={18} />
-                  </button>
-                  <span className="product-index">
-                    Nº{" "}
-                    {(
-                      ((catalog?.page ?? 1) - 1) * (catalog?.pageSize ?? 12) +
-                      filtered.indexOf(p) +
-                      1
-                    )
-                      .toString()
-                      .padStart(2, "0")}
-                  </span>
-                </div>
-                <div className="product-caption">
-                  <div>
-                    <p className="product-category">{p.category}</p>
-                    <h3>
-                      <button onClick={() => setDetail(p)}>{p.name}</button>
-                    </h3>
-                    <p className="product-tagline">{p.tagline}</p>
-                    <Link
-                      className="product-permalink"
-                      href={`/produtos/${p.slug}`}
+          {catalogLoading && (
+            <p className="catalog-loading" role="status">
+              Atualizando curadoria…
+            </p>
+          )}
+          <div className="product-grid" aria-busy={catalogLoading}>
+            {!catalogError &&
+              !catalogLoading &&
+              visible.map((p) => (
+                <article className="product-card" key={p.id}>
+                  <div className="product-visual">
+                    <button
+                      className="product-image-button"
+                      onClick={() => setDetail(p)}
+                      aria-label={`Conhecer ${p.name}`}
                     >
-                      Ver ficha da peça <ArrowRight size={13} />
-                    </Link>
+                      {imageIsUnavailable(p.image) ? (
+                        <span
+                          className="media-fallback product-media-fallback"
+                          data-testid="media-fallback"
+                          role="img"
+                          aria-label={`Imagem de ${p.name} temporariamente indisponível`}
+                        >
+                          <Gift aria-hidden="true" size={22} />
+                          <span>Imagem indisponível</span>
+                        </span>
+                      ) : (
+                        <Image
+                          src={p.image}
+                          alt={p.originalName}
+                          fill
+                          sizes="(max-width: 850px) 45vw, 23vw"
+                          onError={() => markImageUnavailable(p.image)}
+                        />
+                      )}
+                    </button>
+                    <span className="product-tag">
+                      {p.category === "Kits & experiências"
+                        ? "O GESTO COMPLETO"
+                        : p.category.toUpperCase()}
+                    </span>
+                    <button
+                      className={`favorite-button ${favorites.includes(p.id) ? "is-favorite" : ""}`}
+                      aria-label={`${favorites.includes(p.id) ? "Remover" : "Adicionar"} ${p.name} ${favorites.includes(p.id) ? "dos" : "aos"} favoritos`}
+                      aria-pressed={favorites.includes(p.id)}
+                      onClick={() => toggleFavorite(p)}
+                    >
+                      <Heart size={18} />
+                    </button>
+                    <span className="product-index">
+                      Nº{" "}
+                      {(
+                        ((catalog?.page ?? 1) - 1) * (catalog?.pageSize ?? 12) +
+                        filtered.indexOf(p) +
+                        1
+                      )
+                        .toString()
+                        .padStart(2, "0")}
+                    </span>
                   </div>
-                  <button
-                    className={`add-button ${selected[p.id] ? "is-added" : ""}`}
-                    aria-label={`${selected[p.id] ? "Ver seleção com" : "Adicionar"} ${p.name}${selected[p.id] ? "" : " à seleção"}`}
-                    onClick={() =>
-                      selected[p.id] ? openProject() : addProduct(p)
-                    }
-                  >
-                    {selected[p.id] ? <Check size={19} /> : <Plus size={20} />}
-                  </button>
-                </div>
-              </article>
-            ))}
+                  <div className="product-caption">
+                    <div>
+                      <p className="product-category">{p.category}</p>
+                      <h3>
+                        <button onClick={() => setDetail(p)}>{p.name}</button>
+                      </h3>
+                      <p className="product-tagline">{p.tagline}</p>
+                      <Link
+                        className="product-permalink"
+                        href={`/produtos/${p.slug}`}
+                      >
+                        Ver ficha da peça <ArrowRight size={13} />
+                      </Link>
+                    </div>
+                    <button
+                      className={`add-button ${selected[p.id] ? "is-added" : ""}`}
+                      aria-label={`${selected[p.id] ? "Ver seleção com" : "Adicionar"} ${p.name}${selected[p.id] ? "" : " à seleção"}`}
+                      onClick={() =>
+                        selected[p.id] ? openProject() : addProduct(p)
+                      }
+                    >
+                      {selected[p.id] ? (
+                        <Check size={19} />
+                      ) : (
+                        <Plus size={20} />
+                      )}
+                    </button>
+                  </div>
+                </article>
+              ))}
           </div>
           {catalogError ? (
             <div className="empty-state" role="status">
@@ -845,45 +886,55 @@ export default function Storefront({
               </div>
             )
           )}
-          {!expanded && !search && !onlyFavorites && category === "Todos" && (
-            <div className="catalog-more">
-              <button className="text-button" onClick={() => setExpanded(true)}>
-                Conheça toda a seleção <ArrowRight size={17} />
-              </button>
-              <span>8 PEÇAS. MUITAS POSSIBILIDADES.</span>
-            </div>
-          )}
-          {expanded && !onlyFavorites && (catalog?.totalPages ?? 1) > 1 && (
-            <nav
-              className="catalog-pagination"
-              aria-label="Paginação da curadoria"
-            >
-              <button
-                className="text-button"
-                disabled={(catalog?.page ?? 1) <= 1 || catalogLoading}
-                onClick={() =>
-                  void loadCatalog(search, category, (catalog?.page ?? 1) - 1)
-                }
+          {!catalogError &&
+            !expanded &&
+            !search &&
+            !onlyFavorites &&
+            category === "Todos" && (
+              <div className="catalog-more">
+                <button
+                  className="text-button"
+                  onClick={() => setExpanded(true)}
+                >
+                  Conheça toda a seleção <ArrowRight size={17} />
+                </button>
+                <span>8 PEÇAS. MUITAS POSSIBILIDADES.</span>
+              </div>
+            )}
+          {!catalogError &&
+            expanded &&
+            !onlyFavorites &&
+            (catalog?.totalPages ?? 1) > 1 && (
+              <nav
+                className="catalog-pagination"
+                aria-label="Paginação da curadoria"
               >
-                Anterior
-              </button>
-              <span>
-                Página {catalog?.page} de {catalog?.totalPages}
-              </span>
-              <button
-                className="text-button"
-                disabled={
-                  (catalog?.page ?? 1) >= (catalog?.totalPages ?? 1) ||
-                  catalogLoading
-                }
-                onClick={() =>
-                  void loadCatalog(search, category, (catalog?.page ?? 1) + 1)
-                }
-              >
-                Próxima
-              </button>
-            </nav>
-          )}
+                <button
+                  className="text-button"
+                  disabled={(catalog?.page ?? 1) <= 1 || catalogLoading}
+                  onClick={() =>
+                    void loadCatalog(search, category, (catalog?.page ?? 1) - 1)
+                  }
+                >
+                  Anterior
+                </button>
+                <span>
+                  Página {catalog?.page} de {catalog?.totalPages}
+                </span>
+                <button
+                  className="text-button"
+                  disabled={
+                    (catalog?.page ?? 1) >= (catalog?.totalPages ?? 1) ||
+                    catalogLoading
+                  }
+                  onClick={() =>
+                    void loadCatalog(search, category, (catalog?.page ?? 1) + 1)
+                  }
+                >
+                  Próxima
+                </button>
+              </nav>
+            )}
         </section>
 
         <section
@@ -1449,8 +1500,9 @@ export default function Storefront({
                 Preparar meu briefing <ArrowRight size={17} />
               </button>
               <p className="fine-print">
-                Nesta prévia, você poderá baixar seu briefing. Nenhum pedido
-                será enviado.
+                {deliveryConfigured
+                  ? "O envio registra uma solicitação para análise comercial. Não é um pedido nem reserva estoque."
+                  : "Nesta prévia, você poderá baixar seu briefing. Nenhum pedido será enviado."}
               </p>
             </>
           )}
