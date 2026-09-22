@@ -322,9 +322,11 @@ test("página de produto é acessível diretamente e a prévia permanece bloquea
   expect(await robots.text()).toContain("Disallow: /");
   const sitemap = await request.get("/sitemap.xml");
   expect(await sitemap.text()).not.toContain(`/produtos/${slug}`);
-  expect(
-    (await request.get("/")).headers()["content-security-policy"],
-  ).toContain("frame-ancestors 'none'");
+  const home = await request.get("/");
+  expect(home.headers()["content-security-policy"]).toContain(
+    "frame-ancestors 'none'",
+  );
+  expect(home.headers()["x-robots-tag"]).toContain("noindex");
 });
 
 test("consulta compartilhável abre a curadoria filtrada", async ({ page }) => {

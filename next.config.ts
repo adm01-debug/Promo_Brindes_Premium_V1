@@ -1,4 +1,7 @@
 import type { NextConfig } from "next";
+
+const blockIndexing = process.env.PROMO_PREMIUM_INDEXABLE !== "true";
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   async headers() {
@@ -18,6 +21,9 @@ const nextConfig: NextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
+          ...(blockIndexing
+            ? [{ key: "X-Robots-Tag", value: "noindex, nofollow" }]
+            : []),
         ],
       },
     ];
