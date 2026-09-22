@@ -31,7 +31,7 @@ Node 22.12+ ou 24 LTS recomendado. O projeto usa Next.js 16, React 19 e TypeScri
 
 ## Limites desta entrega
 
-Nesta instalação, a versão **não envia leads, não registra propostas e não reserva estoque**. O formulário gera um arquivo no navegador e informa isso explicitamente. O endpoint de briefing só habilita entrega quando `BRIEFING_DELIVERY_ENABLED=true` e há um receptor HTTPS aprovado em `BRIEFING_WEBHOOK_URL`; sem as duas condições, ele responde indisponibilidade e a interface permanece em download local. A curadoria contém oito peças sincronizadas no banco da vitrine, que alimenta home, fichas e validação de briefing. Valores, condições e disponibilidade devem ser confirmados pelo comercial.
+Nesta instalação, a versão **não envia leads, não registra propostas e não reserva estoque**. O formulário gera um arquivo no navegador e informa isso explicitamente. O endpoint de briefing só habilita entrega quando `BRIEFING_DELIVERY_ENABLED=true`, há um receptor HTTPS aprovado em `BRIEFING_WEBHOOK_URL`, banco dedicado configurado e cabeçalho de IP confiável declarado em `PROMO_PREMIUM_CLIENT_IP_HEADER`; sem essas condições, ele responde indisponibilidade e a interface permanece em download local. A curadoria contém oito peças sincronizadas no banco da vitrine, que alimenta home, fichas e validação de briefing. Valores, condições e disponibilidade devem ser confirmados pelo comercial.
 
 A imagem de campanha foi gerada por IA e é conceitual. Os cards usam fotografias reais de fornecedor; direitos de publicação comercial devem ser confirmados. Não foram alterados schema, policies, dados ou serviços do sistema comercial. O site está `noindex` e não foi publicado remotamente.
 

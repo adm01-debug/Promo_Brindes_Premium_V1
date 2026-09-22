@@ -81,6 +81,7 @@ function request(key, body = payload, headers = {}) {
     headers: {
       "Content-Type": "application/json",
       "Idempotency-Key": key,
+      "x-vercel-forwarded-for": "203.0.113.42",
       ...headers,
     },
     body: JSON.stringify(body),
@@ -89,9 +90,17 @@ function request(key, body = payload, headers = {}) {
 
 function deliveryHarness() {
   const records = new Map();
+  const rateAttempts = new Map();
   let webhookCalls = 0;
   const fetcher = async (input, init = {}) => {
     const url = new URL(String(input));
+    if (url.pathname.endsWith("/allow_premium_briefing_attempt")) {
+      const { p_client_hash: hash } = JSON.parse(String(init.body));
+      const count = rateAttempts.get(hash) ?? 0;
+      if (count >= 5) return Response.json(false);
+      rateAttempts.set(hash, count + 1);
+      return Response.json(true);
+    }
     if (url.pathname === "/rest/v1/premium_catalog_items")
       return new Response(JSON.stringify([item]), {
         headers: { "content-range": "0-0/1" },
@@ -162,6 +171,7 @@ const activeEnv = {
   NODE_ENV: "development",
   BRIEFING_DELIVERY_ENABLED: "true",
   BRIEFING_WEBHOOK_URL: "http://localhost:3999/mock",
+  PROMO_PREMIUM_CLIENT_IP_HEADER: "x-vercel-forwarded-for",
   SUPABASE_PROJECT_REF: project,
   SUPABASE_URL: `https://${project}.supabase.co`,
   SUPABASE_PUBLISHABLE_KEY: "synthetic-public",
@@ -211,6 +221,74 @@ await probe("AUD-03-body-without-content-length", 413, async () => {
       request("audit-large-body-0001", {
         ...payload,
         unexpected: "x".repeat(20000),
+      }),
+    )
+  ).status;
+});
+
+await probe("AUD-16-stream-body-limit", "413;true", async () => {
+  let cancelled = false;
+  const stream = new ReadableStream({
+    pull(controller) {
+      controller.enqueue(new Uint8Array(8000));
+    },
+    cancel() {
+      cancelled = true;
+    },
+  });
+  const api = load(
+    "src/app/api/briefings/route.ts",
+    activeEnv,
+    deliveryHarness().fetcher,
+  );
+  const response = await api.POST(
+    new NextRequest("http://localhost:3111/api/briefings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Idempotency-Key": "audit-stream-0001",
+        "x-vercel-forwarded-for": "203.0.113.42",
+      },
+      body: stream,
+      duplex: "half",
+    }),
+  );
+  return `${response.status};${cancelled}`;
+});
+
+await probe("AUD-14-shared-rate-limit", "422,422,422,422,422,429", async () => {
+  const harness = deliveryHarness();
+  const first = load(
+    "src/app/api/briefings/route.ts",
+    activeEnv,
+    harness.fetcher,
+  );
+  const second = load(
+    "src/app/api/briefings/route.ts",
+    activeEnv,
+    harness.fetcher,
+  );
+  const statuses = [];
+  for (let index = 0; index < 6; index += 1) {
+    const api = index % 2 ? second : first;
+    const response = await api.POST(
+      request(`audit-rate-${String(index).padStart(12, "0")}`, {}),
+    );
+    statuses.push(response.status);
+  }
+  return statuses.join(",");
+});
+
+await probe("AUD-15-missing-trusted-address", 503, async () => {
+  const api = load(
+    "src/app/api/briefings/route.ts",
+    activeEnv,
+    deliveryHarness().fetcher,
+  );
+  return (
+    await api.POST(
+      request("audit-no-address-0001", payload, {
+        "x-vercel-forwarded-for": "untrusted, 203.0.113.42",
       }),
     )
   ).status;

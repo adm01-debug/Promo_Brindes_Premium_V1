@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-22T14:09:28.490Z",
+  "generatedAt": "2026-09-22T14:23:13.530Z",
   "scope": "Isolated source modules; synthetic inputs; no external network or database writes",
   "results": [
     {
@@ -18,6 +18,24 @@
       "id": "AUD-03-body-without-content-length",
       "expected": 413,
       "observed": 413,
+      "passed": true
+    },
+    {
+      "id": "AUD-16-stream-body-limit",
+      "expected": "413;true",
+      "observed": "413;true",
+      "passed": true
+    },
+    {
+      "id": "AUD-14-shared-rate-limit",
+      "expected": "422,422,422,422,422,429",
+      "observed": "422,422,422,422,422,429",
+      "passed": true
+    },
+    {
+      "id": "AUD-15-missing-trusted-address",
+      "expected": 503,
+      "observed": 503,
       "passed": true
     },
     {
@@ -51,6 +69,6 @@
       "passed": true
     }
   ],
-  "passed": 8,
+  "passed": 11,
   "failed": 0
 }

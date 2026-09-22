@@ -11,7 +11,7 @@ Esses números contam critérios do plano, não esforço restante ou porcentagem
 - Foram lidos os **200 títulos, ações, critérios, dependências e estados anteriores**. Cada etapa recebeu uma constatação individual, referências e próxima ação em [`src/lib/plan.json`](../src/lib/plan.json).
 - Foram confrontados componentes, rotas, helpers, configurações, migration, scripts, três arquivos de testes e documentação de pesquisa/arquitetura/validação. Não se atribuiu conclusão apenas à existência de um arquivo.
 - O grafo local orientou o levantamento de relações; arquivos atuais prevaleceram quando houve alteração posterior à extração. Não se confundiu esse grafo com o artefato histórico do aplicativo comercial.
-- Foram executados oito cenários sintéticos em módulos TypeScript e cinco em Chromium local. Os oito sintéticos confirmam idempotência concorrente, conflito de payload, limite real de corpo, data, paginação e allowlist de host; os cinco de browser verificam as correções de jornada. Não são uma certificação de produção.
+- Foram executados onze cenários sintéticos em módulos TypeScript e cinco em Chromium local. Os sintéticos confirmam idempotência concorrente, conflito de payload, limite de corpo com cancelamento do fluxo, data, paginação, allowlist de host e limite compartilhado entre instâncias; os cinco de browser verificam as correções de jornada. Não são uma certificação de produção.
 - O PostgreSQL da vitrine foi consultado para conferir migrations, contagens, RLS e privilégios. As funções de entrega foram exercitadas dentro de uma transação revertida; nenhum dado comercial foi mantido e nenhuma mensagem foi enviada.
 - Referências externas e estudos de mercado foram avaliados como evidência documental histórica de 20/09; não houve nova pesquisa de mercado, entrevistas ou auditoria administrativa do banco operacional nesta revisão.
 
@@ -70,7 +70,7 @@ Os endpoints foram carregados com `fetch` simulado e as interações de envio fo
 |---|---|---|---|
 | AUD-01 | P0 antes de ativar envio · 117, 134 | A reprodução inicial duplicava webhook sob concorrência. O cenário atual retorna `201` e `202`, com uma chamada externa. | Persistência/hash e lease já implementados; exercer contra CRM homologado antes de ativar. |
 | AUD-02 | P0 antes de ativar envio · 134 | A reprodução inicial aceitava conteúdo divergente. O cenário atual retorna `409`. | Manter contrato e testar adaptador comercial. |
-| AUD-03 | P0 antes de ativar envio · 144 | O limite dependia de `Content-Length`. O cenário atual mede bytes e retorna `413`. | Substituir rate limit local por controle distribuído antes de produção. |
+| AUD-03 | P0 antes de ativar envio · 144 | O limite dependia de `Content-Length`. O cenário atual mede bytes e retorna `413`; o limite distribuído também foi instalado no banco. | Validar cabeçalho de IP e WAF no proxy real antes de produção. |
 | AUD-04 | P1 · 117, 118 | URL inválida aparecia configurada. A capacidade e o POST agora usam a mesma validação; localhost só é aceito no desenvolvimento. | Definir receptor e política aprovados. |
 | AUD-05 | P1 · 144 | Sufixo de data era truncado. A entrada integral agora é rejeitada. | Definir regras comerciais de data além do calendário. |
 | AUD-06 | P0 antes de ampliar catálogo · 089, 127 | Fonte de 30 registros era truncada. O cenário atual confirma total 30 com paginação/contagem na fonte. | Testar expansão de curadoria com dados aprovados. |
@@ -82,7 +82,7 @@ Os endpoints foram carregados com `fetch` simulado e as interações de envio fo
 
 Os controles **AUD-07 e AUD-08 passam**: projeto operacional e host semelhante são rejeitados antes da leitura do catálogo.
 
-A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, JavaScript, fontes e chunks, oito cenários sintéticos, cinco sondas de browser e testes E2E em Chromium. A cobertura inclui API 503, offline, mídia 403, resposta atrasada, página fora do intervalo, protocolo ausente e remoção de SKU. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
+A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, JavaScript, fontes e chunks, onze cenários sintéticos, cinco sondas de browser e testes E2E em Chromium. A cobertura inclui API 503, offline, mídia 403, resposta atrasada, página fora do intervalo, protocolo ausente, remoção de SKU e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
 
 O painel atualizado também foi inspecionado em **390 e 1440 pixels**, com filtro de parciais e critério expandido: sem overflow horizontal e sem violações nas regras axe selecionadas. [Registro da inspeção](audit/plan-dashboard-check.json).
 
@@ -95,7 +95,7 @@ Resultados brutos: [módulos isolados](audit/plan-scenarios.json), [navegador](a
 | Facetas futuras de busca | Busca, categoria, página e ordenação sincronizam URL e histórico. | 088 está concluída; incluir novas facetas no contrato de URL ao criá-las. |
 | Facetas comerciais incompletas | UI oferece ordenação e paginação na fonte, com ID como desempate; atributos comerciais ainda não estão aprovados para facetas combináveis. | 085–086 e 090: projetar e testar relevância/facetas com dados e compradores. |
 | Passagem comercial sem homologação | O protocolo é persistido e a entrega é reservada, mas não há receptor/CRM configurado. | 117–118, 139, 184: falta contrato vivo, conciliação operacional e aceite de vendedores. |
-| Controles locais de abuso | Rate limit depende de `x-forwarded-for` e de Maps na instância. | 144: contrato com proxy confiável, limite distribuído e resistência a reinício não estão implementados. |
+| Controle de abuso em produção | A entrega configurada usa janela móvel atômica no PostgreSQL e HMAC do IP; sem cabeçalho declarado ou IP válido, falha fechado. A prévia desligada ainda usa limite local. | 144: homologar que o proxy real sobrescreve o cabeçalho, validar WAF/múltiplas réplicas e acompanhar o cron de retenção. |
 | Retorno do CRM ainda não homologado | Cliente rejeita `2xx` sem protocolo válido e mantém o formulário; não há receptor comercial aprovado para testar confirmação real. | 117–118: homologar contrato, erro e conciliação do receptor. |
 | Logs publicados ainda não inspecionados | Scanner cobre código público, scripts e build estático; não existe infraestrutura publicada com logs completos para revisar. | 143: incluir inspeção de logs no ambiente comercial. |
 | Domínio e SEO comercial sem aprovação | Canonical é específico por rota; a indexação exige URL HTTPS e catálogo configurado, e o sitemap lê itens publicados. A posse do domínio e redirects não foram homologados. | 152–156: aprovar domínio, slugs finais, redirects e conteúdo. |
@@ -121,7 +121,7 @@ Essas lacunas ainda exigem decisões, ambiente e evidências próprias. As corre
 
 ## Banco e repositório
 
-O banco oficial **da vitrine** confirmou **8 produtos publicados**, **0 briefings comerciais**, migrations até `20260922130000`, RLS nas duas tabelas e ausência de privilégios anônimos de escrita. `anon` não tem SELECT em briefings. A persistência, reserva concorrente e finalização foram exercitadas em transação revertida. Evidência: [consulta de auditoria](audit/plan-database-check.json).
+O banco oficial **da vitrine** confirmou **8 produtos publicados**, **0 briefings comerciais**, migrations até `20260922143000`, RLS nas tabelas da aplicação e ausência de privilégios anônimos de escrita. `anon` não tem SELECT em briefings ou limites. A persistência, reserva concorrente e finalização foram exercitadas em transação revertida; o limite compartilhado aceitou cinco chamadas, bloqueou a sexta e expôs um retorno REST booleano. Evidências: [consulta de auditoria](audit/plan-database-check.json) e [controle de abuso](audit/2026-09-22-rate-limit.md).
 
 Isso comprova schema, dados da curadoria, consumo dinâmico nas jornadas públicas e persistência técnica pronta. Não comprova integração no CRM. A conta da CLI continua sem permissão de Management API para `supabase link`; as migrations foram aplicadas por conexão PostgreSQL autorizada. O banco operacional `doufsxqlfjyuvxuezpln` não recebeu alterações nesta revisão.
 

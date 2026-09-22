@@ -1058,8 +1058,8 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **117. Implementar envio real no backend.** Enviar briefing validado com chave de idempotência e proteção contra abuso.
   - **Situação auditada:** Parcial.
   - **Aceite:** Duplo clique e retry não geram oportunidades duplicadas.
-  - **Constatação:** Entrega opcional usa chave estável, persistência/hash e lease atômica; falta receptor comercial homologado e rate limit distribuído.
-  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`.
+  - **Constatação:** Entrega opcional usa chave estável, persistência/hash, lease atômica e rate limit compartilhado no banco; falta receptor comercial homologado e validar o cabeçalho de IP no proxy real.
+  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`, `supabase/migrations/20260922142000_add_briefing_rate_limit.sql`.
   - **Próxima ação:** Integrar o destino aprovado e validar a criação de oportunidade sem duplicação.
   - **Dependências:** 116 (Parcial), 126 (Parcial), 134 (Concluída no escopo).
 
@@ -1295,9 +1295,9 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **144. Isolar requisições de orçamento.** Validar origem, tamanho, campos e limites; usar proteção conforme arquitetura.
   - **Situação auditada:** Parcial.
   - **Aceite:** Abuso, payload inesperado e repetição recebem respostas controladas.
-  - **Constatação:** Corpo é limitado por bytes reais, data e textos são validados integralmente; rate limit por IP ainda é local ao processo.
-  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/lib/briefing.ts`, `docs/audit/plan-scenarios.json`.
-  - **Próxima ação:** Aplicar rate limit confiável/distribuído no ambiente de produção.
+  - **Constatação:** Corpo, origem e campos são validados; quando a entrega é habilitada, o limite de cinco tentativas em dez minutos é atômico no banco, usa HMAC do IP fornecido por proxy configurado e falha fechado. A implantação e o proxy real não foram homologados.
+  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/lib/briefing.ts`, `docs/audit/plan-scenarios.json`, `docs/audit/2026-09-22-rate-limit.md`.
+  - **Próxima ação:** Validar em staging que o proxy sobrescreve o cabeçalho de IP, testar múltiplas réplicas e acompanhar a limpeza agendada e o WAF.
   - **Dependências:** 141 (Parcial).
 
 - [ ] **145. Revisar arquivos e links públicos.** Garantir acesso privado a logos e expiração de links compartilháveis.

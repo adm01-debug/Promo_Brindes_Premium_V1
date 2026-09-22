@@ -1,14 +1,14 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { briefingDeliveryConfig } from "@/lib/briefing-delivery-config";
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Privacidade da prévia | Promo Brindes Premium",
   alternates: { canonical: "/privacidade" },
   robots: { index: false, follow: false },
 };
 export default function Privacy() {
-  const deliveryActive =
-    process.env.BRIEFING_DELIVERY_ENABLED === "true" &&
-    Boolean(process.env.BRIEFING_WEBHOOK_URL);
+  const deliveryActive = Boolean(briefingDeliveryConfig());
   return (
     <main className="legal-page">
       <Link href="/">← Voltar à curadoria</Link>

@@ -1,11 +1,16 @@
-import { createHash } from "node:crypto";
+import { createHash, createHmac } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import {
   BRIEFING_CONTRACT_VERSION,
   toCommercialPayload,
   validateBriefing,
 } from "@/lib/briefing";
-import { getSiteCatalogPage, siteServerConfig } from "@/lib/site-database";
+import { getSiteCatalogPage } from "@/lib/site-database";
+import {
+  briefingDeliveryConfig,
+  trustedBriefingAddress,
+  type BriefingDeliveryConfig,
+} from "@/lib/briefing-delivery-config";
 
 export const dynamic = "force-dynamic";
 
@@ -14,10 +19,6 @@ const MAX_REQUESTS = 5;
 const MAX_BODY_BYTES = 16 * 1024;
 const attempts = new Map<string, number[]>();
 
-type DeliveryConfig = {
-  destination: string;
-  database: { url: string; secret: string };
-};
 type PersistedBriefing = {
   protocol: string;
   duplicate: boolean;
@@ -29,12 +30,6 @@ type DeliveryClaim = {
   claimed: boolean;
   delivery_status: "delivering" | "delivered";
 };
-
-function clientAddress(request: NextRequest) {
-  return (
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown"
-  );
-}
 
 function originIsAllowed(request: NextRequest) {
   const origin = request.headers.get("origin");
@@ -53,31 +48,21 @@ function canAttempt(address: string) {
   return true;
 }
 
-function destinationIsSafe(value: string | undefined) {
-  if (!value) return false;
-  try {
-    const url = new URL(value);
-    return (
-      url.protocol === "https:" ||
-      (process.env.NODE_ENV === "development" &&
-        url.protocol === "http:" &&
-        ["localhost", "127.0.0.1"].includes(url.hostname))
-    );
-  } catch {
-    return false;
-  }
-}
-
-function deliveryConfig(): DeliveryConfig | null {
-  if (process.env.BRIEFING_DELIVERY_ENABLED !== "true") return null;
-  const destination = process.env.BRIEFING_WEBHOOK_URL;
-  if (!destinationIsSafe(destination)) return null;
-  try {
-    const database = siteServerConfig();
-    return database ? { destination: destination!, database } : null;
-  } catch {
-    return null;
-  }
+async function canAttemptDistributed(
+  config: BriefingDeliveryConfig,
+  address: string,
+) {
+  const identity = createHmac("sha256", config.database.secret)
+    .update(address)
+    .digest("hex");
+  const allowed = await rpc<boolean>(
+    config.database,
+    "allow_premium_briefing_attempt",
+    { p_client_hash: identity },
+  );
+  if (typeof allowed !== "boolean")
+    throw new Error("RATE_LIMIT_RESPONSE_INVALID");
+  return allowed;
 }
 
 function validIdempotencyKey(value: string | null) {
@@ -92,8 +77,34 @@ function jsonNoStore(body: object, status = 200) {
 }
 
 async function parseBody(request: NextRequest): Promise<unknown | null> {
-  const bytes = await request.arrayBuffer();
-  if (bytes.byteLength > MAX_BODY_BYTES) throw new Error("PAYLOAD_TOO_LARGE");
+  if (!request.body) return null;
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > MAX_BODY_BYTES) {
+        try {
+          await reader.cancel();
+        } catch {
+          // A failed cancellation must not turn an oversized body into a 422.
+        }
+        throw new Error("PAYLOAD_TOO_LARGE");
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
   try {
     return JSON.parse(new TextDecoder().decode(bytes));
   } catch {
@@ -102,7 +113,7 @@ async function parseBody(request: NextRequest): Promise<unknown | null> {
 }
 
 async function rpc<T>(
-  config: DeliveryConfig["database"],
+  config: BriefingDeliveryConfig["database"],
   name: string,
   payload: object,
 ): Promise<T> {
@@ -145,7 +156,7 @@ function submittedProductIds(input: unknown) {
 }
 
 async function persistBriefing(
-  config: DeliveryConfig["database"],
+  config: BriefingDeliveryConfig["database"],
   key: string,
   body: {
     name: string;
@@ -191,7 +202,7 @@ async function persistBriefing(
 }
 
 async function recordDelivery(
-  config: DeliveryConfig["database"],
+  config: BriefingDeliveryConfig["database"],
   key: string,
   delivered: boolean,
   error?: string,
@@ -208,7 +219,10 @@ async function recordDelivery(
   if (!rows[0]?.protocol) throw new Error("DELIVERY_RECORD_INVALID");
 }
 
-async function claimDelivery(config: DeliveryConfig["database"], key: string) {
+async function claimDelivery(
+  config: BriefingDeliveryConfig["database"],
+  key: string,
+) {
   const rows = await rpc<DeliveryClaim[]>(
     config,
     "claim_premium_briefing_delivery",
@@ -227,7 +241,7 @@ async function claimDelivery(config: DeliveryConfig["database"], key: string) {
 
 /** Does not reveal receiver URLs or enable data collection without an explicit flag. */
 export function GET() {
-  return jsonNoStore({ configured: Boolean(deliveryConfig()) });
+  return jsonNoStore({ configured: Boolean(briefingDeliveryConfig()) });
 }
 
 export async function POST(request: NextRequest) {
@@ -235,11 +249,23 @@ export async function POST(request: NextRequest) {
     return jsonNoStore({ error: "ORIGIN_REJECTED" }, 403);
   if (!request.headers.get("content-type")?.includes("application/json"))
     return jsonNoStore({ error: "JSON_REQUIRED" }, 415);
-  if (!canAttempt(clientAddress(request)))
-    return jsonNoStore({ error: "RATE_LIMITED" }, 429);
   const key = request.headers.get("idempotency-key");
   if (!validIdempotencyKey(key))
     return jsonNoStore({ error: "IDEMPOTENCY_KEY_REQUIRED" }, 400);
+  const config = briefingDeliveryConfig();
+  if (config) {
+    const address = trustedBriefingAddress(request.headers, config.ipHeader);
+    if (!address)
+      return jsonNoStore({ error: "CLIENT_ADDRESS_UNAVAILABLE" }, 503);
+    try {
+      if (!(await canAttemptDistributed(config, address)))
+        return jsonNoStore({ error: "RATE_LIMITED" }, 429);
+    } catch {
+      return jsonNoStore({ error: "RATE_LIMIT_UNAVAILABLE" }, 503);
+    }
+  } else if (!canAttempt("preview")) {
+    return jsonNoStore({ error: "RATE_LIMITED" }, 429);
+  }
 
   let input: unknown;
   try {
@@ -266,7 +292,6 @@ export async function POST(request: NextRequest) {
       { error: "INVALID_BRIEFING", message: parsed.message },
       422,
     );
-  const config = deliveryConfig();
   if (!config) return jsonNoStore({ error: "DESTINATION_UNAVAILABLE" }, 503);
 
   let persisted;
