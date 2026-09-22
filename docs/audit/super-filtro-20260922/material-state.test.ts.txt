@@ -1,0 +1,50 @@
+// Reprodução local do hook real; catálogos auxiliares são mocks sem rede.
+// O runner copia este arquivo para .test.ts fora do projeto premium.
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, renderHook } from '@testing-library/react';
+import { defaultFilters } from '@/components/filters/filter-panel/types';
+import { useFilterPanelState } from '@/components/filters/filter-panel/useFilterPanelState';
+
+vi.mock('@/hooks/common', () => ({ useDebounce: (value: unknown) => value }));
+vi.mock('@/hooks/products', () => {
+  const empty: never[] = [];
+  const state = { selectedGroups: empty, selectedTypes: empty, searchTerm: '' };
+  return {
+    SORT_OPTIONS: [],
+    useCategoryIcons: () => ({ data: empty }),
+    useAdvancedFilters: () => ({ techniqueOptions: empty, tagOptions: empty }),
+    useSuppliers: () => ({ suppliers: empty, isLoading: false }),
+    useMaterialFilter: () => ({
+      groups: empty, materials: empty, isLoading: false, filterState: state,
+      toggleGroup: vi.fn(), toggleType: vi.fn(), isGroupSelected: () => false,
+      getTypesForGroup: () => empty, clearFilters: vi.fn(),
+    }),
+  };
+});
+vi.mock('@/hooks/crm', () => ({ useRamoAtividadeFilter: () => ({
+  groups: [], segmentos: [], isLoading: false, totalGroups: 0,
+  totalSegmentos: 0, getSegmentosForRamo: () => [],
+}) }));
+vi.mock('@/hooks/products/usePublicoAlvoOptions', () => ({ usePublicoAlvoOptions: () => [] }));
+vi.mock('@/hooks/products/useProductsBySize', () => ({ useAvailableSizes: () => ({ sizes: [] }) }));
+afterEach(cleanup);
+
+describe('Reprodução de perda de seleção externa de materiais', () => {
+  it('seleção inicial recebida por props é sobrescrita pelos arrays locais vazios', () => {
+    const onChange = vi.fn();
+    renderHook(() => useFilterPanelState(
+      { ...defaultFilters, materialGroups: ['metal'], materialTypes: ['inox'] }, onChange, [],
+    ));
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ materialGroups: [], materialTypes: [] }));
+  });
+
+  it('preset recebido depois da montagem também é sobrescrito pelo estado local vazio', () => {
+    const onChange = vi.fn();
+    const { rerender } = renderHook(({ groups }) => useFilterPanelState(
+      { ...defaultFilters, materialGroups: groups }, onChange, [],
+    ), { initialProps: { groups: [] as string[] } });
+    expect(onChange).not.toHaveBeenCalled();
+    rerender({ groups: ['metal'] });
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ materialGroups: [] }));
+  });
+});

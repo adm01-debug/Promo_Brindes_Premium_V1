@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-09-22T18:39:13.601Z",
+  "commit": "e3ed6c5dba080bc9601a42d99e2fc5e00e319ad6",
+  "node": "v24.19.0",
+  "suiteTests": 124,
+  "hookReproductions": 2,
+  "pipelineProbes": 10,
+  "databaseAccess": false,
+  "environmentFilesLoaded": false,
+  "isolation": "Pure pipeline, mocked hook dependencies, blocked Node HTTP/HTTPS/net/fetch in Vitest. No production E2E."
+}

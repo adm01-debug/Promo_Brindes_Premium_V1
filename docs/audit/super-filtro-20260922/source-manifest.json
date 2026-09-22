@@ -1,0 +1,63 @@
+{
+  "sourceCommit": "e3ed6c5dba080bc9601a42d99e2fc5e00e319ad6",
+  "premiumBaseCommit": "61dec84db8ec0eb9daa22ea7d98e73077a1efa62",
+  "sourceReferences": [
+    {
+      "path": "src/components/filters/ExternalCategoryFilter.tsx",
+      "sha256": "a89c79a3383bcb3f26b51982684e69cd08d774f0914ea68fbe0bc1dd6deefc30"
+    },
+    {
+      "path": "src/components/filters/FilterPresets.ts",
+      "sha256": "db6e9d34d2e5da615d60196b71deba0cd2d9cbdb11f6b6b10275864b874bdbc0"
+    },
+    {
+      "path": "src/components/filters/filter-panel/FilterPanelHeader.tsx",
+      "sha256": "5066820998f3878c742b3f2f3e73addcdb6ebd4e9149473b69d15e8360e7179a"
+    },
+    {
+      "path": "src/components/filters/filter-panel/types.ts",
+      "sha256": "fd793c41258c2ec553a8fd2dbe48926b8cd5f3a06ec8ae8f144f6be5bf19b42e"
+    },
+    {
+      "path": "src/components/filters/filter-panel/useFilterPanelState.ts",
+      "sha256": "10ce3c1b3298f87fb18297dee686c61ca3bd53b55edff9e61cbc35a40343b168"
+    },
+    {
+      "path": "src/components/products/VirtualizedProductGrid.tsx",
+      "sha256": "9cdbffcb2d9faf8f78870c0a10d2f658f1d3ca8d7cbc81c9da448cbcd67a034a"
+    },
+    {
+      "path": "src/components/ui/badge.tsx",
+      "sha256": "8276017856602291065eca5dd795ae1d3ea308a6dde0c7eb72f19ea124883951"
+    },
+    {
+      "path": "src/hooks/products/useMaterialFilter.ts",
+      "sha256": "a82168286c008a96d79eee12849e0b9566e0eab2c563caa54ccacc8d89a2846b"
+    },
+    {
+      "path": "src/hooks/products/useProductFuzzySearch.ts",
+      "sha256": "9a1fe0dcb90a4c5d55f94e3cb0589297a8bcac5e94e739050e37c1a6f573a4bf"
+    },
+    {
+      "path": "src/hooks/products/useProductsLightweight.ts",
+      "sha256": "cfbfd9d5656fa0eeedd6e293f0c9c32940b22eabcefee8fbe1df8fe2f6e848a4"
+    },
+    {
+      "path": "src/lib/db/postgrest.ts",
+      "sha256": "6c4b6cd670ef6c4f76b2b531f070a2acfb35e069e32740d9aa432d56d7ed0cdb"
+    },
+    {
+      "path": "src/pages/filters/applyProductFilters.ts",
+      "sha256": "fc8761fe3839978a3a3745f394d8b2b1b4c8a02c4d8058f4ec4aad74a08bbedd"
+    },
+    {
+      "path": "src/pages/filters/useFiltersPageState.ts",
+      "sha256": "861d312067bcc3b744c4c1bebc6df9d43a1e08891b2dc2010e76c21da0bb2b5f"
+    },
+    {
+      "path": "src/pages/products/FiltersPage.tsx",
+      "sha256": "d4545078789cc2e8f4fdfe3bbc5c24f1173224848703954acd1d90ca487a9bc6"
+    }
+  ],
+  "snapshotProducts": 8
+}

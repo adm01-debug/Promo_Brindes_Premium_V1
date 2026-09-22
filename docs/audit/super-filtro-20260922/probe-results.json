@@ -1,0 +1,121 @@
+{
+  "sourceCommit": "e3ed6c5dba080bc9601a42d99e2fc5e00e319ad6",
+  "scope": "Comportamentos do pipeline puro, com fixtures sintéticas. Não comprova ocorrência em produção. P06 testa a etapa anterior ao enriquecimento; a cor vermelha com estoque 10 é cenário de risco descrito no relatório.",
+  "sourceHashes": {
+    "pages/filters/applyProductFilters": "fc8761fe3839978a3a3745f394d8b2b1b4c8a02c4d8058f4ec4aad74a08bbedd",
+    "utils/product-sorting": "2e49c258f599548bef108589baaba2dd1e9dd8296ec7366a6a61888ec587e1f7",
+    "lib/products/kit-detection": "6be110822de73e32ddc446e5fc3f689c806207079196616afc5d06e3b78a94db",
+    "lib/products/stock-status": "a696644487c05801839280137ff93dfa4b6d44701138b8dc7cf87e18b1f4e3ba",
+    "defaults": "fd793c41258c2ec553a8fd2dbe48926b8cd5f3a06ec8ae8f144f6be5bf19b42e"
+  },
+  "cases": [
+    {
+      "id": "P01",
+      "description": "Categoria ativa com erro e nenhum ID preserva produtos sem confirmação de categoria",
+      "expected": [
+        "a",
+        "b"
+      ],
+      "actual": [
+        "a",
+        "b"
+      ],
+      "verified": true
+    },
+    {
+      "id": "P02",
+      "description": "Categoria ativa resolvida sem IDs retorna zero",
+      "expected": [],
+      "actual": [],
+      "verified": true
+    },
+    {
+      "id": "P03",
+      "description": "Técnica selecionada sem dados não restringe o resultado",
+      "expected": [
+        "a",
+        "b"
+      ],
+      "actual": [
+        "a",
+        "b"
+      ],
+      "verified": true
+    },
+    {
+      "id": "P04",
+      "description": "Com dados parciais de técnicas, produto desconhecido permanece no resultado",
+      "expected": [
+        "a",
+        "b"
+      ],
+      "actual": [
+        "a",
+        "b"
+      ],
+      "verified": true
+    },
+    {
+      "id": "P05",
+      "description": "Material textual sem hidratação de materials não restringe o resultado",
+      "expected": [
+        "a",
+        "b"
+      ],
+      "actual": [
+        "a",
+        "b"
+      ],
+      "verified": true
+    },
+    {
+      "id": "P06",
+      "description": "Cor selecionada com estoque agregado de 200 passa mínimo de 100 antes do enriquecimento por cor",
+      "expected": [
+        "a"
+      ],
+      "actual": [
+        "a"
+      ],
+      "verified": true
+    },
+    {
+      "id": "P07",
+      "description": "Estoque mínimo recusa Infinity",
+      "expected": [],
+      "actual": [],
+      "verified": true
+    },
+    {
+      "id": "P08",
+      "description": "OR entre valores de público e AND com personalizável",
+      "expected": [
+        "a",
+        "c"
+      ],
+      "actual": [
+        "a",
+        "c"
+      ],
+      "verified": true
+    },
+    {
+      "id": "P09",
+      "description": "Busca legada de um caractere não normaliza acento",
+      "expected": [],
+      "actual": [],
+      "verified": true
+    },
+    {
+      "id": "P10",
+      "description": "Preço não finito atravessa comparações numéricas do pipeline isolado",
+      "expected": [
+        "a"
+      ],
+      "actual": [
+        "a"
+      ],
+      "verified": true
+    }
+  ]
+}

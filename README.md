@@ -40,6 +40,8 @@ O planejamento é uma ferramenta desta prévia. Antes de lançar a vitrine públ
 
 ## Documentação
 
+- [Auditoria do Super Filtro V4: padrões, riscos, simulações e adaptação premium](docs/AUDITORIA_SUPER_FILTRO.md)
+- [Backlog do Super Filtro: 30 recomendações com critérios de aceite](docs/BACKLOG_SUPER_FILTRO.csv)
 - [Biblioteca de catálogos premium: funcionalidades, dados e verificação](docs/CATALOGOS.md)
 - [Auditoria comparativa do Promo Brindes V1: oportunidades, riscos e 32 recomendações](docs/AUDITORIA_COMPARATIVA_PROMO_BRINDES_V1.md)
 - [Backlog de aproveitamento do V1 em CSV](docs/BACKLOG_APROVEITAMENTO_V1.csv)

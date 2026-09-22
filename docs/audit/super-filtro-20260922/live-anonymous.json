@@ -1,0 +1,396 @@
+{
+  "checkedAt": "2026-09-22T18:27:21.077Z",
+  "requestedUrl": "https://www.promogifts.com.br/filtros",
+  "url": "https://www.promogifts.com.br/auth",
+  "title": "Login | Promo Gifts",
+  "text": "Promo Gifts\nSTORE SYSTEM\nUm Universo de Brindes, para o Melhor Time das Galáxias!\n\nTenha acesso ao maior mix de produtos personalizados, consulte estoque em tempo real, visualize locais e técnicas de personalização. Feito especialmente para você decolar!!!\n\n+20.000\n\nPRODUTOS\n\n+100\n\nFORNECEDORES\n\nFiltros\n\nAVANÇADOS\n\nIA\n\nASSISTENTE PESSOAL\n\nConexão segura\nDados criptografados\nEntre com suas credenciais para Brilhar, Você nasceu para isso!\n\nContinue sua jornada rumo ao sucesso.\n\nOU\nContinuar com Google\nDeixe em branco\nEmail\nSenha de Acesso\nESQUECI MINHA SENHA\nEntrar na Plataforma\n\nEste sistema é propriedade intelectual exclusiva da Brasil Marcas, sendo protegido pela Lei nº 9.609/98 e demais normas aplicáveis. É proibida sua reprodução, cópia, modificação, distribuição ou uso não autorizado.\n\nTermos de Uso\n•\nPolítica de Privacidade\n\n© 2026 Promo Brindes — Todos os direitos reservados.",
+  "controls": [
+    {
+      "tag": "BUTTON",
+      "text": "Continuar com Google",
+      "label": null,
+      "placeholder": null,
+      "type": "button",
+      "href": null
+    },
+    {
+      "tag": "INPUT",
+      "text": "",
+      "label": null,
+      "placeholder": null,
+      "type": "text",
+      "href": null
+    },
+    {
+      "tag": "INPUT",
+      "text": "",
+      "label": null,
+      "placeholder": "seu@email.com",
+      "type": "email",
+      "href": null
+    },
+    {
+      "tag": "INPUT",
+      "text": "",
+      "label": null,
+      "placeholder": "••••••••",
+      "type": "password",
+      "href": null
+    },
+    {
+      "tag": "BUTTON",
+      "text": "",
+      "label": "Mostrar senha",
+      "placeholder": null,
+      "type": "button",
+      "href": null
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Esqueci minha senha",
+      "label": null,
+      "placeholder": null,
+      "type": "button",
+      "href": null
+    },
+    {
+      "tag": "BUTTON",
+      "text": "Entrar na Plataforma",
+      "label": null,
+      "placeholder": null,
+      "type": "submit",
+      "href": null
+    },
+    {
+      "tag": "A",
+      "text": "Termos de Uso",
+      "label": null,
+      "placeholder": null,
+      "type": null,
+      "href": "/termos"
+    },
+    {
+      "tag": "A",
+      "text": "Política de Privacidade",
+      "label": null,
+      "placeholder": null,
+      "type": null,
+      "href": "/privacidade"
+    }
+  ],
+  "blocked": [
+    {
+      "method": "POST",
+      "host": "doufsxqlfjyuvxuezpln.supabase.co",
+      "path": "/functions/v1/get-visitor-info"
+    },
+    {
+      "method": "POST",
+      "host": "doufsxqlfjyuvxuezpln.supabase.co",
+      "path": "/functions/v1/get-visitor-info"
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/filtros"
+    },
+    {
+      "method": "GET",
+      "host": "fonts.googleapis.com",
+      "path": "/css2"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/index-w100MAlx.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/rolldown-runtime-CMxvf4Kt.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/runtime-vendor-2rxlSZO5.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/supabase-vendor-CQHR4TPe.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/react-vendor-Dq3CDr3L.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/ui-vendor-BOdiFL6O.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/query-vendor-D_laUPb8.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/app-shell-UwC7U1eT.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/critical-icons-B2RCh2cE.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/router-vendor-BrmXjyuV.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/index-BgZdsbR9.css"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/CloudStatusBanner-DDtc2ICZ.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/date-vendor-BGH_inPD.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/circle-check-EsM7Iqp4.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/circle-x-yW6q7bdQ.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/clock-BNw3kEvu.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/info-Bb3WeMXD.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/wifi-off-BnGqROIY.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/CloudStatusDot-Brit0MB2.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/GlobalOfflineAlert-Bbt2PuCy.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/cloud-off-D7f9kLqZ.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/wifi-qImRz3d1.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/x-B7PL8FC-.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/cloud-status-BLubmiEO.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/health-check-D7eygii0.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/kill-switch-client-DRgwgjPQ.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/Auth-BWVMQddM.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/form-vendor-DdaVZYIx.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/eye-off-BsxGDzPY.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/eye-B1EW5ySw.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/AuthBranding-DNnvMsAF.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/brain-Chm1PG1U.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/rocket-xKcqByMt.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/sliders-horizontal-CIIRtcoH.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/AppLogo-BkYZv634.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/gift-DyNAKFzW.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/globe-B9s6W1bW.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/lock-CG340PBN.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/mail-Cr3lGda-.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/rotate-cw-DeGh9WgB.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/zod-vendor-PeYlO1tV.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/LegalFooter-BPM0KKqU.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/PageSEO-DaGEbGOk.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/card-BKsAtdGS.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/input-BCvHNdwf.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/useIPValidation-DdCoeAMU.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/safeInvokeCall-DLkiYkZP.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/invokeTelemetrySink-wVq2YT_G.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/usePasswordResetRequests-CL4WSc1T.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/use-toast-DwLaj7ek.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/oauth-pending-BLiuvumy.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/sensitive-masking-_FDUob1p.js"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/validations-rYsTTQCD.js"
+    },
+    {
+      "method": "GET",
+      "host": "fonts.gstatic.com",
+      "path": "/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw.woff2"
+    },
+    {
+      "method": "GET",
+      "host": "doufsxqlfjyuvxuezpln.supabase.co",
+      "path": "/rest/v1/system_settings"
+    },
+    {
+      "method": "GET",
+      "host": "doufsxqlfjyuvxuezpln.supabase.co",
+      "path": "/rest/v1/system_settings"
+    },
+    {
+      "method": "GET",
+      "host": "fonts.gstatic.com",
+      "path": "/s/outfit/v15/QGYvz_MVcBeNP4NJtEtq.woff2"
+    },
+    {
+      "method": "GET",
+      "host": "www.promogifts.com.br",
+      "path": "/assets/astronaut-BTsFMJzS.svg"
+    }
+  ],
+  "error": null
+}
