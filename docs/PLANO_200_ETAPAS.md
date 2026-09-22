@@ -536,7 +536,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **057. Definir jornada móvel.** Priorizar busca, seleção e briefing em telas pequenas.
   - **Situação auditada:** Parcial.
   - **Aceite:** Protótipo cobre 360 pixels e teclado virtual sem perder ações principais.
-  - **Constatação:** Há testes móveis em Chromium; teclado virtual real não foi exercitado.
+  - **Constatação:** A jornada móvel automatizada passou em Chromium, Firefox e WebKit; teclado virtual real não foi exercitado.
   - **Evidências e referências:** `tests/storefront.spec.ts`, `docs/audit/responsive-check.json`.
   - **Próxima ação:** Validar preenchimento e ações com teclado virtual em aparelhos reais.
   - **Dependências:** 054 (Concluída no escopo).
@@ -1651,9 +1651,9 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **185. Testar navegadores e dispositivos.** Verificar Chromium, Safari/WebKit e Firefox em larguras acordadas.
   - **Situação auditada:** Parcial.
   - **Aceite:** Matriz registra versões, tarefas cobertas e falhas corrigidas.
-  - **Constatação:** CI executa Chromium serialmente em push/PR; WebKit, Firefox e aparelhos reais ainda faltam na matriz.
-  - **Evidências e referências:** `playwright.config.ts`, `docs/VALIDACAO.md`, `.github/workflows/quality.yml`.
-  - **Próxima ação:** Completar matriz com versões, tarefas e correções.
+  - **Constatação:** A matriz local registra 28 jornadas por Chromium, Firefox e WebKit, com 84 testes aprovados e correções de foco e isolamento da prévia; o CI foi ampliado. Aparelhos físicos e Safari instalado ainda não foram exercitados.
+  - **Evidências e referências:** `playwright.config.ts`, `docs/VALIDACAO.md`, `.github/workflows/quality.yml`, `docs/audit/2026-09-22-browser-matrix.md`.
+  - **Próxima ação:** Confirmar a matriz no CI remoto e testar Safari, teclado virtual e navegação em aparelhos reais.
   - **Dependências:** 181 (Concluída no escopo).
 
 - [ ] **186. Testar jornadas com rede limitada.** Simular lentidão, offline e falha de imagem ou API.

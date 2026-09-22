@@ -319,6 +319,13 @@ export default function Storefront({
         : "smooth",
     });
   };
+  const closeMenuAndFocusCuration = () => {
+    setMenuOpen(false);
+    window.setTimeout(() => {
+      scrollToCuration();
+      document.getElementById("curation-title")?.focus({ preventScroll: true });
+    }, 0);
+  };
   async function loadCatalog(
     nextSearch = search,
     nextCategory = category,
@@ -400,8 +407,8 @@ export default function Storefront({
   const browse = (value: string) => {
     setOnlyFavorites(false);
     void loadCatalog("", value);
-    setMenuOpen(false);
-    scrollToCuration();
+    if (menuOpen) closeMenuAndFocusCuration();
+    else scrollToCuration();
   };
 
   function briefingLines(data: FormData, contact: string, company: string) {
@@ -670,7 +677,7 @@ export default function Storefront({
           <div className="section-heading">
             <div>
               <p className="eyebrow">ESCOLHAS QUE DIZEM MUITO</p>
-              <h2 id="curation-title">
+              <h2 id="curation-title" tabIndex={-1}>
                 O extraordinário está <em>na escolha.</em>
               </h2>
             </div>
@@ -1176,11 +1183,10 @@ export default function Storefront({
           <nav className="mobile-nav" aria-label="Menu móvel">
             <button
               onClick={() => {
-                setMenuOpen(false);
                 setOnlyFavorites(true);
                 setExpanded(true);
                 void loadCatalog("", "Todos");
-                scrollToCuration();
+                closeMenuAndFocusCuration();
               }}
             >
               Meus favoritos <Heart />

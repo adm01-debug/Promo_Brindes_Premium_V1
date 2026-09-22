@@ -76,7 +76,7 @@ Para o banco dedicado da vitrine, preencha `.env.local` com as credenciais do pr
 
 Os testes iniciam o servidor de produção na porta 3107, que deve estar livre. Execute o build antes dos testes. Se necessário, instale o navegador com `npx playwright install chromium`.
 
-O workflow [quality.yml](.github/workflows/quality.yml) executa os gates em push e pull request, com instalação limpa e Chromium. A configuração de indexação só entra em vigor com URL HTTPS de domínio e catálogo da vitrine configurado; a posse do domínio e os demais gates comerciais ainda exigem validação antes do lançamento.
+O workflow [quality.yml](.github/workflows/quality.yml) executa os gates em push e pull request, com instalação limpa e Chromium, Firefox e WebKit. A configuração de indexação só entra em vigor com URL HTTPS de domínio e catálogo da vitrine configurado; a posse do domínio e os demais gates comerciais ainda exigem validação antes do lançamento.
 
 O plano tem fonte única em `src/lib/plan.json`, com constatação, evidências e próxima ação por etapa. Após atualizar status/evidências, execute `node scripts/generate-plan.mjs` e `npm run check:plan`. O check confere também igualdade completa de Markdown/CSV com a fonte. Os checkboxes salvam acompanhamento local separado e identificado pela revisão; não alteram o status auditado. Dependências abertas continuam bloqueando prontidão integrada mesmo quando uma entrega isolada atende ao próprio critério.
 

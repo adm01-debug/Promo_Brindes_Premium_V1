@@ -82,7 +82,7 @@ Os endpoints foram carregados com `fetch` simulado e as interações de envio fo
 
 Os controles **AUD-07 e AUD-08 passam**: projeto operacional e host semelhante são rejeitados antes da leitura do catálogo.
 
-A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, JavaScript, fontes e chunks, onze cenários sintéticos, cinco sondas de browser e testes E2E em Chromium. A cobertura inclui API 503, offline, mídia 403, resposta atrasada, página fora do intervalo, protocolo ausente, remoção de SKU e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
+A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, JavaScript, fontes e chunks, onze cenários sintéticos, cinco sondas de browser e 84 testes E2E em Chromium, Firefox e WebKit local. A cobertura inclui API 503, offline, mídia 403, resposta atrasada, página fora do intervalo, protocolo ausente, remoção de SKU e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
 
 O painel atualizado também foi inspecionado em **390 e 1440 pixels**, com filtro de parciais e critério expandido: sem overflow horizontal e sem violações nas regras axe selecionadas. [Registro da inspeção](audit/plan-dashboard-check.json).
 
@@ -95,7 +95,7 @@ Resultados brutos: [módulos isolados](audit/plan-scenarios.json), [navegador](a
 | Facetas futuras de busca | Busca, categoria, página e ordenação sincronizam URL e histórico. | 088 está concluída; incluir novas facetas no contrato de URL ao criá-las. |
 | Facetas comerciais incompletas | UI oferece ordenação e paginação na fonte, com ID como desempate; atributos comerciais ainda não estão aprovados para facetas combináveis. | 085–086 e 090: projetar e testar relevância/facetas com dados e compradores. |
 | Passagem comercial sem homologação | O protocolo é persistido e a entrega é reservada, mas não há receptor/CRM configurado. | 117–118, 139, 184: falta contrato vivo, conciliação operacional e aceite de vendedores. |
-| Controle de abuso em produção | A entrega configurada usa janela móvel atômica no PostgreSQL e HMAC do IP; sem cabeçalho declarado ou IP válido, falha fechado. A prévia desligada ainda usa limite local. | 144: homologar que o proxy real sobrescreve o cabeçalho, validar WAF/múltiplas réplicas e acompanhar o cron de retenção. |
+| Controle de abuso em produção | A entrega configurada usa janela móvel atômica no PostgreSQL e HMAC do IP; sem cabeçalho declarado ou IP válido, falha fechado. A prévia desligada não grava contatos nem usa a janela. | 144: homologar que o proxy real sobrescreve o cabeçalho, validar WAF/múltiplas réplicas e acompanhar o cron de retenção. |
 | Retorno do CRM ainda não homologado | Cliente rejeita `2xx` sem protocolo válido e mantém o formulário; não há receptor comercial aprovado para testar confirmação real. | 117–118: homologar contrato, erro e conciliação do receptor. |
 | Logs publicados ainda não inspecionados | Scanner cobre código público, scripts e build estático; não existe infraestrutura publicada com logs completos para revisar. | 143: incluir inspeção de logs no ambiente comercial. |
 | Domínio e SEO comercial sem aprovação | Canonical é específico por rota; a indexação exige URL HTTPS e catálogo configurado, e o sitemap lê itens publicados. A posse do domínio e redirects não foram homologados. | 152–156: aprovar domínio, slugs finais, redirects e conteúdo. |
@@ -115,7 +115,7 @@ Essas lacunas ainda exigem decisões, ambiente e evidências próprias. As corre
 | Conversão | Seleção, download local e entrega opcional persistida/idempotente. | CRM homologado, confirmação comercial, atendimento e conciliação efetiva. |
 | Operação | Schema privado preparado e código publicado no GitHub. | Dono do lead, qualificação aprovada, distribuição, orçamento transacional, estados, SLA, fila e conciliação. |
 | Conteúdo/SEO | Home editorial, metadados iniciais, robots e sitemap condicionais. | Direitos, conteúdo aprovado, guias, redirects/canonical completos, domínio e Search Console. |
-| Qualidade | CI de build/tipos/checks, E2E Chromium e axe em cenários representativos. | Firefox/WebKit, aparelhos reais, leitores de tela, carga, rede limitada e pilotos. |
+| Qualidade | CI de build/tipos/checks, matriz E2E Chromium/Firefox/WebKit e axe em cenários representativos. | Aparelhos reais, Safari instalado, leitores de tela, carga, rede limitada e pilotos. |
 | Governança | Papéis sugeridos e avisos de prévia. | Pessoas responsáveis, controlador/canais reais, política comercial, retenção e processo de direitos. |
 | Crescimento | Métricas propostas em documento. | Instrumentação aprovada, baseline real, monitoramento, experimentos e revisão periódica. |
 

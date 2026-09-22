@@ -1561,7 +1561,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "Há testes móveis em Chromium; teclado virtual real não foi exercitado.",
+        "finding": "A jornada móvel automatizada passou em Chromium, Firefox e WebKit; teclado virtual real não foi exercitado.",
         "nextAction": "Validar preenchimento e ações com teclado virtual em aparelhos reais.",
         "evidence": [
           "tests/storefront.spec.ts",
@@ -4739,12 +4739,13 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "CI executa Chromium serialmente em push/PR; WebKit, Firefox e aparelhos reais ainda faltam na matriz.",
-        "nextAction": "Completar matriz com versões, tarefas e correções.",
+        "finding": "A matriz local registra 28 jornadas por Chromium, Firefox e WebKit, com 84 testes aprovados e correções de foco e isolamento da prévia; o CI foi ampliado. Aparelhos físicos e Safari instalado ainda não foram exercitados.",
+        "nextAction": "Confirmar a matriz no CI remoto e testar Safari, teclado virtual e navegação em aparelhos reais.",
         "evidence": [
           "playwright.config.ts",
           "docs/VALIDACAO.md",
-          ".github/workflows/quality.yml"
+          ".github/workflows/quality.yml",
+          "docs/audit/2026-09-22-browser-matrix.md"
         ]
       }
     },

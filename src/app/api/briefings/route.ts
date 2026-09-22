@@ -14,10 +14,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const WINDOW_MS = 10 * 60 * 1000;
-const MAX_REQUESTS = 5;
 const MAX_BODY_BYTES = 16 * 1024;
-const attempts = new Map<string, number[]>();
 
 type PersistedBriefing = {
   protocol: string;
@@ -36,16 +33,6 @@ function originIsAllowed(request: NextRequest) {
   if (!origin) return true;
   const configured = process.env.PROMO_PREMIUM_SITE_ORIGIN;
   return origin === (configured || request.nextUrl.origin);
-}
-
-function canAttempt(address: string) {
-  const now = Date.now();
-  const recent = (attempts.get(address) ?? []).filter(
-    (time) => now - time < WINDOW_MS,
-  );
-  if (recent.length >= MAX_REQUESTS) return false;
-  attempts.set(address, [...recent, now]);
-  return true;
 }
 
 async function canAttemptDistributed(
@@ -263,8 +250,6 @@ export async function POST(request: NextRequest) {
     } catch {
       return jsonNoStore({ error: "RATE_LIMIT_UNAVAILABLE" }, 503);
     }
-  } else if (!canAttempt("preview")) {
-    return jsonNoStore({ error: "RATE_LIMITED" }, 429);
   }
 
   let input: unknown;

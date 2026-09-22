@@ -385,9 +385,11 @@ test("mobile mantém conteúdo sem overflow e navegação funcional", async ({
     .getByRole("button", { name: "A curadoria" })
     .click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  await expect(
-    page.getByRole("heading", { name: "O extraordinário está na escolha." }),
-  ).toBeInViewport();
+  const curationHeading = page.getByRole("heading", {
+    name: "O extraordinário está na escolha.",
+  });
+  await expect(curationHeading).toBeInViewport();
+  await expect(curationHeading).toBeFocused();
   await page
     .getByRole("button", { name: "Conhecer Kit executivo", exact: true })
     .click();

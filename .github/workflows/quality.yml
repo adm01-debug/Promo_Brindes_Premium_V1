@@ -38,7 +38,7 @@ jobs:
           npm run check:public-secrets
           npm run check:performance-budget
           node scripts/audit-plan-scenarios.mjs
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install browsers
+        run: npx playwright install --with-deps chromium firefox webkit
       - name: Test browser journeys
         run: npm run test:e2e

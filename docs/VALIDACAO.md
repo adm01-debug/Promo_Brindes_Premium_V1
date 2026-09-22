@@ -10,7 +10,7 @@ Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu
 
 ## Resultados funcionais
 
-**28 testes E2E em Chromium** cobrem os fluxos da prévia e a auditoria do plano. A suíte garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. Os cenários incluem:
+**84 execuções E2E locais: 28 jornadas em cada Chromium, Firefox e WebKit** cobrem os fluxos da prévia e a auditoria do plano. A suíte garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. Os cenários incluem:
 
 1. Busca por SKU, resultado vazio, limpeza e filtro de categoria.
 2. Favoritos e seleção após recarregar, mínimo de quantidade e remoção.
@@ -42,7 +42,7 @@ Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu
 
 Comandos: `npm run build`, `npm run typecheck`, `npm run check:plan`, `npm run check:public-secrets`, `npm run check:performance-budget` e `npm run test:e2e`. A suíte usa servidor de produção na porta 3107, sem reutilizar processo estranho. A porta 3000 já servia outro aplicativo neste ambiente; o teste inicial foi descartado e a configuração foi corrigida.
 
-O workflow de CI executa instalação limpa, esses gates, cenários isolados e Chromium com um worker em push e pull request. `actionlint` validou a sintaxe localmente e o [primeiro run remoto](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35738493096) passou. [Cenários adicionais e simulação de indexação](audit/2026-09-22-regression-scenarios.md).
+O workflow de CI executa instalação limpa, esses gates, cenários isolados e a matriz Chromium/Firefox/WebKit com um worker em push e pull request. `actionlint` validou a sintaxe localmente; a matriz completa foi aprovada localmente e aguarda a primeira execução remota. [Matriz e correções](audit/2026-09-22-browser-matrix.md); [cenários adicionais e simulação de indexação](audit/2026-09-22-regression-scenarios.md).
 
 O teste de teclado encontrou que o diálogo nativo permitia a sequência de Tab sair do ciclo esperado. Foi adicionado tratamento explícito das extremidades, mantendo Escape, inert nativo e restauração de foco. O teste de filtro do plano também foi corrigido para consultar o combobox pelo nome acessível, em vez de considerar todo o texto das opções como label.
 
