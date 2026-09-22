@@ -42,7 +42,7 @@ Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu
 
 Comandos: `npm run build`, `npm run typecheck`, `npm run check:plan`, `npm run check:public-secrets`, `npm run check:performance-budget` e `npm run test:e2e`. A suíte usa servidor de produção na porta 3107, sem reutilizar processo estranho. A porta 3000 já servia outro aplicativo neste ambiente; o teste inicial foi descartado e a configuração foi corrigida.
 
-O workflow de CI executa instalação limpa, esses gates, cenários isolados e Chromium com um worker em push e pull request. `actionlint` validou a sintaxe localmente; a execução remota precisa ser conferida no GitHub. [Cenários adicionais e simulação de indexação](audit/2026-09-22-regression-scenarios.md).
+O workflow de CI executa instalação limpa, esses gates, cenários isolados e Chromium com um worker em push e pull request. `actionlint` validou a sintaxe localmente e o [primeiro run remoto](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35738493096) passou. [Cenários adicionais e simulação de indexação](audit/2026-09-22-regression-scenarios.md).
 
 O teste de teclado encontrou que o diálogo nativo permitia a sequência de Tab sair do ciclo esperado. Foi adicionado tratamento explícito das extremidades, mantendo Escape, inert nativo e restauração de foco. O teste de filtro do plano também foi corrigido para consultar o combobox pelo nome acessível, em vez de considerar todo o texto das opções como label.
 
