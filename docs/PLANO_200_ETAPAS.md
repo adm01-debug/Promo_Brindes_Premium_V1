@@ -1659,9 +1659,9 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **186. Testar jornadas com rede limitada.** Simular lentidão, offline e falha de imagem ou API.
   - **Situação auditada:** Parcial.
   - **Aceite:** Feedback mantém contexto e oferece recuperação sem sucesso fictício.
-  - **Constatação:** A jornada E2E cobre API 503 com seleção preservada e mídia 403 com fallback; ainda faltam perfil de lentidão e offline de navegador completo.
+  - **Constatação:** A jornada E2E cobre API 503 e offline com seleção preservada, além de mídia 403 com fallback; ainda falta perfil de lentidão em navegadores e dispositivos representativos.
   - **Evidências e referências:** `tests/public-api.spec.ts`, `tests/storefront.spec.ts`.
-  - **Próxima ação:** Executar cenários de lentidão e offline em navegadores e dispositivos representativos.
+  - **Próxima ação:** Executar cenários de lentidão em navegadores e dispositivos representativos.
   - **Dependências:** 168 (Concluída no escopo).
 
 - [ ] **187. Executar revisão comercial.** Validar nomes, técnicas, quantidades, preços e textos institucionais.

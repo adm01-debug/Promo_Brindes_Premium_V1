@@ -10,7 +10,7 @@ Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu
 
 ## Resultados funcionais
 
-**24 testes E2E passaram em Chromium** após a revisão (8,6 segundos nesta rodada). O cenário garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. A suíte cobre:
+**25 testes E2E passaram em Chromium** após a revisão (8,3 segundos nesta rodada). O cenário garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. A suíte cobre:
 
 1. Busca por SKU, resultado vazio, limpeza e filtro de categoria.
 2. Favoritos e seleção após recarregar, mínimo de quantidade e remoção.
@@ -35,6 +35,7 @@ Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu
 21. Indisponibilidade `503` da curadoria mantém a seleção e permite nova consulta.
 22. Resposta `403` da mídia mostra alternativa acessível e mantém o detalhe da peça utilizável.
 23. SKU removido da curadoria é retirado da seleção com explicação visível, sem descartar a seleção por falha de rede.
+24. Offline de navegador preserva a seleção, explica a indisponibilidade e recupera a curadoria após reconexão.
 
 Comandos: `npm run build`, `npm run typecheck`, `npm run check:plan`, `npm run check:public-secrets`, `npm run check:performance-budget` e `npm run test:e2e`. A suíte usa servidor de produção na porta 3107, sem reutilizar processo estranho. A porta 3000 já servia outro aplicativo neste ambiente; o teste inicial foi descartado e a configuração foi corrigida.
 

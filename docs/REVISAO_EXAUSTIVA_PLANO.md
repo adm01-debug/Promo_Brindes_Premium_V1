@@ -82,7 +82,7 @@ Os endpoints foram carregados com `fetch` simulado e as interações de envio fo
 
 Os controles **AUD-07 e AUD-08 passam**: projeto operacional e host semelhante são rejeitados antes da leitura do catálogo.
 
-A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, JavaScript, fontes e chunks, oito cenários sintéticos, cinco sondas de browser e **24 testes E2E**. A cobertura reproduz recuperação de API 503, fallback de mídia 403, retorno de navegação, remoção canônica de SKU e garante que marcação local não modifica a auditoria nem reaplica uma conclusão antiga. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
+A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, JavaScript, fontes e chunks, oito cenários sintéticos, cinco sondas de browser e **25 testes E2E**. A cobertura reproduz recuperação de API 503 e offline, fallback de mídia 403, retorno de navegação, remoção canônica de SKU e garante que marcação local não modifica a auditoria nem reaplica uma conclusão antiga. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
 
 O painel atualizado também foi inspecionado em **390 e 1440 pixels**, com filtro de parciais e critério expandido: sem overflow horizontal e sem violações nas regras axe selecionadas. [Registro da inspeção](audit/plan-dashboard-check.json).
 

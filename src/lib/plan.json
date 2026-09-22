@@ -4756,8 +4756,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "A jornada E2E cobre API 503 com seleção preservada e mídia 403 com fallback; ainda faltam perfil de lentidão e offline de navegador completo.",
-        "nextAction": "Executar cenários de lentidão e offline em navegadores e dispositivos representativos.",
+        "finding": "A jornada E2E cobre API 503 e offline com seleção preservada, além de mídia 403 com fallback; ainda falta perfil de lentidão em navegadores e dispositivos representativos.",
+        "nextAction": "Executar cenários de lentidão em navegadores e dispositivos representativos.",
         "evidence": [
           "tests/public-api.spec.ts",
           "tests/storefront.spec.ts"

@@ -82,6 +82,29 @@ test("falha da curadoria preserva o contexto e permite recuperar", async ({
   await expect(page.locator(".product-card")).toHaveCount(2);
 });
 
+test("modo offline explica a falha e recupera a curadoria após reconexão", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", {
+      name: "Adicionar Kit executivo à seleção",
+      exact: true,
+    })
+    .click();
+  await page.context().setOffline(true);
+  await page.getByRole("button", { name: "Escrita", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Você está sem conexão no momento." }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Minha seleção, 1 produtos" }),
+  ).toBeVisible();
+  await page.context().setOffline(false);
+  await page.getByRole("button", { name: "Tentar novamente" }).click();
+  await expect(page.locator(".product-card")).toHaveCount(2);
+});
+
 test("imagem indisponível mostra fallback sem quebrar a peça", async ({
   page,
 }) => {
