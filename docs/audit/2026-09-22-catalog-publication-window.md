@@ -46,3 +46,13 @@ Evidência reproduzível:
 - `node scripts/audit-plan-scenarios.mjs`: **57/57** cenários;
 - `npm run check:editorial:live`: oito produtos e 12 campos por peça iguais ao snapshot;
 - `npm run db:migrate -- --dry-run`: banco remoto atualizado, sem migration pendente.
+
+## Produção validada
+
+O runtime foi publicado pelo commit técnico `37b278a3a8e167bc6fdadc0e34d93f6b2fddb9c1` no deployment Vercel `dpl_AquMsZCasrt5mME84puAJ628Mmco`, com URL imutável `https://promo-brindes-premium-v1-iwt72z78c-juca1.vercel.app` e alias `https://promo-brindes-premium-v1.vercel.app`. O GitHub registrou o deployment de produção `6601902320` para o mesmo SHA.
+
+- [Banco isolado 35791611794](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35791611794): aprovado em 1m46s, com rebuild de onze migrations, 64 contratos pgTAP, concorrência e lint sem alertas.
+- [Qualidade 35791611910](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35791611910): aprovado em 4m14s, com tipos, plano, build, 57 cenários, 70 contratos unitários e 213 execuções E2E.
+- Smoke autenticado: catálogo `200`, contrato `2026-09-22.2`, oito itens, fonte `site-database`; briefing `configured:false`; home e ficha `200`; CSP, HSTS, `nosniff`, `DENY` e `X-Robots-Tag: noindex, nofollow` presentes.
+- Cache real na mesma URL: primeiro `MISS`, depois `HIT` com `age: 35`, seguido de novo `MISS` e `age: 0` depois do vencimento. O segundo `MISS` trouxe outro `X-Request-Id`, provando nova execução após o SLA.
+- Logs do deployment: seis eventos inspecionados, zero `5xx` e zero correspondência para secret, URL PostgreSQL, bearer, e-mail ou telefone.
