@@ -16,6 +16,17 @@ function destinationIsSafe(value: string | undefined) {
   if (!value) return false;
   try {
     const url = new URL(value);
+    // The operational project is a read-only product source, never a receiver.
+    if (
+      url.username ||
+      url.password ||
+      [
+        "doufsxqlfjyuvxuezpln.supabase.co",
+        "doufsxqlfjyuvxuezpln.functions.supabase.co",
+        "db.doufsxqlfjyuvxuezpln.supabase.co",
+      ].includes(url.hostname)
+    )
+      return false;
     return (
       url.protocol === "https:" ||
       (process.env.NODE_ENV === "development" &&

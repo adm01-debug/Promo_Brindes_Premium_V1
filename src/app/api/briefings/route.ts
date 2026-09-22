@@ -113,6 +113,7 @@ async function rpc<T>(
 ): Promise<T> {
   const response = await fetch(`${config.url}/rest/v1/rpc/${name}`, {
     method: "POST",
+    redirect: "error",
     headers: {
       apikey: config.secret,
       Authorization: `Bearer ${config.secret}`,
@@ -377,6 +378,7 @@ export async function POST(request: NextRequest) {
   try {
     const response = await fetch(config.destination, {
       method: "POST",
+      redirect: "error",
       headers: {
         "Content-Type": "application/json",
         "Idempotency-Key": key!,

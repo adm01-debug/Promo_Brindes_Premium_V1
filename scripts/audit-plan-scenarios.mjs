@@ -813,6 +813,79 @@ for (const [id, url] of [
   });
 }
 
+for (const host of [
+  "doufsxqlfjyuvxuezpln.supabase.co",
+  "doufsxqlfjyuvxuezpln.functions.supabase.co",
+  "db.doufsxqlfjyuvxuezpln.supabase.co",
+]) {
+  await probe(
+    `CAT-READONLY-reject-receiver-${host}`,
+    "false;503;0",
+    async () => {
+      let forbiddenCalls = 0;
+      const harness = deliveryHarness();
+      const api = load(
+        "src/app/api/briefings/route.ts",
+        {
+          ...activeEnv,
+          BRIEFING_WEBHOOK_URL: `https://${host}/rest/v1/rpc/synthetic`,
+        },
+        async (input, init = {}) => {
+          if (
+            new URL(String(input)).hostname !== `${project}.supabase.co` ||
+            init.method === "POST"
+          )
+            forbiddenCalls++;
+          return harness.fetcher(input, init);
+        },
+      );
+      const capability = await api.GET().json();
+      const response = await api.POST(request("source-read-only-0001"));
+      return `${capability.configured};${response.status};${forbiddenCalls}`;
+    },
+  );
+}
+
+await probe(
+  "CAT-READONLY-reject-operational-persistence",
+  "503;0",
+  async () => {
+    let calls = 0;
+    const api = load(
+      "src/app/api/briefings/route.ts",
+      {
+        ...activeEnv,
+        SUPABASE_URL: "https://doufsxqlfjyuvxuezpln.supabase.co",
+      },
+      async () => {
+        calls++;
+        return Response.json({});
+      },
+    );
+    const response = await api.POST(request("source-no-persistence-0001"));
+    return `${response.status};${calls}`;
+  },
+);
+
+await probe("CAT-READONLY-no-write-redirects", true, async () => {
+  const harness = deliveryHarness();
+  const writes = [];
+  const api = load(
+    "src/app/api/briefings/route.ts",
+    activeEnv,
+    async (input, init = {}) => {
+      if (init.method === "POST") writes.push(init);
+      return harness.fetcher(input, init);
+    },
+  );
+  const response = await api.POST(request("source-no-redirect-0001"));
+  return (
+    response.status === 201 &&
+    writes.length > 1 &&
+    writes.every((init) => init.redirect === "error")
+  );
+});
+
 const report = {
   generatedAt: new Date().toISOString(),
   scope:

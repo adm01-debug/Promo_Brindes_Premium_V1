@@ -11,7 +11,8 @@ flowchart LR
   B[Comprador] --> W[Site premium público]
   W --> C[Leitura pública de catálogo / cache]
   C --> V[Supabase da vitrine premium]
-  G[Gold do sistema comercial] -. revisão editorial .-> V
+  G[Gold operacional: somente GET] --> S[Conferência da seleção editorial]
+  S --> V
   W --> A[API de briefing validada]
   A --> I[Persistência e idempotência]
   I --> O[Oportunidade / atribuição comercial]
@@ -20,7 +21,7 @@ flowchart LR
   Q --> R[Produção e acompanhamento]
 ```
 
-O trecho de passagem ao comercial no diagrama representa a **integração futura**. A rota pública, a home, as fichas e a validação de briefing leem o banco dedicado da vitrine quando configurado; o snapshot editorial é só fallback offline. As imagens são locais. O briefing permanece em download no navegador enquanto a entrega estiver desligada. Ainda não há vínculo com CRM.
+O trecho de passagem ao comercial no diagrama representa a **integração futura**. A fonte operacional é estritamente de leitura para este projeto: nenhum receptor de briefing pode apontar diretamente para esse Supabase, e não há credencial administrativa da origem no site. A sincronização explícita confere a seleção na view `v_products_public` com chave publishable antes de gravar somente no banco premium. A rota pública, a home, as fichas e a validação de briefing leem o banco dedicado da vitrine quando configurado; o snapshot editorial é só fallback offline. As imagens são locais. O briefing permanece em download no navegador enquanto a entrega estiver desligada. Ainda não há vínculo com CRM.
 
 ## Contratos de dados
 

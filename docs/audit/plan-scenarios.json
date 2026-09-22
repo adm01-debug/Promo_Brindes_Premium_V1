@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-22T16:29:50.651Z",
+  "generatedAt": "2026-09-22T17:22:05.579Z",
   "scope": "Isolated source modules; synthetic inputs; no external network or database writes",
   "results": [
     {
@@ -217,8 +217,38 @@
       "expected": true,
       "observed": true,
       "passed": true
+    },
+    {
+      "id": "CAT-READONLY-reject-receiver-doufsxqlfjyuvxuezpln.supabase.co",
+      "expected": "false;503;0",
+      "observed": "false;503;0",
+      "passed": true
+    },
+    {
+      "id": "CAT-READONLY-reject-receiver-doufsxqlfjyuvxuezpln.functions.supabase.co",
+      "expected": "false;503;0",
+      "observed": "false;503;0",
+      "passed": true
+    },
+    {
+      "id": "CAT-READONLY-reject-receiver-db.doufsxqlfjyuvxuezpln.supabase.co",
+      "expected": "false;503;0",
+      "observed": "false;503;0",
+      "passed": true
+    },
+    {
+      "id": "CAT-READONLY-reject-operational-persistence",
+      "expected": "503;0",
+      "observed": "503;0",
+      "passed": true
+    },
+    {
+      "id": "CAT-READONLY-no-write-redirects",
+      "expected": true,
+      "observed": true,
+      "passed": true
     }
   ],
-  "passed": 36,
+  "passed": 41,
   "failed": 0
 }

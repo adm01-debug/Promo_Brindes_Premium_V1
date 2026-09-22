@@ -37,7 +37,12 @@ function approvedUrl(rawUrl: string) {
   if (
     url.protocol !== "https:" ||
     url.hostname !== SITE_HOST ||
-    url.pathname !== "/"
+    url.pathname !== "/" ||
+    url.port ||
+    url.username ||
+    url.password ||
+    url.search ||
+    url.hash
   )
     throw new Error("Site Supabase host does not match the approved project.");
   return url.origin;
