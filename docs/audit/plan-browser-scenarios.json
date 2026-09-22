@@ -1,36 +1,36 @@
 {
-  "generatedAt": "2026-09-22T11:40:19.978Z",
+  "generatedAt": "2026-09-22T12:32:52.050Z",
   "scope": "Local Chromium; synthetic data; mocked delivery; no remote writes",
   "results": [
     {
       "id": "AUD-09-product-selection-expiry",
       "expected": true,
-      "observed": false,
-      "passed": false
+      "observed": true,
+      "passed": true
     },
     {
       "id": "AUD-10-clear-search-url",
       "expected": false,
-      "observed": true,
-      "passed": false
+      "observed": false,
+      "passed": true
     },
     {
       "id": "AUD-11-browser-retry-key",
       "expected": true,
-      "observed": false,
-      "passed": false
+      "observed": true,
+      "passed": true
     },
     {
       "id": "AUD-12-form-back-preserves-contact",
       "expected": "Teste local",
-      "observed": "",
-      "passed": false
+      "observed": "Teste local",
+      "passed": true
     },
     {
       "id": "AUD-13-reduced-motion-explicit-scroll",
       "expected": false,
-      "observed": true,
-      "passed": false
+      "observed": false,
+      "passed": true
     }
   ]
 }

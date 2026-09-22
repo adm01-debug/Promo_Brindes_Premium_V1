@@ -25,13 +25,13 @@ Node 22.12+ ou 24 LTS recomendado. O projeto usa Next.js 16, React 19 e TypeScri
 - Detalhe rápido, quantidades com mínimo cadastrado e remoção de itens.
 - Briefing com validação e download de arquivo local.
 - Plano interativo com 200 etapas, filtros, progresso local e exportação Markdown.
-- Revisão individual das 200 etapas: **68 critérios comprovados no escopo, 80 entregas parciais e 52 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
+- Revisão individual das 200 etapas: **77 critérios comprovados no escopo, 71 entregas parciais e 52 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
 - Páginas permanentes de produto, metadados por peça e infraestrutura de sitemap/robots preparada para lançamento autorizado.
-- Contrato público do catálogo lido do Supabase da vitrine quando configurado; endpoint de briefing com controles iniciais e falha explícita quando não há receptor comercial. A deduplicação atual tem falhas de concorrência e retry registradas na revisão.
+- Contrato público do catálogo lido diretamente do Supabase da vitrine, com paginação e validação no servidor; briefing com persistência idempotente e reserva atômica de entrega, mantido desligado até existir receptor comercial homologado.
 
 ## Limites desta entrega
 
-Nesta instalação, a versão **não envia leads, não registra propostas e não reserva estoque**. O formulário gera um arquivo no navegador e informa isso explicitamente. O endpoint de briefing já existe, mas só habilita entrega quando há um receptor HTTPS aprovado em `BRIEFING_WEBHOOK_URL`; sem essa configuração, ele responde indisponibilidade e a interface permanece em download local. A curadoria contém oito peças sincronizadas no banco da vitrine; a home e as fichas ainda usam o snapshot editorial versionado. Valores, condições e disponibilidade devem ser confirmados pelo comercial.
+Nesta instalação, a versão **não envia leads, não registra propostas e não reserva estoque**. O formulário gera um arquivo no navegador e informa isso explicitamente. O endpoint de briefing só habilita entrega quando `BRIEFING_DELIVERY_ENABLED=true` e há um receptor HTTPS aprovado em `BRIEFING_WEBHOOK_URL`; sem as duas condições, ele responde indisponibilidade e a interface permanece em download local. A curadoria contém oito peças sincronizadas no banco da vitrine, que alimenta home, fichas e validação de briefing. Valores, condições e disponibilidade devem ser confirmados pelo comercial.
 
 A imagem de campanha foi gerada por IA e é conceitual. Os cards usam fotografias reais de fornecedor; direitos de publicação comercial devem ser confirmados. Não foram alterados schema, policies, dados ou serviços do sistema comercial. O site está `noindex` e não foi publicado remotamente.
 

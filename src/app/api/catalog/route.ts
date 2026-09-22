@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { queryCatalog } from "@/lib/catalog";
-import { getSiteCatalog } from "@/lib/site-database";
+import { getSiteCatalogPage } from "@/lib/site-database";
 
 export const revalidate = 300;
 
@@ -30,6 +29,7 @@ export async function GET(request: NextRequest) {
   const page = integer(search.get("page"));
   const pageSize = integer(search.get("pageSize"));
   const sort = search.get("sort");
+  const ids = search.get("ids");
   if (query && query.length > 100)
     return invalid("q aceita no máximo 100 caracteres.");
   if (
@@ -53,32 +53,41 @@ export async function GET(request: NextRequest) {
     );
   if (sort && !["curadoria", "nome"].includes(sort))
     return invalid("sort deve ser curadoria ou nome.");
-  let catalogItems;
+  const selectedIds = ids ? ids.split(",") : [];
+  if (
+    selectedIds.length > 24 ||
+    selectedIds.some(
+      (id) =>
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+          id,
+        ),
+    )
+  )
+    return invalid(
+      "ids aceita no máximo 24 UUIDs públicos separados por vírgula.",
+    );
   try {
-    catalogItems = await getSiteCatalog();
+    const result = await getSiteCatalogPage({
+      query: query ?? undefined,
+      category: category ?? undefined,
+      page: page ?? undefined,
+      pageSize: pageSize ?? undefined,
+      sort: sort ?? undefined,
+      ids: selectedIds,
+    });
+    return NextResponse.json(result, {
+      headers: {
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+        "X-Catalog-Contract-Version": result.contractVersion,
+        "X-Catalog-Source": process.env.SUPABASE_URL
+          ? "site-database"
+          : "snapshot",
+      },
+    });
   } catch {
     return NextResponse.json(
       { error: "CATALOG_UNAVAILABLE" },
       { status: 503, headers: { "Cache-Control": "no-store" } },
     );
   }
-  const result = queryCatalog(
-    {
-      query: query ?? undefined,
-      category: category ?? undefined,
-      page: page ?? undefined,
-      pageSize: pageSize ?? undefined,
-      sort: sort ?? undefined,
-    },
-    catalogItems,
-  );
-  return NextResponse.json(result, {
-    headers: {
-      "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
-      "X-Catalog-Contract-Version": result.contractVersion,
-      "X-Catalog-Source": process.env.SUPABASE_URL
-        ? "site-database"
-        : "snapshot",
-    },
-  });
 }

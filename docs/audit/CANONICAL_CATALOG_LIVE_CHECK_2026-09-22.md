@@ -1,5 +1,7 @@
 # Verificação ao vivo do catálogo canônico
 
+> Atualização posterior em 22/09/2026: este registro descreve a leitura inicial do banco operacional. As migrations `20260922110900` até `20260922130000` foram aplicadas depois, somente no banco dedicado da vitrine `whwloseshzraipljisqo`; o banco operacional não foi alterado. O estado atual está em [SUPABASE_SITE_DATABASE.md](../SUPABASE_SITE_DATABASE.md).
+
 Data: 22/09/2026. Alvo confirmado: `doufsxqlfjyuvxuezpln`.
 
 Foi feita uma leitura limitada da view pública `v_products_public`, autenticada pela chave anônima pública já distribuída pelo cliente do projeto comercial. Nenhuma chave foi registrada neste repositório, nenhum dado foi alterado e nenhuma consulta usou `select=*`.

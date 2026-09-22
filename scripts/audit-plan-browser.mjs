@@ -118,3 +118,4 @@ writeFileSync(
   JSON.stringify(report, null, 2) + "\n",
 );
 console.log(JSON.stringify(report, null, 2));
+if (results.some((result) => !result.passed)) process.exit(1);

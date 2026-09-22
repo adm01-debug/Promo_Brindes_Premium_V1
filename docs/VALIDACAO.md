@@ -4,13 +4,13 @@ Data: 22/09/2026. Escopo: aplicação local compilada, oito produtos de snapshot
 
 ## Revisão posterior dos critérios
 
-A [revisão individual das 200 etapas](REVISAO_EXAUSTIVA_PLANO.md) encontrou **68 critérios comprovados no próprio escopo, 80 entregas parciais e 52 sem entrega comprovada**. Treze cenários diagnósticos adicionais reproduziram onze falhas e confirmaram dois controles de host. A suíte regular abaixo não cobria esses casos: concorrência, conflito de payload, corpo sem Content-Length, retry, expiração iniciada na ficha, retorno do formulário e movimento reduzido por JavaScript. Os resultados brutos estão em `audit/plan-scenarios.json` e `audit/plan-browser-scenarios.json`.
+A [revisão individual das 200 etapas](REVISAO_EXAUSTIVA_PLANO.md) registra **77 critérios comprovados no próprio escopo, 71 entregas parciais e 52 sem entrega comprovada**. Oito cenários sintéticos agora passam para concorrência idempotente, conflito de payload, corpo sem `Content-Length`, data inválida, paginação de fonte e validação de host. As sondas de browser cobrem expiração iniciada na ficha, retorno do formulário e movimento reduzido. Os resultados brutos estão em `audit/plan-scenarios.json` e `audit/plan-browser-scenarios.json`.
 
-Os defeitos permanecem documentados como abertos. Esta revisão alterou o acompanhamento, suas verificações e o painel; não habilitou entrega comercial nem integrou o CRM. O painel separa situação auditada de marcação pessoal e não reaplica automaticamente a conclusão de uma revisão antiga.
+Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu os defeitos técnicos listados, atualizou as verificações e o painel, mas não habilitou entrega comercial nem integrou CRM. O painel separa situação auditada de marcação pessoal e não reaplica automaticamente a conclusão de uma revisão antiga.
 
 ## Resultados funcionais
 
-**19 testes E2E passaram em Chromium** após a revisão do painel (8,8 segundos nesta rodada). O novo cenário garante que marcação local não altera o status auditado e que revisão antiga não mascara etapa reaberta. A suíte cobre:
+**20 testes E2E passaram em Chromium** após a revisão (7,6 segundos nesta rodada). O cenário garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. A suíte cobre:
 
 1. Busca por SKU, resultado vazio, limpeza e filtro de categoria.
 2. Favoritos e seleção após recarregar, mínimo de quantidade e remoção.
@@ -21,7 +21,7 @@ Os defeitos permanecem documentados como abertos. Esta revisão alterou o acompa
 7. Varredura axe da home e formulário do briefing.
 8. Exatamente 200 checkboxes no plano, filtro, persistência e exportação com 200 etapas.
 9. Varredura axe do plano filtrado e privacidade; resposta HTTP 404 para rota inexistente.
-10. Contrato do endpoint `/api/catalog`: paginação, cabeçalho de versão e ausência de campos sensíveis.
+10. Contrato do endpoint `/api/catalog`: paginação, ordenação, busca sem acento, cabeçalho de versão e ausência de campos sensíveis.
 11. Endpoint de briefing sem destino configurado, chave de idempotência obrigatória, origem forjada rejeitada e data de calendário inválida rejeitada.
 12. Rota permanente de produto renderizada no servidor, seleção local e acessibilidade automática do detalhe.
 13. Bloqueio de indexação na prévia por `robots.txt` e sitemap vazio.
@@ -54,7 +54,7 @@ Isso **não é declaração de conformidade integral**. Permanecem revisão manu
 
 Catálogo de origem consultado por leitura pública limitada, com IDs/SKUs preservados. Em 22/09/2026, os oito produtos foram sincronizados no novo banco dedicado à vitrine; a migration criou apenas duas tabelas novas nesse projeto. Nenhum produto, cliente, pedido, policy ou schema do banco operacional de Promo_Gifts_V4 foi alterado. As verificações do novo banco estão em [SUPABASE_SITE_DATABASE.md](SUPABASE_SITE_DATABASE.md). Fotos de fornecedor não equivalem a autorização legal de publicação comercial; essa validação está pendente.
 
-O briefing preserva o download local quando não há destino configurado. O endpoint preparado para entrega valida origem, tipo e tamanho do corpo, calendário, mínimo por item, chave de idempotência e limite de requisições; ele resolve SKU e quantidade no servidor, portanto ignora preço ou fornecedor forjados pelo navegador. Sem `BRIEFING_WEBHOOK_URL` válido, não há transferência de dados nem teste de entrega a CRM. A memória de idempotência e rate limit é intencionalmente local ao processo: produção exige persistência compartilhada e uma integração comercial aprovada. Valores são sob consulta; não há preço garantido, reserva, pagamento, prazo confirmado ou amostra de arte aprovada. O frontend não possui chave Supabase ou segredos de integração.
+O briefing preserva o download local quando a entrega não está explicitamente ativada. O endpoint valida origem, tipo e tamanho do corpo, calendário, mínimo por item, chave de idempotência e limite de requisições; ele resolve SKU e quantidade no servidor, portanto ignora preço ou fornecedor forjados pelo navegador. Quando ativado, persiste chave/hash e reserva a entrega no banco antes de chamar o receptor. Sem `BRIEFING_DELIVERY_ENABLED=true` e `BRIEFING_WEBHOOK_URL` válido, não há transferência de dados nem teste de entrega a CRM. O rate limit ainda é local ao processo: produção exige controle compartilhado e uma integração comercial aprovada. Valores são sob consulta; não há preço garantido, reserva, pagamento, prazo confirmado ou amostra de arte aprovada. O frontend não possui chave Supabase ou segredos de integração.
 
 ## Integridade do plano
 

@@ -35,10 +35,10 @@ test("marcação local não altera auditoria e revisão antiga não mascara etap
   page,
 }) => {
   await page.addInitScript(() => {
-    localStorage.setItem("promo-premium-plan-v1", JSON.stringify({ 68: true }));
+    localStorage.setItem("promo-premium-plan-v1", JSON.stringify({ 61: true }));
     localStorage.setItem(
       "promo-premium-plan-v2",
-      JSON.stringify({ review: "revisao-antiga", overrides: { 68: true } }),
+      JSON.stringify({ review: "revisao-antiga", overrides: { 61: true } }),
     );
   });
   await page.goto("/planejamento");
@@ -50,7 +50,7 @@ test("marcação local não altera auditoria e revisão antiga não mascara etap
     .getByRole("combobox", { name: "Filtrar status", exact: true })
     .selectOption("partial");
   await expect(page.getByRole("checkbox")).toHaveCount(partial);
-  const reopened = page.getByRole("checkbox", { name: /Concluir etapa 68:/ });
+  const reopened = page.getByRole("checkbox", { name: /Concluir etapa 61:/ });
   await expect(reopened).not.toBeChecked();
   await reopened.check();
   await expect(progress).toHaveAttribute("value", String(audited));

@@ -4,7 +4,9 @@ export const metadata: Metadata = {
   title: "Privacidade da prévia | Promo Brindes Premium",
 };
 export default function Privacy() {
-  const deliveryActive = Boolean(process.env.BRIEFING_WEBHOOK_URL);
+  const deliveryActive =
+    process.env.BRIEFING_DELIVERY_ENABLED === "true" &&
+    Boolean(process.env.BRIEFING_WEBHOOK_URL);
   return (
     <main className="legal-page">
       <Link href="/">← Voltar à curadoria</Link>

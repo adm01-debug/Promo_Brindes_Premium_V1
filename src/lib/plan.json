@@ -1528,7 +1528,7 @@
       "acceptance": "Política cobre dispositivo compartilhado, expiração e limpeza da seleção.",
       "owner": "UX + conteúdo",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "src/components/ProductDetailActions.tsx",
       "dependencies": [
         55
@@ -1536,8 +1536,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Home usa envelope com validade; ficha permanente grava formato sem savedAt e contorna expiração.",
-        "nextAction": "Unificar serialização e testar expiração iniciada em cada rota.",
+        "finding": "Home e ficha permanente usam o mesmo envelope com savedAt; a validade e a limpeza preservam apenas IDs e quantidades.",
+        "nextAction": "Manter o teste de expiração entre rotas ao alterar o armazenamento local.",
         "evidence": [
           "src/components/ProductDetailActions.tsx",
           "src/lib/catalog.ts",
@@ -1820,7 +1820,7 @@
       "acceptance": "Preferência de movimento reduzido desativa transições e rolagem suave.",
       "owner": "Design de produto + frontend",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "src/app/globals.css",
       "dependencies": [
         61
@@ -1828,8 +1828,8 @@
       "audit": {
         "previousStatus": "done",
         "kind": "tecnica",
-        "finding": "CSS reduz movimento, mas scrollIntoView com smooth ainda anima sob reduced-motion.",
-        "nextAction": "Respeitar preferência também nas chamadas JavaScript.",
+        "finding": "CSS e scrollIntoView consultam prefers-reduced-motion; a rolagem explícita passa a ser instantânea quando necessário.",
+        "nextAction": "Reexecutar a sonda de movimento ao criar novas transições controladas por JavaScript.",
         "evidence": [
           "src/app/globals.css",
           "src/components/Storefront.tsx",
@@ -2290,18 +2290,19 @@
       "acceptance": "Paginação não repete nem perde produtos ao mudar ordenação.",
       "owner": "UX + frontend + backend",
       "priority": "P0",
-      "status": "partial",
-      "evidence": "src/lib/catalog.ts",
+      "status": "done",
+      "evidence": "src/components/Storefront.tsx",
       "dependencies": [
         126
       ],
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "API ordena por nome; UI não oferece ordenação e não há desempate explícito por ID.",
-        "nextAction": "Unificar ordenação da UI e servidor e testar empates.",
+        "finding": "A interface oferece curadoria ou nome, preserva a escolha na URL e a fonte usa ID como desempate determinístico.",
+        "nextAction": "Manter casos de empate quando houver ampliação de catálogo.",
         "evidence": [
-          "src/lib/catalog.ts",
+          "src/components/Storefront.tsx",
+          "src/lib/site-database.ts",
           "tests/public-api.spec.ts"
         ]
       }
@@ -2338,7 +2339,7 @@
       "acceptance": "Nenhuma jornada pública baixa milhares de registros para filtrar no cliente.",
       "owner": "UX + frontend + backend",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "src/app/api/catalog/route.ts",
       "dependencies": [
         127
@@ -2346,8 +2347,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "API pagina em memória só os primeiros 24 itens lidos; UI usa todos os oito do snapshot.",
-        "nextAction": "Paginar e contar no banco, preservar filtros e cancelamento; testar mais de 24.",
+        "finding": "A fonte aplica filtro, ordenação, contagem e offset antes de devolver uma página; a UI consulta apenas a página necessária.",
+        "nextAction": "Monitorar a contagem e manter o limite de 24 ao ampliar a curadoria.",
         "evidence": [
           "src/app/api/catalog/route.ts",
           "src/lib/site-database.ts",
@@ -2953,7 +2954,7 @@
       "acceptance": "Contato obrigatório e campos opcionais têm labels e validação clara.",
       "owner": "UX + frontend + comercial",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "src/components/Storefront.tsx",
       "dependencies": [
         66
@@ -2961,8 +2962,8 @@
       "audit": {
         "previousStatus": "done",
         "kind": "tecnica",
-        "finding": "Formulário em duas etapas funciona, mas Voltar apaga os contatos preenchidos.",
-        "nextAction": "Manter rascunho em memória entre etapas sem persistir PII no navegador.",
+        "finding": "O rascunho controlado permanece em memória ao voltar entre etapas e é excluído ao iniciar outro briefing; PII não vai ao armazenamento local.",
+        "nextAction": "Rever campos e retenção somente junto da política comercial aprovada.",
         "evidence": [
           "src/components/Storefront.tsx",
           "docs/audit/plan-browser-scenarios.json"
@@ -3278,7 +3279,7 @@
       "acceptance": "Dados reais são validados e erros não viram listagens vazias silenciosas.",
       "owner": "Arquitetura + backend + dados",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "src/lib/site-database.ts",
       "dependencies": [
         125,
@@ -3287,8 +3288,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "GET /api/catalog lê banco; home, fichas e validação de briefing leem snapshot.",
-        "nextAction": "Unificar leitura publicada em todas as jornadas e validar exclusões e falhas.",
+        "finding": "Home, ficha de produto, API, seleção recuperada e validação de briefing consultam a projeção publicada com a mesma validação de contrato.",
+        "nextAction": "Testar despublicação e conteúdo novo em um ambiente de staging quando houver dados aprovados.",
         "evidence": [
           "src/lib/site-database.ts",
           "src/components/Storefront.tsx",
@@ -3453,7 +3454,7 @@
       "acceptance": "Retentativas não criam duplicatas nem fundem empresas distintas indevidamente.",
       "owner": "Backend + comercial + operações",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "src/app/api/briefings/route.ts",
       "dependencies": [
         133
@@ -3461,8 +3462,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Map em memória aceita concorrência duplicada e replay de payload diferente; tabela única não é usada.",
-        "nextAction": "Persistir atomicamente chave e hash; testar concorrência, reinício e resposta perdida.",
+        "finding": "A chave e o hash são persistidos atomicamente; uma lease no banco permite uma única entrega concorrente, detecta conflito de payload e sobrevive ao reinício do processo.",
+        "nextAction": "Exercitar a passagem ao CRM homologado e a conciliação operacional antes de habilitar a coleta.",
         "evidence": [
           "src/app/api/briefings/route.ts",
           "supabase/migrations/20260922110900_create_premium_site_core.sql",
@@ -4292,7 +4293,7 @@
       "acceptance": "Erro do upstream não transforma indisponibilidade em falsa ausência de produtos.",
       "owner": "Frontend + SRE + backend",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "src/lib/site-database.ts",
       "dependencies": [
         127
@@ -4300,8 +4301,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "API tem timeout e 503; catálogo realmente vazio também vira erro, e UI não trata upstream.",
-        "nextAction": "Distinguir vazio de falha, definir recuperação e circuit breaker proporcional.",
+        "finding": "Resposta vazia válida preserva total zero; falha de fonte vira 503 e a interface mantém a seleção local com ação explícita de nova tentativa.",
+        "nextAction": "Definir circuit breaker e observabilidade no ambiente com tráfego real.",
         "evidence": [
           "src/lib/site-database.ts",
           "src/app/api/catalog/route.ts"
@@ -4540,7 +4541,7 @@
       "acceptance": "Nenhuma informação depende de animação, cor isolada ou imagem sem alternativa.",
       "owner": "QA acessibilidade + frontend",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "docs/audit/plan-browser-scenarios.json",
       "dependencies": [
         68,
@@ -4549,8 +4550,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Alt e identificação conceitual existem; movimento reduzido falha na rolagem explícita.",
-        "nextAction": "Corrigir chamadas JavaScript e testar mídia/movimento em todas as rotas.",
+        "finding": "A sonda de navegador confirma que reduced-motion interrompe a rolagem suave explícita; imagens essenciais têm texto alternativo e identificação conceitual.",
+        "nextAction": "Incluir qualquer nova mídia ou animação na varredura de acessibilidade.",
         "evidence": [
           "docs/audit/plan-browser-scenarios.json",
           "src/components/Storefront.tsx",

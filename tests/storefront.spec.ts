@@ -32,6 +32,15 @@ test("busca por SKU, recuperação de resultado vazio e filtro por categoria", a
   await expect(page.locator(".product-card")).toHaveCount(2);
 });
 
+test("ordenação pública é acionável e compartilhável", async ({ page }) => {
+  await page.goto("/");
+  const sort = page.locator(".catalog-sort select");
+  await sort.selectOption("nome");
+  await expect(sort).toHaveValue("nome");
+  await expect(page).toHaveURL(/sort=nome/);
+  await expect(page.locator(".product-card").first()).toBeVisible();
+});
+
 test("favoritos e seleção persistem, mínimo é respeitado e remoção funciona", async ({
   page,
 }) => {

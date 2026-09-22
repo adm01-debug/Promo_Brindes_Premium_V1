@@ -52,6 +52,10 @@ test("catálogo rejeita parâmetros inválidos e pagina a ordenação sem repeti
     }
   }
   expect(seen.size).toBe(8);
+
+  const accentInsensitive = await request.get("/api/catalog?q=experiencias");
+  expect(accentInsensitive.status()).toBe(200);
+  expect((await accentInsensitive.json()).total).toBe(3);
 });
 
 test("endpoint de briefing falha de forma explícita sem destinatário comercial", async ({

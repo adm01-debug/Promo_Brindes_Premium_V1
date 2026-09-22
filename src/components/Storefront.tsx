@@ -26,10 +26,9 @@ import Modal from "./Modal";
 import {
   categories,
   downloadText,
-  normalize,
-  products,
-  readSelection,
+  readUnverifiedSelection,
   serializeSelection,
+  type CatalogPage,
   type Product,
   type Selection,
 } from "@/lib/catalog";
@@ -53,9 +52,32 @@ const faq = [
   ],
 ];
 
-export default function Storefront() {
+type BriefingDraft = {
+  name: string;
+  company: string;
+  email: string;
+  date: string;
+  budget: string;
+  message: string;
+};
+
+const emptyBriefingDraft: BriefingDraft = {
+  name: "",
+  company: "",
+  email: "",
+  date: "",
+  budget: "",
+  message: "",
+};
+
+export default function Storefront({
+  initialCatalog,
+}: {
+  initialCatalog: CatalogPage | null;
+}) {
   const [category, setCategory] = useState("Todos");
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<"curadoria" | "nome">("curadoria");
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -71,20 +93,37 @@ export default function Storefront() {
   const [deliveryConfigured, setDeliveryConfigured] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [protocol, setProtocol] = useState<string | null>(null);
+  const [deliveryPending, setDeliveryPending] = useState(false);
+  const [briefingDraft, setBriefingDraft] =
+    useState<BriefingDraft>(emptyBriefingDraft);
+  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
+  const [catalog, setCatalog] = useState<CatalogPage | null>(initialCatalog);
+  const [catalogLoading, setCatalogLoading] = useState(false);
+  const [catalogError, setCatalogError] = useState(!initialCatalog);
+  const [knownProducts, setKnownProducts] = useState<Record<string, Product>>(
+    () =>
+      Object.fromEntries(
+        (initialCatalog?.items ?? []).map((product) => [product.id, product]),
+      ),
+  );
 
   useEffect(() => {
     try {
       const url = new URL(window.location.href);
       const initialCategory = url.searchParams.get("categoria");
       const initialSearch = url.searchParams.get("q")?.slice(0, 100) ?? "";
+      const initialSort = url.searchParams.get("sort");
       if (categories.includes(initialCategory as (typeof categories)[number]))
         setCategory(initialCategory!);
       if (initialSearch) {
         setSearch(initialSearch);
         setExpanded(true);
       }
+      if (initialSort === "nome") setSort(initialSort);
       setSelected(
-        readSelection(localStorage.getItem("promo-premium-selection-v1")),
+        readUnverifiedSelection(
+          localStorage.getItem("promo-premium-selection-v1"),
+        ),
       );
       const parsed: unknown = JSON.parse(
         localStorage.getItem("promo-premium-favorites-v1") ?? "[]",
@@ -93,7 +132,7 @@ export default function Storefront() {
         setFavorites(
           parsed.filter(
             (id): id is string =>
-              typeof id === "string" && products.some((p) => p.id === id),
+              typeof id === "string" && /^[0-9a-f-]{36}$/i.test(id),
           ),
         );
     } catch {
@@ -138,35 +177,136 @@ export default function Storefront() {
     return () => clearTimeout(timer);
   }, [notice]);
 
+  useEffect(() => {
+    setIdempotencyKey(null);
+  }, [selected]);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const requestedCategory = url.searchParams.get("categoria") || "Todos";
+    const requestedSearch = url.searchParams.get("q")?.slice(0, 100) || "";
+    const requestedPage = Number(url.searchParams.get("page") || "1");
+    const requestedSort =
+      url.searchParams.get("sort") === "nome" ? "nome" : "curadoria";
+    if (
+      requestedSearch ||
+      requestedCategory !== "Todos" ||
+      (Number.isInteger(requestedPage) && requestedPage > 1) ||
+      requestedSort !== "curadoria"
+    )
+      void loadCatalog(
+        requestedSearch,
+        requestedCategory,
+        requestedPage,
+        requestedSort,
+      );
+    // Initial query comes from the browser URL; subsequent changes are explicit actions.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const missing = Object.keys(selected).filter((id) => !knownProducts[id]);
+    if (!missing.length || missing.length > 24) return;
+    const controller = new AbortController();
+    fetch(`/api/catalog?ids=${missing.join(",")}&pageSize=24`, {
+      signal: controller.signal,
+    })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((page: CatalogPage | null) => {
+        if (!page?.items) return;
+        setKnownProducts((current) => ({
+          ...current,
+          ...Object.fromEntries(
+            page.items.map((product) => [product.id, product]),
+          ),
+        }));
+      })
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, [selected, knownProducts]);
+
   const filtered = useMemo(
     () =>
-      products.filter(
-        (p) =>
-          (category === "Todos" || category === p.category) &&
-          (!onlyFavorites || favorites.includes(p.id)) &&
-          normalize(
-            `${p.name} ${p.originalName} ${p.sku} ${p.category}`,
-          ).includes(normalize(search.trim())),
+      (catalog?.items ?? []).filter(
+        (product) => !onlyFavorites || favorites.includes(product.id),
       ),
-    [category, search, onlyFavorites, favorites],
+    [catalog, onlyFavorites, favorites],
   );
   const visible =
     expanded || category !== "Todos" || search || onlyFavorites
       ? filtered
       : filtered.slice(0, 4);
-  const selection = products.filter((p) => selected[p.id]);
-  const updateDiscoveryUrl = (nextSearch: string, nextCategory: string) => {
+  const selection = Object.keys(selected)
+    .map((id) => knownProducts[id])
+    .filter((product): product is Product => Boolean(product));
+  const updateDiscoveryUrl = (
+    nextSearch: string,
+    nextCategory: string,
+    nextPage = 1,
+    nextSort: "curadoria" | "nome" = sort,
+  ) => {
     const url = new URL(window.location.href);
     if (nextSearch.trim()) url.searchParams.set("q", nextSearch.trim());
     else url.searchParams.delete("q");
     if (nextCategory !== "Todos")
       url.searchParams.set("categoria", nextCategory);
     else url.searchParams.delete("categoria");
+    if (nextPage > 1) url.searchParams.set("page", String(nextPage));
+    else url.searchParams.delete("page");
+    if (nextSort === "nome") url.searchParams.set("sort", "nome");
+    else url.searchParams.delete("sort");
     window.history.replaceState({}, "", url);
   };
+  const scrollToCuration = () => {
+    document.getElementById("curadoria")?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+    });
+  };
+  async function loadCatalog(
+    nextSearch = search,
+    nextCategory = category,
+    nextPage = 1,
+    nextSort = sort,
+  ) {
+    const params = new URLSearchParams({ page: String(Math.max(1, nextPage)) });
+    if (nextSearch.trim()) params.set("q", nextSearch.trim());
+    if (nextCategory !== "Todos") params.set("category", nextCategory);
+    if (nextSort === "nome") params.set("sort", "nome");
+    // Reflect the user's intent synchronously; the source response later
+    // normalizes an out-of-range page without leaving a stale search URL.
+    setSearch(nextSearch);
+    setCategory(nextCategory);
+    setSort(nextSort);
+    updateDiscoveryUrl(nextSearch, nextCategory, nextPage, nextSort);
+    setCatalogLoading(true);
+    setCatalogError(false);
+    try {
+      const response = await fetch(`/api/catalog?${params}`, {
+        headers: { Accept: "application/json" },
+      });
+      if (!response.ok) throw new Error("Catalog request failed");
+      const next = (await response.json()) as CatalogPage;
+      setCatalog(next);
+      setKnownProducts((current) => ({
+        ...current,
+        ...Object.fromEntries(
+          next.items.map((product) => [product.id, product]),
+        ),
+      }));
+      setSort(next.sort);
+      updateDiscoveryUrl(nextSearch, nextCategory, next.page, next.sort);
+    } catch {
+      setCatalogError(true);
+    } finally {
+      setCatalogLoading(false);
+    }
+  }
   const openProject = () => {
     setStep(1);
     setProtocol(null);
+    setDeliveryPending(false);
     setDrawer(true);
   };
   const addProduct = (p: Product) => {
@@ -181,14 +321,10 @@ export default function Storefront() {
       prev.includes(p.id) ? prev.filter((id) => id !== p.id) : [...prev, p.id],
     );
   const browse = (value: string) => {
-    setCategory(value);
     setOnlyFavorites(false);
-    setSearch("");
-    updateDiscoveryUrl("", value);
+    void loadCatalog("", value);
     setMenuOpen(false);
-    document
-      .getElementById("curadoria")
-      ?.scrollIntoView({ behavior: "smooth" });
+    scrollToCuration();
   };
 
   function briefingLines(data: FormData, contact: string, company: string) {
@@ -235,13 +371,16 @@ export default function Storefront() {
       setStep(3);
       return;
     }
+    const requestKey =
+      idempotencyKey ?? `briefing-${crypto.randomUUID().replaceAll("-", "")}`;
+    if (!idempotencyKey) setIdempotencyKey(requestKey);
     setSubmitting(true);
     try {
       const response = await fetch("/api/briefings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Idempotency-Key": `briefing-${crypto.randomUUID()}`,
+          "Idempotency-Key": requestKey,
         },
         body: JSON.stringify({
           name: contact,
@@ -257,8 +396,12 @@ export default function Storefront() {
           })),
         }),
       });
-      const result: { protocol?: string; error?: string; message?: string } =
-        await response.json().catch(() => ({}));
+      const result: {
+        protocol?: string;
+        error?: string;
+        message?: string;
+        pending?: boolean;
+      } = await response.json().catch(() => ({}));
       if (!response.ok) {
         if (result.error === "DESTINATION_UNAVAILABLE") {
           setDeliveryConfigured(false);
@@ -267,9 +410,16 @@ export default function Storefront() {
           setStep(3);
           return;
         }
+        if (result.error === "BRIEFING_PENDING" && result.protocol) {
+          setProtocol(result.protocol);
+          setDeliveryPending(true);
+          setStep(3);
+          return;
+        }
         throw new Error(result.message || result.error || "Falha ao enviar");
       }
       setProtocol(result.protocol ?? null);
+      setDeliveryPending(result.pending === true);
       setStep(3);
     } catch {
       setNotice(
@@ -321,11 +471,8 @@ export default function Storefront() {
             onClick={() => {
               setOnlyFavorites(true);
               setExpanded(true);
-              setCategory("Todos");
-              setSearch("");
-              document
-                .getElementById("curadoria")
-                ?.scrollIntoView({ behavior: "smooth" });
+              void loadCatalog("", "Todos");
+              scrollToCuration();
             }}
           >
             <Heart size={20} />
@@ -453,8 +600,7 @@ export default function Storefront() {
                   className={category === c ? "active" : ""}
                   aria-pressed={category === c}
                   onClick={() => {
-                    setCategory(c);
-                    updateDiscoveryUrl(search, c);
+                    void loadCatalog(search, c);
                     setExpanded(true);
                   }}
                 >
@@ -462,23 +608,43 @@ export default function Storefront() {
                 </button>
               ))}
             </div>
-            <button
-              className="filter-button"
-              onClick={() => setSearchOpen(true)}
-            >
-              <SlidersHorizontal size={15} /> Encontrar uma peça
-            </button>
+            <div className="catalog-discovery-actions">
+              <label className="catalog-sort">
+                <span>Ordenar</span>
+                <select
+                  value={sort}
+                  onChange={(event) =>
+                    void loadCatalog(
+                      search,
+                      category,
+                      1,
+                      event.target.value === "nome" ? "nome" : "curadoria",
+                    )
+                  }
+                >
+                  <option value="curadoria">Curadoria</option>
+                  <option value="nome">Nome</option>
+                </select>
+              </label>
+              <button
+                className="filter-button"
+                onClick={() => setSearchOpen(true)}
+              >
+                <SlidersHorizontal size={15} /> Encontrar uma peça
+              </button>
+            </div>
           </div>
           {(search || onlyFavorites) && (
             <div className="active-filters">
               <span>
                 {onlyFavorites ? "Seus favoritos" : `Busca: “${search}”`} ·{" "}
-                {filtered.length} {filtered.length === 1 ? "peça" : "peças"}
+                {catalog?.total ?? 0}{" "}
+                {(catalog?.total ?? 0) === 1 ? "peça" : "peças"}
               </span>
               <button
                 onClick={() => {
-                  setSearch("");
                   setOnlyFavorites(false);
+                  void loadCatalog("", "Todos");
                 }}
               >
                 Limpar <X size={14} />
@@ -515,7 +681,14 @@ export default function Storefront() {
                     <Heart size={18} />
                   </button>
                   <span className="product-index">
-                    Nº {(products.indexOf(p) + 1).toString().padStart(2, "0")}
+                    Nº{" "}
+                    {(
+                      ((catalog?.page ?? 1) - 1) * (catalog?.pageSize ?? 12) +
+                      filtered.indexOf(p) +
+                      1
+                    )
+                      .toString()
+                      .padStart(2, "0")}
                   </span>
                 </div>
                 <div className="product-caption">
@@ -545,31 +718,49 @@ export default function Storefront() {
               </article>
             ))}
           </div>
-          {filtered.length === 0 && (
-            <div className="empty-state">
+          {catalogError ? (
+            <div className="empty-state" role="status">
               <Search size={28} />
-              <h3>
-                {onlyFavorites
-                  ? "Sua curadoria começa com uma escolha."
-                  : "Vamos encontrar outra possibilidade."}
-              </h3>
+              <h3>Não foi possível consultar a curadoria agora.</h3>
               <p>
-                {onlyFavorites
-                  ? "Toque no coração das peças que mais combinam com sua marca."
-                  : "Tente buscar por “caderno”, “garrafa” ou por um SKU."}
+                Sua seleção local continua preservada. Tente atualizar a
+                consulta.
               </p>
               <button
                 className="button button-outline"
-                onClick={() => {
-                  setSearch("");
-                  setCategory("Todos");
-                  setOnlyFavorites(false);
-                  updateDiscoveryUrl("", "Todos");
-                }}
+                onClick={() =>
+                  void loadCatalog(search, category, catalog?.page ?? 1)
+                }
+                disabled={catalogLoading}
               >
-                Explorar todas as peças <ArrowRight size={16} />
+                {catalogLoading ? "Consultando…" : "Tentar novamente"}
               </button>
             </div>
+          ) : (
+            filtered.length === 0 && (
+              <div className="empty-state">
+                <Search size={28} />
+                <h3>
+                  {onlyFavorites
+                    ? "Sua curadoria começa com uma escolha."
+                    : "Vamos encontrar outra possibilidade."}
+                </h3>
+                <p>
+                  {onlyFavorites
+                    ? "Toque no coração das peças que mais combinam com sua marca."
+                    : "Tente buscar por “caderno”, “garrafa” ou por um SKU."}
+                </p>
+                <button
+                  className="button button-outline"
+                  onClick={() => {
+                    setOnlyFavorites(false);
+                    void loadCatalog("", "Todos");
+                  }}
+                >
+                  Explorar todas as peças <ArrowRight size={16} />
+                </button>
+              </div>
+            )
           )}
           {!expanded && !search && !onlyFavorites && category === "Todos" && (
             <div className="catalog-more">
@@ -578,6 +769,37 @@ export default function Storefront() {
               </button>
               <span>8 PEÇAS. MUITAS POSSIBILIDADES.</span>
             </div>
+          )}
+          {expanded && !onlyFavorites && (catalog?.totalPages ?? 1) > 1 && (
+            <nav
+              className="catalog-pagination"
+              aria-label="Paginação da curadoria"
+            >
+              <button
+                className="text-button"
+                disabled={(catalog?.page ?? 1) <= 1 || catalogLoading}
+                onClick={() =>
+                  void loadCatalog(search, category, (catalog?.page ?? 1) - 1)
+                }
+              >
+                Anterior
+              </button>
+              <span>
+                Página {catalog?.page} de {catalog?.totalPages}
+              </span>
+              <button
+                className="text-button"
+                disabled={
+                  (catalog?.page ?? 1) >= (catalog?.totalPages ?? 1) ||
+                  catalogLoading
+                }
+                onClick={() =>
+                  void loadCatalog(search, category, (catalog?.page ?? 1) + 1)
+                }
+              >
+                Próxima
+              </button>
+            </nav>
           )}
         </section>
 
@@ -823,11 +1045,8 @@ export default function Storefront() {
                 setMenuOpen(false);
                 setOnlyFavorites(true);
                 setExpanded(true);
-                setCategory("Todos");
-                setSearch("");
-                document
-                  .getElementById("curadoria")
-                  ?.scrollIntoView({ behavior: "smooth" });
+                void loadCatalog("", "Todos");
+                scrollToCuration();
               }}
             >
               Meus favoritos <Heart />
@@ -866,14 +1085,11 @@ export default function Storefront() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              setCategory("Todos");
               setOnlyFavorites(false);
               setExpanded(true);
-              updateDiscoveryUrl(search, "Todos");
+              void loadCatalog(search, "Todos");
               setSearchOpen(false);
-              document
-                .getElementById("curadoria")
-                ?.scrollIntoView({ behavior: "smooth" });
+              scrollToCuration();
             }}
           >
             <label htmlFor="search">Nome, categoria ou código do produto</label>
@@ -1138,6 +1354,14 @@ export default function Storefront() {
                     pattern={".*\\S.*"}
                     autoComplete="name"
                     maxLength={120}
+                    value={briefingDraft.name}
+                    onChange={(event) => {
+                      setBriefingDraft((draft) => ({
+                        ...draft,
+                        name: event.target.value,
+                      }));
+                      setIdempotencyKey(null);
+                    }}
                   />
                 </label>
                 <label>
@@ -1148,6 +1372,14 @@ export default function Storefront() {
                     pattern={".*\\S.*"}
                     autoComplete="organization"
                     maxLength={160}
+                    value={briefingDraft.company}
+                    onChange={(event) => {
+                      setBriefingDraft((draft) => ({
+                        ...draft,
+                        company: event.target.value,
+                      }));
+                      setIdempotencyKey(null);
+                    }}
                   />
                 </label>
               </div>
@@ -1159,13 +1391,24 @@ export default function Storefront() {
                   type="email"
                   autoComplete="email"
                   maxLength={200}
+                  value={briefingDraft.email}
+                  onChange={(event) => {
+                    setBriefingDraft((draft) => ({
+                      ...draft,
+                      email: event.target.value,
+                    }));
+                    setIdempotencyKey(null);
+                  }}
                 />
               </label>
               <label>
                 O que vamos celebrar?
                 <select
                   value={occasion}
-                  onChange={(e) => setOccasion(e.target.value)}
+                  onChange={(e) => {
+                    setOccasion(e.target.value);
+                    setIdempotencyKey(null);
+                  }}
                 >
                   <option>Relacionamento com clientes</option>
                   <option>Boas-vindas ao time</option>
@@ -1188,11 +1431,29 @@ export default function Storefront() {
                         .toISOString()
                         .split("T")[0]
                     }
+                    value={briefingDraft.date}
+                    onChange={(event) => {
+                      setBriefingDraft((draft) => ({
+                        ...draft,
+                        date: event.target.value,
+                      }));
+                      setIdempotencyKey(null);
+                    }}
                   />
                 </label>
                 <label>
                   Por presente <small>(opcional)</small>
-                  <select name="budget">
+                  <select
+                    name="budget"
+                    value={briefingDraft.budget}
+                    onChange={(event) => {
+                      setBriefingDraft((draft) => ({
+                        ...draft,
+                        budget: event.target.value,
+                      }));
+                      setIdempotencyKey(null);
+                    }}
+                  >
                     <option value="">A definir</option>
                     <option>Até R$ 100</option>
                     <option>R$ 100 a R$ 250</option>
@@ -1208,6 +1469,14 @@ export default function Storefront() {
                   rows={3}
                   maxLength={2000}
                   placeholder="Mensagem, cores, embalagem, destino…"
+                  value={briefingDraft.message}
+                  onChange={(event) => {
+                    setBriefingDraft((draft) => ({
+                      ...draft,
+                      message: event.target.value,
+                    }));
+                    setIdempotencyKey(null);
+                  }}
                 />
               </label>
               <p className="fine-print">
@@ -1250,12 +1519,16 @@ export default function Storefront() {
               <h3>Seu briefing está pronto.</h3>
               <p>
                 {protocol
-                  ? `Sua solicitação foi recebida. Protocolo: ${protocol}.`
+                  ? deliveryPending
+                    ? `Seu briefing foi registrado com o protocolo ${protocol}. A entrega ao comercial está pendente e será conciliada com segurança.`
+                    : `Sua solicitação foi recebida. Protocolo: ${protocol}.`
                   : "O arquivo foi preparado para download. Você pode compartilhá-lo com a equipe comercial para dar continuidade ao projeto."}
               </p>
               <p className="fine-print">
                 {protocol
-                  ? "A proposta, disponibilidade, personalização e prazo continuam sujeitos à confirmação comercial."
+                  ? deliveryPending
+                    ? "Você pode manter este protocolo. Não envie uma nova solicitação enquanto a equipe confirma a continuidade."
+                    : "A proposta, disponibilidade, personalização e prazo continuam sujeitos à confirmação comercial."
                   : "Nenhum pedido foi enviado. A seleção continua salva neste navegador."}
               </p>
               <button
@@ -1264,7 +1537,16 @@ export default function Storefront() {
               >
                 Continuar explorando <ArrowRight size={17} />
               </button>
-              <button className="text-button" onClick={() => setStep(2)}>
+              <button
+                className="text-button"
+                onClick={() => {
+                  setBriefingDraft(emptyBriefingDraft);
+                  setIdempotencyKey(null);
+                  setDeliveryPending(false);
+                  setProtocol(null);
+                  setStep(2);
+                }}
+              >
                 Preparar outro briefing
               </button>
             </div>

@@ -1,4 +1,4 @@
-import { getProductById } from "@/lib/catalog";
+import { products, type Product } from "@/lib/catalog";
 
 export const BRIEFING_CONTRACT_VERSION = "2026-09-21";
 
@@ -22,8 +22,13 @@ type ValidationResult =
   | { ok: true; value: BriefingPayload }
   | { ok: false; message: string };
 
-const text = (value: unknown, max: number) =>
-  typeof value === "string" ? value.trim().slice(0, max) : "";
+const text = (value: unknown, max: number) => {
+  if (typeof value !== "string") return null;
+  const result = value.trim();
+  return result.length <= max ? result : null;
+};
+const optionalText = (value: unknown, max: number) =>
+  value === undefined || value === null ? "" : text(value, max);
 
 function isCalendarDate(value: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -37,22 +42,34 @@ function isCalendarDate(value: string) {
 }
 
 /** Validates public input without accepting supplier or price data from a browser. */
-export function validateBriefing(input: unknown): ValidationResult {
+export function validateBriefing(
+  input: unknown,
+  catalogItems: readonly Product[] = products,
+): ValidationResult {
   if (!input || typeof input !== "object" || Array.isArray(input))
     return { ok: false, message: "Solicitação inválida." };
   const data = input as Record<string, unknown>;
   const name = text(data.name, 120);
   const company = text(data.company, 160);
-  const email = text(data.email, 200).toLowerCase();
+  const rawEmail = text(data.email, 200);
+  const email = rawEmail?.toLowerCase() ?? null;
   const occasion = text(data.occasion, 120);
-  const date = text(data.date, 10);
-  const budget = text(data.budget, 80);
-  const message = text(data.message, 2000);
+  const rawDate = data.date;
+  const date =
+    rawDate === undefined || rawDate === null || rawDate === ""
+      ? ""
+      : text(rawDate, 10);
+  const budget = optionalText(data.budget, 80);
+  const message = optionalText(data.message, 2000);
 
   if (
     !name ||
     !company ||
     !occasion ||
+    email === null ||
+    budget === null ||
+    message === null ||
+    date === null ||
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   )
     return { ok: false, message: "Revise nome, empresa, e-mail e ocasião." };
@@ -69,8 +86,11 @@ export function validateBriefing(input: unknown): ValidationResult {
     const item = rawItem as Record<string, unknown>;
     const productId = text(item.productId, 64);
     const quantity = item.quantity;
-    const product = getProductById(productId);
+    const product = catalogItems.find(
+      (candidate) => candidate.id === productId,
+    );
     if (
+      !productId ||
       !product ||
       seen.has(productId) ||
       !Number.isInteger(quantity) ||
@@ -89,7 +109,10 @@ export function validateBriefing(input: unknown): ValidationResult {
   };
 }
 
-export function toCommercialPayload(briefing: BriefingPayload) {
+export function toCommercialPayload(
+  briefing: BriefingPayload,
+  catalogItems: readonly Product[] = products,
+) {
   return {
     contractVersion: BRIEFING_CONTRACT_VERSION,
     contact: {
@@ -104,7 +127,9 @@ export function toCommercialPayload(briefing: BriefingPayload) {
       message: briefing.message || null,
     },
     items: briefing.items.map((item) => {
-      const product = getProductById(item.productId);
+      const product = catalogItems.find(
+        (candidate) => candidate.id === item.productId,
+      );
       return {
         productId: item.productId,
         sku: product?.sku,

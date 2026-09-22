@@ -446,6 +446,32 @@ svg {
   margin-bottom: 28px;
   gap: 15px;
 }
+.catalog-discovery-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 8px;
+}
+.catalog-sort {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.catalog-sort select {
+  appearance: none;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--ink-soft);
+  color: var(--ivory);
+  font: inherit;
+  letter-spacing: 0.04em;
+  padding: 7px 24px 7px 8px;
+}
 .category-tabs {
   display: flex;
   gap: 27px;
@@ -1391,6 +1417,9 @@ svg {
     font-size: 0;
     gap: 0;
   }
+  .catalog-sort span {
+    display: none;
+  }
   .filter-button svg {
     width: 20px;
     height: 20px;
@@ -1645,6 +1674,13 @@ svg {
   .filter-button {
     min-width: 32px;
     justify-content: center;
+  }
+  .catalog-discovery-actions {
+    gap: 8px;
+  }
+  .catalog-sort select {
+    max-width: 90px;
+    padding-right: 8px;
   }
   .product-grid {
     gap: 28px 15px;

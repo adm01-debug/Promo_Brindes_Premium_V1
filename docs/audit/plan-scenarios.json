@@ -1,42 +1,42 @@
 {
-  "generatedAt": "2026-09-22T11:28:52.399Z",
+  "generatedAt": "2026-09-22T12:32:10.366Z",
   "scope": "Isolated source modules; synthetic inputs; no external network or database writes",
   "results": [
     {
       "id": "AUD-01-concurrent-idempotency",
-      "expected": 1,
-      "observed": 2,
-      "passed": false
+      "expected": "201,202;1",
+      "observed": "201,202;1",
+      "passed": true
     },
     {
       "id": "AUD-02-key-payload-conflict",
       "expected": 409,
-      "observed": 200,
-      "passed": false
+      "observed": 409,
+      "passed": true
     },
     {
       "id": "AUD-03-body-without-content-length",
       "expected": 413,
-      "observed": 201,
-      "passed": false
+      "observed": 413,
+      "passed": true
     },
     {
       "id": "AUD-04-invalid-destination-capability",
       "expected": false,
-      "observed": true,
-      "passed": false
+      "observed": false,
+      "passed": true
     },
     {
       "id": "AUD-05-invalid-date-suffix",
       "expected": false,
-      "observed": true,
-      "passed": false
+      "observed": false,
+      "passed": true
     },
     {
       "id": "AUD-06-source-pagination-truncation",
       "expected": 30,
-      "observed": 24,
-      "passed": false
+      "observed": 30,
+      "passed": true
     },
     {
       "id": "AUD-07-reject-legacy-project",
@@ -51,6 +51,6 @@
       "passed": true
     }
   ],
-  "passed": 2,
-  "failed": 6
+  "passed": 8,
+  "failed": 0
 }

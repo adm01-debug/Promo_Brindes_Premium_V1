@@ -20,7 +20,7 @@ flowchart LR
   Q --> R[Produção e acompanhamento]
 ```
 
-O trecho de passagem ao comercial no diagrama representa a **integração futura**. A rota pública de catálogo lê o banco da vitrine quando configurado; a home e as fichas usam o snapshot editorial versionado das mesmas oito peças. As imagens são locais. O briefing é baixado no navegador, embora exista uma API preparada para entrega com receptor configurável. Ainda não há vínculo com o CRM.
+O trecho de passagem ao comercial no diagrama representa a **integração futura**. A rota pública, a home, as fichas e a validação de briefing leem o banco dedicado da vitrine quando configurado; o snapshot editorial é só fallback offline. As imagens são locais. O briefing permanece em download no navegador enquanto a entrega estiver desligada. Ainda não há vínculo com CRM.
 
 ## Contratos de dados
 
@@ -68,15 +68,15 @@ Contrato de referência a implementar:
 }
 ```
 
-Isso é uma proposta de contrato para passagem ao comercial. A tabela privada `premium_briefings` já existe no banco da vitrine, mas o formulário ainda não a utiliza. Arquivos devem ter upload validado e acesso privado; a referência ao arquivo fica no briefing, não um blob/base64 em eventos de analytics.
+Isso é uma proposta de contrato para passagem ao comercial. A tabela privada `premium_briefings` persiste o briefing apenas quando a entrega é ativada por variável explícita. A chave e o hash do conteúdo são únicos, e uma lease no banco impede duas chamadas concorrentes ao receptor. Arquivos devem ter upload validado e acesso privado; a referência ao arquivo fica no briefing, não um blob/base64 em eventos de analytics.
 
 O servidor valida esquema e regras; resolve novamente produto e variante; aplica proteção contra abuso; persiste com idempotência; encaminha conforme regras aprovadas; confirma protocolo somente depois do commit. A ação de converter em proposta utiliza as funções transacionais e de aprovação existentes. Nomes concretos do destino de lead e do adaptador CRM dependem de inventário e revisão com a operação.
 
-Resposta proposta: 201 para criado; 200 para replay idempotente; 422 para validação; 429 para excesso; 503 para indisponibilidade recuperável. Nunca usar uma mensagem de sucesso gerada apenas por timer. Logs têm `request_id`, resultado, latência e IDs técnicos mínimos; não devem carregar e-mail, texto livre ou arquivos completos.
+Resposta implementada: 201 para criado; 200 para replay entregue; 202 para outra chamada enquanto a mesma entrega está reservada; 409 para chave reutilizada com conteúdo diferente; 422 para validação; 429 para excesso e 503 para indisponibilidade recuperável. Nunca usar uma mensagem de sucesso gerada apenas por timer. Logs têm `request_id`, resultado, latência e IDs técnicos mínimos; não devem carregar e-mail, texto livre ou arquivos completos.
 
 ## Privacidade e persistência
 
-Na prévia, `localStorage` contém apenas IDs de seleção, quantidades, favoritos e progresso opcional do plano. Campos de contato do formulário ficam na memória e no download solicitado. O navegador não envia esses campos a um endpoint. A política local descreve precisamente isso.
+Na prévia, `localStorage` contém apenas IDs de seleção, quantidades, favoritos e progresso opcional do plano. Campos de contato do formulário ficam na memória e no download solicitado. Com `BRIEFING_DELIVERY_ENABLED=false`, o navegador não envia esses campos a um endpoint. A política local descreve precisamente isso.
 
 Na produção, jurídico/responsável deve validar controlador, finalidade, base legal, retenção, canal de direitos e operadores. A existência de formulário não implica automaticamente um checkbox de marketing obrigatório. O cadastro para comunicação promocional, quando houver, precisa ser separado do atendimento solicitado conforme análise aplicável.
 

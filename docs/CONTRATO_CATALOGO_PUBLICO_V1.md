@@ -1,6 +1,6 @@
 # Contrato público de catálogo v1
 
-Status: implementado para o snapshot editorial e, quando configurado, para a tabela pública curada do projeto da vitrine `whwloseshzraipljisqo`. Este contrato não autoriza acesso direto do navegador a tabelas internas, à aplicação comercial ou a campos de custo.
+Status: implementado para a tabela pública curada do projeto da vitrine `whwloseshzraipljisqo`, com snapshot editorial apenas como fallback offline. Este contrato não autoriza acesso direto do navegador a tabelas internas, à aplicação comercial ou a campos de custo.
 
 `GET /api/catalog` entrega uma projeção editorial versionada. A resposta carrega `X-Catalog-Contract-Version: 2026-09-21` e usa cache compartilhado de cinco minutos, com `stale-while-revalidate` de dez minutos.
 
@@ -8,11 +8,11 @@ Status: implementado para o snapshot editorial e, quando configurado, para a tab
 
 | Parâmetro  | Regra                                                                    |
 | ---------- | ------------------------------------------------------------------------ |
-| `q`        | Texto de até 100 caracteres; busca nome, nome original, SKU e categoria. |
+| `q`        | Texto de até 100 caracteres; busca normalizada sem distinção de acento em nome, nome original, SKU e categoria. |
 | `category` | `Todos`, `Kits & experiências`, `Escrita`, `Lifestyle` ou `Viagem`.      |
 | `page`     | Inteiro positivo; padrão `1`.                                            |
 | `pageSize` | Inteiro positivo entre `1` e `24`; padrão `12`.                          |
-| `sort`     | `curadoria` (padrão) ou `nome`, com ordenação determinística por nome.   |
+| `sort`     | `curadoria` (padrão) ou `nome`, ambos com desempate determinístico por ID.   |
 
 ## Resposta de sucesso ou vazia
 
@@ -34,8 +34,8 @@ Cada item pode conter somente `id`, `sku`, `slug`, `name`, `originalName`, `cate
 
 ## Erros e indisponibilidade
 
-Parâmetro fora da forma pública retorna `400` com `INVALID_CATALOG_QUERY` e não é silenciosamente convertido em outra busca. Uma consulta válida sem peças retorna `200` e `items: []`. O snapshot local não tem upstream para ficar indisponível; quando a fonte canônica for conectada, falha ou timeout devem retornar `503 CATALOG_UNAVAILABLE` com um estado recuperável na interface, jamais uma lista vazia tratada como sucesso.
+Parâmetro fora da forma pública retorna `400` com `INVALID_CATALOG_QUERY` e não é silenciosamente convertido em outra busca. Uma consulta válida sem peças retorna `200` e `items: []`. Falha ou timeout da fonte canônica retorna `503 CATALOG_UNAVAILABLE` com um estado recuperável na interface, jamais uma lista vazia tratada como sucesso.
 
 ## Limite atual e migração segura
 
-A rota lê `premium_catalog_items` do banco dedicado à vitrine quando `SUPABASE_URL`, `SUPABASE_PROJECT_REF` e a chave publicável estão configurados. A consulta usa uma lista explícita de colunas, limite de 24 e apenas itens publicados; erro de rede, resposta vazia inesperada ou violação do formato retorna `503 CATALOG_UNAVAILABLE`. Sem configuração, a rota usa o snapshot local. A fonte operacional original `v_products_public` pertence ao outro projeto, `doufsxqlfjyuvxuezpln`, e não é modificada por esta migration.
+A rota lê `premium_catalog_items` do banco dedicado à vitrine quando `SUPABASE_URL`, `SUPABASE_PROJECT_REF` e a chave publicável estão configurados. A consulta usa lista explícita de colunas, limite de 24, contagem e offset na fonte, somente itens publicados e a coluna gerada interna `search_text` para filtrar sem acento; essa coluna não faz parte da resposta. Erro de rede ou violação do formato retorna `503 CATALOG_UNAVAILABLE`. Sem configuração, a rota usa o snapshot local. A fonte operacional original `v_products_public` pertence ao outro projeto, `doufsxqlfjyuvxuezpln`, e não é modificada por estas migrations.

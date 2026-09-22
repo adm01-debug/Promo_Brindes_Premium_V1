@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, Check, Plus } from "lucide-react";
 import {
-  products,
   readSelection,
+  serializeSelection,
   type Product,
   type Selection,
 } from "@/lib/catalog";
@@ -32,7 +32,7 @@ export default function ProductDetailActions({
     setSelected((current) => {
       const next = { ...current, [product.id]: current[product.id] ?? minimum };
       try {
-        localStorage.setItem(selectionKey, JSON.stringify(next));
+        localStorage.setItem(selectionKey, serializeSelection(next));
       } catch {
         // The user can still continue in the current page session.
       }

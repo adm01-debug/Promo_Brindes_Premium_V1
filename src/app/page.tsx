@@ -1,5 +1,12 @@
 import Storefront from "@/components/Storefront";
+import { getSiteCatalogPage } from "@/lib/site-database";
 
-export default function Home() {
-  return <Storefront />;
+export const revalidate = 300;
+
+export default async function Home() {
+  try {
+    return <Storefront initialCatalog={await getSiteCatalogPage()} />;
+  } catch {
+    return <Storefront initialCatalog={null} />;
+  }
 }

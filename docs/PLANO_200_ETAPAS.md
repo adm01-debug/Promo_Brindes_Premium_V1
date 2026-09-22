@@ -2,7 +2,7 @@
 
 Referência: **2026-09-22** · **20 fases × 10 etapas = 200 etapas**.
 
-Status auditado: **68 concluídas no próprio escopo; 80 parciais; 52 sem entrega comprovada**. São 132 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
+Status auditado: **77 concluídas no próprio escopo; 71 parciais; 52 sem entrega comprovada**. São 123 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
 
 Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatório e prioridades](REVISAO_EXAUSTIVA_PLANO.md).
 
@@ -525,12 +525,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Manter distinção ao ativar a integração comercial.
   - **Dependências:** 054 (Concluída no escopo).
 
-- [ ] **056. Definir jornada de retorno.** Desenhar retomada de seleção, validade e dados que podem ser persistidos.
-  - **Situação auditada:** Parcial.
+- [x] **056. Definir jornada de retorno.** Desenhar retomada de seleção, validade e dados que podem ser persistidos.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Política cobre dispositivo compartilhado, expiração e limpeza da seleção.
-  - **Constatação:** Home usa envelope com validade; ficha permanente grava formato sem savedAt e contorna expiração.
+  - **Constatação:** Home e ficha permanente usam o mesmo envelope com savedAt; a validade e a limpeza preservam apenas IDs e quantidades.
   - **Evidências e referências:** `src/components/ProductDetailActions.tsx`, `src/lib/catalog.ts`, `docs/audit/plan-browser-scenarios.json`.
-  - **Próxima ação:** Unificar serialização e testar expiração iniciada em cada rota.
+  - **Próxima ação:** Manter o teste de expiração entre rotas ao alterar o armazenamento local.
   - **Dependências:** 055 (Concluída no escopo).
 
 - [ ] **057. Definir jornada móvel.** Priorizar busca, seleção e briefing em telas pequenas.
@@ -628,12 +628,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Validar anúncios com leitores reais antes do lançamento.
   - **Dependências:** 061 (Parcial).
 
-- [ ] **068. Especificar movimento.** Limitar animações a feedback e transições discretas.
-  - **Situação auditada:** Parcial.
+- [x] **068. Especificar movimento.** Limitar animações a feedback e transições discretas.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Preferência de movimento reduzido desativa transições e rolagem suave.
-  - **Constatação:** CSS reduz movimento, mas scrollIntoView com smooth ainda anima sob reduced-motion.
+  - **Constatação:** CSS e scrollIntoView consultam prefers-reduced-motion; a rolagem explícita passa a ser instantânea quando necessário.
   - **Evidências e referências:** `src/app/globals.css`, `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`.
-  - **Próxima ação:** Respeitar preferência também nas chamadas JavaScript.
+  - **Próxima ação:** Reexecutar a sonda de movimento ao criar novas transições controladas por JavaScript.
   - **Dependências:** 061 (Parcial).
 
 - [ ] **069. Catalogar componentes.** Criar documentação de variantes, exemplos e decisões de uso.
@@ -642,7 +642,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Inventário descritivo existe; faltam exemplos reproduzíveis e variantes completas da biblioteca.
   - **Evidências e referências:** `docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md`, `docs/DESIGN_SYSTEM.md`.
   - **Próxima ação:** Documentar estados e exemplos de todos os templates e componentes.
-  - **Dependências:** 061 (Parcial), 062 (Concluída no escopo), 063 (Concluída no escopo), 064 (Concluída no escopo), 065 (Concluída no escopo), 066 (Concluída no escopo), 067 (Concluída no escopo), 068 (Parcial).
+  - **Dependências:** 061 (Parcial), 062 (Concluída no escopo), 063 (Concluída no escopo), 064 (Concluída no escopo), 065 (Concluída no escopo), 066 (Concluída no escopo), 067 (Concluída no escopo), 068 (Concluída no escopo).
 
 - [ ] **070. Revisar consistência transversal.** Inspecionar tipografia, densidade, ícones e espaçamento entre páginas.
   - **Situação auditada:** Parcial.
@@ -794,12 +794,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Implementar facetas e contagens após aprovação dos atributos.
   - **Dependências:** 085 (Sem entrega comprovada).
 
-- [ ] **087. Implementar ordenação pública.** Ordenar por critérios úteis com desempate determinístico.
-  - **Situação auditada:** Parcial.
+- [x] **087. Implementar ordenação pública.** Ordenar por critérios úteis com desempate determinístico.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Paginação não repete nem perde produtos ao mudar ordenação.
-  - **Constatação:** API ordena por nome; UI não oferece ordenação e não há desempate explícito por ID.
-  - **Evidências e referências:** `src/lib/catalog.ts`, `tests/public-api.spec.ts`.
-  - **Próxima ação:** Unificar ordenação da UI e servidor e testar empates.
+  - **Constatação:** A interface oferece curadoria ou nome, preserva a escolha na URL e a fonte usa ID como desempate determinístico.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/lib/site-database.ts`, `tests/public-api.spec.ts`.
+  - **Próxima ação:** Manter casos de empate quando houver ampliação de catálogo.
   - **Dependências:** 126 (Parcial).
 
 - [ ] **088. Implementar URLs de busca.** Manter consulta, filtros e página ao compartilhar ou usar voltar.
@@ -810,13 +810,13 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Sincronizar todos os controles, voltar/avançar, facetas e paginação.
   - **Dependências:** 086 (Sem entrega comprovada).
 
-- [ ] **089. Implementar paginação de servidor.** Buscar apenas o conjunto necessário com cancelamento e limites.
-  - **Situação auditada:** Parcial.
+- [x] **089. Implementar paginação de servidor.** Buscar apenas o conjunto necessário com cancelamento e limites.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Nenhuma jornada pública baixa milhares de registros para filtrar no cliente.
-  - **Constatação:** API pagina em memória só os primeiros 24 itens lidos; UI usa todos os oito do snapshot.
+  - **Constatação:** A fonte aplica filtro, ordenação, contagem e offset antes de devolver uma página; a UI consulta apenas a página necessária.
   - **Evidências e referências:** `src/app/api/catalog/route.ts`, `src/lib/site-database.ts`, `docs/audit/plan-scenarios.json`.
-  - **Próxima ação:** Paginar e contar no banco, preservar filtros e cancelamento; testar mais de 24.
-  - **Dependências:** 127 (Parcial).
+  - **Próxima ação:** Monitorar a contagem e manter o limite de 24 ao ampliar a curadoria.
+  - **Dependências:** 127 (Concluída no escopo).
 
 - [ ] **090. Testar relevância da descoberta.** Avaliar consultas reais, abreviações e sinônimos do comercial.
   - **Situação auditada:** Sem entrega comprovada.
@@ -824,7 +824,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Não há conjunto de consultas reais, sinônimos e ranking esperado.
   - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`.
   - **Próxima ação:** Construir referência com comercial e medir acerto.
-  - **Dependências:** 081 (Concluída no escopo), 086 (Sem entrega comprovada), 087 (Parcial), 088 (Parcial), 089 (Parcial).
+  - **Dependências:** 081 (Concluída no escopo), 086 (Sem entrega comprovada), 087 (Concluída no escopo), 088 (Parcial), 089 (Concluída no escopo).
 
 
 ## Fase 10 — Página de produto e confiança
@@ -903,7 +903,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Não há recomendação contextual de complementos ou alternativas.
   - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/produtos/[slug]/page.tsx`.
   - **Próxima ação:** Implementar regras sobre catálogo aprovado e elegibilidade.
-  - **Dependências:** 053 (Parcial), 127 (Parcial).
+  - **Dependências:** 053 (Parcial), 127 (Concluída no escopo).
 
 - [ ] **100. Validar decisão de produto.** Testar se comprador entende inclusões, mínimo e próxima ação.
   - **Situação auditada:** Sem entrega comprovada.
@@ -1031,12 +1031,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Nenhuma ação para o briefing aberto local.
   - **Dependências:** 111 (Concluída no escopo).
 
-- [ ] **114. Implementar formulário progressivo.** Separar seleção e informações do projeto com campos essenciais.
-  - **Situação auditada:** Parcial.
+- [x] **114. Implementar formulário progressivo.** Separar seleção e informações do projeto com campos essenciais.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Contato obrigatório e campos opcionais têm labels e validação clara.
-  - **Constatação:** Formulário em duas etapas funciona, mas Voltar apaga os contatos preenchidos.
+  - **Constatação:** O rascunho controlado permanece em memória ao voltar entre etapas e é excluído ao iniciar outro briefing; PII não vai ao armazenamento local.
   - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`.
-  - **Próxima ação:** Manter rascunho em memória entre etapas sem persistir PII no navegador.
+  - **Próxima ação:** Rever campos e retenção somente junto da política comercial aprovada.
   - **Dependências:** 066 (Concluída no escopo).
 
 - [x] **115. Implementar exportação de briefing.** Gerar arquivo local com SKUs, IDs, quantidade, ocasião e contato.
@@ -1045,7 +1045,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Download inclui IDs, SKUs e quantidades corretos e informa não envio.
   - **Evidências e referências:** `tests/storefront.spec.ts`, `src/components/Storefront.tsx`.
   - **Próxima ação:** Nenhuma ação para a exportação local testada.
-  - **Dependências:** 112 (Concluída no escopo), 113 (Concluída no escopo), 114 (Parcial).
+  - **Dependências:** 112 (Concluída no escopo), 113 (Concluída no escopo), 114 (Concluída no escopo).
 
 - [ ] **116. Definir formulário de produção.** Validar dados indispensáveis, aviso de privacidade e finalidade com comercial.
   - **Situação auditada:** Parcial.
@@ -1061,7 +1061,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Há endpoint e caminho de envio opcional; receptor vazio e retries geram novas chaves.
   - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`.
   - **Próxima ação:** Integrar persistência e destino aprovados com chave estável e controles distribuídos.
-  - **Dependências:** 116 (Parcial), 126 (Parcial), 134 (Parcial).
+  - **Dependências:** 116 (Parcial), 126 (Parcial), 134 (Concluída no escopo).
 
 - [ ] **118. Implementar resposta confiável.** Apresentar protocolo somente após confirmação persistida no servidor.
   - **Situação auditada:** Parcial.
@@ -1142,12 +1142,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Corrigir semântica de catálogo vazio, paginação integral e documentar contrato integrado.
   - **Dependências:** 121 (Concluída no escopo), 122 (Concluída no escopo), 124 (Parcial).
 
-- [ ] **127. Implementar leitura de catálogo.** Conectar servidor Next à projeção pública aprovada com limites de consulta.
-  - **Situação auditada:** Parcial.
+- [x] **127. Implementar leitura de catálogo.** Conectar servidor Next à projeção pública aprovada com limites de consulta.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Dados reais são validados e erros não viram listagens vazias silenciosas.
-  - **Constatação:** GET /api/catalog lê banco; home, fichas e validação de briefing leem snapshot.
+  - **Constatação:** Home, ficha de produto, API, seleção recuperada e validação de briefing consultam a projeção publicada com a mesma validação de contrato.
   - **Evidências e referências:** `src/lib/site-database.ts`, `src/components/Storefront.tsx`, `src/lib/briefing.ts`.
-  - **Próxima ação:** Unificar leitura publicada em todas as jornadas e validar exclusões e falhas.
+  - **Próxima ação:** Testar despublicação e conteúdo novo em um ambiente de staging quando houver dados aprovados.
   - **Dependências:** 125 (Parcial), 126 (Parcial).
 
 - [ ] **128. Implementar cache e atualização.** Definir TTL e invalidação por mudanças relevantes de produto e publicação.
@@ -1156,7 +1156,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Cache de API usa TTL/SWR; snapshot das páginas não é invalidado por despublicação.
   - **Evidências e referências:** `src/app/api/catalog/route.ts`, `src/lib/site-database.ts`, `src/app/produtos/[slug]/page.tsx`.
   - **Próxima ação:** Definir SLA e testar retirada completa, revalidação e cache.
-  - **Dependências:** 127 (Parcial).
+  - **Dependências:** 127 (Concluída no escopo).
 
 - [ ] **129. Implementar saúde de mídia.** Verificar disponibilidade, fallback e dimensões das imagens autorizadas.
   - **Situação auditada:** Parcial.
@@ -1164,7 +1164,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Fotos locais evitam o CDN com falha; não há fallback observável nem monitoramento de mídia.
   - **Evidências e referências:** `docs/audit/media-check.json`, `src/components/Storefront.tsx`.
   - **Próxima ação:** Implementar fallback e diagnóstico de falha de imagem.
-  - **Dependências:** 047 (Concluída no escopo), 127 (Parcial).
+  - **Dependências:** 047 (Concluída no escopo), 127 (Concluída no escopo).
 
 - [ ] **130. Testar contrato ponta a ponta.** Conferir nomes, IDs, variantes, preço e resposta pública no staging.
   - **Situação auditada:** Parcial.
@@ -1172,7 +1172,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** E2E checam subset do DTO e oito produtos; não há staging nem teste de drift completo.
   - **Evidências e referências:** `tests/public-api.spec.ts`.
   - **Próxima ação:** Testar contrato exato, estados, variantes e alteração/despublicação em staging.
-  - **Dependências:** 127 (Parcial), 128 (Parcial), 129 (Parcial).
+  - **Dependências:** 127 (Concluída no escopo), 128 (Parcial), 129 (Parcial).
 
 
 ## Fase 14 — Passagem para o comercial e CRM
@@ -1205,12 +1205,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Homologar contrato e adaptar o receptor sem redigitação.
   - **Dependências:** 126 (Parcial), 131 (Sem entrega comprovada), 132 (Parcial).
 
-- [ ] **134. Implementar deduplicação.** Tratar mesma solicitação e contato com idempotência e janela definida.
-  - **Situação auditada:** Parcial.
+- [x] **134. Implementar deduplicação.** Tratar mesma solicitação e contato com idempotência e janela definida.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Retentativas não criam duplicatas nem fundem empresas distintas indevidamente.
-  - **Constatação:** Map em memória aceita concorrência duplicada e replay de payload diferente; tabela única não é usada.
+  - **Constatação:** A chave e o hash são persistidos atomicamente; uma lease no banco permite uma única entrega concorrente, detecta conflito de payload e sobrevive ao reinício do processo.
   - **Evidências e referências:** `src/app/api/briefings/route.ts`, `supabase/migrations/20260922110900_create_premium_site_core.sql`, `docs/audit/plan-scenarios.json`.
-  - **Próxima ação:** Persistir atomicamente chave e hash; testar concorrência, reinício e resposta perdida.
+  - **Próxima ação:** Exercitar a passagem ao CRM homologado e a conciliação operacional antes de habilitar a coleta.
   - **Dependências:** 133 (Parcial).
 
 - [ ] **135. Implementar atribuição de vendedor.** Aplicar regras aprovadas de carteira, região ou distribuição.
@@ -1227,7 +1227,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Capacidade transacional foi localizada no comercial, sem adaptador na vitrine.
   - **Evidências e referências:** `docs/AUDITORIA_PROJETO_INTERNO.md`, `docs/ARQUITETURA_E_INTEGRACAO.md`.
   - **Próxima ação:** Integrar criação/aprovação autorizadas e testar atomicidade.
-  - **Dependências:** 133 (Parcial), 134 (Parcial), 135 (Sem entrega comprovada).
+  - **Dependências:** 133 (Parcial), 134 (Concluída no escopo), 135 (Sem entrega comprovada).
 
 - [ ] **137. Definir estados de acompanhamento.** Relacionar recebido, qualificado, proposta, aprovado e encerrado.
   - **Situação auditada:** Parcial.
@@ -1498,13 +1498,13 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Instrumentar após definição de privacidade e ambiente publicado.
   - **Dependências:** 148 (Parcial), 194 (Sem entrega comprovada).
 
-- [ ] **168. Definir indisponibilidade e retries.** Projetar timeout, circuit breaker e mensagens úteis para falha de catálogo.
-  - **Situação auditada:** Parcial.
+- [x] **168. Definir indisponibilidade e retries.** Projetar timeout, circuit breaker e mensagens úteis para falha de catálogo.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Erro do upstream não transforma indisponibilidade em falsa ausência de produtos.
-  - **Constatação:** API tem timeout e 503; catálogo realmente vazio também vira erro, e UI não trata upstream.
+  - **Constatação:** Resposta vazia válida preserva total zero; falha de fonte vira 503 e a interface mantém a seleção local com ação explícita de nova tentativa.
   - **Evidências e referências:** `src/lib/site-database.ts`, `src/app/api/catalog/route.ts`.
-  - **Próxima ação:** Distinguir vazio de falha, definir recuperação e circuit breaker proporcional.
-  - **Dependências:** 127 (Parcial).
+  - **Próxima ação:** Definir circuit breaker e observabilidade no ambiente com tráfego real.
+  - **Dependências:** 127 (Concluída no escopo).
 
 - [ ] **169. Validar capacidade do backend.** Executar teste de carga controlado em staging com orçamento acordado.
   - **Situação auditada:** Sem entrega comprovada.
@@ -1512,7 +1512,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Não há ambiente de staging ou teste de carga autorizado registrado.
   - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`.
   - **Próxima ação:** Definir orçamento e executar carga controlada em staging.
-  - **Dependências:** 168 (Parcial).
+  - **Dependências:** 168 (Concluída no escopo).
 
 - [ ] **170. Definir observabilidade e alertas.** Acompanhar disponibilidade, mídia, latência e falha de briefings.
   - **Situação auditada:** Sem entrega comprovada.
@@ -1520,7 +1520,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Não existem alertas, limiares, donos ou runbook de resposta.
   - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`.
   - **Próxima ação:** Instrumentar disponibilidade, mídia e entrega de briefings.
-  - **Dependências:** 138 (Sem entrega comprovada), 168 (Parcial).
+  - **Dependências:** 138 (Sem entrega comprovada), 168 (Concluída no escopo).
 
 
 ## Fase 18 — Acessibilidade e inclusão
@@ -1551,7 +1551,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Teste de teclado cobre ciclo do diálogo, não toda a jornada de menu/filtros/quantidade/formulário.
   - **Evidências e referências:** `tests/storefront.spec.ts`.
   - **Próxima ação:** Executar percurso completo só com teclado e registrar foco.
-  - **Dependências:** 065 (Concluída no escopo), 071 (Concluída no escopo), 081 (Concluída no escopo), 112 (Concluída no escopo), 114 (Parcial).
+  - **Dependências:** 065 (Concluída no escopo), 071 (Concluída no escopo), 081 (Concluída no escopo), 112 (Concluída no escopo), 114 (Concluída no escopo).
 
 - [x] **174. Auditar diálogos.** Confirmar foco inicial adequado, Escape, contenção e restauração.
   - **Situação auditada:** Concluída no escopo.
@@ -1583,15 +1583,15 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Validação nativa existe; Voltar perde dados válidos e não houve teste com leitor de tela.
   - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`.
   - **Próxima ação:** Preservar rascunho e testar identificação/correção de erros.
-  - **Dependências:** 066 (Concluída no escopo), 114 (Parcial).
+  - **Dependências:** 066 (Concluída no escopo), 114 (Concluída no escopo).
 
-- [ ] **178. Auditar movimento e mídia.** Testar reduced motion, textos alternativos e conteúdo conceitual.
-  - **Situação auditada:** Parcial.
+- [x] **178. Auditar movimento e mídia.** Testar reduced motion, textos alternativos e conteúdo conceitual.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Nenhuma informação depende de animação, cor isolada ou imagem sem alternativa.
-  - **Constatação:** Alt e identificação conceitual existem; movimento reduzido falha na rolagem explícita.
+  - **Constatação:** A sonda de navegador confirma que reduced-motion interrompe a rolagem suave explícita; imagens essenciais têm texto alternativo e identificação conceitual.
   - **Evidências e referências:** `docs/audit/plan-browser-scenarios.json`, `src/components/Storefront.tsx`, `src/app/globals.css`.
-  - **Próxima ação:** Corrigir chamadas JavaScript e testar mídia/movimento em todas as rotas.
-  - **Dependências:** 068 (Parcial), 093 (Parcial).
+  - **Próxima ação:** Incluir qualquer nova mídia ou animação na varredura de acessibilidade.
+  - **Dependências:** 068 (Concluída no escopo), 093 (Parcial).
 
 - [x] **179. Executar varredura automatizada.** Rodar axe nas páginas e diálogos representativos.
   - **Situação auditada:** Concluída no escopo.
@@ -1599,7 +1599,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Axe roda na home, formulário, produto, plano e privacidade sem violações nas regras cobertas.
   - **Evidências e referências:** `tests/storefront.spec.ts`, `tests/public-api.spec.ts`, `tests/plan.spec.ts`.
   - **Próxima ação:** Manter automação; não declarar conformidade integral por este resultado.
-  - **Dependências:** 171 (Parcial), 172 (Parcial), 173 (Parcial), 174 (Concluída no escopo), 175 (Parcial), 176 (Parcial), 177 (Parcial), 178 (Parcial).
+  - **Dependências:** 171 (Parcial), 172 (Parcial), 173 (Parcial), 174 (Concluída no escopo), 175 (Parcial), 176 (Parcial), 177 (Parcial), 178 (Concluída no escopo).
 
 - [ ] **180. Validar com pessoas.** Conduzir tarefas com usuários de tecnologia assistiva.
   - **Situação auditada:** Sem entrega comprovada.
@@ -1662,7 +1662,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Há testes de negativa sem destino; offline, lentidão e imagem/API quebrada não têm jornada completa.
   - **Evidências e referências:** `tests/public-api.spec.ts`.
   - **Próxima ação:** Executar cenários de rede e recuperação com contexto preservado.
-  - **Dependências:** 168 (Parcial).
+  - **Dependências:** 168 (Concluída no escopo).
 
 - [ ] **187. Executar revisão comercial.** Validar nomes, técnicas, quantidades, preços e textos institucionais.
   - **Situação auditada:** Sem entrega comprovada.

@@ -13,20 +13,21 @@ A conexão PostgreSQL direta fornecida resolve apenas para IPv6 neste ambiente; 
 `supabase/migrations/20260922110900_create_premium_site_core.sql` cria:
 
 - `public.premium_catalog_items`: 8 peças curadas, IDs/SKUs originais, ordem editorial, publicação explícita, quantidades mínimas e mídia local. RLS permite somente leitura dos publicados para `anon` e `authenticated`.
-- `public.premium_briefings`: estrutura preparada para contato, projeto, itens, protocolo e chave de idempotência única. RLS está ligado, sem policy para `anon` ou `authenticated`; nenhum briefing foi criado.
+- `public.premium_briefings`: estrutura privada para contato, projeto, itens, protocolo e chave de idempotência única. RLS está ligado, sem policy para `anon` ou `authenticated`; nenhum briefing comercial foi criado.
 
-Os comandos reproduzíveis são `npm run db:migrate -- --dry-run`, `npm run db:migrate` e `npm run db:sync-catalog`. O sincronizador usa a chave de servidor apenas no processo local e importa exatamente os oito registros de `src/lib/products.json`. A rota `GET /api/catalog` lê a projeção pública do novo banco quando o ambiente está configurado e responde `503 CATALOG_UNAVAILABLE` em falhas do upstream. Sem configuração, mantém o snapshot local para prévias e testes offline. A página inicial e as fichas permanentes ainda usam o snapshot editorial versionado; mudanças de catálogo além dessas oito peças exigem revisão de conteúdo e atualização dessas páginas.
+As migrations `20260922120000_persist_idempotent_briefings.sql`, `20260922123000_claim_briefing_delivery.sql`, `20260922124000_fix_delivery_claim_ambiguity.sql` e `20260922125000_fix_delivery_record_ambiguity.sql` acrescentam estado de entrega, tentativas, lease de dois minutos e funções `SECURITY DEFINER` para persistir, reservar e finalizar a entrega. `20260922130000_add_normalized_catalog_search.sql` acrescenta busca normalizada gerada e indexada ao catálogo. As funções são revogadas de `public`, `anon` e `authenticated`, e concedidas apenas a `service_role`.
+
+Os comandos reproduzíveis são `npm run db:migrate -- --dry-run`, `npm run db:migrate` e `npm run db:sync-catalog`. O sincronizador usa a chave de servidor apenas no processo local e importa exatamente os oito registros de `src/lib/products.json`. A rota `GET /api/catalog`, a home, as fichas permanentes e a validação do briefing leem a projeção pública paginada quando o ambiente está configurado e respondem uma indisponibilidade explícita em falhas do upstream. Sem configuração, o snapshot local permanece somente como fallback de prévia e testes offline.
 
 ## Verificação pós-migration
 
 | Verificação                          | Resultado                                                                     |
 | ------------------------------------ | ----------------------------------------------------------------------------- |
 | Ensaio da SQL em transação revertida | Passou; 0 objetos residuais após rollback                                     |
-| Histórico remoto                     | Versão `20260922110900` registrada em `supabase_migrations.schema_migrations` |
+| Histórico remoto                     | Versões `20260922110900` até `20260922130000` registradas |
 | Catálogo                             | 8 registros, 8 publicados, 8 SKUs distintos                                   |
-| Briefings                            | 0 registros                                                                   |
+| Briefings                            | 0 registros comerciais; teste de funções executado em transação revertida     |
 | RLS                                  | Ativo nas duas tabelas                                                        |
-| Chave pública                        | `GET` do catálogo `200`, 8 itens; `GET` de briefings `401`                    |
-| Chave de servidor                    | `GET` de briefings `200`, 0 itens                                             |
+| Funções de entrega                   | Persistir → reservar → reserva concorrente recusada → finalizar: aprovado em rollback |
 
-O formulário continua em download local porque `BRIEFING_WEBHOOK_URL` está vazio. A tabela preparada não equivale a entrega a vendedores ou integração com CRM. O contato só deve passar a ser persistido após definir política de privacidade, retenção, operador e atendimento comercial.
+O formulário continua em download local porque `BRIEFING_DELIVERY_ENABLED=false`. A tabela privada e a capacidade técnica não equivalem a entrega a vendedores ou integração com CRM. O contato só deve passar a ser persistido após definir política de privacidade, retenção, operador, atendimento comercial e receptor homologado.

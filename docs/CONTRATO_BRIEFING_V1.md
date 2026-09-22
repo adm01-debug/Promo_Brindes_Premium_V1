@@ -1,8 +1,8 @@
 # Contrato de briefing v1
 
-Status: endpoint implementado, receptor comercial não configurado. O banco dedicado da vitrine já possui a tabela privada `premium_briefings`, mas esta prévia não escreve nela. Enquanto `BRIEFING_WEBHOOK_URL` estiver vazio, a interface mantém download local e `POST /api/briefings` responde `503 DESTINATION_UNAVAILABLE`; ela não simula sucesso.
+Status: a entrega é implementada, durável e **desligada por padrão**. A interface só deixa o modo de download local quando `BRIEFING_DELIVERY_ENABLED=true`, há um receptor HTTPS aprovado em `BRIEFING_WEBHOOK_URL` e as credenciais do banco dedicado estão completas. Ter uma URL por si só não inicia coleta de contato.
 
-**Revisão de 22/09:** a tabela abaixo descreve o contrato pretendido, com lacunas comprovadas na implementação. O limite de 16 KiB só é verificado pelo cabeçalho `Content-Length`; concorrência envia duas vezes a mesma chave; payload diferente reutiliza protocolo; o cliente troca a chave em retries. Data com sufixo inválido é truncada e aceita. Os controles ainda não atendem ao critério de ativação comercial. Evidências e condições de correção: [revisão do plano](REVISAO_EXAUSTIVA_PLANO.md#defeitos-reproduzidos).
+O servidor grava primeiro o briefing privado no Supabase da vitrine usando a chave de idempotência e um hash do conteúdo comercial. Em seguida, uma reserva atômica de dois minutos permite apenas uma chamada concorrente ao receptor. Erro ou timeout preserva o protocolo como pendente para nova tentativa com a mesma chave. A ativação continua bloqueada até haver política de privacidade, retenção, responsável comercial e integração homologada.
 
 ## Entrada
 
@@ -21,23 +21,27 @@ Status: endpoint implementado, receptor comercial não configurado. O banco dedi
 }
 ```
 
-O servidor ignora qualquer SKU, preço, fornecedor, status de estoque ou regra comercial que o navegador tente fornecer. Ele resolve SKU e quantidade mínima apenas a partir do catálogo público carregado no servidor.
+O corpo é limitado a 16 KiB medidos nos bytes recebidos. O servidor rejeita datas inexistentes, textos acima do limite e quantidades abaixo do mínimo publicado. SKU, preço, fornecedor, estoque e regras enviados pelo navegador são ignorados: os dados de item são resolvidos novamente no catálogo publicado.
 
 ## Saídas
 
-| Estado                                               | Resposta                                         |
-| ---------------------------------------------------- | ------------------------------------------------ |
-| Receptor confirmou                                   | `201` com `protocol` e `duplicate:false`.        |
-| Mesma chave no processo                              | `200` com o mesmo `protocol` e `duplicate:true`. |
-| Entrada inválida                                     | `422 INVALID_BRIEFING`.                          |
-| Chave ausente ou inválida                            | `400 IDEMPOTENCY_KEY_REQUIRED`.                  |
-| Origem não autorizada                                | `403 ORIGIN_REJECTED`.                           |
-| Corpo que não é JSON                                 | `415 JSON_REQUIRED`.                             |
-| Corpo acima de 16 KiB                                | `413 PAYLOAD_TOO_LARGE`.                         |
-| Mais de cinco tentativas por endereço em dez minutos | `429 RATE_LIMITED`.                              |
-| Receptor não configurado                             | `503 DESTINATION_UNAVAILABLE`.                   |
-| Timeout ou erro do receptor                          | `502 DESTINATION_FAILED`.                        |
+| Estado | Resposta |
+| --- | --- |
+| Receptor confirmou uma nova entrega | `201` com `protocol` e `duplicate:false`. |
+| Repetição após entrega concluída | `200` com o mesmo `protocol` e `duplicate:true`. |
+| Outra solicitação usa a mesma chave durante a reserva | `202` com o mesmo `protocol`, `duplicate:true` e `pending:true`. |
+| Mesma chave com conteúdo diferente | `409 IDEMPOTENCY_PAYLOAD_CONFLICT`. |
+| Receptor falha ou expira | `503 BRIEFING_PENDING` com protocolo para acompanhamento. |
+| Entrada inválida | `422 INVALID_BRIEFING`. |
+| Chave ausente ou inválida | `400 IDEMPOTENCY_KEY_REQUIRED`. |
+| Origem não autorizada | `403 ORIGIN_REJECTED`. |
+| Corpo que não é JSON | `415 JSON_REQUIRED`. |
+| Corpo acima de 16 KiB | `413 PAYLOAD_TOO_LARGE`. |
+| Mais de cinco tentativas por endereço em dez minutos | `429 RATE_LIMITED`. |
+| Entrega não ativada ou receptor inválido | `503 DESTINATION_UNAVAILABLE`. |
 
-## Limite deliberado antes de produção
+## Persistência e operação
 
-O receptor deve usar HTTPS; a exceção para `localhost` ainda não verifica o ambiente e precisa ser restrita ao desenvolvimento. O rate limit e a deduplicação vivem na memória do processo; replay sequencial idêntico pode reutilizar protocolo, mas os cenários de concorrência, payload conflitante e retry do cliente falham. Antes de habilitar o receptor, usar persistência idempotente no sistema aprovado, registrar tentativas sem conteúdo sensível, definir conciliação e validar a passagem ao CRM com vendedores. O webhook é uma porta de adaptação; não substitui a criação transacional de proposta do projeto comercial.
+As migrations `20260922120000` a `20260922125000` criam o estado de entrega, a chave única, hash, contagem de tentativas, reserva com expiração e as funções privadas `persist_premium_briefing`, `claim_premium_briefing_delivery` e `record_premium_briefing_delivery`. A migration `20260922130000` adiciona busca normalizada ao catálogo publicado. As funções só podem ser chamadas por `service_role`; `anon` e `authenticated` não recebem acesso.
+
+O limite de requisições por IP ainda vive no processo da aplicação. Antes da abertura pública, infraestrutura e segurança precisam fornecer rate limit compartilhado/WAF, alertas, retenção aprovada e runbook de conciliação. O webhook é uma porta de adaptação e não cria automaticamente proposta, preço, reserva ou tarefa no CRM. A aprovação e o teste ponta a ponta com o destino comercial permanecem requisitos de lançamento.

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { getProductBySlug, products } from "@/lib/catalog";
+import { products } from "@/lib/catalog";
+import { getSiteProductBySlug } from "@/lib/site-database";
 import ProductDetailActions from "@/components/ProductDetailActions";
 import { notFound } from "next/navigation";
 
@@ -10,13 +11,17 @@ export function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
 }
 
-export function generateMetadata({
+export const revalidate = 300;
+export const dynamicParams = true;
+
+export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  return params.then(({ slug }) => {
-    const product = getProductBySlug(slug);
+  const { slug } = await params;
+  try {
+    const product = await getSiteProductBySlug(slug);
     if (!product) return {};
     return {
       title: `${product.name} | Promo Brindes Premium`,
@@ -29,7 +34,9 @@ export function generateMetadata({
       },
       alternates: { canonical: `/produtos/${product.slug}` },
     };
-  });
+  } catch {
+    return {};
+  }
 }
 
 export default async function ProductPage({
@@ -38,7 +45,20 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  let product;
+  try {
+    product = await getSiteProductBySlug(slug);
+  } catch {
+    return (
+      <main className="legal-page">
+        <h1>Curadoria temporariamente indisponível.</h1>
+        <p>Não foi possível confirmar os dados publicados desta peça agora.</p>
+        <Link href="/" className="button button-gold">
+          Voltar à curadoria
+        </Link>
+      </main>
+    );
+  }
   if (!product) notFound();
   const minimum = Math.max(1, product.minimum ?? 1);
   const siteUrl = process.env.PROMO_PREMIUM_SITE_URL?.replace(/\/$/, "");
@@ -117,7 +137,7 @@ export default async function ProductPage({
           </dl>
           <ProductDetailActions product={product} />
           <p className="fine-print">
-            Snapshot editorial consultado em{" "}
+            Dados editoriais confirmados em{" "}
             {product.sourceDate.split("-").reverse().join(".")}. Condições,
             materiais, variantes e estoque precisam ser confirmados pelo
             comercial antes da proposta.
