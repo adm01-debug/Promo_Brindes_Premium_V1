@@ -22,7 +22,7 @@ Pedidos legados, sem os campos novos, continuam normalizados sem propriedades ex
 | Voltar do formulário e retornar                 | Dados novos preservados em memória                                             | Browser                             |
 | Download local                                  | Escopo total, evento, canal e telefone constam no arquivo; nenhum POST externo | Browser                             |
 
-Resultados reproduzíveis: `node scripts/audit-plan-scenarios.mjs` (36/36 sondas no escopo sintético) e `npx playwright test tests/storefront.spec.ts --grep 'briefing estruturado' --project=chromium`. A suíte original de navegador e a CI devem continuar cobrindo as jornadas anteriores. Não há migração de banco para este item.
+Resultados reproduzíveis: `node scripts/audit-plan-scenarios.mjs` (36/36 sondas no escopo sintético), `npx playwright test tests/storefront.spec.ts --grep 'briefing estruturado' --project=chromium` e a suíte completa (105/105 cenários em Chromium, Firefox e WebKit). A [CI do commit `e4fff10`](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35755047994) também concluiu com sucesso. Não há migração de banco para este item.
 
 ## Limites para concluir a entrega comercial
 
