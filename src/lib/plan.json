@@ -2247,7 +2247,7 @@
       "acceptance": "Filtros usam atributos confiáveis e não prometem estoque ou prazo inexistentes.",
       "owner": "UX + frontend + backend",
       "priority": "P0",
-      "status": "pending",
+      "status": "partial",
       "evidence": "src/components/Storefront.tsx",
       "dependencies": [
         45,
@@ -2256,11 +2256,13 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Não existem filtros de material, investimento, prazo ou mínimo.",
-        "nextAction": "Homologar atributos e implementar filtros úteis.",
+        "finding": "Quantidade desejada usa o mínimo cadastrado e deixa explícito que não confirma estoque. Material, investimento e prazo continuam sem dados e regras públicas homologadas.",
+        "nextAction": "Homologar os atributos comerciais restantes antes de oferecer material, investimento ou prazo como filtros.",
         "evidence": [
           "src/components/Storefront.tsx",
-          "src/lib/products.json"
+          "src/lib/products.json",
+          "docs/CONTRATO_CATALOGO_PUBLICO_V1.md",
+          "tests/storefront.spec.ts"
         ]
       }
     },
@@ -2272,7 +2274,7 @@
       "acceptance": "Semântica OR no grupo e AND entre grupos é validada no contrato.",
       "owner": "UX + frontend + backend",
       "priority": "P0",
-      "status": "pending",
+      "status": "done",
       "evidence": "src/components/Storefront.tsx",
       "dependencies": [
         85
@@ -2280,11 +2282,15 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Não há multisseleção de facetas nem semântica OR/AND contratada.",
-        "nextAction": "Implementar facetas e contagens após aprovação dos atributos.",
+        "finding": "Ocasiões aceitam multisseleção em OR; ocasião, categoria, personalização, quantidade e busca combinam em AND. A resposta inclui contagens contextuais calculadas antes da paginação.",
+        "nextAction": "Estender o mesmo contrato somente quando novas dimensões tiverem dados públicos homologados.",
         "evidence": [
           "src/components/Storefront.tsx",
-          "docs/CONTRATO_CATALOGO_PUBLICO_V1.md"
+          "src/components/CatalogFilters.tsx",
+          "src/lib/catalog.ts",
+          "docs/CONTRATO_CATALOGO_PUBLICO_V1.md",
+          "tests/public-api.spec.ts",
+          "tests/storefront.spec.ts"
         ]
       }
     },
@@ -2329,8 +2335,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Busca, categoria, página e ordenação sincronizam URL; popstate restaura a consulta e respostas antigas não sobrescrevem o filtro mais recente.",
-        "nextAction": "Incluir facetas futuras no mesmo contrato de URL.",
+        "finding": "Busca, categoria, ocasiões, personalização, quantidade, página e ordenação sincronizam URL; popstate restaura a consulta e respostas antigas não sobrescrevem o filtro mais recente.",
+        "nextAction": "Manter o teste de Voltar/Avançar quando novas facetas forem homologadas.",
         "evidence": [
           "src/components/Storefront.tsx",
           "docs/audit/plan-browser-scenarios.json",
@@ -2354,8 +2360,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "A fonte aplica filtro, ordenação, contagem e offset antes de devolver uma página; uma página acima do total é normalizada para a última página publicada.",
-        "nextAction": "Monitorar a contagem e manter o limite de 24 ao ampliar a curadoria.",
+        "finding": "O servidor lê a projeção pública completa em páginas cacheadas e limitadas, calcula resultados e facetas exatas e envia ao navegador somente a página solicitada, limitada a 24 itens.",
+        "nextAction": "Medir cache frio com volume representativo e mover agregações ao banco premium antes de atingir o limite auditado.",
         "evidence": [
           "src/app/api/catalog/route.ts",
           "src/lib/site-database.ts",
@@ -2371,7 +2377,7 @@
       "acceptance": "Conjunto de referência tem ranking esperado e métricas de acerto.",
       "owner": "UX + frontend + backend",
       "priority": "P0",
-      "status": "pending",
+      "status": "partial",
       "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
       "dependencies": [
         81,
@@ -2383,10 +2389,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "Não há conjunto de consultas reais, sinônimos e ranking esperado.",
-        "nextAction": "Construir referência com comercial e medir acerto.",
+        "finding": "Busca cobre acentos, múltiplos termos, SKU, aliases editoriais e sugestão explícita para erro de um caractere; ainda não existe conjunto de consultas reais com ranking esperado.",
+        "nextAction": "Construir a referência com vendedores e compradores e medir acerto sobre consultas reais.",
         "evidence": [
-          "docs/ESTRATEGIA_E_PESQUISA.md"
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "src/lib/catalog.ts",
+          "tests/public-api.spec.ts"
         ]
       }
     },

@@ -1,6 +1,6 @@
 # Matriz local de navegadores — 22/09/2026
 
-Playwright `1.63.0`, Linux headless e build de produção. Cada motor executou as mesmas 34 jornadas: catálogo/contrato/API, busca e histórico, seleção e briefing, menu e reflow móvel, diálogos, privacidade, plano e axe nos fluxos representativos. Foram **102 aprovações locais** na matriz ampliada. A matriz anterior, com 28 jornadas por motor, também passou no [CI remoto do commit `6e87c3b`](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35740802785).
+Playwright `1.63.0`, Linux headless e build de produção. A matriz vigente executou as mesmas 55 jornadas em cada motor: catálogo/contrato/API, facetas combináveis, busca e histórico, seleção e briefing, menu e reflow móvel, diálogos, privacidade, plano e axe nos fluxos representativos. Foram **165 aprovações locais**. A matriz anterior também passou no [CI remoto do commit `6e87c3b`](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35740802785).
 
 | Motor | Versão observada | Larguras exercitadas | Resultado local |
 | --- | --- | --- | --- |

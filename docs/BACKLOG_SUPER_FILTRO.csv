@@ -1,31 +1,31 @@
 id,prioridade,recomendacao,estado_atual,dependencia,criterio_de_aceite
-SF-01,P0,Definir contrato e semântica de filtros,Planejado,Contrato atual de catálogo,Uma regra compartilhada define OR dentro; AND entre dimensões; inválidos; limites; ausentes
-SF-02,P0,Preservar fronteira dos bancos,Existente; manter,AGENTS.md e contrato de origem,Nenhuma escrita ou cliente operacional importado; novos campos passam por allowlist
-SF-03,P1,Integrar ocasiões das coleções à busca de produtos,Parcial: biblioteca existente,SF-01; catalog-library,Slugs de coleção restringem a produtos publicados; coleção inválida não abre catálogo inteiro
-SF-04,P1,Estender categoria sem duplicar consulta,Parcial: categoria única existente,SF-01,A categoria usa a consulta central; multisseleção somente se validada pelo uso
-SF-05,P1,Filtro de personalização confirmada,Planejado; dado disponível,SF-01; personalizable,Só personalizable=true é incluído; técnica não é inferida
-SF-06,P1,Filtro por quantidade desejada,Planejado; dado disponível,SF-01; minimum,minimum<=quantidade; inteiro positivo; limite do briefing; texto não promete estoque
-SF-07,P1,Resumo acessível com remoção individual,Planejado,SF-03 a SF-06,Botão por opção; nome acessível; resumo visível também no móvel
-SF-08,P1,Limpar opção; dimensão; todos,Parcial: limpeza existente,SF-07,Cada ação tem escopo claro; ordenação preservada; uma confirmação discreta
-SF-09,P1,URL e histórico para novas facetas,Parcial: histórico existente,SF-01,Recarregar; compartilhar; Voltar e Avançar restauram filtros e página
-SF-10,P1,Painel móvel de filtros,Planejado,SF-03 a SF-09,Sem estado duplicado; aplicação imediata; botão Ver fecha; rodapé não cobre conteúdo
-SF-11,P1,Contagem completa de resultados,Parcial: total existente,SF-01,Contagem antes da paginação; produto único; estado parcial explicitamente identificado
-SF-12,P1,Contagens contextuais das opções,Planejado,SF-11,Mesma versão de dados; cálculo exclui própria dimensão; deduplicação por produto
-SF-13,P0,Falha persistente sem falsa compatibilidade,Parcial: estados existentes,SF-01,Erro não vira vazio nem sucesso; estado anterior identificado; tentar novamente funciona
-SF-14,P1,Concorrência e carregamento reais,Parcial: consulta existente,SF-13,Resposta antiga descartada; spinner depende da requisição atual; sem temporizador de conclusão
-SF-15,P1,Busca normalizada e aliases controlados,Parcial: acentos e aliases em coleções,SF-01,SKU exato; acentos; múltiplas palavras; aliases sem falso atributo técnico
-SF-16,P2,Tolerância a erro de digitação,Planejado,SF-15; conjunto de candidatos,garafa encontra garrafa em fluxo completo; sugestão explícita; SKU não substituído silenciosamente
-SF-17,P1,Curadorias rápidas compartilháveis,Parcial: seis coleções existentes,SF-03; SF-09,Atalhos usam slugs existentes; link reproduz critérios e informa resultado atual
+SF-01,P0,Definir contrato e semântica de filtros,Implementado,Contrato atual de catálogo,Uma regra compartilhada define OR dentro; AND entre dimensões; inválidos; limites; ausentes
+SF-02,P0,Preservar fronteira dos bancos,Implementado e verificado,AGENTS.md e contrato de origem,Nenhuma escrita ou cliente operacional importado; novos campos passam por allowlist
+SF-03,P1,Integrar ocasiões das coleções à busca de produtos,Implementado,SF-01; catalog-library,Slugs de coleção restringem a produtos publicados; coleção inválida não abre catálogo inteiro
+SF-04,P1,Estender categoria sem duplicar consulta,Implementado,SF-01,A categoria usa a consulta central; multisseleção somente se validada pelo uso
+SF-05,P1,Filtro de personalização confirmada,Implementado,SF-01; personalizable,Só personalizable=true é incluído; técnica não é inferida
+SF-06,P1,Filtro por quantidade desejada,Implementado,SF-01; minimum,minimum<=quantidade; inteiro positivo; limite do briefing; texto não promete estoque
+SF-07,P1,Resumo acessível com remoção individual,Implementado,SF-03 a SF-06,Botão por opção; nome acessível; resumo visível também no móvel
+SF-08,P1,Limpar opção; dimensão; todos,Implementado,SF-07,Cada ação tem escopo claro; ordenação preservada; uma confirmação discreta
+SF-09,P1,URL e histórico para novas facetas,Implementado,SF-01,Recarregar; compartilhar; Voltar e Avançar restauram filtros e página
+SF-10,P1,Painel móvel de filtros,Implementado,SF-03 a SF-09,Sem estado duplicado; aplicação imediata; botão Ver fecha; rodapé não cobre conteúdo
+SF-11,P1,Contagem completa de resultados,Implementado,SF-01,Contagem antes da paginação; produto único; estado parcial explicitamente identificado
+SF-12,P1,Contagens contextuais das opções,Implementado,SF-11,Mesma versão de dados; cálculo exclui própria dimensão; deduplicação por produto
+SF-13,P0,Falha persistente sem falsa compatibilidade,Implementado,SF-01,Erro não vira vazio nem sucesso; estado anterior identificado; tentar novamente funciona
+SF-14,P1,Concorrência e carregamento reais,Implementado,SF-13,Resposta antiga descartada; spinner depende da requisição atual; sem temporizador de conclusão
+SF-15,P1,Busca normalizada e aliases controlados,Implementado,SF-01,SKU exato; acentos; múltiplas palavras; aliases sem falso atributo técnico
+SF-16,P2,Tolerância a erro de digitação,Implementado,SF-15; conjunto de candidatos,garafa encontra garrafa em fluxo completo; sugestão explícita; SKU não substituído silenciosamente
+SF-17,P1,Curadorias rápidas compartilháveis,Implementado,SF-03; SF-09,Atalhos usam slugs existentes; link reproduz critérios e informa resultado atual
 SF-18,P2,Preferências salvas do comprador,Condicional,Necessidade validada; banco premium,Não copiar CRUD saved_filters V4; retenção e isolamento verificados no destino premium
-SF-19,P0,Manter custos e métricas internas fora do público,Existente; manter,Contrato público,Sem cost_price; fornecedor; vendas90d ou fallback de custo no JSON público
+SF-19,P0,Manter custos e métricas internas fora do público,Implementado e verificado,Contrato público,Sem cost_price; fornecedor; vendas90d ou fallback de custo no JSON público
 SF-20,P2,Cores com dados verificáveis,Dependente de dados,Leitura autorizada; projeção premium,ID; rótulo; variante; foto correspondente; cor desconhecida explícita
 SF-21,P2,Materiais com uma fonte de estado,Dependente de dados,Leitura autorizada; SF-01,URL e preset preservados; grupo/tipo controlados; sem inferência por imagem
 SF-22,P2,Técnicas de personalização verificadas,Dependente de dados e operação,Regra técnica por produto/área,Desconhecido não significa compatível; restrições e quantidade representadas
 SF-23,P2,Preço comercial público,Dependente de decisão comercial,Política de preço e vigência,Valor por quantidade/configuração; centavos preservados; custo nunca como fallback
 SF-24,P2,Disponibilidade na mesma variante,Dependente de dados e operação,SF-20; dados de variante,Cor+tamanho+quantidade na mesma variante; timestamp; nenhum estoque agregado enganoso
 SF-25,P2,Prazo solicitado como requisito do briefing,Dependente de operação,Produção; personalização; logística,Data desejada não vira promessa; filtro de entrega só após regra verificável
-SF-26,P1,Acessibilidade e regressão da jornada,Planejado para a adaptação,SF-07 a SF-14,Teclado; foco; leitor de tela; status; favoritos; detalhe; seleção e briefing preservados
-SF-27,P2,Desempenho com volume representativo,Planejado para a adaptação,SF-11; contrato de facetas,Bytes e duração medidos; não baixar todo catálogo por padrão; cache e erros medidos
-SF-28,P2,Métricas de uso com minimização,Planejado,Definições de eventos e privacidade,Registrar dimensão; total e duração; não capturar dados de cliente ou busca livre integral por padrão
+SF-26,P1,Acessibilidade e regressão da jornada,Implementado; homologação manual pendente,SF-07 a SF-14,Teclado; foco; leitor de tela; status; favoritos; detalhe; seleção e briefing preservados
+SF-27,P2,Desempenho com volume representativo,Implementado para a curadoria atual; volume pendente,SF-11; contrato de facetas,Bytes e duração medidos; não baixar todo catálogo por padrão; cache e erros medidos
+SF-28,P2,Métricas de uso com minimização,Implementado no evento local; coleta depende de privacidade,Definições de eventos e privacidade,Registrar dimensão; total e duração; não capturar dados de cliente ou busca livre integral por padrão
 SF-29,P1,Homologar deploy autenticado e tarefas reais,Pendente de sessão e participantes,Versão publicada identificada,Vendedores e compradores completam tarefas; registrar falhas; não inferir deploy pelo checkout
-SF-30,P2,SEO de facetas e coleções,Planejado para lançamento,Política de lançamento existente,Sem mudar noindex nesta auditoria; diferenciar coleção editorial de URL combinatória
+SF-30,P2,SEO de facetas e coleções,Parcial; política implementada na prévia,Política de lançamento existente,Sem mudar noindex nesta auditoria; diferenciar coleção editorial de URL combinatória

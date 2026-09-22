@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import { readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
+import { dirname, resolve } from "node:path";
 import vm from "node:vm";
 import ts from "typescript";
 
@@ -25,6 +26,14 @@ function load(file, env = {}, fetcher = async () => new Response("{}")) {
     if (name === "./products.json") return products;
     if (name.startsWith("@/"))
       return load(`src/${name.slice(2)}.ts`, env, fetcher);
+    if (name.startsWith(".")) {
+      const dependency = resolve(dirname(file), name);
+      return load(
+        dependency.endsWith(".ts") ? dependency : `${dependency}.ts`,
+        env,
+        fetcher,
+      );
+    }
     return require(name);
   };
   vm.runInNewContext(
@@ -538,8 +547,8 @@ await probe(
   },
 );
 
-await probe("AUD-06-source-pagination-truncation", 30, async () => {
-  const rows = Array.from({ length: 30 }, (_, index) => ({
+await probe("AUD-06-source-pagination-truncation", 530, async () => {
+  const rows = Array.from({ length: 530 }, (_, index) => ({
     ...item,
     id: `00000000-0000-4000-8000-${String(index).padStart(12, "0")}`,
     sku: `AUD${index}`,
@@ -557,8 +566,14 @@ await probe("AUD-06-source-pagination-truncation", 30, async () => {
     async (input) => {
       const url = new URL(String(input));
       const limit = Number(url.searchParams.get("limit"));
-      return new Response(JSON.stringify(rows.slice(0, limit)), {
-        headers: { "content-range": `0-${limit - 1}/${rows.length}` },
+      const offset = Number(url.searchParams.get("offset") ?? 0);
+      const page = rows.slice(offset, offset + limit);
+      return new Response(JSON.stringify(page), {
+        headers: {
+          "content-range": page.length
+            ? `${offset}-${offset + page.length - 1}/${rows.length}`
+            : `*/${rows.length}`,
+        },
       });
     },
   );
@@ -686,20 +701,6 @@ for (const [id, input, rows] of [
     { ids: [item.id] },
     [{ ...item, id: "03b447a0-930f-43f9-a51f-5fce910bfc4a" }],
   ],
-  [
-    "AUD-28-overfilled-page",
-    { pageSize: 1 },
-    [
-      item,
-      {
-        ...item,
-        id: "03b447a0-930f-43f9-a51f-5fce910bfc4a",
-        sku: "93586",
-        slug: "other-item",
-      },
-    ],
-  ],
-  ["AUD-32-category-filter-drift", { category: "Escrita" }, [item]],
 ]) {
   await probe(id, true, async () => {
     const api = load(
@@ -720,6 +721,88 @@ for (const [id, input, rows] of [
     }
   });
 }
+
+await probe("AUD-28-overfilled-page", "1;2", async () => {
+  const rows = [
+    item,
+    {
+      ...item,
+      id: "03b447a0-930f-43f9-a51f-5fce910bfc4a",
+      sku: "93586",
+      slug: "other-item",
+    },
+  ];
+  const api = load(
+    "src/lib/site-database.ts",
+    activeEnv,
+    async () =>
+      new Response(JSON.stringify(rows), {
+        headers: { "content-range": "0-1/2" },
+      }),
+  );
+  const page = await api.getSiteCatalogPage({ pageSize: 1 });
+  return `${page.items.length};${page.total}`;
+});
+
+await probe("AUD-32-category-filter-drift", 0, async () => {
+  const api = load(
+    "src/lib/site-database.ts",
+    activeEnv,
+    async () =>
+      new Response(JSON.stringify([item]), {
+        headers: { "content-range": "0-0/1" },
+      }),
+  );
+  return (await api.getSiteCatalogPage({ category: "Escrita" })).total;
+});
+
+await probe("AUD-37-public-catalog-hard-limit", true, async () => {
+  const rows = Array.from({ length: 500 }, (_, index) => ({
+    ...item,
+    id: `10000000-0000-4000-8000-${String(index).padStart(12, "0")}`,
+    sku: `LIMIT${index}`,
+    slug: `limit-${index}`,
+  }));
+  const api = load(
+    "src/lib/site-database.ts",
+    activeEnv,
+    async () =>
+      new Response(JSON.stringify(rows), {
+        headers: { "content-range": "0-499/10001" },
+      }),
+  );
+  try {
+    await api.getSiteCatalogPage();
+    return false;
+  } catch {
+    return true;
+  }
+});
+
+await probe("AUD-38-total-change-during-pagination", true, async () => {
+  const rows = Array.from({ length: 501 }, (_, index) => ({
+    ...item,
+    id: `20000000-0000-4000-8000-${String(index).padStart(12, "0")}`,
+    sku: `DRIFT${index}`,
+    slug: `drift-${index}`,
+  }));
+  const api = load("src/lib/site-database.ts", activeEnv, async (input) => {
+    const offset = Number(new URL(String(input)).searchParams.get("offset"));
+    const page = rows.slice(offset, offset + 500);
+    const total = offset === 0 ? 501 : 502;
+    return new Response(JSON.stringify(page), {
+      headers: {
+        "content-range": `${offset}-${offset + page.length - 1}/${total}`,
+      },
+    });
+  });
+  try {
+    await api.getSiteCatalogPage();
+    return false;
+  } catch {
+    return true;
+  }
+});
 
 await probe("AUD-29-product-slug-mismatch", true, async () => {
   const api = load(

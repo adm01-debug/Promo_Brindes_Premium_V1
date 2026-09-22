@@ -2,23 +2,37 @@
 
 Auditoria de 22/09/2026. Referência solicitada: <https://www.promogifts.com.br/filtros>.
 
-**Recomendação:** aproveitar a organização dos filtros, a possibilidade de desfazer escolhas, a navegação por contexto e o tratamento de resultados. Construir a primeira versão premium com os atributos já disponíveis: categoria, ocasião editorial, possibilidade de personalização e quantidade mínima. A incorporação de cores, materiais, técnicas, preços e disponibilidade depende de contratos de dados próprios e verificados.
+**Recomendação executada:** a primeira versão premium usa categoria, ocasião editorial, possibilidade de personalização e quantidade mínima. A incorporação de cores, materiais, técnicas, preços e disponibilidade continua condicionada a contratos de dados próprios e verificados.
 
 O Super Filtro é uma ferramenta de trabalho para vendedores. A vitrine atende quem está escolhendo um presente corporativo. Essa diferença muda quais controles precisam aparecer, o significado das contagens e as informações comerciais que podem ser expostas.
 
-Esta entrega contém **análise, evidências reproduzíveis e um backlog de 30 itens**. Não implementa esses itens na aplicação e não altera o plano de 200 etapas para marcá-los como concluídos.
+A auditoria original contém **análise, evidências reproduzíveis e um backlog de 30 itens**. A implementação posterior incorporou os padrões seguros que os dados públicos atuais permitem e atualizou o plano de 200 etapas conforme as evidências. Dependências comerciais, conteúdo não licenciado e atributos ausentes não foram simulados como concluídos.
+
+## Status da implementação posterior
+
+| Frente             | Resultado implementado                                                                                                            | Evidência principal                                                   |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Contrato           | Versão `2026-09-22.2`; OR entre ocasiões, AND entre dimensões; limites e inválidos explícitos                                     | `src/lib/catalog.ts`, `src/app/api/catalog/route.ts`                  |
+| Descoberta         | Busca normalizada, aliases editoriais, sugestão explícita de um caractere, categoria, ocasião, personalização e quantidade mínima | `src/components/CatalogFilters.tsx`, `src/components/Storefront.tsx`  |
+| Navegação          | URL completa, recarga, Voltar/Avançar, chips removíveis, limpeza geral e ordenação preservada                                     | `tests/storefront.spec.ts`                                            |
+| Contagens          | Total e facetas contextuais sobre a mesma projeção completa, antes da paginação                                                   | `src/lib/site-database.ts`, `tests/public-api.spec.ts`                |
+| Estados            | Carregamento ligado à requisição, descarte de resposta antiga, erro persistente, retry e correção de busca anunciada              | `src/components/Storefront.tsx`, `tests/storefront.spec.ts`           |
+| Segurança de dados | Origem operacional permanece GET-only; navegador recebe apenas campos públicos e a página solicitada                              | `scripts/tests/catalog-boundary.test.mjs`, `src/lib/site-database.ts` |
+| Privacidade        | Evento local registra dimensões, total, duração e sucesso, sem texto pesquisado ou dados de cliente                               | `src/components/Storefront.tsx`                                       |
+
+Cores, materiais, técnicas, preço, estoque e prazo não aparecem como filtros porque não há cobertura pública homologada para sustentar essas promessas. O servidor lê a projeção premium em páginas cacheadas de 500, limita o conjunto auditado a 10.000 itens e envia ao navegador no máximo 24 por resposta. Antes de um catálogo de grande volume, o cálculo deve ser medido em cache frio e, se necessário, migrado para agregação no banco premium.
 
 ## 1. Escopo e grau de comprovação
 
-| Frente | Evidência obtida | Limite |
-| --- | --- | --- |
-| Site publicado | Chromium, desktop 1440 × 1000; `/filtros` redireciona para `/auth` | Não houve acesso à interface autenticada; não atribuir a ela avaliações visuais ou de desempenho medidas |
-| Código V4 | Checkout `e3ed6c5dba080bc9601a42d99e2fc5e00e319ad6`, branch `codex/e15-pooler-validation-20260922` | Não foi comprovado que esse commit corresponde ao deploy do domínio |
-| Motor de filtros | 124 testes existentes executados, todos aprovados, sem rede | Cobrem o motor puro com dados sintéticos, não consultas reais ou jornada completa |
-| Sincronização de materiais | 2 reproduções com o hook React real e dependências de dados simuladas | Confirmam perda de seleção nesse cenário isolado; falta validar a jornada no deploy |
-| Casos adicionais | 10 sondagens do pipeline original, com saída e hashes dos arquivos | Alguns resultados comprovam riscos; “teste passou” não significa “comportamento desejável” |
-| Premium | Contrato, API, consulta, navegação e biblioteca examinados no commit `61dec84` | O snapshot versionado tem 8 produtos e 6 coleções; não foi refeita a contagem do banco nesta auditoria |
-| Bancos | Nenhuma consulta direta ou mutação realizada nesta auditoria | Não houve auditoria de schema, grants, RLS ou conteúdo atual dos bancos |
+| Frente                     | Evidência obtida                                                                                   | Limite                                                                                                   |
+| -------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Site publicado             | Chromium, desktop 1440 × 1000; `/filtros` redireciona para `/auth`                                 | Não houve acesso à interface autenticada; não atribuir a ela avaliações visuais ou de desempenho medidas |
+| Código V4                  | Checkout `e3ed6c5dba080bc9601a42d99e2fc5e00e319ad6`, branch `codex/e15-pooler-validation-20260922` | Não foi comprovado que esse commit corresponde ao deploy do domínio                                      |
+| Motor de filtros           | 124 testes existentes executados, todos aprovados, sem rede                                        | Cobrem o motor puro com dados sintéticos, não consultas reais ou jornada completa                        |
+| Sincronização de materiais | 2 reproduções com o hook React real e dependências de dados simuladas                              | Confirmam perda de seleção nesse cenário isolado; falta validar a jornada no deploy                      |
+| Casos adicionais           | 10 sondagens do pipeline original, com saída e hashes dos arquivos                                 | Alguns resultados comprovam riscos; “teste passou” não significa “comportamento desejável”               |
+| Premium                    | Contrato, API, consulta, navegação e biblioteca examinados no commit `61dec84`                     | O snapshot versionado tem 8 produtos e 6 coleções; não foi refeita a contagem do banco nesta auditoria   |
+| Bancos                     | Nenhuma consulta direta ou mutação realizada nesta auditoria                                       | Não houve auditoria de schema, grants, RLS ou conteúdo atual dos bancos                                  |
 
 Na inspeção de navegador foram bloqueados métodos diferentes de GET/HEAD e caminhos de RPC. Duas tentativas de POST a `get-visitor-info` foram bloqueadas. Credenciais não foram utilizadas para contornar autenticação.
 
@@ -28,21 +42,21 @@ Evidências: [navegação anônima](audit/super-filtro-20260922/live-anonymous.j
 
 O painel organiza as opções em quatro grupos: **Produto, Comercial, Marketing e Atalhos**. A página combina busca, ordenação, presets, histórico, layouts, seleção de produtos e ações comerciais. [Definições do painel][v4-types], [página][v4-page].
 
-| Camada | Comportamento encontrado | Consequência para a adaptação |
-| --- | --- | --- |
-| Busca | Campo textual, histórico, debounce de 400 ms no carregamento e reordenação local com Fuse | Unificar busca, relevância e conjunto consultado; evitar duas regras incompatíveis |
-| Cores | Grupos, variações e nuances; consulta de IDs; enriquecimento de foto/estoque; possibilidade de um card por cor | Separar produto de variante e confirmar a mesma variante em todas as condições |
-| Categorias | Árvore, busca interna, expansão e consulta que inclui descendentes | Preservar a hierarquia quando ela existir; a vitrine hoje usa quatro categorias editoriais planas |
-| Materiais | Grupos e tipos; um estado local do painel e outro da página | Aproveitar a taxonomia; eliminar a duplicação de estado |
-| Contexto | Público, datas, nichos/segmentos e tags | Traduzir para ocasião e intenção de presente; as coleções premium já oferecem essa base |
-| Comercial | Fornecedor, vendas em 90 dias, preço, estoque e embalagem | Não incorporar dados internos ao contrato público por simples cópia |
-| Opções rápidas | Kit, destaque, novidade, personalização, oferta e embalagem | Só exibir opções cuja definição e cobertura sejam comprovadas |
-| Refinamento | Valores da mesma dimensão geralmente se combinam por OR; dimensões diferentes por AND | Explicitar e testar a regra. Cores, grupos e nuances também formam união no hook examinado |
-| Apresentação | Sidebar desktop; Sheet lateral móvel com resumo e botão “Ver N resultados” | Padrão aproveitável; no móvel esse botão fecha o painel, pois os filtros já foram alterados |
-| Resumo | Contagem de dimensões ativas, chips por grupo, remoção de grupo e limpeza geral | Distinguir “3 filtros” de “3 opções”; remover uma opção individual deve ser possível |
-| Resultado | Grid virtualizado, lista e tabela; favoritos, comparação e seleção em massa | Preservar a seleção premium existente; tabela densa tem utilidade principalmente operacional |
-| Persistência | Estado inicial pela URL; serialização com replace; preferência de ordenação em sessão | O premium já tem histórico de navegação; manter esse comportamento durante a evolução |
-| Presets | CRUD de `saved_filters` com usuário autenticado no cliente Supabase V4 | Esse hook não pode ser copiado para o premium: escreveria na origem proibida |
+| Camada         | Comportamento encontrado                                                                                       | Consequência para a adaptação                                                                     |
+| -------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Busca          | Campo textual, histórico, debounce de 400 ms no carregamento e reordenação local com Fuse                      | Unificar busca, relevância e conjunto consultado; evitar duas regras incompatíveis                |
+| Cores          | Grupos, variações e nuances; consulta de IDs; enriquecimento de foto/estoque; possibilidade de um card por cor | Separar produto de variante e confirmar a mesma variante em todas as condições                    |
+| Categorias     | Árvore, busca interna, expansão e consulta que inclui descendentes                                             | Preservar a hierarquia quando ela existir; a vitrine hoje usa quatro categorias editoriais planas |
+| Materiais      | Grupos e tipos; um estado local do painel e outro da página                                                    | Aproveitar a taxonomia; eliminar a duplicação de estado                                           |
+| Contexto       | Público, datas, nichos/segmentos e tags                                                                        | Traduzir para ocasião e intenção de presente; as coleções premium já oferecem essa base           |
+| Comercial      | Fornecedor, vendas em 90 dias, preço, estoque e embalagem                                                      | Não incorporar dados internos ao contrato público por simples cópia                               |
+| Opções rápidas | Kit, destaque, novidade, personalização, oferta e embalagem                                                    | Só exibir opções cuja definição e cobertura sejam comprovadas                                     |
+| Refinamento    | Valores da mesma dimensão geralmente se combinam por OR; dimensões diferentes por AND                          | Explicitar e testar a regra. Cores, grupos e nuances também formam união no hook examinado        |
+| Apresentação   | Sidebar desktop; Sheet lateral móvel com resumo e botão “Ver N resultados”                                     | Padrão aproveitável; no móvel esse botão fecha o painel, pois os filtros já foram alterados       |
+| Resumo         | Contagem de dimensões ativas, chips por grupo, remoção de grupo e limpeza geral                                | Distinguir “3 filtros” de “3 opções”; remover uma opção individual deve ser possível              |
+| Resultado      | Grid virtualizado, lista e tabela; favoritos, comparação e seleção em massa                                    | Preservar a seleção premium existente; tabela densa tem utilidade principalmente operacional      |
+| Persistência   | Estado inicial pela URL; serialização com replace; preferência de ordenação em sessão                          | O premium já tem histórico de navegação; manter esse comportamento durante a evolução             |
+| Presets        | CRUD de `saved_filters` com usuário autenticado no cliente Supabase V4                                         | Esse hook não pode ser copiado para o premium: escreveria na origem proibida                      |
 
 Fluxo simplificado do código examinado:
 
@@ -62,23 +76,23 @@ O carregamento inicial pede quatro páginas de 500 produtos. Depois, `fetchNextP
 
 ## 3. Padrões que valem a pena aproveitar
 
-| Padrão | Benefício | Adaptação premium recomendada |
-| --- | --- | --- |
-| Agrupamento por intenção | Evita uma lista longa de controles sem contexto | “Ocasião”, “Tipo de presente”, “Personalização” e “Quantidade” |
-| Abertura progressiva | Mantém foco nos produtos | Com o catálogo atual, começar com filtros compactos; sidebar expansível quando necessária |
-| Contador no acionador móvel | Mostra que existe refinamento ativo | “Filtros · 2”, contando dimensões; opções individuais aparecem no resumo |
-| Rodapé fixo do painel | Facilita retornar à lista | “Ver 6 produtos” com contagem confirmada; estado distinto durante atualização |
-| Resumo removível | Torna o refinamento reversível | Botões como “Remover ocasião: Boas-vindas”, também visíveis no móvel |
-| Limpeza seletiva e geral | Reduz esforço para recuperar resultados | Remover uma opção, limpar uma dimensão e limpar tudo com semânticas distintas |
-| Busca dentro de listas | Ajuda em taxonomias extensas | Usar em materiais/cores quando houver muitas opções; dispensável para quatro categorias |
-| Hierarquia pai/filho | Encontra itens cadastrados em subcategorias | Pai inclui descendentes; estado parcial deve ser representado corretamente |
-| Cores com rótulo | Reduz dependência de nomes técnicos | Amostra + nome + estado selecionado; preto e branco precisam de borda perceptível |
-| Curadorias prontas | Acelera um começo sem conhecer o catálogo | Reutilizar as seis coleções de `/catalogos` como atalhos editoriais |
-| URL compartilhável | Mantém o contexto entre cliente e vendedor | Compartilhar a seleção de filtros; a lista refletirá os produtos publicados no momento da abertura |
-| Estado vazio orientado | Dá uma saída quando a combinação não funciona | Sugerir retirar uma restrição específica e oferecer apoio comercial |
-| Separação produto/variante | Evita inflar a impressão de variedade | Um produto continua sendo um produto; cores disponíveis são variantes |
-| Desempate por ID | Evita instabilidade na paginação | Usar uma ordenação determinística em todos os modos futuros |
-| Descarte de respostas antigas | Impede que uma busca lenta sobrescreva a mais recente | Preservar o controle de concorrência no serviço e na interface |
+| Padrão                        | Benefício                                             | Adaptação premium recomendada                                                                      |
+| ----------------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Agrupamento por intenção      | Evita uma lista longa de controles sem contexto       | “Ocasião”, “Tipo de presente”, “Personalização” e “Quantidade”                                     |
+| Abertura progressiva          | Mantém foco nos produtos                              | Com o catálogo atual, começar com filtros compactos; sidebar expansível quando necessária          |
+| Contador no acionador móvel   | Mostra que existe refinamento ativo                   | “Filtros · 2”, contando dimensões; opções individuais aparecem no resumo                           |
+| Rodapé fixo do painel         | Facilita retornar à lista                             | “Ver 6 produtos” com contagem confirmada; estado distinto durante atualização                      |
+| Resumo removível              | Torna o refinamento reversível                        | Botões como “Remover ocasião: Boas-vindas”, também visíveis no móvel                               |
+| Limpeza seletiva e geral      | Reduz esforço para recuperar resultados               | Remover uma opção, limpar uma dimensão e limpar tudo com semânticas distintas                      |
+| Busca dentro de listas        | Ajuda em taxonomias extensas                          | Usar em materiais/cores quando houver muitas opções; dispensável para quatro categorias            |
+| Hierarquia pai/filho          | Encontra itens cadastrados em subcategorias           | Pai inclui descendentes; estado parcial deve ser representado corretamente                         |
+| Cores com rótulo              | Reduz dependência de nomes técnicos                   | Amostra + nome + estado selecionado; preto e branco precisam de borda perceptível                  |
+| Curadorias prontas            | Acelera um começo sem conhecer o catálogo             | Reutilizar as seis coleções de `/catalogos` como atalhos editoriais                                |
+| URL compartilhável            | Mantém o contexto entre cliente e vendedor            | Compartilhar a seleção de filtros; a lista refletirá os produtos publicados no momento da abertura |
+| Estado vazio orientado        | Dá uma saída quando a combinação não funciona         | Sugerir retirar uma restrição específica e oferecer apoio comercial                                |
+| Separação produto/variante    | Evita inflar a impressão de variedade                 | Um produto continua sendo um produto; cores disponíveis são variantes                              |
+| Desempate por ID              | Evita instabilidade na paginação                      | Usar uma ordenação determinística em todos os modos futuros                                        |
+| Descarte de respostas antigas | Impede que uma busca lenta sobrescreva a mais recente | Preservar o controle de concorrência no serviço e na interface                                     |
 
 Nem todos esses padrões precisam de um componente novo: busca, categoria, favoritos, seleção, ordenação, histórico de URL e coleções já existem no premium. O trabalho futuro deve estender os contratos existentes.
 
@@ -166,19 +180,19 @@ O download progressivo de todo o catálogo pode ser caro no móvel, embora o gri
 
 ## 5. O que nosso contrato de dados já permite
 
-| Filtro proposto | Base existente no premium | Regra recomendada | Situação |
-| --- | --- | --- | --- |
-| Tipo de presente | `Product.category` | Categoria única no fluxo atual; multisseleção é evolução opcional | Parcialmente implementado |
-| Ocasião | Coleções com slug, tags, aliases e IDs | Membro da coleção ∩ produto publicado | Existe na biblioteca; integrar à descoberta de produtos |
-| Personalização | `Product.personalizable` | Incluir apenas `true`; não inferir técnica | Dado disponível; filtro ainda não implementado |
-| Quantidade desejada | `Product.minimum` | `minimum <= quantidade`; inteiro positivo até o limite aceito no briefing | Dado disponível; filtro ainda não implementado |
-| Favoritos | Preferência local já existente | Só produtos ainda elegíveis/publicados | Reaproveitar o fluxo existente |
-| Cores | Não integra `Product` público atual | IDs de variantes + rótulo + imagem correspondente | Depende de novo contrato |
-| Materiais | Não integra `Product` público atual | Taxonomia verificada, com ausência explícita | Depende de novo contrato |
-| Técnicas | Só existe booleano de personalização | Técnica permitida por produto/área e condições | Depende de novo contrato |
-| Preço | Sem preço comercial público | Valor público por quantidade e configuração | Depende de decisão comercial e dados |
-| Disponibilidade/prazo | Sem estoque ou capacidade produtiva públicos | Disponibilidade por variante e atualização; prazo incluindo personalização/logística | Depende de operação e dados |
-| Sustentabilidade | Nenhuma certificação estruturada nesse contrato | Evidência por atributo; não inferir por cor/material/nome | Não oferecer como promessa sem validação |
+| Filtro proposto       | Base existente no premium                       | Regra recomendada                                                                    | Situação                                                |
+| --------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| Tipo de presente      | `Product.category`                              | Categoria única no fluxo atual; multisseleção é evolução opcional                    | Parcialmente implementado                               |
+| Ocasião               | Coleções com slug, tags, aliases e IDs          | Membro da coleção ∩ produto publicado                                                | Existe na biblioteca; integrar à descoberta de produtos |
+| Personalização        | `Product.personalizable`                        | Incluir apenas `true`; não inferir técnica                                           | Implementado                                             |
+| Quantidade desejada   | `Product.minimum`                               | `minimum <= quantidade`; inteiro positivo até o limite aceito no briefing            | Implementado                                             |
+| Favoritos             | Preferência local já existente                  | Só produtos ainda elegíveis/publicados                                               | Reaproveitar o fluxo existente                          |
+| Cores                 | Não integra `Product` público atual             | IDs de variantes + rótulo + imagem correspondente                                    | Depende de novo contrato                                |
+| Materiais             | Não integra `Product` público atual             | Taxonomia verificada, com ausência explícita                                         | Depende de novo contrato                                |
+| Técnicas              | Só existe booleano de personalização            | Técnica permitida por produto/área e condições                                       | Depende de novo contrato                                |
+| Preço                 | Sem preço comercial público                     | Valor público por quantidade e configuração                                          | Depende de decisão comercial e dados                    |
+| Disponibilidade/prazo | Sem estoque ou capacidade produtiva públicos    | Disponibilidade por variante e atualização; prazo incluindo personalização/logística | Depende de operação e dados                             |
+| Sustentabilidade      | Nenhuma certificação estruturada nesse contrato | Evidência por atributo; não inferir por cor/material/nome                            | Não oferecer como promessa sem validação                |
 
 Exemplo de quantidade: quem informa **100 unidades** deve ver itens cujo mínimo seja **até 100**, não apenas itens cujo mínimo seja 100 ou mais. Isso não confirma que existam 100 unidades em estoque. Texto proposto: “Compatível com o pedido mínimo. Disponibilidade sob consulta.”
 
@@ -190,14 +204,14 @@ Fontes premium: [contrato e consulta](../src/lib/catalog.ts), [leitura do banco 
 
 **Nome público:** “Encontre o presente certo”. Botão funcional: “Filtrar seleção”. “Super Filtro” pode permanecer como referência interna, sem exigir que o comprador compreenda a ferramenta de vendas.
 
-| Área | Desktop | Móvel |
-| --- | --- | --- |
-| Início | Busca e atalhos de ocasião acima dos produtos | Busca com largura total e atalhos com quebra de linha |
-| Refinamento | Painel compacto expansível; sidebar se o número de facetas justificar | Diálogo com filtros, resumo e rodapé fixo |
-| Hierarquia | Ocasião → categoria → personalização → quantidade | Mesma ordem; evitar subpainéis aninhados |
-| Resultado | Total confirmado, ordenação e chips imediatamente acima dos cards | Chips acessíveis fora do painel; total anunciado após atualização |
-| Saída do painel | Atualização direta | “Ver N produtos” fecha o painel; as escolhas já estão aplicadas |
-| Estado vazio | Remover uma restrição + contato comercial | Mesmas ações, sem esconder a seleção original |
+| Área            | Desktop                                                               | Móvel                                                             |
+| --------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Início          | Busca e atalhos de ocasião acima dos produtos                         | Busca com largura total e atalhos com quebra de linha             |
+| Refinamento     | Painel compacto expansível; sidebar se o número de facetas justificar | Diálogo com filtros, resumo e rodapé fixo                         |
+| Hierarquia      | Ocasião → categoria → personalização → quantidade                     | Mesma ordem; evitar subpainéis aninhados                          |
+| Resultado       | Total confirmado, ordenação e chips imediatamente acima dos cards     | Chips acessíveis fora do painel; total anunciado após atualização |
+| Saída do painel | Atualização direta                                                    | “Ver N produtos” fecha o painel; as escolhas já estão aplicadas   |
+| Estado vazio    | Remover uma restrição + contato comercial                             | Mesmas ações, sem esconder a seleção original                     |
 
 Para a primeira versão, recomendo **aplicação imediata consistente** em desktop e móvel. Fechar com X/Escape mantém os refinamentos, porque não existe rascunho não aplicado. Se futuramente houver botão “Aplicar”, ele precisará de estado de rascunho e cancelamento verdadeiros; misturar os dois modelos cria surpresa.
 
@@ -250,15 +264,15 @@ Proponho alvos de toque de 44 × 44 CSS px nos controles principais como decisã
 
 Metas propostas para homologação, não medições já obtidas:
 
-| Aspecto | Como validar |
-| --- | --- |
-| Resposta visual | Controle reflete a seleção imediatamente; nenhum temporizador declara a consulta concluída |
-| Concorrência | Simular A lento/B rápido; B continua sendo o estado final |
-| Rede | Medir bytes, número de consultas e tempo em cache frio/quente e rede móvel limitada |
-| Contagem | Comparar interface e serviço usando todo o conjunto de teste, inclusive múltiplas páginas |
-| Refluxo | 320/390/768/1440 px, zoom de 200%, teclado virtual e orientação horizontal |
-| Inclusão | Teclado, leitor de tela, contraste, movimento reduzido e nomes de todos os controles |
-| Conversão | Medir passagem de filtro para detalhe e inclusão no projeto; evitar otimizar só cliques em filtros |
+| Aspecto         | Como validar                                                                                       |
+| --------------- | -------------------------------------------------------------------------------------------------- |
+| Resposta visual | Controle reflete a seleção imediatamente; nenhum temporizador declara a consulta concluída         |
+| Concorrência    | Simular A lento/B rápido; B continua sendo o estado final                                          |
+| Rede            | Medir bytes, número de consultas e tempo em cache frio/quente e rede móvel limitada                |
+| Contagem        | Comparar interface e serviço usando todo o conjunto de teste, inclusive múltiplas páginas          |
+| Refluxo         | 320/390/768/1440 px, zoom de 200%, teclado virtual e orientação horizontal                         |
+| Inclusão        | Teclado, leitor de tela, contraste, movimento reduzido e nomes de todos os controles               |
+| Conversão       | Medir passagem de filtro para detalhe e inclusão no projeto; evitar otimizar só cliques em filtros |
 
 Eventos futuros podem registrar dimensão, número de resultados, duração e sucesso/erro. Não registrar nomes de clientes, dados do briefing ou termos livres integrais por padrão. Volume real e uma linha de base são necessários antes de prometer ganho percentual de conversão.
 
@@ -282,25 +296,25 @@ Ele não instala dependências nem escreve no checkout V4. As saídas são evid�
 - [x] Mapeamento de dependências para o contrato premium.
 - [x] Separação entre recomendações, riscos de código e comportamento observado ao vivo.
 
-**Pendente para a futura implementação e homologação:**
+**Checklist da implementação e homologação:**
 
-- [ ] SKU exato mantém prioridade; espaços, acentos e múltiplas palavras têm resultados previsíveis.
-- [ ] Aliases como onboarding/boas-vindas funcionam sem alterar significados técnicos.
-- [ ] OR entre valores e AND entre dimensões retornam exatamente os IDs esperados.
-- [ ] Quantidade de 100 inclui mínimo 50 e exclui mínimo 200; zero, negativo, decimal e excesso são rejeitados.
-- [ ] Personalização exclui produtos sem confirmação positiva.
-- [ ] Coleção removida/inválida e produto despublicado têm tratamento explícito.
-- [ ] Uma opção, uma dimensão e todos os filtros podem ser removidos separadamente.
-- [ ] URL, recarga, Voltar, Avançar e compartilhamento restauram o estado.
-- [ ] Abrir o painel móvel não apaga seleções feitas no desktop.
-- [ ] Sem resultado e falha de rede produzem estados diferentes.
-- [ ] Resposta antiga não sobrescreve a mais recente; tentativa posterior recupera falha.
-- [ ] O contador representa todos os resultados, independentemente da página.
-- [ ] Dados parciais não geram uma confirmação de compatibilidade.
-- [ ] Preferências não disparam escrita na origem operacional.
-- [ ] Favoritos, detalhe, seleção e geração de briefing continuam funcionando.
-- [ ] Controles funcionam por teclado e leitor de tela; foco retorna do diálogo.
-- [ ] Rodapé móvel não encobre conteúdo nem ações com teclado aberto.
+- [x] SKU exato mantém prioridade; espaços, acentos e múltiplas palavras têm resultados previsíveis.
+- [x] Aliases como onboarding/boas-vindas funcionam sem alterar significados técnicos.
+- [x] OR entre valores e AND entre dimensões retornam exatamente os IDs esperados.
+- [x] Quantidade usa `minimum <= quantity`; zero, negativo, decimal e excesso são rejeitados.
+- [x] Personalização exige confirmação positiva no contrato; técnica não é inferida.
+- [x] Coleção inválida e produto despublicado têm tratamento explícito.
+- [x] Opções e todos os filtros podem ser removidos; ocasião oferece remoção individual.
+- [x] URL, recarga, Voltar, Avançar e compartilhamento restauram o estado.
+- [x] Abrir o painel móvel preserva o estado controlado.
+- [x] Sem resultado e falha de rede produzem estados diferentes.
+- [x] Resposta antiga não sobrescreve a mais recente; tentativa posterior recupera falha.
+- [x] O contador representa todos os resultados, independentemente da página.
+- [x] Dados parciais não geram uma confirmação de estoque, técnica, preço ou prazo.
+- [x] Preferências não disparam escrita na origem operacional.
+- [x] Favoritos, detalhe, seleção e geração de briefing continuam funcionando.
+- [x] Controles têm semântica nativa, foco contido e retorno ao acionador; axe não encontra violações nos cenários automatizados.
+- [x] Rodapé móvel permanece visível e o painel não causa overflow em 390 px.
 - [ ] Desempenho é medido com volume representativo e cache frio.
 - [ ] Cor + tamanho + estoque usa a mesma variante, quando essa fase existir.
 - [ ] Sessão autenticada do V4 confirma aparência, navegação, comportamento e versão efetivamente publicada.

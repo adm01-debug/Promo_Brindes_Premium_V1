@@ -4,13 +4,13 @@ Data: 22/09/2026. Escopo: aplicação local compilada, oito produtos publicados 
 
 ## Revisão posterior dos critérios
 
-A [revisão individual das 200 etapas](REVISAO_EXAUSTIVA_PLANO.md) registra **82 critérios comprovados no próprio escopo, 66 entregas parciais e 52 sem entrega comprovada**. Vinte e sete cenários sintéticos passam para concorrência idempotente, conflito de payload, corpo sem `Content-Length`, data inválida, paginação e contagem exata da fonte, IDs sem cache no navegador e no POST, drift de campos e estados de entrega. As sondas de browser cobrem expiração iniciada na ficha, retorno do formulário e movimento reduzido. A suíte também reproduz retorno 503 da curadoria e 403 de mídia, preservando a seleção e exibindo fallback. Os resultados brutos estão em `audit/plan-scenarios.json` e `audit/plan-browser-scenarios.json`.
+A [revisão individual das 200 etapas](REVISAO_EXAUSTIVA_PLANO.md) registra **84 critérios comprovados no próprio escopo, 68 entregas parciais e 48 sem entrega comprovada**. Quarenta e três cenários sintéticos passam para concorrência idempotente, conflito de payload, corpo sem `Content-Length`, data inválida, paginação em múltiplos lotes, limite de catálogo, mudança de total, contagem exata da fonte, IDs sem cache, drift de campos e estados de entrega. As sondas de browser cobrem expiração iniciada na ficha, retorno do formulário e movimento reduzido. A suíte também reproduz retorno 503 da curadoria e 403 de mídia, preservando a seleção e exibindo fallback. Os resultados brutos estão em `audit/plan-scenarios.json` e `audit/plan-browser-scenarios.json`.
 
 Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu os defeitos técnicos listados, atualizou as verificações e o painel, mas não habilitou entrega comercial nem integrou CRM. O painel separa situação auditada de marcação pessoal e não reaplica automaticamente a conclusão de uma revisão antiga.
 
 ## Resultados funcionais
 
-**102 execuções E2E locais: 34 jornadas em cada Chromium, Firefox e WebKit** cobrem os fluxos da prévia e a auditoria do plano. A suíte garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. Os cenários incluem:
+**165 execuções E2E locais: 55 jornadas em cada Chromium, Firefox e WebKit** cobrem os fluxos da prévia e a auditoria do plano. A suíte garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. Os cenários incluem:
 
 1. Busca por SKU, resultado vazio, limpeza e filtro de categoria.
 2. Favoritos e seleção após recarregar, mínimo de quantidade e remoção.
@@ -45,6 +45,14 @@ Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu
 31. Falha da consulta de conferência impede exportar um briefing de peças cuja situação é desconhecida.
 32. Alterar a seleção enquanto a conferência está pendente impede exportar a intenção anterior.
 33. Categoria escolhida durante a recuperação substitui a resposta anterior, mesmo quando esta chega depois.
+34. Ocasiões em OR e categoria, personalização e quantidade em AND retornam IDs e total esperados.
+35. Facetas contextuais excluem a própria dimensão e preservam as demais antes da paginação.
+36. Aliases editoriais e correção de um caractere funcionam com sugestão visível, sem ampliar uma busca exata por alias de coleção.
+37. Parâmetros de ocasião, personalização e quantidade inválidos são rejeitados e não podem acompanhar consulta por IDs.
+38. Painel combina filtros, exibe contagens, remove uma ocasião individual e fecha com o total atualizado.
+39. URL restaura múltiplas ocasiões, quantidade, busca corrigida, Voltar e Avançar.
+40. Painel em 390 × 844 permanece dentro da viewport com ação final visível.
+41. Painel de filtros passa a varredura axe automatizada nas regras A/AA selecionadas.
 
 Comandos: `npm run build`, `npm run typecheck`, `npm run check:plan`, `npm run check:public-secrets`, `npm run check:performance-budget` e `npm run test:e2e`. A suíte usa servidor de produção na porta 3107, sem reutilizar processo estranho. A porta 3000 já servia outro aplicativo neste ambiente; o teste inicial foi descartado e a configuração foi corrigida.
 
@@ -56,7 +64,7 @@ O teste de teclado encontrou que o diálogo nativo permitia a sequência de Tab 
 
 Revisão em **360, 390, 768 e 1440 pixels** no Chromium: sem overflow horizontal; imagens carregadas; nenhum erro JavaScript registrado na navegação de inspeção. Evidência: [`audit/responsive-check.json`](audit/responsive-check.json).
 
-Capturas revisadas: [desktop](screenshots/home-desktop.png), [mobile](screenshots/home-mobile.png), [primeira dobra desktop](screenshots/hero-desktop.png), [primeira dobra mobile](screenshots/hero-mobile.png), [plano desktop](screenshots/plan-desktop.png) e [plano mobile](screenshots/plan-mobile.png).
+Capturas revisadas: [desktop](screenshots/home-desktop.png), [mobile](screenshots/home-mobile.png), [primeira dobra desktop](screenshots/hero-desktop.png), [primeira dobra mobile](screenshots/hero-mobile.png), [Super Filtro desktop](screenshots/super-filtro-desktop.png), [Super Filtro mobile](screenshots/super-filtro-mobile.png), [plano desktop](screenshots/plan-desktop.png) e [plano mobile](screenshots/plan-mobile.png).
 
 As fotos locais foram decodificadas e convertidas para WebP; a imagem conceitual principal foi reduzida de aproximadamente 2,2 MB em PNG para aproximadamente 144 KB em WebP, antes das variantes de tamanho servidas pelo Next. O PNG de trabalho foi movido para `design-assets/`, fora do diretório servido. O orçamento automatizado aprovou as nove imagens de entrega: hero com 145.116 bytes e catálogo inteiro com 195.366 bytes. A navegação não depende do CDN que respondeu 403 na amostra; se uma imagem falhar, a peça mostra alternativa visível e acessível.
 

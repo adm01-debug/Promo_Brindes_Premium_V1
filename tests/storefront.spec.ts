@@ -70,6 +70,111 @@ test("histórico restaura a consulta compartilhável", async ({ page }) => {
   await expect(page.locator(".product-card")).toHaveCount(1);
 });
 
+test("painel combina ocasião, tipo e quantidade e oferece remoção individual", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Buscar presentes", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog", { name: "Filtrar curadoria" });
+  await dialog.getByText("Um começo com significado", { exact: true }).click();
+  await dialog.getByRole("button", { name: /^Escrita/ }).click();
+  await dialog.getByLabel("Quantidade desejada").fill("1");
+  await dialog.getByRole("button", { name: "Aplicar", exact: true }).click();
+  await expect(
+    dialog.getByRole("button", { name: "Ver 1 peça", exact: true }),
+  ).toBeEnabled();
+  await dialog.getByRole("button", { name: "Ver 1 peça", exact: true }).click();
+
+  await expect(page).toHaveURL(/categoria=Escrita/);
+  await expect(page).toHaveURL(/ocasiao=boas-vindas/);
+  await expect(page).toHaveURL(/quantidade=1/);
+  await expect(page.locator(".product-card h3")).toHaveText(
+    "Caderno A5 em PET reciclado",
+  );
+
+  await page
+    .getByRole("button", { name: "Remover ocasião Um começo com significado" })
+    .click();
+  await expect(page).not.toHaveURL(/ocasiao=/);
+  await expect(page.locator(".product-card")).toHaveCount(2);
+});
+
+test("URL restaura múltiplas ocasiões, mínimo e sugestão explícita", async ({
+  page,
+}) => {
+  await page.goto(
+    "/?ocasiao=boas-vindas,novos-destinos&quantidade=1&q=caderna",
+  );
+  await expect(page).toHaveURL(/ocasiao=boas-vindas%2Cnovos-destinos/);
+  await expect(page.locator(".catalog-suggestion")).toContainText(
+    "Nenhuma correspondência exata",
+  );
+  await expect(page.locator(".product-card h3")).toHaveText(
+    "Caderno A5 em PET reciclado",
+  );
+  await page
+    .getByRole("button", { name: "Buscar presentes", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog", { name: "Filtrar curadoria" });
+  await expect(
+    dialog.getByRole("checkbox", { name: /Um começo com significado/ }),
+  ).toBeChecked();
+  await expect(
+    dialog.getByRole("checkbox", { name: /Para novos destinos/ }),
+  ).toBeChecked();
+  await expect(dialog.getByLabel("Quantidade desejada")).toHaveValue("1");
+});
+
+test("painel móvel mantém controles e ação final visíveis", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Buscar presentes", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog", { name: "Filtrar curadoria" });
+  await expect(dialog).toBeVisible();
+  await expect(
+    dialog.getByLabel("Nome, categoria ou código do produto"),
+  ).toBeVisible();
+  await expect(
+    dialog.getByRole("button", { name: /^Ver 8 peças$/ }),
+  ).toBeVisible();
+  const box = await dialog.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.x).toBeGreaterThanOrEqual(0);
+  expect(box!.x + box!.width).toBeLessThanOrEqual(390);
+});
+
+test("Voltar e Avançar restauram as novas facetas", async ({ page }) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Buscar presentes", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog", { name: "Filtrar curadoria" });
+  await dialog.getByText("Um começo com significado", { exact: true }).click();
+  await expect(page).toHaveURL(/ocasiao=boas-vindas/);
+  await dialog.getByRole("button", { name: /^Escrita/ }).click();
+  await expect(page).toHaveURL(/categoria=Escrita/);
+
+  await page.goBack();
+  await expect(page).toHaveURL(/ocasiao=boas-vindas/);
+  await expect(page).not.toHaveURL(/categoria=Escrita/);
+  await expect(dialog.getByRole("button", { name: /^Todos/ })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+
+  await page.goForward();
+  await expect(page).toHaveURL(/categoria=Escrita/);
+  await expect(
+    dialog.getByRole("button", { name: /^Escrita/ }),
+  ).toHaveAttribute("aria-pressed", "true");
+});
+
 test("resposta atrasada não substitui o filtro mais recente", async ({
   page,
 }) => {
@@ -609,6 +714,18 @@ test("axe: home e diálogo de projeto sem violações automatizadas", async ({
     .getByRole("button", { name: "Preparar meu briefing", exact: true })
     .click();
   result = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+    .analyze();
+  expect(result.violations).toEqual([]);
+});
+
+test("axe: painel de filtros sem violações automatizadas", async ({ page }) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Buscar presentes", exact: true })
+    .click();
+  const result = await new AxeBuilder({ page })
+    .include(".catalog-filter-modal")
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
     .analyze();
   expect(result.violations).toEqual([]);

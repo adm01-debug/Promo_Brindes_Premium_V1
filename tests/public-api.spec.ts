@@ -7,11 +7,11 @@ test("catálogo público pagina, preserva o contrato e não expõe campos intern
     "/api/catalog?q=08255&page=1&pageSize=1&sort=nome",
   );
   expect(response.status()).toBe(200);
-  expect(response.headers()["x-catalog-contract-version"]).toBe("2026-09-21");
+  expect(response.headers()["x-catalog-contract-version"]).toBe("2026-09-22.2");
   expect(response.headers()["cache-control"]).toContain("s-maxage=300");
   const body = await response.json();
   expect(body).toMatchObject({
-    contractVersion: "2026-09-21",
+    contractVersion: "2026-09-22.2",
     page: 1,
     pageSize: 1,
     total: 1,
@@ -26,6 +26,90 @@ test("catálogo público pagina, preserva o contrato e não expõe campos intern
     "discount",
   ])
     expect(body.items[0]).not.toHaveProperty(forbidden);
+});
+
+test("facetas públicas combinam dimensões, ocasiões em OR e dimensões em AND", async ({
+  request,
+}) => {
+  const occasion = await request.get(
+    "/api/catalog?occasion=boas-vindas,novos-destinos",
+  );
+  expect(occasion.status()).toBe(200);
+  const occasionBody = await occasion.json();
+  expect(occasionBody.total).toBe(4);
+  expect(occasionBody.occasions).toEqual(["boas-vindas", "novos-destinos"]);
+
+  const combined = await request.get(
+    "/api/catalog?category=Escrita&occasion=boas-vindas&personalizable=1&quantity=1",
+  );
+  expect(combined.status()).toBe(200);
+  const body = await combined.json();
+  expect(body).toMatchObject({
+    total: 1,
+    category: "Escrita",
+    occasions: ["boas-vindas"],
+    personalizable: true,
+    quantity: 1,
+  });
+  expect(body.items.map((item: { sku: string }) => item.sku)).toEqual([
+    "93586",
+  ]);
+  expect(body.facets.categories).toMatchObject({
+    Todos: 1,
+    "Kits & experiências": 0,
+    Escrita: 1,
+    Lifestyle: 0,
+    Viagem: 0,
+  });
+  expect(body.facets.personalizable).toBe(1);
+});
+
+test("busca usa aliases editoriais e explicita correção de digitação", async ({
+  request,
+}) => {
+  const alias = await request.get("/api/catalog?q=onboarding");
+  expect(alias.status()).toBe(200);
+  expect((await alias.json()).total).toBe(3);
+
+  const typo = await request.get("/api/catalog?q=garafa");
+  expect(typo.status()).toBe(200);
+  const typoBody = await typo.json();
+  expect(typoBody).toMatchObject({
+    query: "garafa",
+    suggestedQuery: "garrafa",
+    total: 1,
+  });
+  expect(typoBody.items[0].sku).toBe("13845");
+
+  const incompatible = await request.get(
+    "/api/catalog?q=garrafa&category=Escrita",
+  );
+  expect(incompatible.status()).toBe(200);
+  expect(await incompatible.json()).toMatchObject({
+    query: "garrafa",
+    total: 0,
+    suggestedQuery: null,
+  });
+});
+
+test("API rejeita facetas inválidas e filtros combinados à seleção por IDs", async ({
+  request,
+}) => {
+  for (const path of [
+    "/api/catalog?occasion=nao-existe",
+    "/api/catalog?quantity=0",
+    "/api/catalog?quantity=10001",
+    "/api/catalog?personalizable=true",
+    "/api/catalog?occasion=boas-vindas,boas-vindas",
+    "/api/catalog?occasion=boas-vindas,",
+    "/api/catalog?ids=0144f10f-c311-47eb-afd6-14b9ebef35b6&occasion=boas-vindas",
+  ]) {
+    const response = await request.get(path);
+    expect(response.status(), path).toBe(400);
+    expect(await response.json()).toMatchObject({
+      error: "INVALID_CATALOG_QUERY",
+    });
+  }
 });
 
 test("consulta por IDs não é armazenada em cache compartilhado", async ({

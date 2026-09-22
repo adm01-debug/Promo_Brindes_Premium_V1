@@ -1,6 +1,5 @@
 import {
   categories,
-  CATALOG_CONTRACT_VERSION,
   products,
   queryCatalog,
   resolveCatalogQuery,
@@ -149,7 +148,7 @@ function exactCount(response: Response, rowCount: number, offset: number) {
   return count;
 }
 
-async function fetchCatalogPage(endpoint: URL, key: string, fresh: boolean) {
+async function fetchCatalogRows(endpoint: URL, key: string, fresh: boolean) {
   return fetch(endpoint, {
     headers: {
       apikey: key,
@@ -161,41 +160,61 @@ async function fetchCatalogPage(endpoint: URL, key: string, fresh: boolean) {
   });
 }
 
-function safeSearch(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-zA-Z0-9\s-]/g, " ")
-    .trim()
-    .replace(/\s+/g, " ")
-    .slice(0, 100);
-}
+const DATABASE_PAGE_SIZE = 500;
+const MAX_PUBLIC_CATALOG_ITEMS = 10000;
 
-function applyQuery(endpoint: URL, input: CatalogQuery) {
-  const resolved = resolveCatalogQuery(input);
-  endpoint.searchParams.set("select", publicColumns);
-  endpoint.searchParams.set("published", "eq.true");
-  if (resolved.category !== "Todos")
-    endpoint.searchParams.set("category", `eq.${resolved.category}`);
-  if (resolved.ids.length)
-    endpoint.searchParams.set("id", `in.(${resolved.ids.join(",")})`);
-  const search = safeSearch(resolved.query);
-  if (search) endpoint.searchParams.set("search_text", `ilike.*${search}*`);
-  endpoint.searchParams.set(
-    "order",
-    resolved.sort === "nome" ? "name.asc,id.asc" : "editorial_order.asc,id.asc",
-  );
-  endpoint.searchParams.set("limit", String(resolved.pageSize));
-  endpoint.searchParams.set(
-    "offset",
-    String((resolved.page - 1) * resolved.pageSize),
-  );
-  return resolved;
+async function readPublishedCatalog(
+  config: SitePublicConfig,
+  ids: readonly string[],
+  fresh: boolean,
+) {
+  const rows: CatalogRow[] = [];
+  let offset = 0;
+  let total: number | null = null;
+  do {
+    const endpoint = new URL("/rest/v1/premium_catalog_items", config.url);
+    endpoint.searchParams.set("select", publicColumns);
+    endpoint.searchParams.set("published", "eq.true");
+    if (ids.length) endpoint.searchParams.set("id", `in.(${ids.join(",")})`);
+    endpoint.searchParams.set("order", "editorial_order.asc,id.asc");
+    endpoint.searchParams.set("limit", String(DATABASE_PAGE_SIZE));
+    endpoint.searchParams.set("offset", String(offset));
+    const response = await fetchCatalogRows(endpoint, config.key, fresh);
+    if (!response.ok) throw new Error("Site catalog is unavailable.");
+    const page: unknown = await response.json();
+    if (!Array.isArray(page) || !page.every(isCatalogRow))
+      throw new Error("Site catalog did not satisfy the public contract.");
+    const pageTotal = exactCount(response, page.length, offset);
+    if (total !== null && pageTotal !== total)
+      throw new Error("Site catalog changed during pagination.");
+    total = pageTotal;
+    if (total > MAX_PUBLIC_CATALOG_ITEMS)
+      throw new Error("Site catalog exceeds the audited public limit.");
+    rows.push(...page);
+    offset += page.length;
+    if (page.length === 0 && offset < total)
+      throw new Error(
+        "Site catalog pagination stopped before the exact total.",
+      );
+  } while (offset < (total ?? 0));
+  if (
+    rows.length !== total ||
+    ["id", "sku", "slug"].some(
+      (field) =>
+        new Set(rows.map((row) => row[field as keyof CatalogRow])).size !==
+        rows.length,
+    ) ||
+    (ids.length > 0 && rows.some((row) => !ids.includes(row.id)))
+  )
+    throw new Error("Site catalog returned inconsistent products.");
+  return rows.map(toProduct);
 }
 
 /**
- * Reads one public page at the source. Filtering, count and pagination never
- * rely on a truncated browser snapshot.
+ * Reads the complete curated public projection on the server, then applies one
+ * deterministic query for results and contextual facet counts. Next's data
+ * cache reuses the bounded database pages for five minutes; the browser only
+ * receives the requested result page.
  */
 export async function getSiteCatalogPage(
   input: CatalogQuery = {},
@@ -203,65 +222,13 @@ export async function getSiteCatalogPage(
 ): Promise<CatalogPage> {
   const config = siteConfig();
   if (!config) return queryCatalog(input, products);
-  const endpoint = new URL("/rest/v1/premium_catalog_items", config.url);
-  const resolved = applyQuery(endpoint, input);
-  let response = await fetchCatalogPage(
-    endpoint,
-    config.key,
+  const resolved = resolveCatalogQuery(input);
+  const allProducts = await readPublishedCatalog(
+    config,
+    resolved.ids,
     options.fresh === true,
   );
-  let resolvedPage = resolved.page;
-  if (response.status === 416 && resolved.page > 1) {
-    const range = response.headers.get("content-range");
-    const match = /^\*\/(\d+)$/.exec(range ?? "");
-    const total = match ? Number(match[1]) : NaN;
-    if (!Number.isSafeInteger(total))
-      throw new Error("Site catalog did not return an exact total.");
-    resolvedPage = Math.max(1, Math.ceil(total / resolved.pageSize));
-    endpoint.searchParams.set(
-      "offset",
-      String((resolvedPage - 1) * resolved.pageSize),
-    );
-    response = await fetchCatalogPage(
-      endpoint,
-      config.key,
-      options.fresh === true,
-    );
-  }
-  if (!response.ok) throw new Error("Site catalog is unavailable.");
-  const rows: unknown = await response.json();
-  if (!Array.isArray(rows) || !rows.every(isCatalogRow))
-    throw new Error("Site catalog did not satisfy the public contract.");
-  if (
-    rows.length > resolved.pageSize ||
-    ["id", "sku", "slug"].some(
-      (field) =>
-        new Set(rows.map((row) => row[field as keyof CatalogRow])).size !==
-        rows.length,
-    ) ||
-    (resolved.ids.length > 0 &&
-      rows.some((row) => !resolved.ids.includes(row.id))) ||
-    (resolved.category !== "Todos" &&
-      rows.some((row) => row.category !== resolved.category))
-  )
-    throw new Error("Site catalog returned inconsistent products.");
-  const total = exactCount(
-    response,
-    rows.length,
-    (resolvedPage - 1) * resolved.pageSize,
-  );
-  const totalPages = Math.max(1, Math.ceil(total / resolved.pageSize));
-  return {
-    contractVersion: CATALOG_CONTRACT_VERSION,
-    items: rows.map(toProduct),
-    page: Math.min(resolvedPage, totalPages),
-    pageSize: resolved.pageSize,
-    total,
-    totalPages,
-    query: resolved.query,
-    category: resolved.category,
-    sort: resolved.sort,
-  };
+  return queryCatalog(input, allProducts);
 }
 
 export async function getSiteProductBySlug(

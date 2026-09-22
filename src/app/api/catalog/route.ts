@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSiteCatalogPage } from "@/lib/site-database";
+import { catalogCollections } from "@/lib/catalog-library";
 
 export const revalidate = 300;
 
@@ -30,6 +31,9 @@ export async function GET(request: NextRequest) {
   const pageSize = integer(search.get("pageSize"));
   const sort = search.get("sort");
   const ids = search.get("ids");
+  const occasion = search.get("occasion");
+  const personalizable = search.get("personalizable");
+  const quantity = integer(search.get("quantity"));
   if (query && query.length > 100)
     return invalid("q aceita no máximo 100 caracteres.");
   if (
@@ -53,6 +57,21 @@ export async function GET(request: NextRequest) {
     );
   if (sort && !["curadoria", "nome"].includes(sort))
     return invalid("sort deve ser curadoria ou nome.");
+  const occasions = occasion ? occasion.split(",") : [];
+  const knownOccasions = new Set(
+    catalogCollections.map((collection) => collection.slug),
+  );
+  if (
+    occasions.length > catalogCollections.length ||
+    occasions.some((value) => value === "") ||
+    new Set(occasions).size !== occasions.length ||
+    occasions.some((value) => !knownOccasions.has(value))
+  )
+    return invalid("occasion contém uma curadoria pública inválida.");
+  if (personalizable !== null && personalizable !== "1")
+    return invalid("personalizable deve ser 1 quando informado.");
+  if (quantity === null || (quantity !== undefined && quantity > 10000))
+    return invalid("quantity deve ser um inteiro entre 1 e 10000.");
   const selectedIds = ids ? ids.split(",") : [];
   if (
     selectedIds.length > 24 ||
@@ -66,11 +85,23 @@ export async function GET(request: NextRequest) {
     return invalid(
       "ids aceita no máximo 24 UUIDs públicos separados por vírgula.",
     );
+  if (
+    selectedIds.length > 0 &&
+    (query ||
+      category ||
+      occasions.length > 0 ||
+      personalizable !== null ||
+      quantity !== undefined)
+  )
+    return invalid("ids não pode ser combinado com filtros de descoberta.");
   try {
     const result = await getSiteCatalogPage(
       {
         query: query ?? undefined,
         category: category ?? undefined,
+        occasions,
+        personalizable: personalizable === "1",
+        quantity,
         page: page ?? undefined,
         pageSize: pageSize ?? undefined,
         sort: sort ?? undefined,

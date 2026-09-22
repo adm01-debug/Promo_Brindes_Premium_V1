@@ -2,7 +2,7 @@
 
 Referência: **2026-09-22** · **20 fases × 10 etapas = 200 etapas**.
 
-Status auditado: **83 concluídas no próprio escopo; 66 parciais; 51 sem entrega comprovada**. São 117 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
+Status auditado: **84 concluídas no próprio escopo; 68 parciais; 48 sem entrega comprovada**. São 116 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
 
 Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatório e prioridades](REVISAO_EXAUSTIVA_PLANO.md).
 
@@ -779,20 +779,20 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Dependências:** 081 (Concluída no escopo).
 
 - [ ] **085. Projetar filtros comerciais reais.** Incluir material, faixa de investimento, prazo e mínimo conforme dados aprovados.
-  - **Situação auditada:** Sem entrega comprovada.
+  - **Situação auditada:** Parcial.
   - **Aceite:** Filtros usam atributos confiáveis e não prometem estoque ou prazo inexistentes.
-  - **Constatação:** Não existem filtros de material, investimento, prazo ou mínimo.
-  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/lib/products.json`.
-  - **Próxima ação:** Homologar atributos e implementar filtros úteis.
+  - **Constatação:** Quantidade desejada usa o mínimo cadastrado e deixa explícito que não confirma estoque. Material, investimento e prazo continuam sem dados e regras públicas homologadas.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/lib/products.json`, `docs/CONTRATO_CATALOGO_PUBLICO_V1.md`, `tests/storefront.spec.ts`.
+  - **Próxima ação:** Homologar os atributos comerciais restantes antes de oferecer material, investimento ou prazo como filtros.
   - **Dependências:** 045 (Parcial), 046 (Parcial).
 
-- [ ] **086. Implementar facetas combináveis.** Permitir múltiplas escolhas por atributo e indicar quantidade de resultados.
-  - **Situação auditada:** Sem entrega comprovada.
+- [x] **086. Implementar facetas combináveis.** Permitir múltiplas escolhas por atributo e indicar quantidade de resultados.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Semântica OR no grupo e AND entre grupos é validada no contrato.
-  - **Constatação:** Não há multisseleção de facetas nem semântica OR/AND contratada.
-  - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/CONTRATO_CATALOGO_PUBLICO_V1.md`.
-  - **Próxima ação:** Implementar facetas e contagens após aprovação dos atributos.
-  - **Dependências:** 085 (Sem entrega comprovada).
+  - **Constatação:** Ocasiões aceitam multisseleção em OR; ocasião, categoria, personalização, quantidade e busca combinam em AND. A resposta inclui contagens contextuais calculadas antes da paginação.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/components/CatalogFilters.tsx`, `src/lib/catalog.ts`, `docs/CONTRATO_CATALOGO_PUBLICO_V1.md`, `tests/public-api.spec.ts`, `tests/storefront.spec.ts`.
+  - **Próxima ação:** Estender o mesmo contrato somente quando novas dimensões tiverem dados públicos homologados.
+  - **Dependências:** 085 (Parcial).
 
 - [x] **087. Implementar ordenação pública.** Ordenar por critérios úteis com desempate determinístico.
   - **Situação auditada:** Concluída no escopo.
@@ -805,26 +805,26 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [x] **088. Implementar URLs de busca.** Manter consulta, filtros e página ao compartilhar ou usar voltar.
   - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Navegação e política de indexação tratam parâmetros consistentemente.
-  - **Constatação:** Busca, categoria, página e ordenação sincronizam URL; popstate restaura a consulta e respostas antigas não sobrescrevem o filtro mais recente.
+  - **Constatação:** Busca, categoria, ocasiões, personalização, quantidade, página e ordenação sincronizam URL; popstate restaura a consulta e respostas antigas não sobrescrevem o filtro mais recente.
   - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`, `tests/storefront.spec.ts`.
-  - **Próxima ação:** Incluir facetas futuras no mesmo contrato de URL.
-  - **Dependências:** 086 (Sem entrega comprovada).
+  - **Próxima ação:** Manter o teste de Voltar/Avançar quando novas facetas forem homologadas.
+  - **Dependências:** 086 (Concluída no escopo).
 
 - [x] **089. Implementar paginação de servidor.** Buscar apenas o conjunto necessário com cancelamento e limites.
   - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Nenhuma jornada pública baixa milhares de registros para filtrar no cliente.
-  - **Constatação:** A fonte aplica filtro, ordenação, contagem e offset antes de devolver uma página; uma página acima do total é normalizada para a última página publicada.
+  - **Constatação:** O servidor lê a projeção pública completa em páginas cacheadas e limitadas, calcula resultados e facetas exatas e envia ao navegador somente a página solicitada, limitada a 24 itens.
   - **Evidências e referências:** `src/app/api/catalog/route.ts`, `src/lib/site-database.ts`, `docs/audit/plan-scenarios.json`.
-  - **Próxima ação:** Monitorar a contagem e manter o limite de 24 ao ampliar a curadoria.
+  - **Próxima ação:** Medir cache frio com volume representativo e mover agregações ao banco premium antes de atingir o limite auditado.
   - **Dependências:** 127 (Concluída no escopo).
 
 - [ ] **090. Testar relevância da descoberta.** Avaliar consultas reais, abreviações e sinônimos do comercial.
-  - **Situação auditada:** Sem entrega comprovada.
+  - **Situação auditada:** Parcial.
   - **Aceite:** Conjunto de referência tem ranking esperado e métricas de acerto.
-  - **Constatação:** Não há conjunto de consultas reais, sinônimos e ranking esperado.
-  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`.
-  - **Próxima ação:** Construir referência com comercial e medir acerto.
-  - **Dependências:** 081 (Concluída no escopo), 086 (Sem entrega comprovada), 087 (Concluída no escopo), 088 (Concluída no escopo), 089 (Concluída no escopo).
+  - **Constatação:** Busca cobre acentos, múltiplos termos, SKU, aliases editoriais e sugestão explícita para erro de um caractere; ainda não existe conjunto de consultas reais com ranking esperado.
+  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `src/lib/catalog.ts`, `tests/public-api.spec.ts`.
+  - **Próxima ação:** Construir a referência com vendedores e compradores e medir acerto sobre consultas reais.
+  - **Dependências:** 081 (Concluída no escopo), 086 (Concluída no escopo), 087 (Concluída no escopo), 088 (Concluída no escopo), 089 (Concluída no escopo).
 
 
 ## Fase 10 — Página de produto e confiança

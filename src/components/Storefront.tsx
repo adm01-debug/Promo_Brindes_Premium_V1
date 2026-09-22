@@ -23,6 +23,10 @@ import {
   X,
 } from "lucide-react";
 import Modal from "./Modal";
+import CatalogFilters, {
+  countDiscoveryFilters,
+  type CatalogDiscovery,
+} from "./CatalogFilters";
 import {
   briefingContextLabels,
   parseBriefingInput,
@@ -38,6 +42,7 @@ import {
   type Product,
   type Selection,
 } from "@/lib/catalog";
+import { catalogCollections } from "@/lib/catalog-library";
 
 const faq = [
   [
@@ -97,8 +102,12 @@ export default function Storefront({
 }: {
   initialCatalog: CatalogPage | null;
 }) {
-  const [category, setCategory] = useState("Todos");
+  const [category, setCategory] =
+    useState<(typeof categories)[number]>("Todos");
   const [search, setSearch] = useState("");
+  const [occasions, setOccasions] = useState<string[]>([]);
+  const [personalizable, setPersonalizable] = useState(false);
+  const [quantity, setQuantity] = useState<number | null>(null);
   const [sort, setSort] = useState<"curadoria" | "nome">("curadoria");
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -142,17 +151,6 @@ export default function Storefront({
 
   useEffect(() => {
     try {
-      const url = new URL(window.location.href);
-      const initialCategory = url.searchParams.get("categoria");
-      const initialSearch = url.searchParams.get("q")?.slice(0, 100) ?? "";
-      const initialSort = url.searchParams.get("sort");
-      if (categories.includes(initialCategory as (typeof categories)[number]))
-        setCategory(initialCategory!);
-      if (initialSearch) {
-        setSearch(initialSearch);
-        setExpanded(true);
-      }
-      if (initialSort === "nome") setSort(initialSort);
       setSelected(
         readUnverifiedSelection(
           localStorage.getItem("promo-premium-selection-v1"),
@@ -228,22 +226,53 @@ export default function Storefront({
   useEffect(() => {
     const readDiscoveryUrl = (force = false) => {
       const url = new URL(window.location.href);
-      const requestedCategory = url.searchParams.get("categoria") || "Todos";
+      const rawCategory = url.searchParams.get("categoria") || "Todos";
+      const requestedCategory = categories.includes(
+        rawCategory as (typeof categories)[number],
+      )
+        ? (rawCategory as (typeof categories)[number])
+        : "Todos";
       const requestedSearch = url.searchParams.get("q")?.slice(0, 100) || "";
       const requestedPage = Number(url.searchParams.get("page") || "1");
       const requestedSort =
         url.searchParams.get("sort") === "nome" ? "nome" : "curadoria";
+      const knownOccasions = new Set(
+        catalogCollections.map((collection) => collection.slug),
+      );
+      const requestedOccasions = [
+        ...new Set(
+          (url.searchParams.get("ocasiao") || "")
+            .split(",")
+            .filter((occasion) => knownOccasions.has(occasion)),
+        ),
+      ];
+      const requestedPersonalizable =
+        url.searchParams.get("personalizavel") === "1";
+      const rawQuantity = url.searchParams.get("quantidade") || "";
+      const parsedQuantity = /^\d+$/.test(rawQuantity)
+        ? Number(rawQuantity)
+        : null;
+      const requestedQuantity =
+        parsedQuantity && parsedQuantity <= 10000 ? parsedQuantity : null;
       const hasQuery =
         requestedSearch ||
         requestedCategory !== "Todos" ||
+        requestedOccasions.length > 0 ||
+        requestedPersonalizable ||
+        requestedQuantity !== null ||
         (Number.isInteger(requestedPage) && requestedPage > 1) ||
         requestedSort !== "curadoria";
       setExpanded(Boolean(hasQuery));
       setOnlyFavorites(false);
       if (force || hasQuery)
         void loadCatalog(
-          requestedSearch,
-          requestedCategory,
+          {
+            search: requestedSearch,
+            category: requestedCategory,
+            occasions: requestedOccasions,
+            personalizable: requestedPersonalizable,
+            quantity: requestedQuantity,
+          },
           requestedPage,
           requestedSort,
           "replace",
@@ -303,8 +332,16 @@ export default function Storefront({
     [catalog, onlyFavorites, favorites],
   );
   const resultCount = onlyFavorites ? filtered.length : (catalog?.total ?? 0);
+  const discovery: CatalogDiscovery = {
+    search,
+    category,
+    occasions,
+    personalizable,
+    quantity,
+  };
+  const activeFilterCount = countDiscoveryFilters(discovery);
   const visible =
-    expanded || category !== "Todos" || search || onlyFavorites
+    expanded || activeFilterCount > 0 || onlyFavorites
       ? filtered
       : filtered.slice(0, 4);
   const selection = Object.keys(selected)
@@ -317,18 +354,27 @@ export default function Storefront({
     });
   const imageIsUnavailable = (image: string) => unavailableImages.has(image);
   const updateDiscoveryUrl = (
-    nextSearch: string,
-    nextCategory: string,
+    nextDiscovery: CatalogDiscovery,
     nextPage = 1,
     nextSort: "curadoria" | "nome" = sort,
     historyMode: DiscoveryHistoryMode = "push",
   ) => {
     const url = new URL(window.location.href);
-    if (nextSearch.trim()) url.searchParams.set("q", nextSearch.trim());
+    if (nextDiscovery.search.trim())
+      url.searchParams.set("q", nextDiscovery.search.trim());
     else url.searchParams.delete("q");
-    if (nextCategory !== "Todos")
-      url.searchParams.set("categoria", nextCategory);
+    if (nextDiscovery.category !== "Todos")
+      url.searchParams.set("categoria", nextDiscovery.category);
     else url.searchParams.delete("categoria");
+    if (nextDiscovery.occasions.length)
+      url.searchParams.set("ocasiao", nextDiscovery.occasions.join(","));
+    else url.searchParams.delete("ocasiao");
+    if (nextDiscovery.personalizable)
+      url.searchParams.set("personalizavel", "1");
+    else url.searchParams.delete("personalizavel");
+    if (nextDiscovery.quantity !== null)
+      url.searchParams.set("quantidade", String(nextDiscovery.quantity));
+    else url.searchParams.delete("quantidade");
     if (nextPage > 1) url.searchParams.set("page", String(nextPage));
     else url.searchParams.delete("page");
     if (nextSort === "nome") url.searchParams.set("sort", "nome");
@@ -351,32 +397,42 @@ export default function Storefront({
     }, 0);
   };
   async function loadCatalog(
-    nextSearch = search,
-    nextCategory = category,
+    nextDiscovery: CatalogDiscovery = discovery,
     nextPage = 1,
     nextSort = sort,
     historyMode: DiscoveryHistoryMode = "push",
+    selectedIds: readonly string[] = [],
   ) {
+    const startedAt = performance.now();
     const requestId = ++catalogRequestId.current;
     catalogRequestController.current?.abort();
     const controller = new AbortController();
     catalogRequestController.current = controller;
     const params = new URLSearchParams({ page: String(Math.max(1, nextPage)) });
-    if (nextSearch.trim()) params.set("q", nextSearch.trim());
-    if (nextCategory !== "Todos") params.set("category", nextCategory);
+    if (selectedIds.length) {
+      params.set("ids", selectedIds.join(","));
+      params.set("pageSize", "24");
+    } else {
+      if (nextDiscovery.search.trim())
+        params.set("q", nextDiscovery.search.trim());
+      if (nextDiscovery.category !== "Todos")
+        params.set("category", nextDiscovery.category);
+      if (nextDiscovery.occasions.length)
+        params.set("occasion", nextDiscovery.occasions.join(","));
+      if (nextDiscovery.personalizable) params.set("personalizable", "1");
+      if (nextDiscovery.quantity !== null)
+        params.set("quantity", String(nextDiscovery.quantity));
+    }
     if (nextSort === "nome") params.set("sort", "nome");
     // Reflect the user's intent synchronously; the source response later
     // normalizes an out-of-range page without leaving a stale search URL.
-    setSearch(nextSearch);
-    setCategory(nextCategory);
+    setSearch(nextDiscovery.search);
+    setCategory(nextDiscovery.category);
+    setOccasions(nextDiscovery.occasions);
+    setPersonalizable(nextDiscovery.personalizable);
+    setQuantity(nextDiscovery.quantity);
     setSort(nextSort);
-    updateDiscoveryUrl(
-      nextSearch,
-      nextCategory,
-      nextPage,
-      nextSort,
-      historyMode,
-    );
+    updateDiscoveryUrl(nextDiscovery, nextPage, nextSort, historyMode);
     setCatalogLoading(true);
     setCatalogError(false);
     try {
@@ -395,21 +451,63 @@ export default function Storefront({
         ),
       }));
       setSort(next.sort);
-      updateDiscoveryUrl(
-        nextSearch,
-        nextCategory,
-        next.page,
-        next.sort,
-        "replace",
+      updateDiscoveryUrl(nextDiscovery, next.page, next.sort, "replace");
+      window.dispatchEvent(
+        new CustomEvent("promo:catalog-filter", {
+          detail: {
+            dimensions: [
+              selectedIds.length > 0 && "favorites",
+              nextDiscovery.search && "search",
+              nextDiscovery.category !== "Todos" && "category",
+              nextDiscovery.occasions.length > 0 && "occasion",
+              nextDiscovery.personalizable && "personalizable",
+              nextDiscovery.quantity !== null && "quantity",
+            ].filter(Boolean),
+            resultCount: next.total,
+            durationMs: Math.round(performance.now() - startedAt),
+            success: true,
+          },
+        }),
       );
     } catch {
-      if (requestId === catalogRequestId.current) setCatalogError(true);
+      if (requestId === catalogRequestId.current) {
+        setCatalogError(true);
+        window.dispatchEvent(
+          new CustomEvent("promo:catalog-filter", {
+            detail: {
+              dimensions: [
+                selectedIds.length > 0 && "favorites",
+                nextDiscovery.search && "search",
+                nextDiscovery.category !== "Todos" && "category",
+                nextDiscovery.occasions.length > 0 && "occasion",
+                nextDiscovery.personalizable && "personalizable",
+                nextDiscovery.quantity !== null && "quantity",
+              ].filter(Boolean),
+              durationMs: Math.round(performance.now() - startedAt),
+              success: false,
+            },
+          }),
+        );
+      }
     } finally {
       if (requestId === catalogRequestId.current) {
         catalogRequestController.current = null;
         setCatalogLoading(false);
       }
     }
+  }
+  function showFavorites() {
+    const cleanDiscovery: CatalogDiscovery = {
+      search: "",
+      category: "Todos",
+      occasions: [],
+      personalizable: false,
+      quantity: null,
+    };
+    setOnlyFavorites(true);
+    setExpanded(true);
+    void loadCatalog(cleanDiscovery, 1, sort, "push", favorites.slice(0, 24));
+    scrollToCuration();
   }
   const openProject = () => {
     setStep(1);
@@ -425,13 +523,31 @@ export default function Storefront({
     }));
     setNotice(`${p.name} adicionado à sua seleção.`);
   };
-  const toggleFavorite = (p: Product) =>
+  const toggleFavorite = (p: Product) => {
+    if (!favorites.includes(p.id) && favorites.length >= 24) {
+      setNotice(
+        "Você pode guardar até 24 peças nos favoritos desta curadoria.",
+      );
+      return;
+    }
     setFavorites((prev) =>
       prev.includes(p.id) ? prev.filter((id) => id !== p.id) : [...prev, p.id],
     );
+  };
   const browse = (value: string) => {
     setOnlyFavorites(false);
-    void loadCatalog("", value);
+    const nextCategory = categories.includes(
+      value as (typeof categories)[number],
+    )
+      ? (value as (typeof categories)[number])
+      : "Todos";
+    void loadCatalog({
+      search: "",
+      category: nextCategory,
+      occasions: [],
+      personalizable: false,
+      quantity: null,
+    });
     if (menuOpen) closeMenuAndFocusCuration();
     else scrollToCuration();
   };
@@ -687,12 +803,7 @@ export default function Storefront({
           <button
             className="icon-button favorites-trigger"
             aria-label="Ver favoritos"
-            onClick={() => {
-              setOnlyFavorites(true);
-              setExpanded(true);
-              void loadCatalog("", "Todos");
-              scrollToCuration();
-            }}
+            onClick={showFavorites}
           >
             <Heart size={20} />
           </button>
@@ -819,19 +930,26 @@ export default function Storefront({
             <div
               className="category-tabs"
               role="group"
-              aria-label="Filtrar por coleção"
+              aria-label="Filtrar por tipo de presente"
             >
               {categories.map((c) => (
                 <button
                   key={c}
                   className={category === c ? "active" : ""}
                   aria-pressed={category === c}
+                  aria-label={c}
                   onClick={() => {
-                    void loadCatalog(search, c);
+                    setOnlyFavorites(false);
+                    void loadCatalog({ ...discovery, category: c });
                     setExpanded(true);
                   }}
                 >
                   {c}
+                  {catalog?.facets.categories[c] !== undefined && (
+                    <small aria-hidden="true">
+                      {catalog.facets.categories[c]}
+                    </small>
+                  )}
                 </button>
               ))}
             </div>
@@ -842,8 +960,7 @@ export default function Storefront({
                   value={sort}
                   onChange={(event) =>
                     void loadCatalog(
-                      search,
-                      category,
+                      discovery,
                       1,
                       event.target.value === "nome" ? "nome" : "curadoria",
                     )
@@ -858,23 +975,97 @@ export default function Storefront({
                 onClick={() => setSearchOpen(true)}
               >
                 <SlidersHorizontal size={15} /> Encontrar uma peça
+                {activeFilterCount > 0 && (
+                  <b className="filter-count">{activeFilterCount}</b>
+                )}
               </button>
             </div>
           </div>
-          {(search || onlyFavorites) && (
+          {(activeFilterCount > 0 || onlyFavorites) && (
             <div className="active-filters">
-              <span>
-                {onlyFavorites ? "Seus favoritos" : `Busca: “${search}”`} ·{" "}
+              <div className="active-filter-summary">
+                {onlyFavorites ? "Seus favoritos" : "Filtros aplicados"} ·{" "}
                 {catalogLoading
                   ? "atualizando…"
                   : catalogError
                     ? "contagem indisponível"
                     : `${resultCount} ${resultCount === 1 ? "peça" : "peças"}`}
-              </span>
+              </div>
+              <div className="filter-chips" aria-label="Filtros aplicados">
+                {search && (
+                  <button
+                    onClick={() =>
+                      void loadCatalog({ ...discovery, search: "" })
+                    }
+                    aria-label={`Remover busca ${search}`}
+                  >
+                    Busca: {search} <X size={13} />
+                  </button>
+                )}
+                {category !== "Todos" && (
+                  <button
+                    onClick={() =>
+                      void loadCatalog({ ...discovery, category: "Todos" })
+                    }
+                    aria-label={`Remover tipo ${category}`}
+                  >
+                    {category} <X size={13} />
+                  </button>
+                )}
+                {occasions.map((occasionSlug) => {
+                  const label =
+                    catalogCollections.find(
+                      (collection) => collection.slug === occasionSlug,
+                    )?.title ?? occasionSlug;
+                  return (
+                    <button
+                      key={occasionSlug}
+                      onClick={() =>
+                        void loadCatalog({
+                          ...discovery,
+                          occasions: occasions.filter(
+                            (value) => value !== occasionSlug,
+                          ),
+                        })
+                      }
+                      aria-label={`Remover ocasião ${label}`}
+                    >
+                      {label} <X size={13} />
+                    </button>
+                  );
+                })}
+                {personalizable && (
+                  <button
+                    onClick={() =>
+                      void loadCatalog({ ...discovery, personalizable: false })
+                    }
+                    aria-label="Remover filtro aceita personalização"
+                  >
+                    Personalizável <X size={13} />
+                  </button>
+                )}
+                {quantity !== null && (
+                  <button
+                    onClick={() =>
+                      void loadCatalog({ ...discovery, quantity: null })
+                    }
+                    aria-label={`Remover quantidade ${quantity}`}
+                  >
+                    Até mínimo de {quantity} <X size={13} />
+                  </button>
+                )}
+              </div>
               <button
+                className="clear-filters"
                 onClick={() => {
                   setOnlyFavorites(false);
-                  void loadCatalog("", "Todos");
+                  void loadCatalog({
+                    search: "",
+                    category: "Todos",
+                    occasions: [],
+                    personalizable: false,
+                    quantity: null,
+                  });
                 }}
               >
                 Limpar <X size={14} />
@@ -884,6 +1075,12 @@ export default function Storefront({
           {catalogLoading && (
             <p className="catalog-loading" role="status">
               Atualizando curadoria…
+            </p>
+          )}
+          {!catalogLoading && !catalogError && catalog?.suggestedQuery && (
+            <p className="catalog-suggestion" role="status">
+              Nenhuma correspondência exata para “{catalog.query}”. Exibindo
+              resultados de “{catalog.suggestedQuery}”.
             </p>
           )}
           <div className="product-grid" aria-busy={catalogLoading}>
@@ -988,7 +1185,26 @@ export default function Storefront({
               <button
                 className="button button-outline"
                 onClick={() =>
-                  void loadCatalog(search, category, catalog?.page ?? 1)
+                  void (onlyFavorites
+                    ? loadCatalog(
+                        {
+                          search: "",
+                          category: "Todos",
+                          occasions: [],
+                          personalizable: false,
+                          quantity: null,
+                        },
+                        1,
+                        sort,
+                        "replace",
+                        favorites.slice(0, 24),
+                      )
+                    : loadCatalog(
+                        discovery,
+                        catalog?.page ?? 1,
+                        sort,
+                        "replace",
+                      ))
                 }
                 disabled={catalogLoading}
               >
@@ -1013,7 +1229,13 @@ export default function Storefront({
                   className="button button-outline"
                   onClick={() => {
                     setOnlyFavorites(false);
-                    void loadCatalog("", "Todos");
+                    void loadCatalog({
+                      search: "",
+                      category: "Todos",
+                      occasions: [],
+                      personalizable: false,
+                      quantity: null,
+                    });
                   }}
                 >
                   Explorar todas as peças <ArrowRight size={16} />
@@ -1048,7 +1270,7 @@ export default function Storefront({
                   className="text-button"
                   disabled={(catalog?.page ?? 1) <= 1 || catalogLoading}
                   onClick={() =>
-                    void loadCatalog(search, category, (catalog?.page ?? 1) - 1)
+                    void loadCatalog(discovery, (catalog?.page ?? 1) - 1)
                   }
                 >
                   Anterior
@@ -1063,7 +1285,7 @@ export default function Storefront({
                     catalogLoading
                   }
                   onClick={() =>
-                    void loadCatalog(search, category, (catalog?.page ?? 1) + 1)
+                    void loadCatalog(discovery, (catalog?.page ?? 1) + 1)
                   }
                 >
                   Próxima
@@ -1312,9 +1534,7 @@ export default function Storefront({
           <nav className="mobile-nav" aria-label="Menu móvel">
             <button
               onClick={() => {
-                setOnlyFavorites(true);
-                setExpanded(true);
-                void loadCatalog("", "Todos");
+                showFavorites();
                 closeMenuAndFocusCuration();
               }}
             >
@@ -1346,55 +1566,43 @@ export default function Storefront({
 
       {searchOpen && (
         <Modal
-          title="Buscar na curadoria"
+          title="Filtrar curadoria"
           onClose={() => setSearchOpen(false)}
-          className="search-modal"
+          className="catalog-filter-modal"
         >
-          <p className="eyebrow">ENCONTRE O PRESENTE CERTO</p>
-          <h2>
-            O que você tem <em>em mente?</em>
-          </h2>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
+          <CatalogFilters
+            value={discovery}
+            facets={catalog?.facets ?? null}
+            resultCount={resultCount}
+            loading={catalogLoading}
+            error={catalogError}
+            onChange={(nextDiscovery) => {
               setOnlyFavorites(false);
               setExpanded(true);
-              void loadCatalog(search, "Todos");
+              void loadCatalog(nextDiscovery);
+            }}
+            onSearch={(nextDiscovery) => {
+              setOnlyFavorites(false);
+              setExpanded(true);
+              void loadCatalog(nextDiscovery);
               setSearchOpen(false);
               scrollToCuration();
             }}
-          >
-            <label htmlFor="search">Nome, categoria ou código do produto</label>
-            <div className="search-input">
-              <Search size={20} />
-              <input
-                autoFocus
-                id="search"
-                type="search"
-                placeholder="Experimente “caderno” ou “kit”"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                maxLength={100}
-              />
-              <button className="icon-button" aria-label="Aplicar busca">
-                <ArrowRight size={24} />
-              </button>
-            </div>
-            <div className="search-suggestions">
-              {["Caderno", "Garrafa", "Mochila", "Kit"].map((word) => (
-                <button
-                  type="button"
-                  key={word}
-                  onClick={() => setSearch(word)}
-                >
-                  {word} <ArrowUpRight size={13} />
-                </button>
-              ))}
-            </div>
-            <button className="button button-gold" type="submit">
-              Ver resultados <ArrowRight size={16} />
-            </button>
-          </form>
+            onClear={() => {
+              setOnlyFavorites(false);
+              void loadCatalog({
+                search: "",
+                category: "Todos",
+                occasions: [],
+                personalizable: false,
+                quantity: null,
+              });
+            }}
+            onClose={() => {
+              setSearchOpen(false);
+              scrollToCuration();
+            }}
+          />
         </Modal>
       )}
 

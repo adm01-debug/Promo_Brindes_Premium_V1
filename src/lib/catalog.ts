@@ -1,10 +1,11 @@
 import catalog from "./products.json";
+import { catalogCollections } from "./catalog-library";
 
 /**
  * Public, editorial projection of the catalog snapshot. Keep operational
  * fields (cost, supplier, stock and discount rules) outside this module.
  */
-export const CATALOG_CONTRACT_VERSION = "2026-09-21";
+export const CATALOG_CONTRACT_VERSION = "2026-09-22.2";
 export type PublicCategory =
   | "Kits & experiências"
   | "Escrita"
@@ -42,6 +43,9 @@ export type CatalogSort = "curadoria" | "nome";
 export type CatalogQuery = {
   query?: string;
   category?: string;
+  occasions?: readonly string[];
+  personalizable?: boolean;
+  quantity?: number | null;
   page?: number;
   pageSize?: number;
   sort?: string;
@@ -58,6 +62,17 @@ export type CatalogPage = {
   query: string;
   category: string;
   sort: CatalogSort;
+  occasions: string[];
+  personalizable: boolean;
+  quantity: number | null;
+  suggestedQuery: string | null;
+  facets: CatalogFacets;
+};
+
+export type CatalogFacets = {
+  categories: Record<(typeof categories)[number], number>;
+  occasions: Record<string, number>;
+  personalizable: number;
 };
 
 export type ResolvedCatalogQuery = {
@@ -66,6 +81,9 @@ export type ResolvedCatalogQuery = {
   pageSize: number;
   sort: CatalogSort;
   category: (typeof categories)[number];
+  occasions: string[];
+  personalizable: boolean;
+  quantity: number | null;
   ids: readonly string[];
 };
 
@@ -99,13 +117,198 @@ export function resolveCatalogQuery(
   )
     ? (String(input.category) as (typeof categories)[number])
     : "Todos";
+  const knownOccasions = new Set(
+    catalogCollections.map((collection) => collection.slug),
+  );
+  const occasions = Array.isArray(input.occasions)
+    ? [
+        ...new Set(
+          input.occasions.filter(
+            (occasion): occasion is string =>
+              typeof occasion === "string" && knownOccasions.has(occasion),
+          ),
+        ),
+      ].slice(0, catalogCollections.length)
+    : [];
+  const quantity =
+    Number.isSafeInteger(input.quantity) &&
+    Number(input.quantity) >= 1 &&
+    Number(input.quantity) <= 10000
+      ? Number(input.quantity)
+      : null;
   return {
     query,
     category,
+    occasions,
+    personalizable: input.personalizable === true,
+    quantity,
     sort: input.sort === "nome" ? "nome" : "curadoria",
     pageSize: Math.min(asPositiveInteger(input.pageSize, 12), 24),
     page: asPositiveInteger(input.page, 1),
     ids: Array.isArray(input.ids) ? [...new Set(input.ids)] : [],
+  };
+}
+
+function productOccasions(productId: string) {
+  return catalogCollections.filter((collection) =>
+    collection.productIds.includes(productId),
+  );
+}
+
+function productCoreSearchText(product: Product) {
+  return normalize(
+    [product.name, product.originalName, product.sku, product.category].join(
+      " ",
+    ),
+  );
+}
+
+function productSearchText(product: Product) {
+  const occasions = productOccasions(product.id);
+  return normalize(
+    [
+      product.name,
+      product.originalName,
+      product.sku,
+      product.category,
+      ...occasions.flatMap((occasion) => [
+        occasion.title,
+        occasion.eyebrow,
+        ...occasion.tags,
+        ...occasion.aliases,
+      ]),
+    ].join(" "),
+  );
+}
+
+function editDistance(left: string, right: string) {
+  const previous = Array.from(
+    { length: right.length + 1 },
+    (_, index) => index,
+  );
+  for (let i = 1; i <= left.length; i++) {
+    let diagonal = previous[0];
+    previous[0] = i;
+    for (let j = 1; j <= right.length; j++) {
+      const above = previous[j];
+      previous[j] = Math.min(
+        previous[j] + 1,
+        previous[j - 1] + 1,
+        diagonal + (left[i - 1] === right[j - 1] ? 0 : 1),
+      );
+      diagonal = above;
+    }
+  }
+  return previous[right.length];
+}
+
+/** Suggests one public catalog term only after an exact zero-result search. */
+export function suggestCatalogQuery(
+  query: string,
+  catalogItems: readonly Product[] = products,
+) {
+  const term = normalize(query.trim());
+  if (term.length < 5 || /\s|\d/.test(term)) return null;
+  const vocabulary = new Set<string>();
+  for (const product of catalogItems)
+    for (const token of productSearchText(product).split(/[^a-z0-9]+/))
+      if (token.length >= 5 && !/\d/.test(token)) vocabulary.add(token);
+  let best: { value: string; distance: number } | null = null;
+  for (const candidate of vocabulary) {
+    const distance = editDistance(term, candidate);
+    if (
+      distance === 1 &&
+      (!best ||
+        distance < best.distance ||
+        (distance === best.distance && candidate.localeCompare(best.value) < 0))
+    )
+      best = { value: candidate, distance };
+  }
+  return best?.value ?? null;
+}
+
+type FilterDimension = "category" | "occasions" | "personalizable";
+
+function filterCatalogItems(
+  catalogItems: readonly Product[],
+  query: ResolvedCatalogQuery,
+  options: { exclude?: FilterDimension; search?: string } = {},
+) {
+  const terms = normalize(options.search ?? query.query)
+    .split(/\s+/)
+    .filter(Boolean);
+  // When an exact product-field match exists, it wins over broader editorial
+  // aliases. “Garrafa” must not return every product from a travel collection.
+  const useCoreSearch =
+    terms.length > 0 &&
+    catalogItems.some((product) =>
+      terms.every((term) => productCoreSearchText(product).includes(term)),
+    );
+  const occasionIds = new Set(
+    catalogCollections
+      .filter((collection) => query.occasions.includes(collection.slug))
+      .flatMap((collection) => collection.productIds),
+  );
+  return catalogItems.filter(
+    (product) =>
+      (options.exclude === "category" ||
+        query.category === "Todos" ||
+        product.category === query.category) &&
+      (!query.ids.length || query.ids.includes(product.id)) &&
+      (options.exclude === "occasions" ||
+        !query.occasions.length ||
+        occasionIds.has(product.id)) &&
+      (options.exclude === "personalizable" ||
+        !query.personalizable ||
+        product.personalizable) &&
+      (query.quantity === null || product.minimum <= query.quantity) &&
+      terms.every((term) =>
+        (useCoreSearch
+          ? productCoreSearchText(product)
+          : productSearchText(product)
+        ).includes(term),
+      ),
+  );
+}
+
+function catalogFacets(
+  catalogItems: readonly Product[],
+  query: ResolvedCatalogQuery,
+  effectiveSearch: string,
+): CatalogFacets {
+  const withoutCategory = filterCatalogItems(catalogItems, query, {
+    exclude: "category",
+    search: effectiveSearch,
+  });
+  const withoutOccasion = filterCatalogItems(catalogItems, query, {
+    exclude: "occasions",
+    search: effectiveSearch,
+  });
+  const withoutPersonalization = filterCatalogItems(catalogItems, query, {
+    exclude: "personalizable",
+    search: effectiveSearch,
+  });
+  return {
+    categories: Object.fromEntries(
+      categories.map((category) => [
+        category,
+        category === "Todos"
+          ? withoutCategory.length
+          : withoutCategory.filter((product) => product.category === category)
+              .length,
+      ]),
+    ) as CatalogFacets["categories"],
+    occasions: Object.fromEntries(
+      catalogCollections.map((collection) => [
+        collection.slug,
+        withoutOccasion.filter((product) =>
+          collection.productIds.includes(product.id),
+        ).length,
+      ]),
+    ),
+    personalizable: withoutPersonalization.filter(
+      (product) => product.personalizable,
+    ).length,
   };
 }
 
@@ -117,39 +320,51 @@ export function queryCatalog(
   input: CatalogQuery = {},
   catalogItems: readonly Product[] = products,
 ): CatalogPage {
-  const { query, category, sort, pageSize, page, ids } =
-    resolveCatalogQuery(input);
-  const needle = normalize(query);
-  const matches = catalogItems.filter(
-    (product) =>
-      (category === "Todos" || product.category === category) &&
-      (!ids.length || ids.includes(product.id)) &&
-      normalize(
-        `${product.name} ${product.originalName} ${product.sku} ${product.category}`,
-      ).includes(needle),
-  );
+  const resolved = resolveCatalogQuery(input);
+  let effectiveSearch = resolved.query;
+  let matches = filterCatalogItems(catalogItems, resolved);
+  let suggestedQuery: string | null = null;
+  const suggestion =
+    matches.length === 0
+      ? suggestCatalogQuery(resolved.query, catalogItems)
+      : null;
+  if (suggestion) {
+    const suggestedMatches = filterCatalogItems(catalogItems, resolved, {
+      search: suggestion,
+    });
+    if (suggestedMatches.length > 0) {
+      suggestedQuery = suggestion;
+      effectiveSearch = suggestion;
+      matches = suggestedMatches;
+    }
+  }
   const ordered =
-    sort === "nome"
+    resolved.sort === "nome"
       ? [...matches].sort(
           (a, b) =>
             a.name.localeCompare(b.name, "pt-BR", { sensitivity: "base" }) ||
             a.id.localeCompare(b.id),
         )
       : matches;
-  const totalPages = Math.max(1, Math.ceil(ordered.length / pageSize));
-  const resolvedPage = Math.min(page, totalPages);
-  const start = (resolvedPage - 1) * pageSize;
+  const totalPages = Math.max(1, Math.ceil(ordered.length / resolved.pageSize));
+  const resolvedPage = Math.min(resolved.page, totalPages);
+  const start = (resolvedPage - 1) * resolved.pageSize;
 
   return {
     contractVersion: CATALOG_CONTRACT_VERSION,
-    items: ordered.slice(start, start + pageSize),
+    items: ordered.slice(start, start + resolved.pageSize),
     page: resolvedPage,
-    pageSize,
+    pageSize: resolved.pageSize,
     total: ordered.length,
     totalPages,
-    query,
-    category,
-    sort,
+    query: resolved.query,
+    category: resolved.category,
+    sort: resolved.sort,
+    occasions: resolved.occasions,
+    personalizable: resolved.personalizable,
+    quantity: resolved.quantity,
+    suggestedQuery,
+    facets: catalogFacets(catalogItems, resolved, effectiveSearch),
   };
 }
 

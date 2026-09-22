@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-22T17:40:28.186Z",
+  "generatedAt": "2026-09-22T19:49:44.878Z",
   "scope": "Isolated source modules; synthetic inputs; no external network or database writes",
   "results": [
     {
@@ -106,8 +106,8 @@
     },
     {
       "id": "AUD-06-source-pagination-truncation",
-      "expected": 30,
-      "observed": 30,
+      "expected": 530,
+      "observed": 530,
       "passed": true
     },
     {
@@ -178,12 +178,24 @@
     },
     {
       "id": "AUD-28-overfilled-page",
+      "expected": "1;2",
+      "observed": "1;2",
+      "passed": true
+    },
+    {
+      "id": "AUD-32-category-filter-drift",
+      "expected": 0,
+      "observed": 0,
+      "passed": true
+    },
+    {
+      "id": "AUD-37-public-catalog-hard-limit",
       "expected": true,
       "observed": true,
       "passed": true
     },
     {
-      "id": "AUD-32-category-filter-drift",
+      "id": "AUD-38-total-change-during-pagination",
       "expected": true,
       "observed": true,
       "passed": true
@@ -249,6 +261,6 @@
       "passed": true
     }
   ],
-  "passed": 41,
+  "passed": 43,
   "failed": 0
 }
