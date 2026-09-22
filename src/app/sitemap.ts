@@ -3,7 +3,7 @@ import { getSiteCatalogPage } from "@/lib/site-database";
 import { isIndexableSite, publicSiteOrigin } from "@/lib/publication";
 import { catalogCollections } from "@/lib/catalog-library";
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const origin = publicSiteOrigin();

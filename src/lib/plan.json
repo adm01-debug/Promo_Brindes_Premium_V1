@@ -1301,19 +1301,20 @@
       "acceptance": "Cada estado tem mensagem útil e caminho de recuperação.",
       "owner": "UX + conteúdo",
       "priority": "P0",
-      "status": "partial",
-      "evidence": "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
+      "status": "done",
+      "evidence": "docs/audit/2026-09-22-catalog-publication-window.md",
       "dependencies": [54],
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Vazio, armazenamento inválido, indisponibilidade da API, offline e SKU removido têm mensagem e recuperação sem perder a seleção. Antes do briefing, IDs são conferidos sem cache: retirada, mínimo alterado e falha da fonte exigem revisão. A expiração de todas as superfícies publicadas ainda não está completa.",
-        "nextAction": "Definir e testar expiração da curadoria publicada.",
+        "finding": "Vazio, armazenamento inválido, indisponibilidade, offline, SKU removido e conteúdo expirado possuem mensagem e recuperação. A publicação agora aceita início e término opcionais, com RLS temporal, consulta explícita, validação sem cache no briefing e SLA de 60 segundos nas superfícies cacheadas.",
+        "nextAction": "Manter as sondas de vigência e reabrir o critério se uma nova camada de CDN não respeitar must-revalidate.",
         "evidence": [
           "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
           "src/components/Storefront.tsx",
           "src/lib/site-database.ts",
-          "tests/storefront.spec.ts"
+          "supabase/migrations/20260922221500_add_catalog_publication_window.sql",
+          "docs/audit/2026-09-22-catalog-publication-window.md"
         ]
       }
     },
@@ -2808,21 +2809,21 @@
       "acceptance": "Produto retirado deixa de aparecer dentro do SLA definido.",
       "owner": "Arquitetura + backend + dados",
       "priority": "P0",
-      "status": "partial",
-      "evidence": "src/app/api/catalog/route.ts",
+      "status": "done",
+      "evidence": "docs/audit/2026-09-22-catalog-publication-window.md",
       "dependencies": [127],
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Consultas gerais usam TTL/SWR; seleção e validação do POST leem sem cache. O deploy validado lê o banco Premium e o sitemap consulta publicação viva. Páginas pré-renderizadas ainda dependem do TTL e não têm invalidação imediata por despublicação.",
-        "nextAction": "Definir SLA e testar retirada completa, revalidação e cache.",
+        "finding": "Consultas gerais, home, fichas, coleções e sitemap revalidam em 60 segundos; a API usa s-maxage=60 com must-revalidate. RLS e runtime aplicam a janela temporal. Seleção e POST leem sem cache, impedindo briefing de peça retirada ou expirada.",
+        "nextAction": "Monitorar o SLA em produção e adicionar invalidação explícita apenas se a operação passar a exigir retirada em menos de 60 segundos.",
         "evidence": [
           "src/app/api/catalog/route.ts",
           "src/lib/site-database.ts",
           "src/app/produtos/[slug]/page.tsx",
           "src/app/sitemap.ts",
-          "docs/audit/2026-09-22-server-catalog-and-delivery.md",
-          "docs/audit/2026-09-22-production-environment.md"
+          "supabase/migrations/20260922221500_add_catalog_publication_window.sql",
+          "docs/audit/2026-09-22-catalog-publication-window.md"
         ]
       }
     },

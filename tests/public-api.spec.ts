@@ -8,7 +8,11 @@ test("catálogo público pagina, preserva o contrato e não expõe campos intern
   );
   expect(response.status()).toBe(200);
   expect(response.headers()["x-catalog-contract-version"]).toBe("2026-09-22.2");
-  expect(response.headers()["cache-control"]).toContain("s-maxage=300");
+  expect(response.headers()["cache-control"]).toContain("s-maxage=60");
+  expect(response.headers()["cache-control"]).toContain("must-revalidate");
+  expect(response.headers()["cache-control"]).not.toContain(
+    "stale-while-revalidate",
+  );
   expect(response.headers()["x-request-id"]).toMatch(
     /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
   );

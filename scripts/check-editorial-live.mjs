@@ -33,9 +33,11 @@ const fields = {
 };
 const expected = JSON.parse(readFileSync("src/lib/products.json", "utf8"));
 const endpoint = new URL("/rest/v1/premium_catalog_items", url);
+const publicationReference = new Date().toISOString();
 endpoint.search = new URLSearchParams({
   select: Object.values(fields).join(","),
   published: "eq.true",
+  and: `(or(published_from.is.null,published_from.lte.${publicationReference}),or(published_until.is.null,published_until.gt.${publicationReference}))`,
   limit: "100",
 }).toString();
 const response = await fetch(endpoint, {

@@ -170,7 +170,7 @@ async function fetchCatalogRows(endpoint: URL, key: string, fresh: boolean) {
       Accept: "application/json",
       Prefer: "count=exact",
     },
-    ...(fresh ? { cache: "no-store" as const } : { next: { revalidate: 300 } }),
+    ...(fresh ? { cache: "no-store" as const } : { next: { revalidate: 60 } }),
     signal: AbortSignal.timeout(8000),
   });
 }
@@ -178,11 +178,17 @@ async function fetchCatalogRows(endpoint: URL, key: string, fresh: boolean) {
 const DATABASE_PAGE_SIZE = 500;
 const MAX_PUBLIC_CATALOG_ITEMS = 10000;
 
+function publicationWindow(reference: Date) {
+  const timestamp = reference.toISOString();
+  return `(or(published_from.is.null,published_from.lte.${timestamp}),or(published_until.is.null,published_until.gt.${timestamp}))`;
+}
+
 async function readPublishedCatalog(
   config: SitePublicConfig,
   ids: readonly string[],
   fresh: boolean,
 ) {
+  const reference = new Date();
   const rows: CatalogRow[] = [];
   let offset = 0;
   let total: number | null = null;
@@ -190,6 +196,7 @@ async function readPublishedCatalog(
     const endpoint = new URL("/rest/v1/premium_catalog_items", config.url);
     endpoint.searchParams.set("select", publicColumns);
     endpoint.searchParams.set("published", "eq.true");
+    endpoint.searchParams.set("and", publicationWindow(reference));
     if (ids.length) endpoint.searchParams.set("id", `in.(${ids.join(",")})`);
     endpoint.searchParams.set("order", "editorial_order.asc,id.asc");
     endpoint.searchParams.set("limit", String(DATABASE_PAGE_SIZE));
@@ -228,7 +235,7 @@ async function readPublishedCatalog(
 /**
  * Reads the complete curated public projection on the server, then applies one
  * deterministic query for results and contextual facet counts. Next's data
- * cache reuses the bounded database pages for five minutes; the browser only
+ * cache reuses the bounded database pages for one minute; the browser only
  * receives the requested result page.
  */
 export async function getSiteCatalogPage(
@@ -255,13 +262,14 @@ export async function getSiteProductBySlug(
   const endpoint = new URL("/rest/v1/premium_catalog_items", config.url);
   endpoint.searchParams.set("select", publicColumns);
   endpoint.searchParams.set("published", "eq.true");
+  endpoint.searchParams.set("and", publicationWindow(new Date()));
   endpoint.searchParams.set("slug", `eq.${slug}`);
   endpoint.searchParams.set("limit", "1");
   const response = await fetch(endpoint, {
     method: "GET",
     redirect: "error",
     headers: { apikey: config.key, Accept: "application/json" },
-    next: { revalidate: 300 },
+    next: { revalidate: 60 },
     signal: AbortSignal.timeout(8000),
   });
   if (!response.ok) throw new Error("Site product is unavailable.");

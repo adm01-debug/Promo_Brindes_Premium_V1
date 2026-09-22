@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-22T21:39:35.815Z",
+  "generatedAt": "2026-09-22T22:15:41.485Z",
   "scope": "Isolated source modules; synthetic inputs; no external network or database writes",
   "results": [
     {
@@ -132,6 +132,18 @@
       "id": "AUD-20-selection-bypasses-source-cache",
       "expected": "no-store",
       "observed": "no-store",
+      "passed": true
+    },
+    {
+      "id": "AUD-51-discovery-enforces-publication-window",
+      "expected": "eq.true;true;60",
+      "observed": "eq.true;true;60",
+      "passed": true
+    },
+    {
+      "id": "AUD-52-product-enforces-publication-window",
+      "expected": "eq.true;true;60",
+      "observed": "eq.true;true;60",
       "passed": true
     },
     {
@@ -333,6 +345,6 @@
       "passed": true
     }
   ],
-  "passed": 55,
+  "passed": 57,
   "failed": 0
 }

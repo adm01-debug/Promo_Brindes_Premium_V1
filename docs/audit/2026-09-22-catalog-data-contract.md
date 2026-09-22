@@ -14,7 +14,7 @@ O sincronizador passou a validar integralmente o snapshot antes de qualquer cham
 | Verificação                                  | Resultado                            | Comando                                                                                                           |
 | -------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
 | Fronteira origem/destino e falhas simuladas  | 52/52 testes                         | `npm run test:catalog-boundary`                                                                                   |
-| Paginação, cache, drift e integração isolada | 55/55 cenários                       | `node scripts/audit-plan-scenarios.mjs`                                                                           |
+| Paginação, cache, drift e integração isolada | 57/57 cenários                       | `node scripts/audit-plan-scenarios.mjs`                                                                           |
 | Origem operacional ao vivo                   | 8 ativos e coincidentes; GET público | `npm run check:catalog-source`                                                                                    |
 | Fluxo completo sem mutação                   | 8 conferidos; zero escritas          | `npm run db:sync-catalog -- --dry-run`                                                                            |
 | Publicação premium ao vivo                   | 8 publicados; 12 campos exatos       | `npm run check:editorial:live`                                                                                    |
@@ -34,7 +34,8 @@ Nenhum teste de escrita, migration, RPC de mutação ou alteração de permissã
 - Despublicação manual, leitura parcial do destino, falha da origem e drift em SKU, nome original, mínimo ou personalização interrompem o fluxo antes da escrita.
 - API pública lê somente os 12 campos aprovados, somente publicados, em páginas de 500, com contagem exata e teto de 10.000 itens.
 - Paginação de 530 itens, mudança de total entre páginas, ausência de total, intervalo inconsistente, duplicata e item não solicitado foram simulados.
-- Consulta por IDs usa `no-store`; descoberta usa cache compartilhado de cinco minutos e `stale-while-revalidate` de dez minutos.
+- Consulta por IDs usa `no-store`; descoberta usa cache compartilhado de um minuto e `must-revalidate`.
+- Publicação exige `published=true` e a janela opcional `published_from`/`published_until` vigente tanto na RLS quanto nas consultas do runtime.
 - IDs, SKUs e slugs duplicados no resultado premium são tratados como inconsistência; slug, data, categoria, mídia, quantidade e tipos são validados antes de compor o DTO público.
 
 ## Hardening implementado no sincronizador
@@ -64,6 +65,6 @@ Dezessete mutações negativas cobrem colisão de SKU/slug, slug e mídia insegu
 ## Gaps residuais
 
 1. **Mutações fora do sincronizador.** A auditoria prova o comportamento do código versionado, das constraints e das policies. Não certifica processos administrativos externos que usem service role no banco premium.
-2. **Consistência transacional de leitura longa.** Contagem alterada e duplicatas são detectadas entre páginas. Uma alteração concorrente que preserve exatamente o total e não gere duplicata pode produzir uma fotografia mista durante os cinco minutos de cache; ao crescer perto de 500 itens, mover a projeção para uma função/view transacional no banco premium.
+2. **Consistência transacional de leitura longa.** Contagem alterada e duplicatas são detectadas entre páginas. Uma alteração concorrente que preserve exatamente o total e não gere duplicata pode produzir uma fotografia mista durante a leitura paginada; ao crescer perto de 500 itens, mover a projeção para uma função/view transacional no banco premium.
 
 Esses gaps não autorizam alterações no banco operacional. A única ação permitida em `doufsxqlfjyuvxuezpln` continua sendo GET da view pública com colunas explícitas.

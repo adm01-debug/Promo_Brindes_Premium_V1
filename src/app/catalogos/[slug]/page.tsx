@@ -14,7 +14,7 @@ import {
 import { getCollectionProducts } from "@/lib/catalog-library-data";
 import type { Product } from "@/lib/catalog";
 
-export const revalidate = 300;
+export const revalidate = 60;
 export function generateStaticParams() {
   return catalogCollections.map(({ slug }) => ({ slug }));
 }

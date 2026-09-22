@@ -681,6 +681,68 @@ await probe("AUD-20-selection-bypasses-source-cache", "no-store", async () => {
   return cacheMode;
 });
 
+await probe(
+  "AUD-51-discovery-enforces-publication-window",
+  "eq.true;true;60",
+  async () => {
+    let observed = "missing";
+    const api = load(
+      "src/lib/site-database.ts",
+      {
+        SUPABASE_PROJECT_REF: project,
+        SUPABASE_URL: `https://${project}.supabase.co`,
+        SUPABASE_PUBLISHABLE_KEY: "sb_publishable_synthetic",
+      },
+      async (input, init) => {
+        const url = new URL(String(input));
+        const window = url.searchParams.get("and") ?? "";
+        observed = [
+          url.searchParams.get("published"),
+          /^\(or\(published_from\.is\.null,published_from\.lte\..+\),or\(published_until\.is\.null,published_until\.gt\..+\)\)$/.test(
+            window,
+          ),
+          init.next?.revalidate,
+        ].join(";");
+        return new Response(JSON.stringify([item]), {
+          headers: { "content-range": "0-0/1" },
+        });
+      },
+    );
+    await api.getSiteCatalogPage();
+    return observed;
+  },
+);
+
+await probe(
+  "AUD-52-product-enforces-publication-window",
+  "eq.true;true;60",
+  async () => {
+    let observed = "missing";
+    const api = load(
+      "src/lib/site-database.ts",
+      {
+        SUPABASE_PROJECT_REF: project,
+        SUPABASE_URL: `https://${project}.supabase.co`,
+        SUPABASE_PUBLISHABLE_KEY: "sb_publishable_synthetic",
+      },
+      async (input, init) => {
+        const url = new URL(String(input));
+        const window = url.searchParams.get("and") ?? "";
+        observed = [
+          url.searchParams.get("published"),
+          /^\(or\(published_from\.is\.null,published_from\.lte\..+\),or\(published_until\.is\.null,published_until\.gt\..+\)\)$/.test(
+            window,
+          ),
+          init.next?.revalidate,
+        ].join(";");
+        return Response.json([item]);
+      },
+    );
+    await api.getSiteProductBySlug(item.slug);
+    return observed;
+  },
+);
+
 for (const [id, freshRow] of [
   ["AUD-21-server-rejects-unpublished-item", null],
   ["AUD-22-server-rejects-raised-minimum", { ...item, minimum: 10 }],

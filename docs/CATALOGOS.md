@@ -15,14 +15,14 @@ Implementada em 22/09/2026 a partir da funcionalidade solicitada pelo usuário n
 - [x] Estados distintos para busca sem resultados, coleção sem produtos publicados, indisponibilidade do banco e imagem ausente.
 - [x] Navegação responsiva, foco visível, rótulos de formulário e mensagens de estado acessíveis.
 
-| Coleção | Rota | Referências editoriais |
-| --- | --- | --- |
-| Um começo com significado | `/catalogos/boas-vindas` | Caderno, kit executivo e garrafa |
-| Relações que permanecem | `/catalogos/relacoes-que-permanecem` | Café, chá e caneta |
-| À altura de uma conquista | `/catalogos/conquistas-memoraveis` | Mochila, kit executivo e gourmet |
-| A arte de receber | `/catalogos/arte-de-receber` | Chá, café e gourmet |
-| Ideias merecem presença | `/catalogos/escrita-com-presenca` | Caneta e caderno |
-| Para novos destinos | `/catalogos/novos-destinos` | Mochila e garrafa |
+| Coleção                   | Rota                                 | Referências editoriais           |
+| ------------------------- | ------------------------------------ | -------------------------------- |
+| Um começo com significado | `/catalogos/boas-vindas`             | Caderno, kit executivo e garrafa |
+| Relações que permanecem   | `/catalogos/relacoes-que-permanecem` | Café, chá e caneta               |
+| À altura de uma conquista | `/catalogos/conquistas-memoraveis`   | Mochila, kit executivo e gourmet |
+| A arte de receber         | `/catalogos/arte-de-receber`         | Chá, café e gourmet              |
+| Ideias merecem presença   | `/catalogos/escrita-com-presenca`    | Caneta e caderno                 |
+| Para novos destinos       | `/catalogos/novos-destinos`          | Mochila e garrafa                |
 
 São **coleções online**. Não há arquivo PDF ou revista externa disponível nesta entrega; nenhum botão promete baixar um arquivo inexistente. A coleção organiza referências por contexto e não representa um kit comercial fechado. Conteúdo, fotos, alegações, disponibilidade, preços e condições continuam sujeitos aos controles editoriais e comerciais existentes.
 
@@ -32,7 +32,7 @@ São **coleções online**. Não há arquivo PDF ou revista externa disponível 
 
 Não foram criadas migrations nem feitas gravações em nenhum banco para implementar os catálogos. A regra de somente leitura do banco central `doufsxqlfjyuvxuezpln` foi preservada.
 
-A consulta de produtos mantém cache de até cinco minutos. A biblioteca é renderizada no servidor com os filtros da URL; as páginas de coleção usam revalidação de cinco minutos. Sem configuração de banco, vale o fallback de prévia existente. Com configuração e falha, não se substituem os dados por um snapshot silencioso.
+A consulta de produtos mantém cache de até um minuto e exige a janela de publicação vigente no banco Premium. A biblioteca é renderizada no servidor com os filtros da URL; as páginas de coleção usam a mesma revalidação de um minuto. Sem configuração de banco, vale o fallback de prévia existente. Com configuração e falha, não se substituem os dados por um snapshot silencioso.
 
 Coleções suportam até 24 IDs únicos por leitura. Uma resposta truncada ou com mais de uma página é recusada para não exibir contagem incompleta. A ampliação além dessa janela exige paginação adicional do carregador. Quando uma peça é despublicada, ela deixa de compor a capa e a seleção na próxima revalidação. Se todas saírem, a página explica que a coleção está em atualização.
 

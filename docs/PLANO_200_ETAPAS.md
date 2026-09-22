@@ -2,7 +2,7 @@
 
 Referência: **2026-09-22** · **20 fases × 10 etapas = 200 etapas**.
 
-Status auditado: **101 concluídas no próprio escopo; 53 parciais; 46 sem entrega comprovada**. São 99 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
+Status auditado: **103 concluídas no próprio escopo; 51 parciais; 46 sem entrega comprovada**. São 97 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
 
 Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatório e prioridades](REVISAO_EXAUSTIVA_PLANO.md).
 
@@ -541,12 +541,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Validar preenchimento e ações com teclado virtual em aparelhos reais.
   - **Dependências:** 054 (Concluída no escopo).
 
-- [ ] **058. Definir estados excepcionais.** Mapear vazio, erro, offline, SKU removido e conteúdo expirado.
-  - **Situação auditada:** Parcial.
+- [x] **058. Definir estados excepcionais.** Mapear vazio, erro, offline, SKU removido e conteúdo expirado.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Cada estado tem mensagem útil e caminho de recuperação.
-  - **Constatação:** Vazio, armazenamento inválido, indisponibilidade da API, offline e SKU removido têm mensagem e recuperação sem perder a seleção. Antes do briefing, IDs são conferidos sem cache: retirada, mínimo alterado e falha da fonte exigem revisão. A expiração de todas as superfícies publicadas ainda não está completa.
-  - **Evidências e referências:** `docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md`, `src/components/Storefront.tsx`, `src/lib/site-database.ts`, `tests/storefront.spec.ts`.
-  - **Próxima ação:** Definir e testar expiração da curadoria publicada.
+  - **Constatação:** Vazio, armazenamento inválido, indisponibilidade, offline, SKU removido e conteúdo expirado possuem mensagem e recuperação. A publicação agora aceita início e término opcionais, com RLS temporal, consulta explícita, validação sem cache no briefing e SLA de 60 segundos nas superfícies cacheadas.
+  - **Evidências e referências:** `docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md`, `src/components/Storefront.tsx`, `src/lib/site-database.ts`, `supabase/migrations/20260922221500_add_catalog_publication_window.sql`, `docs/audit/2026-09-22-catalog-publication-window.md`.
+  - **Próxima ação:** Manter as sondas de vigência e reabrir o critério se uma nova camada de CDN não respeitar must-revalidate.
   - **Dependências:** 054 (Concluída no escopo).
 
 - [ ] **059. Validar arquitetura com compradores.** Aplicar teste de árvore ou tarefas de localização no sitemap.
@@ -1150,12 +1150,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Testar despublicação e conteúdo novo em um ambiente de staging quando houver dados aprovados.
   - **Dependências:** 125 (Parcial), 126 (Parcial).
 
-- [ ] **128. Implementar cache e atualização.** Definir TTL e invalidação por mudanças relevantes de produto e publicação.
-  - **Situação auditada:** Parcial.
+- [x] **128. Implementar cache e atualização.** Definir TTL e invalidação por mudanças relevantes de produto e publicação.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Produto retirado deixa de aparecer dentro do SLA definido.
-  - **Constatação:** Consultas gerais usam TTL/SWR; seleção e validação do POST leem sem cache. O deploy validado lê o banco Premium e o sitemap consulta publicação viva. Páginas pré-renderizadas ainda dependem do TTL e não têm invalidação imediata por despublicação.
-  - **Evidências e referências:** `src/app/api/catalog/route.ts`, `src/lib/site-database.ts`, `src/app/produtos/[slug]/page.tsx`, `src/app/sitemap.ts`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`, `docs/audit/2026-09-22-production-environment.md`.
-  - **Próxima ação:** Definir SLA e testar retirada completa, revalidação e cache.
+  - **Constatação:** Consultas gerais, home, fichas, coleções e sitemap revalidam em 60 segundos; a API usa s-maxage=60 com must-revalidate. RLS e runtime aplicam a janela temporal. Seleção e POST leem sem cache, impedindo briefing de peça retirada ou expirada.
+  - **Evidências e referências:** `src/app/api/catalog/route.ts`, `src/lib/site-database.ts`, `src/app/produtos/[slug]/page.tsx`, `src/app/sitemap.ts`, `supabase/migrations/20260922221500_add_catalog_publication_window.sql`, `docs/audit/2026-09-22-catalog-publication-window.md`.
+  - **Próxima ação:** Monitorar o SLA em produção e adicionar invalidação explícita apenas se a operação passar a exigir retirada em menos de 60 segundos.
   - **Dependências:** 127 (Concluída no escopo).
 
 - [x] **129. Implementar saúde de mídia.** Verificar disponibilidade, fallback e dimensões das imagens autorizadas.
@@ -1172,7 +1172,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** E2E rejeita qualquer chave extra ou ausente no envelope, item e facetas, além de campo sensível, versão, paginação e cache; sondas cobrem drift da origem. Ainda não existe staging homologado para o contrato comercial completo.
   - **Evidências e referências:** `tests/public-api.spec.ts`, `scripts/audit-plan-scenarios.mjs`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
   - **Próxima ação:** Repetir o contrato exato contra staging e incluir variantes/preço somente quando esses campos forem aprovados no DTO.
-  - **Dependências:** 127 (Concluída no escopo), 128 (Parcial), 129 (Concluída no escopo).
+  - **Dependências:** 127 (Concluída no escopo), 128 (Concluída no escopo), 129 (Concluída no escopo).
 
 
 ## Fase 14 — Passagem para o comercial e CRM

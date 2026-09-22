@@ -14,7 +14,7 @@ export function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
 }
 
-export const revalidate = 300;
+export const revalidate = 60;
 export const dynamicParams = true;
 
 export async function generateMetadata({

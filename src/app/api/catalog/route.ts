@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { getSiteCatalogPage } from "@/lib/site-database";
 import { catalogCollections } from "@/lib/catalog-library";
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 function integer(value: string | null) {
   if (!value) return undefined;
@@ -177,7 +177,7 @@ export async function GET(request: NextRequest) {
       headers: {
         "Cache-Control": selectedIds.length
           ? "no-store"
-          : "public, s-maxage=300, stale-while-revalidate=600",
+          : "public, s-maxage=60, must-revalidate",
         "X-Catalog-Contract-Version": result.contractVersion,
         "X-Catalog-Source": process.env.SUPABASE_URL
           ? "site-database"

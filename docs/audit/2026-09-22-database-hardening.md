@@ -20,16 +20,16 @@ O preflight também confirmou RLS e ACL: `anon` podia selecionar o catálogo suj
 
 ## Evidência reproduzível
 
-| Verificação                                                  | Resultado                                                                                                                    |
-| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| `supabase db reset --local`                                  | schema reconstruído do zero com dez migrations                                                                               |
-| segundo reset + dumps antes/depois                           | dumps idênticos, SHA-256 `b9c159b092246966441dd61cd8231669cf2f7f480e6e7e567d9eee34556d68c0`                                  |
-| `supabase test db --local`                                   | **58/58** contratos pgTAP aprovados                                                                                          |
-| `npm run test:database-concurrency`                          | uma claim vencedora entre oito; token antigo atualizou zero linhas; limite distribuiu 5 permissões e 5 recusas               |
-| `supabase db lint --local --level warning --fail-on warning` | zero alertas                                                                                                                 |
-| `node scripts/audit-plan-scenarios.mjs`                      | **55/55** cenários isolados aprovados, incluindo lease antiga, divergência de protocolo e as duas ordens parciais de rollout |
-| `npm run check:public-secrets`                               | aprovado                                                                                                                     |
-| `npm run db:migrate -- --dry-run` após a implantação         | remoto atualizado; nenhuma migration pendente                                                                                |
+| Verificação                                                  | Resultado                                                                                                                              |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `supabase db reset --local`                                  | schema reconstruído do zero com dez migrations                                                                                         |
+| segundo reset + dumps antes/depois                           | dumps idênticos, SHA-256 `b9c159b092246966441dd61cd8231669cf2f7f480e6e7e567d9eee34556d68c0`                                            |
+| `supabase test db --local`                                   | **58/58** contratos pgTAP aprovados                                                                                                    |
+| `npm run test:database-concurrency`                          | uma claim vencedora entre oito; token antigo atualizou zero linhas; limite distribuiu 5 permissões e 5 recusas                         |
+| `supabase db lint --local --level warning --fail-on warning` | zero alertas                                                                                                                           |
+| `node scripts/audit-plan-scenarios.mjs`                      | **57/57** cenários isolados aprovados, incluindo vigência, lease antiga, divergência de protocolo e as duas ordens parciais de rollout |
+| `npm run check:public-secrets`                               | aprovado                                                                                                                               |
+| `npm run db:migrate -- --dry-run` após a implantação         | remoto atualizado; nenhuma migration pendente                                                                                          |
 
 Os testes também executam RLS como `anon` e `authenticated`, provam que uma linha não publicada não é visível, verificam ACLs das RPCs, deduplicação por chave/hash, conflito de payload, rotação do token, bloqueio de finalizador atrasado, limpeza do lease, janela de rate limit, constraints validadas, índice case-insensitive e avanço automático de `updated_at`.
 

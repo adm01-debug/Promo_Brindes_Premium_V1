@@ -1,7 +1,7 @@
 import Storefront from "@/components/Storefront";
 import { getSiteCatalogPage } from "@/lib/site-database";
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 export default async function Home() {
   try {
