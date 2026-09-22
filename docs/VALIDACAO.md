@@ -45,7 +45,7 @@ Isso **não é declaração de conformidade integral**. Permanecem revisão manu
 
 ## Conteúdo e integração
 
-Catálogo consultado no host correto por leitura pública limitada, com IDs/SKUs preservados. Não foram atualizados produto, cliente, pedido, policy ou schema. Fotos de fornecedor não equivalem a autorização legal de publicação comercial; essa validação está pendente.
+Catálogo de origem consultado por leitura pública limitada, com IDs/SKUs preservados. Em 22/09/2026, os oito produtos foram sincronizados no novo banco dedicado à vitrine; a migration criou apenas duas tabelas novas nesse projeto. Nenhum produto, cliente, pedido, policy ou schema do banco operacional de Promo_Gifts_V4 foi alterado. As verificações do novo banco estão em [SUPABASE_SITE_DATABASE.md](SUPABASE_SITE_DATABASE.md). Fotos de fornecedor não equivalem a autorização legal de publicação comercial; essa validação está pendente.
 
 O briefing preserva o download local quando não há destino configurado. O endpoint preparado para entrega valida origem, tipo e tamanho do corpo, calendário, mínimo por item, chave de idempotência e limite de requisições; ele resolve SKU e quantidade no servidor, portanto ignora preço ou fornecedor forjados pelo navegador. Sem `BRIEFING_WEBHOOK_URL` válido, não há transferência de dados nem teste de entrega a CRM. A memória de idempotência e rate limit é intencionalmente local ao processo: produção exige persistência compartilhada e uma integração comercial aprovada. Valores são sob consulta; não há preço garantido, reserva, pagamento, prazo confirmado ou amostra de arte aprovada. O frontend não possui chave Supabase ou segredos de integração.
 

@@ -10,7 +10,9 @@
     "test:e2e": "playwright test",
     "check:plan": "node scripts/check-plan.mjs",
     "check:public-secrets": "node scripts/check-public-secrets.mjs",
-    "check:performance-budget": "node scripts/check-performance-budget.mjs"
+    "check:performance-budget": "node scripts/check-performance-budget.mjs",
+    "db:migrate": "node --env-file=.env.local scripts/push-site-migrations.mjs",
+    "db:sync-catalog": "node --env-file=.env.local scripts/sync-site-catalog.mjs"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "5.3.0",

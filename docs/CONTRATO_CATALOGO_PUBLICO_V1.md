@@ -1,6 +1,6 @@
 # Contrato público de catálogo v1
 
-Status: implementado para o snapshot local em `2026-09-21`. Este contrato não autoriza acesso direto do navegador a tabelas internas, à aplicação comercial ou a campos de custo.
+Status: implementado para o snapshot editorial e, quando configurado, para a tabela pública curada do projeto da vitrine `whwloseshzraipljisqo`. Este contrato não autoriza acesso direto do navegador a tabelas internas, à aplicação comercial ou a campos de custo.
 
 `GET /api/catalog` entrega uma projeção editorial versionada. A resposta carrega `X-Catalog-Contract-Version: 2026-09-21` e usa cache compartilhado de cinco minutos, com `stale-while-revalidate` de dez minutos.
 
@@ -38,4 +38,4 @@ Parâmetro fora da forma pública retorna `400` com `INVALID_CATALOG_QUERY` e n�
 
 ## Limite atual e migração segura
 
-A rota lê o snapshot local para que a prévia continue funcional sem credenciais. Antes de apontá-la ao Supabase canônico, o responsável técnico deve confirmar no projeto correto, via acesso autorizado e `pg_catalog`, a definição atual de `v_products_public`, suas permissões e a allowlist de colunas. A adaptação deve manter esta forma de resposta e rejeitar campos extras; não deve encaminhar `select=*` do PostgREST ao visitante.
+A rota lê `premium_catalog_items` do banco dedicado à vitrine quando `SUPABASE_URL`, `SUPABASE_PROJECT_REF` e a chave publicável estão configurados. A consulta usa uma lista explícita de colunas, limite de 24 e apenas itens publicados; erro de rede, resposta vazia inesperada ou violação do formato retorna `503 CATALOG_UNAVAILABLE`. Sem configuração, a rota usa o snapshot local. A fonte operacional original `v_products_public` pertence ao outro projeto, `doufsxqlfjyuvxuezpln`, e não é modificada por esta migration.

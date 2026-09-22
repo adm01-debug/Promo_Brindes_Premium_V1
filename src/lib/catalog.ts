@@ -63,7 +63,10 @@ function asPositiveInteger(value: number | undefined, fallback: number) {
  * Deterministic query used by the local snapshot and the public API. It is
  * deliberately limited to fields whose meaning is known in this preview.
  */
-export function queryCatalog(input: CatalogQuery = {}): CatalogPage {
+export function queryCatalog(
+  input: CatalogQuery = {},
+  catalogItems: readonly Product[] = products,
+): CatalogPage {
   const query = String(input.query ?? "")
     .trim()
     .slice(0, 100);
@@ -74,7 +77,7 @@ export function queryCatalog(input: CatalogQuery = {}): CatalogPage {
   const pageSize = Math.min(asPositiveInteger(input.pageSize, 12), 24);
   const page = asPositiveInteger(input.page, 1);
   const needle = normalize(query);
-  const matches = products.filter(
+  const matches = catalogItems.filter(
     (product) =>
       (category === "Todos" || product.category === category) &&
       normalize(

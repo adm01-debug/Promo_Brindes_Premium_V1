@@ -1,6 +1,6 @@
 # Contrato de briefing v1
 
-Status: endpoint implementado, receptor comercial não configurado. Enquanto `BRIEFING_WEBHOOK_URL` estiver vazio, a interface mantém download local e `POST /api/briefings` responde `503 DESTINATION_UNAVAILABLE`; ela não simula sucesso.
+Status: endpoint implementado, receptor comercial não configurado. O banco dedicado da vitrine já possui a tabela privada `premium_briefings`, mas esta prévia não escreve nela. Enquanto `BRIEFING_WEBHOOK_URL` estiver vazio, a interface mantém download local e `POST /api/briefings` responde `503 DESTINATION_UNAVAILABLE`; ela não simula sucesso.
 
 ## Entrada
 
@@ -23,18 +23,18 @@ O servidor ignora qualquer SKU, preço, fornecedor, status de estoque ou regra c
 
 ## Saídas
 
-| Estado | Resposta |
-|---|---|
-| Receptor confirmou | `201` com `protocol` e `duplicate:false`. |
-| Mesma chave no processo | `200` com o mesmo `protocol` e `duplicate:true`. |
-| Entrada inválida | `422 INVALID_BRIEFING`. |
-| Chave ausente ou inválida | `400 IDEMPOTENCY_KEY_REQUIRED`. |
-| Origem não autorizada | `403 ORIGIN_REJECTED`. |
-| Corpo que não é JSON | `415 JSON_REQUIRED`. |
-| Corpo acima de 16 KiB | `413 PAYLOAD_TOO_LARGE`. |
-| Mais de cinco tentativas por endereço em dez minutos | `429 RATE_LIMITED`. |
-| Receptor não configurado | `503 DESTINATION_UNAVAILABLE`. |
-| Timeout ou erro do receptor | `502 DESTINATION_FAILED`. |
+| Estado                                               | Resposta                                         |
+| ---------------------------------------------------- | ------------------------------------------------ |
+| Receptor confirmou                                   | `201` com `protocol` e `duplicate:false`.        |
+| Mesma chave no processo                              | `200` com o mesmo `protocol` e `duplicate:true`. |
+| Entrada inválida                                     | `422 INVALID_BRIEFING`.                          |
+| Chave ausente ou inválida                            | `400 IDEMPOTENCY_KEY_REQUIRED`.                  |
+| Origem não autorizada                                | `403 ORIGIN_REJECTED`.                           |
+| Corpo que não é JSON                                 | `415 JSON_REQUIRED`.                             |
+| Corpo acima de 16 KiB                                | `413 PAYLOAD_TOO_LARGE`.                         |
+| Mais de cinco tentativas por endereço em dez minutos | `429 RATE_LIMITED`.                              |
+| Receptor não configurado                             | `503 DESTINATION_UNAVAILABLE`.                   |
+| Timeout ou erro do receptor                          | `502 DESTINATION_FAILED`.                        |
 
 ## Limite deliberado antes de produção
 

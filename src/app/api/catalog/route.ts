@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { queryCatalog } from "@/lib/catalog";
+import { getSiteCatalog } from "@/lib/site-database";
 
 export const revalidate = 300;
 
@@ -22,7 +23,7 @@ function invalid(message: string) {
  * internal application or expose costs, suppliers, stock, discount rules or
  * unrestricted filters.
  */
-export function GET(request: NextRequest) {
+export async function GET(request: NextRequest) {
   const search = request.nextUrl.searchParams;
   const query = search.get("q");
   const category = search.get("category");
@@ -52,17 +53,32 @@ export function GET(request: NextRequest) {
     );
   if (sort && !["curadoria", "nome"].includes(sort))
     return invalid("sort deve ser curadoria ou nome.");
-  const result = queryCatalog({
-    query: query ?? undefined,
-    category: category ?? undefined,
-    page: page ?? undefined,
-    pageSize: pageSize ?? undefined,
-    sort: sort ?? undefined,
-  });
+  let catalogItems;
+  try {
+    catalogItems = await getSiteCatalog();
+  } catch {
+    return NextResponse.json(
+      { error: "CATALOG_UNAVAILABLE" },
+      { status: 503, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+  const result = queryCatalog(
+    {
+      query: query ?? undefined,
+      category: category ?? undefined,
+      page: page ?? undefined,
+      pageSize: pageSize ?? undefined,
+      sort: sort ?? undefined,
+    },
+    catalogItems,
+  );
   return NextResponse.json(result, {
     headers: {
       "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
       "X-Catalog-Contract-Version": result.contractVersion,
+      "X-Catalog-Source": process.env.SUPABASE_URL
+        ? "site-database"
+        : "snapshot",
     },
   });
 }

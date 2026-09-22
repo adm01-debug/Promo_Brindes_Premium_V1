@@ -20,17 +20,17 @@ Node 22.12+ ou 24 LTS recomendado. O projeto usa Next.js 16, React 19 e TypeScri
 ## O que funciona
 
 - Home responsiva, coleções, personalização, processo e FAQ.
-- Oito produtos reais, com IDs e SKUs consultados no Supabase canônico em 20/09/2026.
+- Oito produtos reais, com IDs e SKUs consultados no sistema comercial em 20/09/2026 e sincronizados no banco dedicado da vitrine em 22/09/2026.
 - Busca por nome/SKU/categoria, filtros, favoritos e seleção persistente.
 - Detalhe rápido, quantidades com mínimo cadastrado e remoção de itens.
 - Briefing com validação e download de arquivo local.
 - Plano interativo com 200 etapas, filtros, progresso local e exportação Markdown.
 - Páginas permanentes de produto, metadados por peça e infraestrutura de sitemap/robots preparada para lançamento autorizado.
-- Contrato público do catálogo e endpoint de briefing com validação, limite de tentativas, idempotência por processo e falha explícita quando não há receptor comercial.
+- Contrato público do catálogo lido do Supabase da vitrine quando configurado; endpoint de briefing com validação, limite de tentativas, idempotência por processo e falha explícita quando não há receptor comercial.
 
 ## Limites desta entrega
 
-Nesta instalação, a versão **não envia leads, não registra propostas e não reserva estoque**. O formulário gera um arquivo no navegador e informa isso explicitamente. O endpoint de briefing já existe, mas só habilita entrega quando há um receptor HTTPS aprovado em `BRIEFING_WEBHOOK_URL`; sem essa configuração, ele responde indisponibilidade e a interface permanece em download local. O catálogo é um snapshot selecionado; não há sincronização contínua. Valores, condições e disponibilidade devem ser confirmados pelo comercial.
+Nesta instalação, a versão **não envia leads, não registra propostas e não reserva estoque**. O formulário gera um arquivo no navegador e informa isso explicitamente. O endpoint de briefing já existe, mas só habilita entrega quando há um receptor HTTPS aprovado em `BRIEFING_WEBHOOK_URL`; sem essa configuração, ele responde indisponibilidade e a interface permanece em download local. A curadoria contém oito peças sincronizadas no banco da vitrine; a home e as fichas ainda usam o snapshot editorial versionado. Valores, condições e disponibilidade devem ser confirmados pelo comercial.
 
 A imagem de campanha foi gerada por IA e é conceitual. Os cards usam fotografias reais de fornecedor; direitos de publicação comercial devem ser confirmados. Não foram alterados schema, policies, dados ou serviços do sistema comercial. O site está `noindex` e não foi publicado remotamente.
 
@@ -41,6 +41,7 @@ O planejamento é uma ferramenta desta prévia. Antes de lançar a vitrine públ
 - [Pesquisa, posicionamento e referências](docs/ESTRATEGIA_E_PESQUISA.md)
 - [Auditoria dirigida de Promo_Gifts_V4](docs/AUDITORIA_PROJETO_INTERNO.md)
 - [Verificação ao vivo do catálogo canônico](docs/audit/CANONICAL_CATALOG_LIVE_CHECK_2026-09-22.md)
+- [Banco dedicado da vitrine premium](docs/SUPABASE_SITE_DATABASE.md)
 - [Arquitetura e integração comercial](docs/ARQUITETURA_E_INTEGRACAO.md)
 - [Contrato público de catálogo v1](docs/CONTRATO_CATALOGO_PUBLICO_V1.md)
 - [Contrato de briefing v1](docs/CONTRATO_BRIEFING_V1.md)
@@ -69,6 +70,8 @@ npm run test:e2e
 
 Copie `.env.example` apenas para configurar um ambiente autorizado. `PROMO_PREMIUM_INDEXABLE` permanece `false` até o domínio, conteúdo, privacidade e operação passarem pelos gates de lançamento.
 
+Para o banco dedicado da vitrine, preencha `.env.local` com as credenciais do projeto correto e use `npm run db:migrate -- --dry-run`, `npm run db:migrate` e `npm run db:sync-catalog`. O procedimento, as permissões e a validação do projeto atual estão em [SUPABASE_SITE_DATABASE.md](docs/SUPABASE_SITE_DATABASE.md).
+
 Os testes iniciam o servidor de produção na porta 3107, que deve estar livre. Execute o build antes dos testes. Se necessário, instale o navegador com `npx playwright install chromium`.
 
 O plano tem fonte única em `src/lib/plan.json`. Após atualizar status/evidências, execute `node scripts/generate-plan.mjs` e `npm run check:plan`. Os checkboxes do navegador salvam um acompanhamento local separado; não alteram o arquivo do repositório nem validam entregas automaticamente.
@@ -80,6 +83,7 @@ src/app/                 Rotas, metadados, estilos e páginas estáticas
 src/components/          Vitrine, diálogo e painel de planejamento
 src/lib/products.json    Seleção pública com proveniência por SKU
 src/lib/plan.json        Fonte estruturada das 200 etapas
+supabase/migrations/     Schema versionado do banco dedicado à vitrine
 docs/                    Pesquisa, auditoria, contratos, plano e evidências
 public/images/           Hero conceitual e fotos locais dos produtos
 scripts/                 Geração e validação dos checklists
