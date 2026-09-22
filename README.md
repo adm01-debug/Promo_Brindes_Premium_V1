@@ -25,7 +25,7 @@ Node 22.12+ ou 24 LTS recomendado. O projeto usa Next.js 16, React 19 e TypeScri
 - Detalhe rápido, quantidades com mínimo cadastrado e remoção de itens.
 - Briefing com validação e download de arquivo local.
 - Plano interativo com 200 etapas, filtros, progresso local e exportação Markdown.
-- Revisão individual das 200 etapas: **77 critérios comprovados no escopo, 71 entregas parciais e 52 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
+- Revisão individual das 200 etapas: **80 critérios comprovados no escopo, 68 entregas parciais e 52 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
 - Páginas permanentes de produto, metadados por peça e infraestrutura de sitemap/robots preparada para lançamento autorizado.
 - Contrato público do catálogo lido diretamente do Supabase da vitrine, com paginação e validação no servidor; briefing com persistência idempotente e reserva atômica de entrega, mantido desligado até existir receptor comercial homologado.
 

@@ -2,7 +2,7 @@
 
 Revisão: **22/09/2026**, identificador `2026-09-22-audit-1`. Código base examinado: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. Projeto: **Promo_Brindes_Premium_V1**. A referência histórica de `Promo_Gifts_V4` continua sendo a auditoria dirigida do commit `44857d5`.
 
-**Não implementamos todas as melhorias.** Há **77 etapas com o próprio critério comprovado, 71 parciais e 52 sem entrega comprovada**. São **123 etapas abertas**, das quais **94 são P0**. O site tem catálogo curado, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
+**Não implementamos todas as melhorias.** Há **80 etapas com o próprio critério comprovado, 68 parciais e 52 sem entrega comprovada**. São **120 etapas abertas**, das quais **91 são P0**. O site tem catálogo curado, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
 
 Esses números contam critérios do plano, não esforço restante ou porcentagem de prontidão comercial. Entrevistas, licenças, homologações e monitoramento têm peso diferente de um componente visual. A conclusão de uma entrega isolada não libera suas dependências nem os gates de lançamento.
 
@@ -29,19 +29,19 @@ A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [
 | 06 · Arquitetura de informação e jornadas | 4 | 5 | 1 |
 | 07 · Sistema de design e componentes | 7 | 3 | 0 |
 | 08 · Página inicial e narrativa de marca | 8 | 1 | 1 |
-| 09 · Busca, filtros e descoberta | 6 | 1 | 3 |
+| 09 · Busca, filtros e descoberta | 7 | 0 | 3 |
 | 10 · Página de produto e confiança | 2 | 5 | 3 |
 | 11 · Personalização e montagem de kits | 0 | 2 | 8 |
 | 12 · Seleção, briefing e conversão | 5 | 3 | 2 |
-| 13 · Contrato público e integração de catálogo | 3 | 7 | 0 |
+| 13 · Contrato público e integração de catálogo | 4 | 6 | 0 |
 | 14 · Passagem para o comercial e CRM | 1 | 3 | 6 |
 | 15 · Segurança, privacidade e governança | 0 | 7 | 3 |
 | 16 · Conteúdo, SEO e descoberta orgânica | 1 | 6 | 3 |
-| 17 · Desempenho e confiabilidade | 4 | 3 | 3 |
+| 17 · Desempenho e confiabilidade | 5 | 2 | 3 |
 | 18 · Acessibilidade e inclusão | 3 | 6 | 1 |
 | 19 · Qualidade, homologação e piloto | 3 | 3 | 4 |
 | 20 · Lançamento, operação e evolução | 0 | 2 | 8 |
-| **Total** | **77** | **71** | **52** |
+| **Total** | **80** | **68** | **52** |
 
 ## Correções do acompanhamento
 
@@ -52,7 +52,7 @@ O registro anterior mostrava **63 concluídas e 137 pendentes**. A revisão não
 | 061 · Tokens | Cores e fontes centralizadas; espaçamentos, bordas e raios ainda usam valores espalhados. |
 | 069 · Biblioteca | Há inventário descritivo, mas faltam exemplos reproduzíveis e variantes completas. |
 
-As regressões inicialmente encontradas nas etapas **056, 068, 087, 089, 114, 127, 134, 168 e 178** foram corrigidas. A revalidação cobre envelope de seleção, reduced motion, ordenação e paginação na fonte, rascunho em memória, fonte única publicada, chave/hash com lease atômica e distinção entre vazio e indisponibilidade.
+As regressões inicialmente encontradas nas etapas **056, 068, 087, 089, 114, 127, 134, 168 e 178** foram corrigidas. A revalidação cobre envelope de seleção, reduced motion, ordenação e paginação na fonte, rascunho em memória, fonte única publicada, chave/hash com lease atômica e distinção entre vazio e indisponibilidade. A revalidação posterior acrescentou histórico de navegação, fallback de mídia para 403 e o gate de JavaScript, fontes e chunks do build.
 
 Nove critérios próprios já atendidos tecnicamente apareciam como pendentes: **051, 054, 055, 092, 122, 153, 162, 163 e 179**. A classificação revisada reconhece essas entregas isoladas e passa a mostrar suas dependências separadamente. Foram verificadas evidências de mapa, jornada sem conta, natureza consultiva, páginas permanentes, host, HTML inicial, imagens e varredura automatizada. Não são nove funções novas criadas nesta revisão; também não aprovam indexação, integração viva, LCP de campo ou conformidade integral de acessibilidade.
 
@@ -75,14 +75,14 @@ Os endpoints foram carregados com `fetch` simulado e as interações de envio fo
 | AUD-05 | P1 · 144 | Sufixo de data era truncado. A entrada integral agora é rejeitada. | Definir regras comerciais de data além do calendário. |
 | AUD-06 | P0 antes de ampliar catálogo · 089, 127 | Fonte de 30 registros era truncada. O cenário atual confirma total 30 com paginação/contagem na fonte. | Testar expansão de curadoria com dados aprovados. |
 | AUD-09 | P1 · 056 | Ficha gravava seleção sem validade. A mesma serialização com `savedAt` é usada nas duas rotas. | Manter teste entre rotas. |
-| AUD-10 | P1 · 088 | Limpeza mantinha `q` na URL. A limpeza agora remove o parâmetro; voltar/avançar ainda não foi implementado. | Sincronizar `popstate` e facetas futuras. |
+| AUD-10 | P1 · 088 | Limpeza mantinha `q` na URL. Busca, categoria, página e ordenação agora registram histórico; voltar restaura a consulta na fonte. | Incluir futuras facetas no mesmo contrato de URL. |
 | AUD-11 | P0 antes de ativar envio · 117, 134 | Retry criava chave nova. A chave permanece estável para a mesma intenção. | Exercer resposta perdida e CRM homologado. |
 | AUD-12 | P1 · 114, 177 | Voltar apagava contato. Rascunho controlado em memória preserva os campos sem localStorage. | Revalidar ao mudar os campos. |
 | AUD-13 | P1 · 068, 178 | Rolagem ignorava reduced motion. A sonda atual não observa animação intermediária. | Incluir novas animações na sonda. |
 
 Os controles **AUD-07 e AUD-08 passam**: projeto operacional e host semelhante são rejeitados antes da leitura do catálogo.
 
-A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, oito cenários sintéticos, cinco sondas de browser e **20 testes E2E**. A cobertura do painel verifica que marcação local não modifica a auditoria nem reaplica uma conclusão antiga. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
+A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, JavaScript, fontes e chunks, oito cenários sintéticos, cinco sondas de browser e **24 testes E2E**. A cobertura reproduz recuperação de API 503, fallback de mídia 403, retorno de navegação, remoção canônica de SKU e garante que marcação local não modifica a auditoria nem reaplica uma conclusão antiga. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
 
 O painel atualizado também foi inspecionado em **390 e 1440 pixels**, com filtro de parciais e critério expandido: sem overflow horizontal e sem violações nas regras axe selecionadas. [Registro da inspeção](audit/plan-dashboard-check.json).
 
@@ -92,7 +92,7 @@ Resultados brutos: [módulos isolados](audit/plan-scenarios.json) e [navegador](
 
 | Lacuna | Evidência | Etapas e efeito |
 |---|---|---|
-| Navegação histórica de busca | Busca e limpeza sincronizam URL, mas não há listener de `popstate`. | 088: voltar/avançar e facetas futuras ainda exigem sincronização. |
+| Facetas futuras de busca | Busca, categoria, página e ordenação sincronizam URL e histórico. | 088 está concluída; incluir novas facetas no contrato de URL ao criá-las. |
 | Ordenação/facetas incompletas | UI não oferece sort, facetas ou paginação de servidor; comparador por nome não declara desempate por ID. | 085–090: testes com oito nomes distintos não cobrem empates ou escala. |
 | Passagem comercial sem homologação | O protocolo é persistido e a entrega é reservada, mas não há receptor/CRM configurado. | 117–118, 139, 184: falta contrato vivo, conciliação operacional e aceite de vendedores. |
 | Controles locais de abuso | Rate limit depende de `x-forwarded-for` e de Maps na instância. | 144: contrato com proxy confiável, limite distribuído e resistência a reinício não estão implementados. |
@@ -101,7 +101,7 @@ Resultados brutos: [módulos isolados](audit/plan-scenarios.json) e [navegador](
 | Metadados e liberação do índice | Privacidade herda canonical `/`; layout/robots aceitam flag de indexação sem domínio validado; sitemap usa snapshot. | 152–156: corrigir identidade por rota e configuração de lançamento. |
 | Planejamento sem controle de acesso | `/planejamento` é rota pública; `noindex` não restringe leitura. | 145, 191, 194: proteger ou mover para ambiente interno antes da abertura. |
 | Ausência de pipeline/deploy | Repositório versionado não fornece neste estado uma implantação comercial com rollback testado. | 185, 191–195: falta CI dos gates, staging, domínio, release e monitoramento. |
-| Medição incompleta | Check de orçamento mede imagens; última coleta válida registra LCP 3,0 s. | 161, 166–170: medir JS/fontes/requisições, repetir laboratório e depois medir campo. |
+| Medição de experiência | Gate mede imagens, fontes WOFF2, JavaScript gzip e chunks por rota; a última coleta válida registra LCP 3,0 s. | 166–170: repetir laboratório, medir campo e instrumentar alertas. |
 
 Esses achados continuam abertos nesta revisão. As alterações realizadas aqui corrigem o diagnóstico, as evidências e o acompanhamento; não transformam funções futuras em funções implementadas.
 

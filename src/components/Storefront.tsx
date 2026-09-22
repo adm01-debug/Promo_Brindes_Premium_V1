@@ -60,6 +60,7 @@ type BriefingDraft = {
   budget: string;
   message: string;
 };
+type DiscoveryHistoryMode = "push" | "replace";
 
 const emptyBriefingDraft: BriefingDraft = {
   name: "",
@@ -100,6 +101,10 @@ export default function Storefront({
   const [catalog, setCatalog] = useState<CatalogPage | null>(initialCatalog);
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [catalogError, setCatalogError] = useState(!initialCatalog);
+  const [networkOnline, setNetworkOnline] = useState(true);
+  const [unavailableImages, setUnavailableImages] = useState<Set<string>>(
+    () => new Set(),
+  );
   const [knownProducts, setKnownProducts] = useState<Record<string, Product>>(
     () =>
       Object.fromEntries(
@@ -178,29 +183,49 @@ export default function Storefront({
   }, [notice]);
 
   useEffect(() => {
+    const syncNetworkState = () => setNetworkOnline(navigator.onLine);
+    syncNetworkState();
+    window.addEventListener("online", syncNetworkState);
+    window.addEventListener("offline", syncNetworkState);
+    return () => {
+      window.removeEventListener("online", syncNetworkState);
+      window.removeEventListener("offline", syncNetworkState);
+    };
+  }, []);
+
+  useEffect(() => {
     setIdempotencyKey(null);
   }, [selected]);
 
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const requestedCategory = url.searchParams.get("categoria") || "Todos";
-    const requestedSearch = url.searchParams.get("q")?.slice(0, 100) || "";
-    const requestedPage = Number(url.searchParams.get("page") || "1");
-    const requestedSort =
-      url.searchParams.get("sort") === "nome" ? "nome" : "curadoria";
-    if (
-      requestedSearch ||
-      requestedCategory !== "Todos" ||
-      (Number.isInteger(requestedPage) && requestedPage > 1) ||
-      requestedSort !== "curadoria"
-    )
-      void loadCatalog(
-        requestedSearch,
-        requestedCategory,
-        requestedPage,
-        requestedSort,
-      );
-    // Initial query comes from the browser URL; subsequent changes are explicit actions.
+    const readDiscoveryUrl = (force = false) => {
+      const url = new URL(window.location.href);
+      const requestedCategory = url.searchParams.get("categoria") || "Todos";
+      const requestedSearch = url.searchParams.get("q")?.slice(0, 100) || "";
+      const requestedPage = Number(url.searchParams.get("page") || "1");
+      const requestedSort =
+        url.searchParams.get("sort") === "nome" ? "nome" : "curadoria";
+      const hasQuery =
+        requestedSearch ||
+        requestedCategory !== "Todos" ||
+        (Number.isInteger(requestedPage) && requestedPage > 1) ||
+        requestedSort !== "curadoria";
+      setExpanded(Boolean(hasQuery));
+      setOnlyFavorites(false);
+      if (force || hasQuery)
+        void loadCatalog(
+          requestedSearch,
+          requestedCategory,
+          requestedPage,
+          requestedSort,
+          "replace",
+        );
+    };
+    readDiscoveryUrl();
+    const onPopState = () => readDiscoveryUrl(true);
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+    // The URL is the source of truth for this one-time listener.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -214,12 +239,26 @@ export default function Storefront({
       .then((response) => (response.ok ? response.json() : null))
       .then((page: CatalogPage | null) => {
         if (!page?.items) return;
+        const returnedIds = new Set(page.items.map((product) => product.id));
+        const removedIds = missing.filter((id) => !returnedIds.has(id));
         setKnownProducts((current) => ({
           ...current,
           ...Object.fromEntries(
             page.items.map((product) => [product.id, product]),
           ),
         }));
+        if (removedIds.length) {
+          setSelected((current) => {
+            const next = { ...current };
+            removedIds.forEach((id) => delete next[id]);
+            return next;
+          });
+          setNotice(
+            removedIds.length === 1
+              ? "Uma peça da sua seleção não está mais disponível e foi removida."
+              : "Algumas peças da sua seleção não estão mais disponíveis e foram removidas.",
+          );
+        }
       })
       .catch(() => undefined);
     return () => controller.abort();
@@ -239,11 +278,18 @@ export default function Storefront({
   const selection = Object.keys(selected)
     .map((id) => knownProducts[id])
     .filter((product): product is Product => Boolean(product));
+  const markImageUnavailable = (image: string) =>
+    setUnavailableImages((current) => {
+      if (current.has(image)) return current;
+      return new Set(current).add(image);
+    });
+  const imageIsUnavailable = (image: string) => unavailableImages.has(image);
   const updateDiscoveryUrl = (
     nextSearch: string,
     nextCategory: string,
     nextPage = 1,
     nextSort: "curadoria" | "nome" = sort,
+    historyMode: DiscoveryHistoryMode = "push",
   ) => {
     const url = new URL(window.location.href);
     if (nextSearch.trim()) url.searchParams.set("q", nextSearch.trim());
@@ -255,7 +301,8 @@ export default function Storefront({
     else url.searchParams.delete("page");
     if (nextSort === "nome") url.searchParams.set("sort", "nome");
     else url.searchParams.delete("sort");
-    window.history.replaceState({}, "", url);
+    if (historyMode === "push") window.history.pushState({}, "", url);
+    else window.history.replaceState({}, "", url);
   };
   const scrollToCuration = () => {
     document.getElementById("curadoria")?.scrollIntoView({
@@ -269,6 +316,7 @@ export default function Storefront({
     nextCategory = category,
     nextPage = 1,
     nextSort = sort,
+    historyMode: DiscoveryHistoryMode = "push",
   ) {
     const params = new URLSearchParams({ page: String(Math.max(1, nextPage)) });
     if (nextSearch.trim()) params.set("q", nextSearch.trim());
@@ -279,7 +327,13 @@ export default function Storefront({
     setSearch(nextSearch);
     setCategory(nextCategory);
     setSort(nextSort);
-    updateDiscoveryUrl(nextSearch, nextCategory, nextPage, nextSort);
+    updateDiscoveryUrl(
+      nextSearch,
+      nextCategory,
+      nextPage,
+      nextSort,
+      historyMode,
+    );
     setCatalogLoading(true);
     setCatalogError(false);
     try {
@@ -296,7 +350,13 @@ export default function Storefront({
         ),
       }));
       setSort(next.sort);
-      updateDiscoveryUrl(nextSearch, nextCategory, next.page, next.sort);
+      updateDiscoveryUrl(
+        nextSearch,
+        nextCategory,
+        next.page,
+        next.sort,
+        "replace",
+      );
     } catch {
       setCatalogError(true);
     } finally {
@@ -499,15 +559,20 @@ export default function Storefront({
 
       <main id="conteudo">
         <section className="hero" aria-labelledby="hero-title">
-          <Image
-            className="hero-image"
-            src="/images/hero-gifting.webp"
-            alt="Composição conceitual de presente com caixa preta, caderno, caneta e garrafa com acabamento dourado"
-            fill
-            priority
-            fetchPriority="high"
-            sizes="100vw"
-          />
+          {imageIsUnavailable("/images/hero-gifting.webp") ? (
+            <div className="media-fallback hero-media-fallback" aria-hidden="true" />
+          ) : (
+            <Image
+              className="hero-image"
+              src="/images/hero-gifting.webp"
+              alt="Composição conceitual de presente com caixa preta, caderno, caneta e garrafa com acabamento dourado"
+              fill
+              priority
+              fetchPriority="high"
+              sizes="100vw"
+              onError={() => markImageUnavailable("/images/hero-gifting.webp")}
+            />
+          )}
           <div className="hero-shade" />
           <div className="hero-content">
             <p className="eyebrow">
@@ -660,12 +725,25 @@ export default function Storefront({
                     onClick={() => setDetail(p)}
                     aria-label={`Conhecer ${p.name}`}
                   >
-                    <Image
-                      src={p.image}
-                      alt={p.originalName}
-                      fill
-                      sizes="(max-width: 850px) 45vw, 23vw"
-                    />
+                    {imageIsUnavailable(p.image) ? (
+                      <span
+                        className="media-fallback product-media-fallback"
+                        data-testid="media-fallback"
+                        role="img"
+                        aria-label={`Imagem de ${p.name} temporariamente indisponível`}
+                      >
+                        <Gift aria-hidden="true" size={22} />
+                        <span>Imagem indisponível</span>
+                      </span>
+                    ) : (
+                      <Image
+                        src={p.image}
+                        alt={p.originalName}
+                        fill
+                        sizes="(max-width: 850px) 45vw, 23vw"
+                        onError={() => markImageUnavailable(p.image)}
+                      />
+                    )}
                   </button>
                   <span className="product-tag">
                     {p.category === "Kits & experiências"
@@ -721,10 +799,15 @@ export default function Storefront({
           {catalogError ? (
             <div className="empty-state" role="status">
               <Search size={28} />
-              <h3>Não foi possível consultar a curadoria agora.</h3>
+              <h3>
+                {networkOnline
+                  ? "Não foi possível consultar a curadoria agora."
+                  : "Você está sem conexão no momento."}
+              </h3>
               <p>
-                Sua seleção local continua preservada. Tente atualizar a
-                consulta.
+                {networkOnline
+                  ? "Sua seleção local continua preservada. Tente atualizar a consulta."
+                  : "Sua seleção local continua preservada. Reconecte-se e atualize a consulta."}
               </p>
               <button
                 className="button button-outline"
@@ -1133,12 +1216,24 @@ export default function Storefront({
           className="product-modal"
         >
           <div className="detail-image">
-            <Image
-              src={detail.image}
-              alt={detail.originalName}
-              fill
-              sizes="(max-width: 700px) 90vw, 450px"
-            />
+            {imageIsUnavailable(detail.image) ? (
+              <span
+                className="media-fallback detail-media-fallback"
+                role="img"
+                aria-label={`Imagem de ${detail.name} temporariamente indisponível`}
+              >
+                <Gift aria-hidden="true" size={28} />
+                <span>Imagem temporariamente indisponível</span>
+              </span>
+            ) : (
+              <Image
+                src={detail.image}
+                alt={detail.originalName}
+                fill
+                sizes="(max-width: 700px) 90vw, 450px"
+                onError={() => markImageUnavailable(detail.image)}
+              />
+            )}
           </div>
           <div className="detail-copy">
             <p className="eyebrow">
@@ -1221,7 +1316,23 @@ export default function Storefront({
                 {selection.length ? (
                   selection.map((p) => (
                     <div className="selection-item" key={p.id}>
-                      <Image src={p.image} alt="" width={72} height={72} />
+                      {imageIsUnavailable(p.image) ? (
+                        <span
+                          className="media-fallback selection-media-fallback"
+                          role="img"
+                          aria-label={`Imagem de ${p.name} temporariamente indisponível`}
+                        >
+                          <Gift aria-hidden="true" size={18} />
+                        </span>
+                      ) : (
+                        <Image
+                          src={p.image}
+                          alt=""
+                          width={72}
+                          height={72}
+                          onError={() => markImageUnavailable(p.image)}
+                        />
+                      )}
                       <div className="selection-name">
                         <h3>{p.name}</h3>
                         <small>

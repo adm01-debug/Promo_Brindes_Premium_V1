@@ -4,13 +4,13 @@ Data: 22/09/2026. Escopo: aplicação local compilada, oito produtos de snapshot
 
 ## Revisão posterior dos critérios
 
-A [revisão individual das 200 etapas](REVISAO_EXAUSTIVA_PLANO.md) registra **77 critérios comprovados no próprio escopo, 71 entregas parciais e 52 sem entrega comprovada**. Oito cenários sintéticos agora passam para concorrência idempotente, conflito de payload, corpo sem `Content-Length`, data inválida, paginação de fonte e validação de host. As sondas de browser cobrem expiração iniciada na ficha, retorno do formulário e movimento reduzido. Os resultados brutos estão em `audit/plan-scenarios.json` e `audit/plan-browser-scenarios.json`.
+A [revisão individual das 200 etapas](REVISAO_EXAUSTIVA_PLANO.md) registra **80 critérios comprovados no próprio escopo, 68 entregas parciais e 52 sem entrega comprovada**. Oito cenários sintéticos agora passam para concorrência idempotente, conflito de payload, corpo sem `Content-Length`, data inválida, paginação de fonte e validação de host. As sondas de browser cobrem expiração iniciada na ficha, retorno do formulário e movimento reduzido. A suíte também reproduz retorno 503 da curadoria e 403 de mídia, preservando a seleção e exibindo fallback. Os resultados brutos estão em `audit/plan-scenarios.json` e `audit/plan-browser-scenarios.json`.
 
 Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu os defeitos técnicos listados, atualizou as verificações e o painel, mas não habilitou entrega comercial nem integrou CRM. O painel separa situação auditada de marcação pessoal e não reaplica automaticamente a conclusão de uma revisão antiga.
 
 ## Resultados funcionais
 
-**20 testes E2E passaram em Chromium** após a revisão (7,6 segundos nesta rodada). O cenário garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. A suíte cobre:
+**24 testes E2E passaram em Chromium** após a revisão (8,6 segundos nesta rodada). O cenário garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. A suíte cobre:
 
 1. Busca por SKU, resultado vazio, limpeza e filtro de categoria.
 2. Favoritos e seleção após recarregar, mínimo de quantidade e remoção.
@@ -31,6 +31,10 @@ Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu
 17. Reflow operável em 320 CSS pixels e abertura da seleção nessa largura.
 18. Proposta e link de produto no HTML inicial; canonical e JSON-LD de produto sem `Offer` fictício.
 19. Três estados auditados, exportação das constatações e próximas ações, progresso comprovado imutável por checkbox e descarte de marcações de revisão antiga.
+20. Voltar do navegador restaura busca, categoria, página e ordenação pela URL.
+21. Indisponibilidade `503` da curadoria mantém a seleção e permite nova consulta.
+22. Resposta `403` da mídia mostra alternativa acessível e mantém o detalhe da peça utilizável.
+23. SKU removido da curadoria é retirado da seleção com explicação visível, sem descartar a seleção por falha de rede.
 
 Comandos: `npm run build`, `npm run typecheck`, `npm run check:plan`, `npm run check:public-secrets`, `npm run check:performance-budget` e `npm run test:e2e`. A suíte usa servidor de produção na porta 3107, sem reutilizar processo estranho. A porta 3000 já servia outro aplicativo neste ambiente; o teste inicial foi descartado e a configuração foi corrigida.
 
@@ -42,7 +46,7 @@ Revisão em **360, 390, 768 e 1440 pixels** no Chromium: sem overflow horizontal
 
 Capturas revisadas: [desktop](screenshots/home-desktop.png), [mobile](screenshots/home-mobile.png), [primeira dobra desktop](screenshots/hero-desktop.png), [primeira dobra mobile](screenshots/hero-mobile.png), [plano desktop](screenshots/plan-desktop.png) e [plano mobile](screenshots/plan-mobile.png).
 
-As fotos locais foram decodificadas e convertidas para WebP; a imagem conceitual principal foi reduzida de aproximadamente 2,2 MB em PNG para aproximadamente 144 KB em WebP, antes das variantes de tamanho servidas pelo Next. O PNG de trabalho foi movido para `design-assets/`, fora do diretório servido. O orçamento automatizado aprovou as nove imagens de entrega: hero com 145.116 bytes e catálogo inteiro com 195.366 bytes. A navegação não depende do CDN que respondeu 403 na amostra.
+As fotos locais foram decodificadas e convertidas para WebP; a imagem conceitual principal foi reduzida de aproximadamente 2,2 MB em PNG para aproximadamente 144 KB em WebP, antes das variantes de tamanho servidas pelo Next. O PNG de trabalho foi movido para `design-assets/`, fora do diretório servido. O orçamento automatizado aprovou as nove imagens de entrega: hero com 145.116 bytes e catálogo inteiro com 195.366 bytes. A navegação não depende do CDN que respondeu 403 na amostra; se uma imagem falhar, a peça mostra alternativa visível e acessível.
 
 ## Acessibilidade
 
@@ -88,4 +92,4 @@ A coleta identificou divergência entre nomes acessíveis e texto visível em do
 
 ## Limitações para lançamento
 
-Faltam integração viva e governança editorial, aprovação de marca/mídia/conteúdo, preço e disponibilidade contextualizados, persistência de briefing, validação no CRM, privacidade comercial, domínio, monitoramento em produção, métricas de campo, testes com compradores e QA multiplataforma. O painel de planejamento deve ficar em ambiente interno antes de abrir a vitrine pública.
+Faltam integração viva e governança editorial, aprovação de marca/mídia/conteúdo, preço e disponibilidade contextualizados, validação no CRM, privacidade comercial, domínio, monitoramento em produção, métricas de campo, testes com compradores e QA multiplataforma. O painel de planejamento deve ficar em ambiente interno antes de abrir a vitrine pública.

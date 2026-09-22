@@ -304,6 +304,26 @@ svg {
   object-fit: cover;
   object-position: 50% 54%;
 }
+.media-fallback {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 9px;
+  background:
+    radial-gradient(circle at 50% 35%, #b89b6552, transparent 38%),
+    linear-gradient(135deg, #1a1b19, #363226);
+  color: var(--gold);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+.hero-media-fallback {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 71% 38%, #a9874342, transparent 25%),
+    linear-gradient(115deg, #0d0e0d 26%, #29261d 100%);
+}
 .hero-shade {
   position: absolute;
   inset: 0;
@@ -534,6 +554,11 @@ svg {
 }
 .product-image-button:hover img {
   transform: scale(1.04);
+}
+.product-media-fallback {
+  position: absolute;
+  inset: 0;
+  padding: 24px;
 }
 .product-tag {
   position: absolute;
@@ -1085,6 +1110,11 @@ svg {
   padding: 25px;
   mix-blend-mode: multiply;
 }
+.detail-media-fallback {
+  position: absolute;
+  inset: 0;
+  padding: 30px;
+}
 .detail-copy {
   padding: 50px 35px 30px;
 }
@@ -1139,6 +1169,11 @@ svg {
 .selection-item > img {
   background: #eeece6;
   object-fit: contain;
+}
+.selection-media-fallback {
+  width: 72px;
+  height: 72px;
+  flex: 0 0 72px;
 }
 .selection-name {
   flex: 1;

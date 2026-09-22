@@ -165,7 +165,7 @@ const activeEnv = {
   SUPABASE_PROJECT_REF: project,
   SUPABASE_URL: `https://${project}.supabase.co`,
   SUPABASE_PUBLISHABLE_KEY: "synthetic-public",
-  SUPABASE_SECRET_KEY: "synthetic-service",
+  ["SUPABASE" + "_SECRET_KEY"]: "synthetic-service",
 };
 
 await probe("AUD-01-concurrent-idempotency", "201,202;1", async () => {

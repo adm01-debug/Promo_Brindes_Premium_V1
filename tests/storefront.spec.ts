@@ -41,6 +41,63 @@ test("ordenação pública é acionável e compartilhável", async ({ page }) =>
   await expect(page.locator(".product-card").first()).toBeVisible();
 });
 
+test("histórico restaura a consulta compartilhável", async ({ page }) => {
+  await page.goto("/?q=08255");
+  await expect(page.locator(".product-card")).toHaveCount(1);
+  await page.getByRole("button", { name: "Limpar" }).click();
+  await expect(page).not.toHaveURL(/q=08255/);
+  await page.goBack();
+  await expect(page).toHaveURL(/q=08255/);
+  await expect(page.locator(".product-card")).toHaveCount(1);
+});
+
+test("falha da curadoria preserva o contexto e permite recuperar", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", {
+      name: "Adicionar Kit executivo à seleção",
+      exact: true,
+    })
+    .click();
+  await page.route(/\/api\/catalog\?/, (route) =>
+    route.fulfill({
+      status: 503,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "CATALOG_UNAVAILABLE" }),
+    }),
+  );
+  await page.getByRole("button", { name: "Escrita", exact: true }).click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Não foi possível consultar a curadoria agora.",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Minha seleção, 1 produtos" }),
+  ).toBeVisible();
+  await page.unroute(/\/api\/catalog\?/);
+  await page.getByRole("button", { name: "Tentar novamente" }).click();
+  await expect(page.locator(".product-card")).toHaveCount(2);
+});
+
+test("imagem indisponível mostra fallback sem quebrar a peça", async ({
+  page,
+}) => {
+  await page.route(/executivo\.webp/, (route) => route.fulfill({ status: 403 }));
+  await page.goto("/");
+  await expect(
+    page.getByRole("img", {
+      name: "Imagem de Kit executivo temporariamente indisponível",
+    }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Conhecer Kit executivo", exact: true })
+    .click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+});
+
 test("favoritos e seleção persistem, mínimo é respeitado e remoção funciona", async ({
   page,
 }) => {
@@ -158,6 +215,30 @@ test("dados locais inválidos não corrompem seleção", async ({ page }) => {
     page.getByRole("button", { name: "Minha seleção, 0 produtos" }),
   ).toBeVisible();
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+});
+
+test("peça removida da curadoria é explicada e retirada da seleção", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "promo-premium-selection-v1",
+      JSON.stringify({
+        version: 1,
+        savedAt: Date.now(),
+        items: { "11111111-1111-4111-8111-111111111111": 1 },
+      }),
+    );
+  });
+  await page.goto("/");
+  await expect(
+    page.getByText(
+      "Uma peça da sua seleção não está mais disponível e foi removida.",
+    ),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Minha seleção, 0 produtos" }),
+  ).toBeVisible();
 });
 
 test("seleção local expira e pode ser apagada explicitamente", async ({

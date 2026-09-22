@@ -2,7 +2,7 @@
 
 Referência: **2026-09-22** · **20 fases × 10 etapas = 200 etapas**.
 
-Status auditado: **77 concluídas no próprio escopo; 71 parciais; 52 sem entrega comprovada**. São 123 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
+Status auditado: **80 concluídas no próprio escopo; 68 parciais; 52 sem entrega comprovada**. São 120 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
 
 Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatório e prioridades](REVISAO_EXAUSTIVA_PLANO.md).
 
@@ -544,9 +544,9 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **058. Definir estados excepcionais.** Mapear vazio, erro, offline, SKU removido e conteúdo expirado.
   - **Situação auditada:** Parcial.
   - **Aceite:** Cada estado tem mensagem útil e caminho de recuperação.
-  - **Constatação:** Vazio e armazenamento inválido têm recuperação; remoção canônica, offline e expiração de conteúdo não estão completos.
-  - **Evidências e referências:** `docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md`, `src/components/Storefront.tsx`, `src/lib/site-database.ts`.
-  - **Próxima ação:** Implementar e testar mensagens e recuperação para todos os estados.
+  - **Constatação:** Vazio, armazenamento inválido, indisponibilidade da API, offline e SKU removido têm mensagem e recuperação sem perder a seleção; expiração de conteúdo canônico ainda não está completa.
+  - **Evidências e referências:** `docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md`, `src/components/Storefront.tsx`, `src/lib/site-database.ts`, `tests/storefront.spec.ts`.
+  - **Próxima ação:** Definir e testar expiração da curadoria publicada.
   - **Dependências:** 054 (Concluída no escopo).
 
 - [ ] **059. Validar arquitetura com compradores.** Aplicar teste de árvore ou tarefas de localização no sitemap.
@@ -802,12 +802,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Manter casos de empate quando houver ampliação de catálogo.
   - **Dependências:** 126 (Parcial).
 
-- [ ] **088. Implementar URLs de busca.** Manter consulta, filtros e página ao compartilhar ou usar voltar.
-  - **Situação auditada:** Parcial.
+- [x] **088. Implementar URLs de busca.** Manter consulta, filtros e página ao compartilhar ou usar voltar.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Navegação e política de indexação tratam parâmetros consistentemente.
-  - **Constatação:** URL inicial aceita busca/categoria; limpar não remove q, falta popstate e estado de página.
-  - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`.
-  - **Próxima ação:** Sincronizar todos os controles, voltar/avançar, facetas e paginação.
+  - **Constatação:** Busca, categoria, página e ordenação sincronizam URL; os controles criam histórico e popstate restaura a consulta na fonte.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`, `tests/storefront.spec.ts`.
+  - **Próxima ação:** Incluir facetas futuras no mesmo contrato de URL.
   - **Dependências:** 086 (Sem entrega comprovada).
 
 - [x] **089. Implementar paginação de servidor.** Buscar apenas o conjunto necessário com cancelamento e limites.
@@ -824,7 +824,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Não há conjunto de consultas reais, sinônimos e ranking esperado.
   - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`.
   - **Próxima ação:** Construir referência com comercial e medir acerto.
-  - **Dependências:** 081 (Concluída no escopo), 086 (Sem entrega comprovada), 087 (Concluída no escopo), 088 (Parcial), 089 (Concluída no escopo).
+  - **Dependências:** 081 (Concluída no escopo), 086 (Sem entrega comprovada), 087 (Concluída no escopo), 088 (Concluída no escopo), 089 (Concluída no escopo).
 
 
 ## Fase 10 — Página de produto e confiança
@@ -1058,17 +1058,17 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **117. Implementar envio real no backend.** Enviar briefing validado com chave de idempotência e proteção contra abuso.
   - **Situação auditada:** Parcial.
   - **Aceite:** Duplo clique e retry não geram oportunidades duplicadas.
-  - **Constatação:** Há endpoint e caminho de envio opcional; receptor vazio e retries geram novas chaves.
+  - **Constatação:** Entrega opcional usa chave estável, persistência/hash e lease atômica; falta receptor comercial homologado e rate limit distribuído.
   - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`.
-  - **Próxima ação:** Integrar persistência e destino aprovados com chave estável e controles distribuídos.
+  - **Próxima ação:** Integrar o destino aprovado e validar a criação de oportunidade sem duplicação.
   - **Dependências:** 116 (Parcial), 126 (Parcial), 134 (Concluída no escopo).
 
 - [ ] **118. Implementar resposta confiável.** Apresentar protocolo somente após confirmação persistida no servidor.
   - **Situação auditada:** Parcial.
   - **Aceite:** Falha permite tentar novamente e sucesso nunca é simulado por temporizador.
-  - **Constatação:** Protocolo nasce após 2xx do webhook, sem prova de commit persistido no banco/CRM.
+  - **Constatação:** Protocolo é persistido antes da entrega e o estado pendente é recuperável; falta validar o commit e o retorno do CRM homologado.
   - **Evidências e referências:** `src/app/api/briefings/route.ts`, `docs/audit/plan-database-check.json`.
-  - **Próxima ação:** Vincular protocolo ao registro transacional e validar resposta do receptor.
+  - **Próxima ação:** Testar resposta, erro e conciliação com o receptor comercial aprovado.
   - **Dependências:** 117 (Parcial).
 
 - [ ] **119. Implementar confirmação transacional.** Enviar confirmação pelo canal aprovado com resumo e próximos passos.
@@ -1137,9 +1137,9 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **126. Preparar contrato versionado.** Especificar paginação, filtros, erros, datas e disponibilidade da API.
   - **Situação auditada:** Parcial.
   - **Aceite:** Contrato revisado inclui exemplos de sucesso, vazio, inválido e indisponível.
-  - **Constatação:** Contrato v1 e exemplos existem, mas cobrem curadoria limitada e não disponibilidade/variantes aprovadas.
+  - **Constatação:** Contrato v1 cobre vazio, indisponibilidade, paginação, ordenação e busca; disponibilidade e variantes dependem de dados ainda não homologados.
   - **Evidências e referências:** `docs/CONTRATO_CATALOGO_PUBLICO_V1.md`, `src/app/api/catalog/route.ts`, `src/lib/site-database.ts`.
-  - **Próxima ação:** Corrigir semântica de catálogo vazio, paginação integral e documentar contrato integrado.
+  - **Próxima ação:** Versionar os campos de disponibilidade e variantes após sua aprovação comercial.
   - **Dependências:** 121 (Concluída no escopo), 122 (Concluída no escopo), 124 (Parcial).
 
 - [x] **127. Implementar leitura de catálogo.** Conectar servidor Next à projeção pública aprovada com limites de consulta.
@@ -1158,12 +1158,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Definir SLA e testar retirada completa, revalidação e cache.
   - **Dependências:** 127 (Concluída no escopo).
 
-- [ ] **129. Implementar saúde de mídia.** Verificar disponibilidade, fallback e dimensões das imagens autorizadas.
-  - **Situação auditada:** Parcial.
+- [x] **129. Implementar saúde de mídia.** Verificar disponibilidade, fallback e dimensões das imagens autorizadas.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** CDN com 403 aciona fallback observável e não quebra a apresentação.
-  - **Constatação:** Fotos locais evitam o CDN com falha; não há fallback observável nem monitoramento de mídia.
-  - **Evidências e referências:** `docs/audit/media-check.json`, `src/components/Storefront.tsx`.
-  - **Próxima ação:** Implementar fallback e diagnóstico de falha de imagem.
+  - **Constatação:** Fotos locais evitam o CDN com falha; erro de mídia, inclusive 403 simulado, mostra fallback com nome da peça e mantém abertura do detalhe.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `tests/storefront.spec.ts`.
+  - **Próxima ação:** Adicionar observabilidade de falhas de mídia ao ambiente publicado.
   - **Dependências:** 047 (Concluída no escopo), 127 (Concluída no escopo).
 
 - [ ] **130. Testar contrato ponta a ponta.** Conferir nomes, IDs, variantes, preço e resposta pública no staging.
@@ -1172,7 +1172,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** E2E checam subset do DTO e oito produtos; não há staging nem teste de drift completo.
   - **Evidências e referências:** `tests/public-api.spec.ts`.
   - **Próxima ação:** Testar contrato exato, estados, variantes e alteração/despublicação em staging.
-  - **Dependências:** 127 (Concluída no escopo), 128 (Parcial), 129 (Parcial).
+  - **Dependências:** 127 (Concluída no escopo), 128 (Parcial), 129 (Concluída no escopo).
 
 
 ## Fase 14 — Passagem para o comercial e CRM
@@ -1287,17 +1287,17 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **143. Proteger segredos de servidor.** Manter service role e integrações exclusivamente no servidor.
   - **Situação auditada:** Parcial.
   - **Aceite:** Build público e logs são verificados e não contêm segredos.
-  - **Constatação:** Inspeção exata não encontrou os segredos atuais no Git candidato nem no build público; scanner geral e logs ainda têm cobertura incompleta.
+  - **Constatação:** Gate percorre código público, scripts e build estático, sem encontrar segredos; logs de uma infraestrutura publicada ainda não existem para inspeção.
   - **Evidências e referências:** `scripts/check-public-secrets.mjs`, `docs/SUPABASE_SITE_DATABASE.md`, `docs/audit/plan-secret-scan.json`.
-  - **Próxima ação:** Ampliar verificação automatizada e registrar inspeção de artefatos e logs.
+  - **Próxima ação:** Adicionar logs e revisão de artefatos ao pipeline do ambiente publicado.
   - **Dependências:** 122 (Concluída no escopo).
 
 - [ ] **144. Isolar requisições de orçamento.** Validar origem, tamanho, campos e limites; usar proteção conforme arquitetura.
   - **Situação auditada:** Parcial.
   - **Aceite:** Abuso, payload inesperado e repetição recebem respostas controladas.
-  - **Constatação:** Há controles de origem/JSON; limite de corpo confia em Content-Length e data é truncada antes de validar.
+  - **Constatação:** Corpo é limitado por bytes reais, data e textos são validados integralmente; rate limit por IP ainda é local ao processo.
   - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/lib/briefing.ts`, `docs/audit/plan-scenarios.json`.
-  - **Próxima ação:** Limitar bytes reais, validar sem truncar e aplicar rate limit confiável/distribuído.
+  - **Próxima ação:** Aplicar rate limit confiável/distribuído no ambiente de produção.
   - **Dependências:** 141 (Parcial).
 
 - [ ] **145. Revisar arquivos e links públicos.** Garantir acesso privado a logos e expiração de links compartilháveis.
@@ -1442,12 +1442,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 
 **Articulação:** fase 08, fase 09, fase 13.
 
-- [ ] **161. Definir orçamento de desempenho.** Fixar limites para JS inicial, imagens, fontes e requisições do MVP.
-  - **Situação auditada:** Parcial.
+- [x] **161. Definir orçamento de desempenho.** Fixar limites para JS inicial, imagens, fontes e requisições do MVP.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Orçamento está associado a páginas e condições de medição reproduzíveis.
-  - **Constatação:** Orçamento documenta JS, fontes e imagens; script só mede imagens e falta limite verificável de requisições.
+  - **Constatação:** Gate mede imagens, fontes WOFF2, JavaScript gzip e quantidade de chunks por rota do build de produção.
   - **Evidências e referências:** `docs/ORCAMENTO_DESEMPENHO.md`, `scripts/check-performance-budget.mjs`.
-  - **Próxima ação:** Completar orçamento por rota e medições de JS/fontes/requisições.
+  - **Próxima ação:** Manter os limites ao adicionar rotas ou dependências.
   - **Dependências:** 030 (Parcial).
 
 - [x] **162. Otimizar imagem principal.** Fornecer formatos e tamanhos adequados e priorizar apenas o LCP.
@@ -1488,7 +1488,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Última coleta válida é única: LCP 3,0 s; repetição posterior falhou no ambiente.
   - **Evidências e referências:** `docs/audit/lighthouse-mobile.json`, `docs/VALIDACAO.md`.
   - **Próxima ação:** Executar rodadas repetidas reproduzíveis e atender orçamento.
-  - **Dependências:** 161 (Parcial), 162 (Concluída no escopo), 163 (Concluída no escopo), 164 (Concluída no escopo), 165 (Parcial).
+  - **Dependências:** 161 (Concluída no escopo), 162 (Concluída no escopo), 163 (Concluída no escopo), 164 (Concluída no escopo), 165 (Parcial).
 
 - [ ] **167. Medir Core Web Vitals em campo.** Instrumentar métricas reais conforme decisão de privacidade e consentimento.
   - **Situação auditada:** Sem entrega comprovada.
@@ -1580,9 +1580,9 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **177. Auditar validação de formulários.** Verificar labels, erros, correção e preservação de campos válidos.
   - **Situação auditada:** Parcial.
   - **Aceite:** Leitor de tela consegue localizar e corrigir campos inválidos.
-  - **Constatação:** Validação nativa existe; Voltar perde dados válidos e não houve teste com leitor de tela.
+  - **Constatação:** Rascunho preserva dados válidos ao voltar; validação nativa e labels existem, mas falta teste com leitor de tela.
   - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`.
-  - **Próxima ação:** Preservar rascunho e testar identificação/correção de erros.
+  - **Próxima ação:** Testar identificação e correção de erros com tecnologia assistiva.
   - **Dependências:** 066 (Concluída no escopo), 114 (Concluída no escopo).
 
 - [x] **178. Auditar movimento e mídia.** Testar reduced motion, textos alternativos e conteúdo conceitual.
@@ -1659,9 +1659,9 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **186. Testar jornadas com rede limitada.** Simular lentidão, offline e falha de imagem ou API.
   - **Situação auditada:** Parcial.
   - **Aceite:** Feedback mantém contexto e oferece recuperação sem sucesso fictício.
-  - **Constatação:** Há testes de negativa sem destino; offline, lentidão e imagem/API quebrada não têm jornada completa.
-  - **Evidências e referências:** `tests/public-api.spec.ts`.
-  - **Próxima ação:** Executar cenários de rede e recuperação com contexto preservado.
+  - **Constatação:** A jornada E2E cobre API 503 com seleção preservada e mídia 403 com fallback; ainda faltam perfil de lentidão e offline de navegador completo.
+  - **Evidências e referências:** `tests/public-api.spec.ts`, `tests/storefront.spec.ts`.
+  - **Próxima ação:** Executar cenários de lentidão e offline em navegadores e dispositivos representativos.
   - **Dependências:** 168 (Concluída no escopo).
 
 - [ ] **187. Executar revisão comercial.** Validar nomes, técnicas, quantidades, preços e textos institucionais.

@@ -1585,12 +1585,13 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Vazio e armazenamento inválido têm recuperação; remoção canônica, offline e expiração de conteúdo não estão completos.",
-        "nextAction": "Implementar e testar mensagens e recuperação para todos os estados.",
+        "finding": "Vazio, armazenamento inválido, indisponibilidade da API, offline e SKU removido têm mensagem e recuperação sem perder a seleção; expiração de conteúdo canônico ainda não está completa.",
+        "nextAction": "Definir e testar expiração da curadoria publicada.",
         "evidence": [
           "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
           "src/components/Storefront.tsx",
-          "src/lib/site-database.ts"
+          "src/lib/site-database.ts",
+          "tests/storefront.spec.ts"
         ]
       }
     },
@@ -2315,7 +2316,7 @@
       "acceptance": "Navegação e política de indexação tratam parâmetros consistentemente.",
       "owner": "UX + frontend + backend",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "src/components/Storefront.tsx",
       "dependencies": [
         86
@@ -2323,11 +2324,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "URL inicial aceita busca/categoria; limpar não remove q, falta popstate e estado de página.",
-        "nextAction": "Sincronizar todos os controles, voltar/avançar, facetas e paginação.",
+        "finding": "Busca, categoria, página e ordenação sincronizam URL; os controles criam histórico e popstate restaura a consulta na fonte.",
+        "nextAction": "Incluir facetas futuras no mesmo contrato de URL.",
         "evidence": [
           "src/components/Storefront.tsx",
-          "docs/audit/plan-browser-scenarios.json"
+          "docs/audit/plan-browser-scenarios.json",
+          "tests/storefront.spec.ts"
         ]
       }
     },
@@ -3039,8 +3041,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Há endpoint e caminho de envio opcional; receptor vazio e retries geram novas chaves.",
-        "nextAction": "Integrar persistência e destino aprovados com chave estável e controles distribuídos.",
+        "finding": "Entrega opcional usa chave estável, persistência/hash e lease atômica; falta receptor comercial homologado e rate limit distribuído.",
+        "nextAction": "Integrar o destino aprovado e validar a criação de oportunidade sem duplicação.",
         "evidence": [
           "src/app/api/briefings/route.ts",
           "src/components/Storefront.tsx",
@@ -3064,8 +3066,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Protocolo nasce após 2xx do webhook, sem prova de commit persistido no banco/CRM.",
-        "nextAction": "Vincular protocolo ao registro transacional e validar resposta do receptor.",
+        "finding": "Protocolo é persistido antes da entrega e o estado pendente é recuperável; falta validar o commit e o retorno do CRM homologado.",
+        "nextAction": "Testar resposta, erro e conciliação com o receptor comercial aprovado.",
         "evidence": [
           "src/app/api/briefings/route.ts",
           "docs/audit/plan-database-check.json"
@@ -3262,8 +3264,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Contrato v1 e exemplos existem, mas cobrem curadoria limitada e não disponibilidade/variantes aprovadas.",
-        "nextAction": "Corrigir semântica de catálogo vazio, paginação integral e documentar contrato integrado.",
+        "finding": "Contrato v1 cobre vazio, indisponibilidade, paginação, ordenação e busca; disponibilidade e variantes dependem de dados ainda não homologados.",
+        "nextAction": "Versionar os campos de disponibilidade e variantes após sua aprovação comercial.",
         "evidence": [
           "docs/CONTRATO_CATALOGO_PUBLICO_V1.md",
           "src/app/api/catalog/route.ts",
@@ -3330,8 +3332,8 @@
       "acceptance": "CDN com 403 aciona fallback observável e não quebra a apresentação.",
       "owner": "Arquitetura + backend + dados",
       "priority": "P0",
-      "status": "partial",
-      "evidence": "docs/audit/media-check.json",
+      "status": "done",
+      "evidence": "tests/storefront.spec.ts",
       "dependencies": [
         47,
         127
@@ -3339,11 +3341,11 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Fotos locais evitam o CDN com falha; não há fallback observável nem monitoramento de mídia.",
-        "nextAction": "Implementar fallback e diagnóstico de falha de imagem.",
+        "finding": "Fotos locais evitam o CDN com falha; erro de mídia, inclusive 403 simulado, mostra fallback com nome da peça e mantém abertura do detalhe.",
+        "nextAction": "Adicionar observabilidade de falhas de mídia ao ambiente publicado.",
         "evidence": [
-          "docs/audit/media-check.json",
-          "src/components/Storefront.tsx"
+          "src/components/Storefront.tsx",
+          "tests/storefront.spec.ts"
         ]
       }
     },
@@ -3680,8 +3682,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Inspeção exata não encontrou os segredos atuais no Git candidato nem no build público; scanner geral e logs ainda têm cobertura incompleta.",
-        "nextAction": "Ampliar verificação automatizada e registrar inspeção de artefatos e logs.",
+        "finding": "Gate percorre código público, scripts e build estático, sem encontrar segredos; logs de uma infraestrutura publicada ainda não existem para inspeção.",
+        "nextAction": "Adicionar logs e revisão de artefatos ao pipeline do ambiente publicado.",
         "evidence": [
           "scripts/check-public-secrets.mjs",
           "docs/SUPABASE_SITE_DATABASE.md",
@@ -3705,8 +3707,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Há controles de origem/JSON; limite de corpo confia em Content-Length e data é truncada antes de validar.",
-        "nextAction": "Limitar bytes reais, validar sem truncar e aplicar rate limit confiável/distribuído.",
+        "finding": "Corpo é limitado por bytes reais, data e textos são validados integralmente; rate limit por IP ainda é local ao processo.",
+        "nextAction": "Aplicar rate limit confiável/distribuído no ambiente de produção.",
         "evidence": [
           "src/app/api/briefings/route.ts",
           "src/lib/briefing.ts",
@@ -4120,7 +4122,7 @@
       "acceptance": "Orçamento está associado a páginas e condições de medição reproduzíveis.",
       "owner": "Frontend + SRE + backend",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "docs/ORCAMENTO_DESEMPENHO.md",
       "dependencies": [
         30
@@ -4128,8 +4130,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Orçamento documenta JS, fontes e imagens; script só mede imagens e falta limite verificável de requisições.",
-        "nextAction": "Completar orçamento por rota e medições de JS/fontes/requisições.",
+        "finding": "Gate mede imagens, fontes WOFF2, JavaScript gzip e quantidade de chunks por rota do build de produção.",
+        "nextAction": "Manter os limites ao adicionar rotas ou dependências.",
         "evidence": [
           "docs/ORCAMENTO_DESEMPENHO.md",
           "scripts/check-performance-budget.mjs"
@@ -4525,8 +4527,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Validação nativa existe; Voltar perde dados válidos e não houve teste com leitor de tela.",
-        "nextAction": "Preservar rascunho e testar identificação/correção de erros.",
+        "finding": "Rascunho preserva dados válidos ao voltar; validação nativa e labels existem, mas falta teste com leitor de tela.",
+        "nextAction": "Testar identificação e correção de erros com tecnologia assistiva.",
         "evidence": [
           "src/components/Storefront.tsx",
           "docs/audit/plan-browser-scenarios.json"
@@ -4754,10 +4756,11 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "Há testes de negativa sem destino; offline, lentidão e imagem/API quebrada não têm jornada completa.",
-        "nextAction": "Executar cenários de rede e recuperação com contexto preservado.",
+        "finding": "A jornada E2E cobre API 503 com seleção preservada e mídia 403 com fallback; ainda faltam perfil de lentidão e offline de navegador completo.",
+        "nextAction": "Executar cenários de lentidão e offline em navegadores e dispositivos representativos.",
         "evidence": [
-          "tests/public-api.spec.ts"
+          "tests/public-api.spec.ts",
+          "tests/storefront.spec.ts"
         ]
       }
     },
