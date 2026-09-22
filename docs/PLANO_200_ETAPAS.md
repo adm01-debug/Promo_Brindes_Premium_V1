@@ -2,7 +2,7 @@
 
 Referência: **2026-09-22** · **20 fases × 10 etapas = 200 etapas**.
 
-Status auditado: **104 concluídas no próprio escopo; 50 parciais; 46 sem entrega comprovada**. São 96 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
+Status auditado: **105 concluídas no próprio escopo; 49 parciais; 46 sem entrega comprovada**. São 95 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
 
 Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatório e prioridades](REVISAO_EXAUSTIVA_PLANO.md).
 
@@ -572,12 +572,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 
 **Articulação:** fase 04, fase 06.
 
-- [ ] **061. Implementar tokens de interface.** Codificar cores, tipografia, espaçamento, bordas e superfícies.
-  - **Situação auditada:** Parcial.
+- [x] **061. Implementar tokens de interface.** Codificar cores, tipografia, espaçamento, bordas e superfícies.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Tokens usados na prévia estão centralizados e nomeados por função.
-  - **Constatação:** Cores nucleares, biblioteca clara, capas, gutter, alvo principal e movimento usam tokens com gate de 25 pares; espaçamentos e cores locais de ilustração ainda têm literais justificados ou não extraídos.
-  - **Evidências e referências:** `src/app/globals.css`, `scripts/check-ui-contract.mjs`, `docs/audit/2026-09-22-design-system-consistency.md`, `src/app/catalogos/catalogs.css`, `docs/audit/2026-09-22-contrast-matrix.md`.
-  - **Próxima ação:** Extrair os demais espaçamentos estruturais quando houver mudança de layout, sem transformar cores específicas de ilustração em tokens semânticos.
+  - **Constatação:** Cores, tipografia, superfícies, gutter, escala de espaçamento, borda fina, raios, alvo principal e movimento usam tokens compartilhados. O gate cobre 25 pares de contraste e rejeita a reintrodução de literais estruturais comuns; a resolução dos novos tokens foi byte a byte equivalente aos CSS anteriores.
+  - **Evidências e referências:** `src/app/globals.css`, `src/app/catalogos/catalogs.css`, `scripts/check-ui-contract.mjs`, `docs/DESIGN_SYSTEM.md`, `docs/audit/2026-09-22-design-system-consistency.md`, `docs/audit/2026-09-22-structural-design-tokens.md`, `docs/audit/2026-09-22-contrast-matrix.md`.
+  - **Próxima ação:** Manter o gate e criar novos tokens somente para decisões reutilizáveis, preservando medidas locais de composição e ilustração.
   - **Dependências:** 032 (Concluída no escopo), 033 (Concluída no escopo).
 
 - [x] **062. Definir grade responsiva.** Construir limites de largura, margens e quebra de colunas.
@@ -586,7 +586,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Evidência de 360, 390, 768 e 1440 pixels sem overflow está preservada.
   - **Evidências e referências:** `docs/audit/responsive-check.json`, `tests/storefront.spec.ts`.
   - **Próxima ação:** Repetir ao alterar layouts; não equivale a QA de todos os navegadores.
-  - **Dependências:** 061 (Parcial).
+  - **Dependências:** 061 (Concluída no escopo).
 
 - [x] **063. Implementar botões e links.** Criar ações primárias, secundárias e ícones com hierarquia consistente.
   - **Situação auditada:** Concluída no escopo.
@@ -594,7 +594,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Estados de hover, foco, disabled e nomes estão presentes e cobertos nos controles principais.
   - **Evidências e referências:** `src/app/globals.css`, `tests/storefront.spec.ts`.
   - **Próxima ação:** Manter revisão de novos controles.
-  - **Dependências:** 061 (Parcial).
+  - **Dependências:** 061 (Concluída no escopo).
 
 - [x] **064. Implementar cartão de produto.** Combinar imagem, categoria, título, favorito e adicionar à seleção.
   - **Situação auditada:** Concluída no escopo.
@@ -602,7 +602,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Card separa detalhe, favorito e seleção; E2E exercitam ações.
   - **Evidências e referências:** `src/components/Storefront.tsx`, `tests/storefront.spec.ts`.
   - **Próxima ação:** Nenhuma ação para o card da prévia.
-  - **Dependências:** 042 (Concluída no escopo), 061 (Parcial).
+  - **Dependências:** 042 (Concluída no escopo), 061 (Concluída no escopo).
 
 - [x] **065. Implementar diálogos acessíveis.** Usar modal com Escape, contenção de foco e restauração do foco.
   - **Situação auditada:** Concluída no escopo.
@@ -610,7 +610,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Diálogo contém foco e restaura acionador nos casos exercitados.
   - **Evidências e referências:** `src/components/Modal.tsx`, `tests/storefront.spec.ts`.
   - **Próxima ação:** Ampliar cobertura de tecnologias assistivas nas etapas 173–180.
-  - **Dependências:** 061 (Parcial).
+  - **Dependências:** 061 (Concluída no escopo).
 
 - [x] **066. Implementar controles de formulário.** Padronizar labels, ajuda, validação e estados de campos.
   - **Situação auditada:** Concluída no escopo.
@@ -618,7 +618,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Labels, obrigatoriedade e validação nativa identificam erros sem depender só de cor.
   - **Evidências e referências:** `src/components/Storefront.tsx`, `tests/storefront.spec.ts`.
   - **Próxima ação:** Validação com leitor de tela permanece na etapa 177.
-  - **Dependências:** 061 (Parcial).
+  - **Dependências:** 061 (Concluída no escopo).
 
 - [x] **067. Implementar feedback de interação.** Adicionar mensagens de adição e estados de download.
   - **Situação auditada:** Concluída no escopo.
@@ -626,7 +626,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Toast usa região de status e feedback não captura foco.
   - **Evidências e referências:** `src/components/Storefront.tsx`, `tests/storefront.spec.ts`.
   - **Próxima ação:** Validar anúncios com leitores reais antes do lançamento.
-  - **Dependências:** 061 (Parcial).
+  - **Dependências:** 061 (Concluída no escopo).
 
 - [x] **068. Especificar movimento.** Limitar animações a feedback e transições discretas.
   - **Situação auditada:** Concluída no escopo.
@@ -634,7 +634,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** CSS e scrollIntoView consultam prefers-reduced-motion; a rolagem explícita passa a ser instantânea quando necessário.
   - **Evidências e referências:** `src/app/globals.css`, `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`.
   - **Próxima ação:** Reexecutar a sonda de movimento ao criar novas transições controladas por JavaScript.
-  - **Dependências:** 061 (Parcial).
+  - **Dependências:** 061 (Concluída no escopo).
 
 - [x] **069. Catalogar componentes.** Criar documentação de variantes, exemplos e decisões de uso.
   - **Situação auditada:** Concluída no escopo.
@@ -642,7 +642,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Inventário liga todos os templates MVP aos componentes, estados reproduzíveis, regras de composição e testes automatizados.
   - **Evidências e referências:** `docs/INVENTARIO_DE_COMPONENTES.md`, `docs/DESIGN_SYSTEM.md`.
   - **Próxima ação:** Manter o inventário sincronizado ao criar um template, estado ou promessa comercial.
-  - **Dependências:** 061 (Parcial), 062 (Concluída no escopo), 063 (Concluída no escopo), 064 (Concluída no escopo), 065 (Concluída no escopo), 066 (Concluída no escopo), 067 (Concluída no escopo), 068 (Concluída no escopo).
+  - **Dependências:** 061 (Concluída no escopo), 062 (Concluída no escopo), 063 (Concluída no escopo), 064 (Concluída no escopo), 065 (Concluída no escopo), 066 (Concluída no escopo), 067 (Concluída no escopo), 068 (Concluída no escopo).
 
 - [x] **070. Revisar consistência transversal.** Inspecionar tipografia, densidade, ícones e espaçamento entre páginas.
   - **Situação auditada:** Concluída no escopo.
@@ -673,7 +673,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Hero prioriza imagem, mantém título e CTAs e tem evidência responsiva.
   - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/audit/responsive-check.json`.
   - **Próxima ação:** Desempenho global permanece separado da implementação visual.
-  - **Dependências:** 036 (Concluída no escopo), 061 (Parcial).
+  - **Dependências:** 036 (Concluída no escopo), 061 (Concluída no escopo).
 
 - [x] **073. Construir proposta de valor.** Apresentar curadoria, identidade e projeto sem promessas operacionais não verificadas.
   - **Situação auditada:** Concluída no escopo.

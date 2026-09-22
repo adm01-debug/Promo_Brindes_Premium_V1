@@ -25,10 +25,73 @@ for (const token of [
   "product-ink",
   "hero-copy",
   "page-gutter",
+  "space-2xs",
+  "space-xs",
+  "space-sm",
+  "space-md",
+  "space-lg",
+  "space-xl",
+  "space-2xl",
+  "space-4xl",
+  "border-hairline",
+  "radius-sharp",
+  "radius-subtle",
+  "radius-round",
+  "radius-pill",
   "target-primary",
   "motion-fast",
 ])
   assert.ok(tokens[token], `Token obrigatório ausente: --${token}`);
+
+const structuralTokens = {
+  "space-2xs": "6px",
+  "space-xs": "8px",
+  "space-sm": "12px",
+  "space-md": "16px",
+  "space-lg": "24px",
+  "space-xl": "32px",
+  "space-2xl": "48px",
+  "space-4xl": "80px",
+  "border-hairline": "1px",
+  "radius-sharp": "0",
+  "radius-subtle": "2px",
+  "radius-round": "50%",
+  "radius-pill": "999px",
+};
+for (const [name, expected] of Object.entries(structuralTokens))
+  assert.equal(tokens[name], expected, `Valor inesperado em --${name}`);
+
+const withoutRoot = css.replace(/:root\s*\{[\s\S]*?\}/, "");
+const stylesheets = [withoutRoot, catalogCss];
+const commonSpacingLiteral = /(?<![-\w])(?:6|8|12|16|24|32|48|80)px(?![\w])/;
+for (const stylesheet of stylesheets) {
+  for (const match of stylesheet.matchAll(
+    /^\s*(?:gap|row-gap|column-gap|padding|margin)\s*:\s*([^;]+);/gm,
+  ))
+    assert.doesNotMatch(
+      match[1],
+      commonSpacingLiteral,
+      `Espaçamento estrutural comum fora de token: ${match[0].trim()}`,
+    );
+  for (const match of stylesheet.matchAll(
+    /^\s*border(?:-(?:top|right|bottom|left|block|inline))?\s*:\s*([^;]+);/gm,
+  ))
+    assert.doesNotMatch(
+      match[1],
+      /(?<![-\w])1px(?![\w])/,
+      `Borda estrutural comum fora de token: ${match[0].trim()}`,
+    );
+  for (const match of stylesheet.matchAll(/^\s*border-radius\s*:\s*([^;]+);/gm))
+    assert.ok(
+      !new Set(["0", "2px", "50%", "999px"]).has(match[1].trim()),
+      `Raio estrutural comum fora de token: ${match[0].trim()}`,
+    );
+}
+assert.doesNotMatch(
+  catalogCss,
+  /max\(5\.5vw,\s*24px\)/,
+  "Catálogos devem reutilizar --page-gutter.",
+);
 
 function luminance(hex) {
   assert.match(hex, /^#[0-9a-f]{6}$/i, `Cor inválida no contrato: ${hex}`);

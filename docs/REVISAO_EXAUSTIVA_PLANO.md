@@ -2,7 +2,7 @@
 
 Revisão: **22/09/2026**, identificador `2026-09-22-audit-1`. Código base examinado: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. Projeto: **Promo_Brindes_Premium_V1**. A referência histórica de `Promo_Gifts_V4` continua sendo a auditoria dirigida do commit `44857d5`.
 
-**Não implementamos todas as melhorias.** Há **104 etapas com o próprio critério comprovado, 50 parciais e 46 sem entrega comprovada**. São **96 etapas abertas**, das quais **70 são P0**. O site tem catálogo curado com vigência temporal e operação editorial protegida, descoberta multifacetada, recomendações editoriais, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
+**Não implementamos todas as melhorias.** Há **105 etapas com o próprio critério comprovado, 49 parciais e 46 sem entrega comprovada**. São **95 etapas abertas**, das quais **69 são P0**. O site tem catálogo curado com vigência temporal e operação editorial protegida, descoberta multifacetada, recomendações editoriais, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
 
 Esses números contam critérios do plano, não esforço restante ou porcentagem de prontidão comercial. Entrevistas, licenças, homologações e monitoramento têm peso diferente de um componente visual. A conclusão de uma entrega isolada não libera suas dependências nem os gates de lançamento.
 
@@ -27,7 +27,7 @@ A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [
 | 04 · Identidade, direção de arte e voz         |                   7 |       2 |                      1 |
 | 05 · Curadoria e qualidade do catálogo         |                   3 |       5 |                      2 |
 | 06 · Arquitetura de informação e jornadas      |                   6 |       3 |                      1 |
-| 07 · Sistema de design e componentes           |                   9 |       1 |                      0 |
+| 07 · Sistema de design e componentes           |                  10 |       0 |                      0 |
 | 08 · Página inicial e narrativa de marca       |                   8 |       1 |                      1 |
 | 09 · Busca, filtros e descoberta               |                   8 |       2 |                      0 |
 | 10 · Página de produto e confiança             |                   3 |       5 |                      2 |
@@ -41,7 +41,7 @@ A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [
 | 18 · Acessibilidade e inclusão                 |                   9 |       0 |                      1 |
 | 19 · Qualidade, homologação e piloto           |                   4 |       2 |                      4 |
 | 20 · Lançamento, operação e evolução           |                   0 |       2 |                      8 |
-| **Total**                                      |             **104** |  **50** |                 **46** |
+| **Total**                                      |             **105** |  **49** |                 **46** |
 
 A entrega posterior da [biblioteca de catálogos](CATALOGOS.md) concluiu o vínculo estrutural da etapa 053 e tornou a etapa 157 parcial: existem seis páginas editoriais com produtos publicados, mas ainda faltam guias aprofundados com participação comercial. Os totais acima incorporam essa entrega.
 

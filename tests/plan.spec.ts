@@ -31,37 +31,45 @@ test("plano tem 200 etapas, filtros, persistência e exportação", async ({
   expect(text).toContain("Próxima ação:");
 });
 
-test("marcação local não altera auditoria e revisão antiga não mascara etapas reabertas", async ({
+test("marcação local não altera auditoria e revisão antiga não mascara etapas parciais", async ({
   page,
 }) => {
-  await page.addInitScript(() => {
-    localStorage.setItem("promo-premium-plan-v1", JSON.stringify({ 61: true }));
+  const partialTask = plan.tasks.find((task) => task.status === "partial");
+  expect(partialTask).toBeDefined();
+  const partialId = partialTask!.id;
+  await page.addInitScript((id) => {
+    localStorage.setItem(
+      "promo-premium-plan-v1",
+      JSON.stringify({ [id]: true }),
+    );
     localStorage.setItem(
       "promo-premium-plan-v2",
-      JSON.stringify({ review: "revisao-antiga", overrides: { 61: true } }),
+      JSON.stringify({ review: "revisao-antiga", overrides: { [id]: true } }),
     );
-  });
+  }, partialId);
   await page.goto("/planejamento");
   const audited = plan.tasks.filter((t) => t.status === "done").length;
-  const partial = plan.tasks.filter((t) => t.status === "partial").length;
+  const partialCount = plan.tasks.filter((t) => t.status === "partial").length;
   const progress = page.getByRole("progressbar");
   await expect(progress).toHaveAttribute("value", String(audited));
   await page
     .getByRole("combobox", { name: "Filtrar status", exact: true })
     .selectOption("partial");
-  await expect(page.getByRole("checkbox")).toHaveCount(partial);
-  const reopened = page.getByRole("checkbox", { name: /Concluir etapa 61:/ });
-  await expect(reopened).not.toBeChecked();
-  await reopened.check();
+  await expect(page.getByRole("checkbox")).toHaveCount(partialCount);
+  const auditedPartial = page.getByRole("checkbox", {
+    name: new RegExp(`Concluir etapa ${partialId}:`),
+  });
+  await expect(auditedPartial).not.toBeChecked();
+  await auditedPartial.check();
   await expect(progress).toHaveAttribute("value", String(audited));
-  await expect(page.getByRole("checkbox")).toHaveCount(partial);
+  await expect(page.getByRole("checkbox")).toHaveCount(partialCount);
   await expect(page.getByTestId("local-plan-progress")).toContainText(
     `${audited + 1}/200`,
   );
   await page
     .getByRole("button", { name: "Restaurar acompanhamento da auditoria" })
     .click();
-  await expect(reopened).not.toBeChecked();
+  await expect(auditedPartial).not.toBeChecked();
   await expect(page.getByTestId("local-plan-progress")).toContainText(
     `${audited}/200`,
   );

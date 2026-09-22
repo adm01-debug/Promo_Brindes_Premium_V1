@@ -29,6 +29,18 @@ Margem desktop próxima de 5,5vw; mobile 24px. Grid de produtos com quatro colun
 
 O hero apresenta objeto e contexto. A narrativa alterna seções curtas e espaço de leitura. Cards não dependem de hover para revelar uma ação essencial. A preferência de movimento reduzido é respeitada.
 
+### Tokens estruturais
+
+| Família           | Tokens                                                                       | Uso                                                                  |
+| ----------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Espaçamento       | `--space-2xs` 6px, `--space-xs` 8px, `--space-sm` 12px, `--space-md` 16px    | Ritmo interno de controles e componentes compactos                   |
+| Espaçamento       | `--space-lg` 24px, `--space-xl` 32px, `--space-2xl` 48px, `--space-4xl` 80px | Blocos, grids e seções                                               |
+| Margem responsiva | `--page-gutter`                                                              | Margem compartilhada entre a vitrine escura e a biblioteca editorial |
+| Borda             | `--border-hairline` 1px                                                      | Divisores, contornos e controles                                     |
+| Raio              | `--radius-sharp`, `--radius-subtle`, `--radius-round`, `--radius-pill`       | Geometria intencional de controles, indicadores e ilustrações        |
+
+Valores intermediários permanecem locais quando definem uma composição concreta, dimensão de ícone, tipografia, alinhamento óptico ou tratamento fotográfico. O gate `check:ui-contract` impede que os valores comuns da escala voltem a aparecer como literais em `gap`, `padding`, `margin`, bordas e raios.
+
 ## Voz e microcopy
 
 Usar: “Explore a curadoria”, “Incluir no meu projeto”, “Data desejada”, “Valores sob consulta”, “Possibilidades de personalização”. Descrever o próximo passo e a condição real.

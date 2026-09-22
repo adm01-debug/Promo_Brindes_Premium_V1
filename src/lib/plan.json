@@ -1367,19 +1367,21 @@
       "acceptance": "Tokens usados na prévia estão centralizados e nomeados por função.",
       "owner": "Design de produto + frontend",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "src/app/globals.css",
       "dependencies": [32, 33],
       "audit": {
         "previousStatus": "done",
         "kind": "tecnica",
-        "finding": "Cores nucleares, biblioteca clara, capas, gutter, alvo principal e movimento usam tokens com gate de 25 pares; espaçamentos e cores locais de ilustração ainda têm literais justificados ou não extraídos.",
-        "nextAction": "Extrair os demais espaçamentos estruturais quando houver mudança de layout, sem transformar cores específicas de ilustração em tokens semânticos.",
+        "finding": "Cores, tipografia, superfícies, gutter, escala de espaçamento, borda fina, raios, alvo principal e movimento usam tokens compartilhados. O gate cobre 25 pares de contraste e rejeita a reintrodução de literais estruturais comuns; a resolução dos novos tokens foi byte a byte equivalente aos CSS anteriores.",
+        "nextAction": "Manter o gate e criar novos tokens somente para decisões reutilizáveis, preservando medidas locais de composição e ilustração.",
         "evidence": [
           "src/app/globals.css",
-          "scripts/check-ui-contract.mjs",
-          "docs/audit/2026-09-22-design-system-consistency.md",
           "src/app/catalogos/catalogs.css",
+          "scripts/check-ui-contract.mjs",
+          "docs/DESIGN_SYSTEM.md",
+          "docs/audit/2026-09-22-design-system-consistency.md",
+          "docs/audit/2026-09-22-structural-design-tokens.md",
           "docs/audit/2026-09-22-contrast-matrix.md"
         ]
       }
