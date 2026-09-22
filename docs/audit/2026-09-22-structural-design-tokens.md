@@ -37,3 +37,14 @@ Um novo valor global precisa representar uma decisão reutilizável. Exceções 
 Build, TypeScript, plano, contrato visual, scanner de segredos, orçamento e 86 contratos unitários passaram. Os 57 cenários sintéticos permaneceram verdes.
 
 A primeira matriz de navegador encontrou três falhas equivalentes no teste do painel: o cenário usava a etapa 061 como exemplo fixo de item parcial, mas ela acabara de ser concluída. O teste passou a escolher uma etapa parcial a partir do próprio plano e continuou verificando que dados de revisão antiga não alteram a auditoria. O caso corrigido passou isoladamente em Chromium, Firefox e WebKit; a repetição integral terminou com **213/213 execuções aprovadas**.
+
+## Evidência remota do commit técnico
+
+O commit `32bb20c351ca85820e7b11c8e5cd3f95e3b5498b` foi enviado à `main` e validado fora da estação de desenvolvimento:
+
+- GitHub Actions **Quality gates** `35795101559`: sucesso em 5m36s, incluindo a matriz completa de navegador;
+- GitHub Actions **Isolated database contracts** `35795101521`: sucesso em 1m48s, com reconstrução das migrations, contratos, concorrência e lint;
+- GitHub deployment `6602480640`: estado `success`;
+- Vercel deployment `dpl_7TRLTbG9efPiU1LTVGq3LQVFdi1J`: produção `Ready`, associado aos aliases públicos.
+
+O smoke test na implantação exata confirmou `200` na home, em `/catalogos` e na rota real de produto. `/api/catalog?pageSize=24` respondeu `200`, oito itens, `x-catalog-contract-version: 2026-09-22.2`, `x-catalog-source: site-database`, `CSP`, `HSTS`, `X-Content-Type-Options`, `X-Frame-Options` e `noindex`. A consulta de logs da implantação não encontrou erros.
