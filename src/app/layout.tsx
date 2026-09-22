@@ -28,6 +28,12 @@ export const metadata: Metadata = {
     type: "website",
     images: ["/images/hero-gifting.webp"],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Promo Brindes Premium — A arte de presentear",
+    description: "Presentes extraordinários para relações que importam.",
+    images: ["/images/hero-gifting.webp"],
+  },
 };
 
 export default function RootLayout({

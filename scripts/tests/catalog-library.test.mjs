@@ -85,6 +85,36 @@ test("collection keeps editorial order and never reintroduces unpublished produc
   );
 });
 
+test("contextual recommendations use shared collection order and published rows only", async () => {
+  const current = products.find((product) => product.sku === "08255");
+  const expectedIds = [
+    library.catalogCollections[0].productIds[0],
+    library.catalogCollections[0].productIds[2],
+    library.catalogCollections[2].productIds[0],
+  ];
+  const result = await data(async (query) => {
+    assert.equal(Array.from(query.ids).join(","), expectedIds.join(","));
+    return pageOf(
+      products.filter((product) => expectedIds.includes(product.id)).reverse(),
+    );
+  }).getContextualProducts(current.id, 3);
+  assert.equal(
+    result.map((product) => product.id).join(","),
+    expectedIds.join(","),
+  );
+  assert.ok(result.every((product) => product.id !== current.id));
+});
+
+test("a product outside editorial collections has no fabricated recommendation", async () => {
+  let called = false;
+  const result = await data(async () => {
+    called = true;
+    return pageOf(products);
+  }).getContextualProducts("11111111-1111-4111-8111-111111111111");
+  assert.equal(result.length, 0);
+  assert.equal(called, false);
+});
+
 test("library uses one bounded read and covers/counts only the published response", async () => {
   let calls = 0;
   const visible = products.filter(

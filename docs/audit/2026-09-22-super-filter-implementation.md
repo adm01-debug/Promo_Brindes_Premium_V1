@@ -23,18 +23,18 @@ A resposta `2026-09-22.2` inclui total, página, critérios normalizados, sugest
 
 ## Evidências de validação
 
-| Verificação | Resultado |
-| --- | --- |
-| Build de produção e TypeScript | Aprovados |
-| Playwright em Chromium, Firefox e WebKit | 165/165 aprovados |
-| Isolamento de sincronização e fronteira dos bancos | 35/35 aprovados |
-| Biblioteca de catálogos | 11/11 aprovados |
-| Probes sintéticos de catálogo, briefing e segurança | 43/43 aprovados |
-| Plano de 200 etapas | 200 IDs/revisões; Markdown e CSV sincronizados |
-| Segredos em arquivos públicos/build | 70 arquivos verificados; aprovado |
-| Orçamento de mídia e build | Aprovado |
-| Origem operacional ao vivo | 8 produtos ativos por GET; nenhuma escrita |
-| Dependências de produção | `npm audit --omit=dev`: 0 vulnerabilidades conhecidas |
+| Verificação                                         | Resultado                                             |
+| --------------------------------------------------- | ----------------------------------------------------- |
+| Build de produção e TypeScript                      | Aprovados                                             |
+| Playwright em Chromium, Firefox e WebKit            | 198/198 aprovados                                     |
+| Isolamento de sincronização e fronteira dos bancos  | 35/35 aprovados                                       |
+| Biblioteca de catálogos                             | 11/11 aprovados                                       |
+| Probes sintéticos de catálogo, briefing e segurança | 43/43 aprovados                                       |
+| Plano de 200 etapas                                 | 200 IDs/revisões; Markdown e CSV sincronizados        |
+| Segredos em arquivos públicos/build                 | 70 arquivos verificados; aprovado                     |
+| Orçamento de mídia e build                          | Aprovado                                              |
+| Origem operacional ao vivo                          | 8 produtos ativos por GET; nenhuma escrita            |
+| Dependências de produção                            | `npm audit --omit=dev`: 0 vulnerabilidades conhecidas |
 
 Capturas revisadas: [desktop](../screenshots/super-filtro-desktop.png) e [mobile](../screenshots/super-filtro-mobile.png).
 

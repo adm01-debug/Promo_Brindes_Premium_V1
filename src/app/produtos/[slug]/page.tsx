@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { products } from "@/lib/catalog";
+import { products, type Product } from "@/lib/catalog";
+import { getContextualProducts } from "@/lib/catalog-library-data";
 import { getSiteProductBySlug } from "@/lib/site-database";
 import { publicSiteOrigin } from "@/lib/publication";
 import ProductDetailActions from "@/components/ProductDetailActions";
+import ProductRecommendationImage from "@/components/ProductRecommendationImage";
 import { notFound } from "next/navigation";
 
 export function generateStaticParams() {
@@ -35,6 +37,16 @@ export async function generateMetadata({
         .trim()
         .slice(0, 155),
       openGraph: {
+        title: `${product.name} | Promo Brindes Premium`,
+        description: product.tagline,
+        type: "website",
+        url: `/produtos/${product.slug}`,
+        images: [{ url: product.image, alt: product.originalName }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${product.name} | Promo Brindes Premium`,
+        description: product.tagline,
         images: [{ url: product.image, alt: product.originalName }],
       },
       alternates: { canonical: `/produtos/${product.slug}` },
@@ -68,6 +80,12 @@ export default async function ProductPage({
     );
   }
   if (!product) notFound();
+  let contextualProducts: Product[] = [];
+  try {
+    contextualProducts = await getContextualProducts(product.id);
+  } catch {
+    // The product detail remains useful when contextual discovery is offline.
+  }
   const minimum = Math.max(1, product.minimum ?? 1);
   const siteUrl = publicSiteOrigin();
   const schema = {
@@ -152,6 +170,51 @@ export default async function ProductPage({
           </p>
         </div>
       </article>
+      {contextualProducts.length > 0 && (
+        <section
+          className="product-recommendations"
+          aria-labelledby="product-recommendations-title"
+        >
+          <div className="product-recommendations-heading">
+            <div>
+              <p className="eyebrow">OUTRAS PEÇAS PARA A MESMA OCASIÃO</p>
+              <h2 id="product-recommendations-title">
+                Continue sua <em>curadoria.</em>
+              </h2>
+            </div>
+            <p>
+              Sugestões publicadas nas mesmas coleções editoriais. Cada peça é
+              escolhida separadamente; composição, disponibilidade e
+              personalização são confirmadas na proposta.
+            </p>
+          </div>
+          <div className="product-recommendation-grid">
+            {contextualProducts.map((related) => (
+              <article className="product-recommendation-card" key={related.id}>
+                <Link
+                  href={`/produtos/${related.slug}`}
+                  className="product-recommendation-image"
+                  aria-label={`Conhecer ${related.name}`}
+                >
+                  <ProductRecommendationImage image={related.image} />
+                  <span>REF. {related.sku}</span>
+                </Link>
+                <p className="product-category">{related.category}</p>
+                <h3>
+                  <Link href={`/produtos/${related.slug}`}>{related.name}</Link>
+                </h3>
+                <p>{related.tagline}</p>
+                <Link
+                  href={`/produtos/${related.slug}`}
+                  className="text-button"
+                >
+                  Conhecer a peça <ArrowRight size={16} aria-hidden="true" />
+                </Link>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
       <section className="product-page-next">
         <p className="eyebrow">UMA SELEÇÃO COM CONTEXTO</p>
         <h2>

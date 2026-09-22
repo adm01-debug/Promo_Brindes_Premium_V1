@@ -7,6 +7,18 @@
   --ivory: #f4f0e8;
   --muted: #b3b1a7;
   --line: #ffffff1b;
+  --cta-ink: #161813;
+  --control-border: #77786b;
+  --decorative-border: #8f8a7255;
+  --announcement-surface: #22231e;
+  --announcement-copy: #d4c7ac;
+  --header-surface: #111210;
+  --product-surface: #eeece6;
+  --product-ink: #4f5049;
+  --section-surface: #181a16;
+  --page-gutter: max(5.5vw, 24px);
+  --target-primary: 44px;
+  --motion-fast: 0.2s;
   --serif: "Cormorant Garamond", Georgia, serif;
   --sans: "Manrope", Arial, sans-serif;
 }
@@ -98,7 +110,7 @@ svg {
   stroke-width: 1.5;
 }
 .section-pad {
-  padding: 86px max(5.5vw, 24px);
+  padding: 86px var(--page-gutter);
 }
 .eyebrow {
   font-size: 10px;
@@ -138,13 +150,13 @@ svg {
   top: 12px;
 }
 .icon-button {
-  min-width: 44px;
-  min-height: 44px;
+  min-width: var(--target-primary);
+  min-height: var(--target-primary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 0;
-  transition: color 0.2s;
+  transition: color var(--motion-fast);
 }
 .icon-button:hover {
   color: var(--gold);
@@ -161,21 +173,21 @@ svg {
   letter-spacing: 0.02em;
   border: 1px solid transparent;
   transition:
-    background 0.2s,
-    transform 0.2s;
+    background var(--motion-fast),
+    transform var(--motion-fast);
 }
 .button:hover {
   transform: translateY(-2px);
 }
 .button-gold {
-  color: #161813;
+  color: var(--cta-ink);
   background: var(--gold);
 }
 .button-gold:hover {
   background: var(--gold-light);
 }
 .button-outline {
-  border: 1px solid #77786b;
+  border: 1px solid var(--control-border);
 }
 .text-button {
   display: inline-flex;
@@ -183,9 +195,9 @@ svg {
   gap: 18px;
   font-size: 12px;
   font-weight: 500;
-  min-height: 44px;
+  min-height: var(--target-primary);
   padding: 6px 0;
-  border-bottom: 1px solid #8f8a7255;
+  border-bottom: 1px solid var(--decorative-border);
 }
 .text-button:hover {
   color: var(--gold);
@@ -199,8 +211,8 @@ svg {
   justify-content: space-between;
   align-items: center;
   padding: 0 5.5vw;
-  background: #22231e;
-  color: #d4c7ac;
+  background: var(--announcement-surface);
+  color: var(--announcement-copy);
   font-size: 8px;
   letter-spacing: 0.19em;
 }
@@ -217,7 +229,7 @@ svg {
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
   gap: 25px;
-  background: #111210;
+  background: var(--header-surface);
   position: relative;
   z-index: 10;
 }
@@ -1009,6 +1021,7 @@ svg {
 .footer-top nav button {
   padding: 0;
   font: inherit;
+  min-height: var(--target-primary);
 }
 .footer-bottom {
   border-top: 1px solid var(--line);
@@ -1536,6 +1549,28 @@ svg {
   display: flex;
   flex-direction: column;
   gap: 17px;
+}
+.form-error-summary {
+  padding: 14px 16px;
+  border-left: 2px solid var(--gold-light);
+  background: #c9b48717;
+  color: var(--ivory);
+  font-size: 11px;
+}
+.form-error-summary strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--gold-light);
+}
+.form-error {
+  display: block;
+  margin-top: 6px;
+  color: var(--gold-light);
+  font-size: 10px;
+}
+.briefing-form [aria-invalid="true"] {
+  border-color: var(--gold-light);
+  box-shadow: inset 0 0 0 1px var(--gold-light);
 }
 .form-row {
   display: grid;
@@ -2575,7 +2610,7 @@ svg {
 }
 .product-page-header {
   min-height: 96px;
-  padding: 0 max(5.5vw, 24px);
+  padding: 0 var(--page-gutter);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2604,7 +2639,7 @@ svg {
   position: absolute;
   bottom: 26px;
   left: 28px;
-  color: #4f5049;
+  color: var(--product-ink);
   font-size: 8px;
   letter-spacing: 0.15em;
 }
@@ -2666,11 +2701,94 @@ svg {
 .product-page-actions .fine-print {
   margin: 0;
 }
+.product-recommendations {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: clamp(72px, 9vw, 126px) var(--page-gutter);
+  border-top: 1px solid var(--line);
+}
+.product-recommendations-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  align-items: end;
+  gap: clamp(32px, 8vw, 120px);
+  margin-bottom: clamp(40px, 6vw, 72px);
+}
+.product-recommendations-heading h2 {
+  font-size: clamp(39px, 4.4vw, 66px);
+}
+.product-recommendations-heading > p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.9;
+  max-width: 520px;
+}
+.product-recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(18px, 2.5vw, 38px);
+}
+.product-recommendation-card {
+  min-width: 0;
+}
+.product-recommendation-image {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--product-surface);
+}
+.product-recommendation-image > img {
+  object-fit: contain;
+  padding: clamp(24px, 4vw, 58px);
+  mix-blend-mode: multiply;
+  transition: transform 0.45s ease;
+}
+.product-recommendation-image:hover > img {
+  transform: scale(1.035);
+}
+.product-recommendation-image > span:not(.product-recommendation-fallback) {
+  position: absolute;
+  left: 18px;
+  bottom: 15px;
+  color: var(--product-ink);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+}
+.product-recommendation-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  color: var(--product-ink);
+  font-size: 10px;
+}
+.product-recommendation-card .product-category {
+  margin-top: 22px;
+}
+.product-recommendation-card h3 {
+  margin-top: 7px;
+  font-family: var(--serif);
+  font-size: clamp(25px, 2vw, 33px);
+  font-weight: 400;
+  line-height: 1.08;
+}
+.product-recommendation-card > p:not(.product-category) {
+  min-height: 3.5em;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.product-recommendation-card .text-button {
+  margin-top: 15px;
+}
 .product-page-next {
-  padding: clamp(72px, 11vw, 150px) max(5.5vw, 24px);
+  padding: clamp(72px, 11vw, 150px) var(--page-gutter);
   border-top: 1px solid var(--line);
   text-align: center;
-  background: #181a16;
+  background: var(--section-surface);
 }
 .product-page-next h2 {
   font-size: clamp(39px, 4.4vw, 66px);
@@ -2681,6 +2799,17 @@ svg {
 @media (max-width: 750px) {
   .plan-header .eyebrow {
     display: none;
+  }
+  .product-recommendations-heading {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .product-recommendation-grid {
+    grid-template-columns: 1fr;
+    gap: 42px;
+  }
+  .product-recommendation-card > p:not(.product-category) {
+    min-height: 0;
   }
   .plan-header {
     padding-block: 20px;
@@ -2766,6 +2895,7 @@ svg {
     font-size: 0;
     border-bottom: 0;
     gap: 0;
+    min-width: var(--target-primary);
   }
   .product-page-header .text-button svg {
     width: 22px;

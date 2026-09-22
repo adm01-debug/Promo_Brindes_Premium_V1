@@ -19,6 +19,32 @@ async function openFilledBriefing(page: Page) {
     .fill("teste@example.com");
 }
 
+async function auditInteractionTargets(page: Page) {
+  const failures = await page
+    .locator(
+      "button, input, select, textarea, summary, a.button, a.text-button, a.icon-button",
+    )
+    .evaluateAll((elements) =>
+      elements.flatMap((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        if (
+          rect.width === 0 ||
+          rect.height === 0 ||
+          style.visibility === "hidden" ||
+          style.display === "none"
+        )
+          return [];
+        return rect.width >= 24 && rect.height >= 24
+          ? []
+          : [
+              `${element.tagName.toLowerCase()}[${(element.getAttribute("aria-label") || element.textContent || "sem nome").trim().slice(0, 40)}]=${Math.round(rect.width)}x${Math.round(rect.height)}`,
+            ];
+      }),
+    );
+  expect(failures).toEqual([]);
+}
+
 test("busca por SKU, recuperação de resultado vazio e filtro por categoria", async ({
   page,
 }) => {
@@ -698,6 +724,174 @@ test("layout permanece operável na largura equivalente a reflow", async ({
   ).toBe(true);
   await page.getByRole("button", { name: "Minha seleção, 0 produtos" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
+});
+
+test("templates públicos mantêm landmarks, H1 único e reflow em 320 px", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  for (const path of [
+    "/",
+    "/catalogos",
+    "/catalogos/boas-vindas",
+    "/produtos/kit-executivo-2-pecas-08255",
+    "/privacidade",
+  ]) {
+    await page.goto(path);
+    await expect(page.locator("main")).toHaveCount(1);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+      path,
+    ).toBe(true);
+  }
+});
+
+const interactionTargetRoutes = [
+  { label: "home e diálogos", path: "/", dialogs: true },
+  { label: "biblioteca de catálogos", path: "/catalogos" },
+  { label: "coleção editorial", path: "/catalogos/boas-vindas" },
+  {
+    label: "ficha de produto",
+    path: "/produtos/kit-executivo-2-pecas-08255",
+  },
+  { label: "privacidade", path: "/privacidade" },
+] as const;
+
+for (const route of interactionTargetRoutes) {
+  test(`ações principais atendem alvo mínimo WCAG em ${route.label}`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(route.path);
+    await auditInteractionTargets(page);
+
+    if ("dialogs" in route && route.dialogs) {
+      await page.getByRole("button", { name: "Buscar presentes" }).click();
+      await auditInteractionTargets(page);
+      await page.keyboard.press("Escape");
+      await page
+        .getByRole("button", { name: "Minha seleção, 0 produtos" })
+        .click();
+      await auditInteractionTargets(page);
+      expect(
+        await page
+          .locator(".button")
+          .first()
+          .evaluate((element) => getComputedStyle(element).transitionDuration),
+      ).toMatch(/^(0s|0\.001s)(, (0s|0\.001s))*$/);
+    }
+  });
+}
+
+test("teclado abre, opera e fecha o super filtro com foco restaurado", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const trigger = page.getByRole("button", { name: "Buscar presentes" });
+  await trigger.focus();
+  await page.keyboard.press("Enter");
+  const dialog = page.getByRole("dialog", { name: "Filtrar curadoria" });
+  await expect(dialog).toBeVisible();
+  const search = dialog.getByLabel("Nome, categoria ou código do produto");
+  await search.focus();
+  await page.keyboard.type("08255");
+  await expect(search).toHaveValue("08255");
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+});
+
+test("jornada essencial pode ser concluída somente com comandos de teclado", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const filterTrigger = page.getByRole("button", { name: "Buscar presentes" });
+  await filterTrigger.focus();
+  await page.keyboard.press("Enter");
+  const dialog = page.getByRole("dialog", { name: "Filtrar curadoria" });
+  const quantity = dialog.getByLabel("Quantidade desejada");
+  await quantity.focus();
+  await page.keyboard.type("5");
+  await page.keyboard.press("Enter");
+  const search = dialog.getByLabel("Nome, categoria ou código do produto");
+  await search.focus();
+  await page.keyboard.type("08255");
+  await page.keyboard.press("Enter");
+  await expect(dialog).toHaveCount(0);
+  await expect(page.locator(".product-card h3")).toHaveText("Kit executivo");
+
+  const favorite = page.locator(".product-card .favorite-button");
+  await favorite.focus();
+  await page.keyboard.press("Enter");
+  await expect(favorite).toHaveAttribute("aria-pressed", "true");
+  const add = page.getByRole("button", {
+    name: "Adicionar Kit executivo à seleção",
+  });
+  await add.focus();
+  await page.keyboard.press("Enter");
+  const selection = page.getByRole("button", {
+    name: "Minha seleção, 1 produtos",
+  });
+  await selection.focus();
+  await page.keyboard.press("Enter");
+  const project = page.getByRole("dialog", { name: "Seu projeto" });
+  await expect(project).toBeVisible();
+  const continueButton = project.getByRole("button", {
+    name: "Preparar meu briefing",
+  });
+  await continueButton.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByLabel("Seu nome", { exact: true })).toBeVisible();
+});
+
+test("validação nativa leva o foco ao primeiro campo obrigatório e permite correção", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Minha seleção, 0 produtos" }).click();
+  await page.getByRole("button", { name: "Preparar meu briefing" }).click();
+  await page.getByRole("button", { name: "Baixar meu briefing" }).click();
+  const name = page.getByLabel("Seu nome", { exact: true });
+  await expect(name).toBeFocused();
+  await expect(name).toHaveAttribute("aria-invalid", "true");
+  await expect(name).toHaveAttribute(
+    "aria-errormessage",
+    "briefing-name-error",
+  );
+  await expect(page.locator(".form-error-summary")).toContainText(
+    "Revise os campos indicados",
+  );
+  await expect(page.locator("#briefing-name-error")).toHaveText(
+    "Informe seu nome.",
+  );
+  await name.fill("Pessoa de teste");
+  await expect(name).toHaveAttribute("aria-invalid", "false");
+  await page.getByRole("button", { name: "Baixar meu briefing" }).click();
+  await expect(page.getByLabel("Empresa", { exact: true })).toBeFocused();
+});
+
+test("rede lenta mantém contexto, anuncia progresso e conclui sem sucesso fictício", async ({
+  page,
+}) => {
+  await page.route(/\/api\/catalog\?/, async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 650));
+    await route.continue();
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Escrita", exact: true }).click();
+  await expect(page.locator(".catalog-loading")).toContainText(
+    "Atualizando curadoria",
+  );
+  await expect(page.locator(".product-card h3")).toHaveText([
+    "Caderno A5 em PET reciclado",
+    "Caneta touch em alumínio",
+  ]);
+  await expect(page).toHaveURL(/categoria=Escrita/);
+  await expect(page.getByText("Seu briefing está pronto.")).toHaveCount(0);
 });
 
 test("axe: home e diálogo de projeto sem violações automatizadas", async ({

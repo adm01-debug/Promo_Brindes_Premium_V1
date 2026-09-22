@@ -53,6 +53,11 @@ Campanha: iluminação quente lateral, sombras suaves, materiais reconhecíveis,
 
 ## Componentes e estados
 
+O inventário reproduzível de templates, componentes e estados está em
+[`INVENTARIO_DE_COMPONENTES.md`](INVENTARIO_DE_COMPONENTES.md). O gate
+`npm run check:ui-contract` impede regressão dos tokens essenciais, contraste,
+foco, alvo principal e preferência de movimento.
+
 | Componente  | Estados necessários                                                               |
 | ----------- | --------------------------------------------------------------------------------- |
 | Botão       | normal, hover, foco, disabled, processando quando houver rede                     |

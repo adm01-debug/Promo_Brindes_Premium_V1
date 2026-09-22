@@ -14,6 +14,19 @@ export const metadata: Metadata = {
     description:
       "Para cada intenção, um presente. Explore nossas coleções online.",
     url: "/catalogos",
+    images: [
+      {
+        url: "/images/hero-gifting.webp",
+        alt: "Composição conceitual da Promo Brindes Premium",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Catálogos | Promo Brindes Premium",
+    description:
+      "Para cada intenção, um presente. Explore nossas coleções online.",
+    images: ["/images/hero-gifting.webp"],
   },
 };
 

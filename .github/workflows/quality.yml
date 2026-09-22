@@ -32,6 +32,7 @@ jobs:
           npm run typecheck
           npm run check:plan
           npm run check:editorial
+          npm run check:ui-contract
           npm run test:catalog-boundary
           npm run test:catalog-library
       - name: Build production site

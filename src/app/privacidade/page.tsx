@@ -4,6 +4,8 @@ import { briefingDeliveryConfig } from "@/lib/briefing-delivery-config";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Privacidade da prévia | Promo Brindes Premium",
+  description:
+    "Como a prévia Promo Brindes Premium trata seleção, favoritos e dados de briefing.",
   alternates: { canonical: "/privacidade" },
   robots: { index: false, follow: false },
 };

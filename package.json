@@ -17,6 +17,7 @@
     "test:catalog-library": "node --test scripts/tests/catalog-library.test.mjs",
     "check:public-secrets": "node scripts/check-public-secrets.mjs",
     "check:performance-budget": "node scripts/check-performance-budget.mjs",
+    "check:ui-contract": "node scripts/check-ui-contract.mjs",
     "db:migrate": "node --env-file=.env.local scripts/push-site-migrations.mjs",
     "db:sync-catalog": "node --env-file=.env.local scripts/sync-site-catalog.mjs"
   },

@@ -37,6 +37,18 @@ export async function generateMetadata({
       title: collection.title,
       description: collection.description,
       url: `/catalogos/${collection.slug}`,
+      images: [
+        {
+          url: "/images/hero-gifting.webp",
+          alt: "Composição conceitual da Promo Brindes Premium",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${collection.title} | Promo Brindes Premium`,
+      description: collection.description,
+      images: ["/images/hero-gifting.webp"],
     },
   };
 }

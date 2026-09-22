@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "node:crypto";
 import { getSiteCatalogPage } from "@/lib/site-database";
 import { catalogCollections } from "@/lib/catalog-library";
 
@@ -11,10 +12,23 @@ function integer(value: string | null) {
   return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : null;
 }
 
-function invalid(message: string) {
+function timingHeaders(startedAt: number, requestId: string) {
+  return {
+    "Server-Timing": `catalog;dur=${(performance.now() - startedAt).toFixed(1)}`,
+    "X-Request-Id": requestId,
+  };
+}
+
+function invalid(message: string, startedAt: number, requestId: string) {
   return NextResponse.json(
     { error: "INVALID_CATALOG_QUERY", message },
-    { status: 400, headers: { "Cache-Control": "no-store" } },
+    {
+      status: 400,
+      headers: {
+        "Cache-Control": "no-store",
+        ...timingHeaders(startedAt, requestId),
+      },
+    },
   );
 }
 
@@ -24,6 +38,8 @@ function invalid(message: string) {
  * unrestricted filters.
  */
 export async function GET(request: NextRequest) {
+  const startedAt = performance.now();
+  const requestId = randomUUID();
   const search = request.nextUrl.searchParams;
   const query = search.get("q");
   const category = search.get("category");
@@ -35,7 +51,7 @@ export async function GET(request: NextRequest) {
   const personalizable = search.get("personalizable");
   const quantity = integer(search.get("quantity"));
   if (query && query.length > 100)
-    return invalid("q aceita no máximo 100 caracteres.");
+    return invalid("q aceita no máximo 100 caracteres.", startedAt, requestId);
   if (
     category &&
     ![
@@ -46,7 +62,11 @@ export async function GET(request: NextRequest) {
       "Viagem",
     ].includes(category)
   )
-    return invalid("category não pertence à taxonomia pública.");
+    return invalid(
+      "category não pertence à taxonomia pública.",
+      startedAt,
+      requestId,
+    );
   if (
     page === null ||
     pageSize === null ||
@@ -54,9 +74,11 @@ export async function GET(request: NextRequest) {
   )
     return invalid(
       "page e pageSize devem ser inteiros positivos; pageSize é no máximo 24.",
+      startedAt,
+      requestId,
     );
   if (sort && !["curadoria", "nome"].includes(sort))
-    return invalid("sort deve ser curadoria ou nome.");
+    return invalid("sort deve ser curadoria ou nome.", startedAt, requestId);
   const occasions = occasion ? occasion.split(",") : [];
   const knownOccasions = new Set(
     catalogCollections.map((collection) => collection.slug),
@@ -67,11 +89,23 @@ export async function GET(request: NextRequest) {
     new Set(occasions).size !== occasions.length ||
     occasions.some((value) => !knownOccasions.has(value))
   )
-    return invalid("occasion contém uma curadoria pública inválida.");
+    return invalid(
+      "occasion contém uma curadoria pública inválida.",
+      startedAt,
+      requestId,
+    );
   if (personalizable !== null && personalizable !== "1")
-    return invalid("personalizable deve ser 1 quando informado.");
+    return invalid(
+      "personalizable deve ser 1 quando informado.",
+      startedAt,
+      requestId,
+    );
   if (quantity === null || (quantity !== undefined && quantity > 10000))
-    return invalid("quantity deve ser um inteiro entre 1 e 10000.");
+    return invalid(
+      "quantity deve ser um inteiro entre 1 e 10000.",
+      startedAt,
+      requestId,
+    );
   const selectedIds = ids ? ids.split(",") : [];
   if (
     selectedIds.length > 24 ||
@@ -84,6 +118,8 @@ export async function GET(request: NextRequest) {
   )
     return invalid(
       "ids aceita no máximo 24 UUIDs públicos separados por vírgula.",
+      startedAt,
+      requestId,
     );
   if (
     selectedIds.length > 0 &&
@@ -93,7 +129,11 @@ export async function GET(request: NextRequest) {
       personalizable !== null ||
       quantity !== undefined)
   )
-    return invalid("ids não pode ser combinado com filtros de descoberta.");
+    return invalid(
+      "ids não pode ser combinado com filtros de descoberta.",
+      startedAt,
+      requestId,
+    );
   try {
     const result = await getSiteCatalogPage(
       {
@@ -118,12 +158,29 @@ export async function GET(request: NextRequest) {
         "X-Catalog-Source": process.env.SUPABASE_URL
           ? "site-database"
           : "snapshot",
+        ...timingHeaders(startedAt, requestId),
       },
     });
   } catch {
+    console.error(
+      JSON.stringify({
+        level: "error",
+        event: "catalog_unavailable",
+        route: "/api/catalog",
+        status: 503,
+        requestId,
+        durationMs: Math.round(performance.now() - startedAt),
+      }),
+    );
     return NextResponse.json(
       { error: "CATALOG_UNAVAILABLE" },
-      { status: 503, headers: { "Cache-Control": "no-store" } },
+      {
+        status: 503,
+        headers: {
+          "Cache-Control": "no-store",
+          ...timingHeaders(startedAt, requestId),
+        },
+      },
     );
   }
 }

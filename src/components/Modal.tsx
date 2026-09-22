@@ -34,6 +34,11 @@ export default function Modal({
       className={`modal ${className}`}
       aria-label={title}
       onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          closeRef.current();
+          return;
+        }
         if (event.key !== "Tab") return;
         const focusable = Array.from(
           event.currentTarget.querySelectorAll<HTMLElement>(

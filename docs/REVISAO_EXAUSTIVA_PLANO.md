@@ -2,7 +2,7 @@
 
 Revisão: **22/09/2026**, identificador `2026-09-22-audit-1`. Código base examinado: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. Projeto: **Promo_Brindes_Premium_V1**. A referência histórica de `Promo_Gifts_V4` continua sendo a auditoria dirigida do commit `44857d5`.
 
-**Não implementamos todas as melhorias.** Há **83 etapas com o próprio critério comprovado, 66 parciais e 51 sem entrega comprovada**. São **117 etapas abertas**, das quais **88 são P0**. O site tem catálogo curado, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
+**Não implementamos todas as melhorias.** Há **97 etapas com o próprio critério comprovado, 57 parciais e 46 sem entrega comprovada**. São **103 etapas abertas**, das quais **76 são P0**. O site tem catálogo curado, descoberta multifacetada, recomendações editoriais, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
 
 Esses números contam critérios do plano, não esforço restante ou porcentagem de prontidão comercial. Entrevistas, licenças, homologações e monitoramento têm peso diferente de um componente visual. A conclusão de uma entrega isolada não libera suas dependências nem os gates de lançamento.
 
@@ -11,7 +11,7 @@ Esses números contam critérios do plano, não esforço restante ou porcentagem
 - Foram lidos os **200 títulos, ações, critérios, dependências e estados anteriores**. Cada etapa recebeu uma constatação individual, referências e próxima ação em [`src/lib/plan.json`](../src/lib/plan.json).
 - Foram confrontados componentes, rotas, helpers, configurações, migration, scripts, três arquivos de testes e documentação de pesquisa/arquitetura/validação. Não se atribuiu conclusão apenas à existência de um arquivo.
 - O grafo local orientou o levantamento de relações; arquivos atuais prevaleceram quando houve alteração posterior à extração. Não se confundiu esse grafo com o artefato histórico do aplicativo comercial.
-- Foram executados 43 cenários sintéticos em módulos TypeScript e 165 execuções E2E nos três motores. Os sintéticos confirmam idempotência concorrente, recuperação de protocolo após retirada, conflito de payload, limite de corpo com cancelamento do fluxo, data, paginação em múltiplos lotes, limite e mudança de total do catálogo, contagem exata, consulta por IDs sem cache, allowlist de host e limite compartilhado entre instâncias. A matriz de browser cobre também as novas facetas, histórico, painel móvel e acessibilidade automatizada. Não são uma certificação de produção.
+- Foram executados 43 cenários sintéticos em módulos TypeScript, 13 contratos da biblioteca e 198 execuções E2E nos três motores. Os sintéticos confirmam idempotência concorrente, recuperação de protocolo após retirada, conflito de payload, limite de corpo com cancelamento do fluxo, data, paginação em múltiplos lotes, limite e mudança de total do catálogo, contagem exata, consulta por IDs sem cache, allowlist de host e limite compartilhado entre instâncias. A matriz de browser cobre facetas, histórico, metadados, recomendações, teclado, alvos, reflow, rede lenta e acessibilidade automatizada. Não são uma certificação de produção.
 - O PostgreSQL da vitrine foi consultado para conferir migrations, contagens, RLS e privilégios. As funções de entrega foram exercitadas dentro de uma transação revertida; nenhum dado comercial foi mantido e nenhuma mensagem foi enviada.
 - Referências externas e estudos de mercado foram avaliados como evidência documental histórica de 20/09; não houve nova pesquisa de mercado, entrevistas ou auditoria administrativa do banco operacional nesta revisão.
 
@@ -19,29 +19,29 @@ A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [
 
 ## Resultado por fase
 
-| Fase | Critério comprovado | Parcial | Sem entrega comprovada |
-|---|---:|---:|---:|
-| 01 · Diagnóstico e patrimônio existente | 9 | 0 | 1 |
-| 02 · Pesquisa de mercado e evidências de UX | 10 | 0 | 0 |
-| 03 · Posicionamento, descoberta e mensuração | 1 | 7 | 2 |
-| 04 · Identidade, direção de arte e voz | 7 | 2 | 1 |
-| 05 · Curadoria e qualidade do catálogo | 3 | 5 | 2 |
-| 06 · Arquitetura de informação e jornadas | 5 | 4 | 1 |
-| 07 · Sistema de design e componentes | 7 | 3 | 0 |
-| 08 · Página inicial e narrativa de marca | 8 | 1 | 1 |
-| 09 · Busca, filtros e descoberta | 7 | 0 | 3 |
-| 10 · Página de produto e confiança | 2 | 5 | 3 |
-| 11 · Personalização e montagem de kits | 0 | 2 | 8 |
-| 12 · Seleção, briefing e conversão | 5 | 3 | 2 |
-| 13 · Contrato público e integração de catálogo | 4 | 6 | 0 |
-| 14 · Passagem para o comercial e CRM | 1 | 3 | 6 |
-| 15 · Segurança, privacidade e governança | 0 | 7 | 3 |
-| 16 · Conteúdo, SEO e descoberta orgânica | 1 | 7 | 2 |
-| 17 · Desempenho e confiabilidade | 7 | 0 | 3 |
-| 18 · Acessibilidade e inclusão | 3 | 6 | 1 |
-| 19 · Qualidade, homologação e piloto | 3 | 3 | 4 |
-| 20 · Lançamento, operação e evolução | 0 | 2 | 8 |
-| **Total** | **83** | **66** | **51** |
+| Fase                                           | Critério comprovado | Parcial | Sem entrega comprovada |
+| ---------------------------------------------- | ------------------: | ------: | ---------------------: |
+| 01 · Diagnóstico e patrimônio existente        |                   9 |       0 |                      1 |
+| 02 · Pesquisa de mercado e evidências de UX    |                  10 |       0 |                      0 |
+| 03 · Posicionamento, descoberta e mensuração   |                   1 |       7 |                      2 |
+| 04 · Identidade, direção de arte e voz         |                   7 |       2 |                      1 |
+| 05 · Curadoria e qualidade do catálogo         |                   3 |       5 |                      2 |
+| 06 · Arquitetura de informação e jornadas      |                   5 |       4 |                      1 |
+| 07 · Sistema de design e componentes           |                   9 |       1 |                      0 |
+| 08 · Página inicial e narrativa de marca       |                   8 |       1 |                      1 |
+| 09 · Busca, filtros e descoberta               |                   8 |       2 |                      0 |
+| 10 · Página de produto e confiança             |                   3 |       5 |                      2 |
+| 11 · Personalização e montagem de kits         |                   0 |       2 |                      8 |
+| 12 · Seleção, briefing e conversão             |                   5 |       3 |                      2 |
+| 13 · Contrato público e integração de catálogo |                   4 |       6 |                      0 |
+| 14 · Passagem para o comercial e CRM           |                   1 |       3 |                      6 |
+| 15 · Segurança, privacidade e governança       |                   1 |       6 |                      3 |
+| 16 · Conteúdo, SEO e descoberta orgânica       |                   3 |       5 |                      2 |
+| 17 · Desempenho e confiabilidade               |                   8 |       0 |                      2 |
+| 18 · Acessibilidade e inclusão                 |                   8 |       1 |                      1 |
+| 19 · Qualidade, homologação e piloto           |                   4 |       2 |                      4 |
+| 20 · Lançamento, operação e evolução           |                   0 |       2 |                      8 |
+| **Total**                                      |              **97** |  **57** |                 **46** |
 
 A entrega posterior da [biblioteca de catálogos](CATALOGOS.md) concluiu o vínculo estrutural da etapa 053 e tornou a etapa 157 parcial: existem seis páginas editoriais com produtos publicados, mas ainda faltam guias aprofundados com participação comercial. Os totais acima incorporam essa entrega.
 
@@ -49,10 +49,10 @@ A entrega posterior da [biblioteca de catálogos](CATALOGOS.md) concluiu o vínc
 
 O registro anterior mostrava **63 concluídas e 137 pendentes**. A revisão não mudou os 200 objetivos para obter um resultado melhor:
 
-| Etapa reaberta | Motivo |
-|---|---|
-| 061 · Tokens | Cores e fontes centralizadas; espaçamentos, bordas e raios ainda usam valores espalhados. |
-| 069 · Biblioteca | Há inventário descritivo, mas faltam exemplos reproduzíveis e variantes completas. |
+| Etapa reaberta   | Motivo                                                                                                     |
+| ---------------- | ---------------------------------------------------------------------------------------------------------- |
+| 061 · Tokens     | Cores e fontes centralizadas; espaçamentos, bordas e raios ainda usam valores espalhados.                  |
+| 069 · Biblioteca | Concluída depois da revisão: inventário atual liga templates, componentes, estados e testes reproduzíveis. |
 
 As regressões inicialmente encontradas nas etapas **056, 068, 087, 089, 114, 127, 134, 168 e 178** foram corrigidas. A revalidação cobre envelope de seleção, reduced motion, ordenação e paginação na fonte, rascunho em memória, fonte única publicada, chave/hash com lease atômica e distinção entre vazio e indisponibilidade. A revalidação posterior acrescentou histórico de navegação, fallback de mídia para 403 e o gate de JavaScript, fontes e chunks do build.
 
@@ -70,27 +70,27 @@ Marcações pessoais não mudam o status auditado, os filtros ou o progresso com
 
 Os endpoints foram carregados com `fetch` simulado e as interações de envio foram interceptadas no navegador. O destino comercial real permaneceu desconfigurado. A tabela registra a reprodução inicial e a evidência atual da correção; prioridade é a urgência para completar a frente afetada, não uma afirmação de incidente em produção.
 
-| ID | Prioridade e etapas | Cenário e resultado observado | Condição para encerrar |
-|---|---|---|---|
-| AUD-01 | P0 antes de ativar envio · 117, 134 | A reprodução inicial duplicava webhook sob concorrência. O cenário atual retorna `201` e `202`, com uma chamada externa. | Persistência/hash e lease já implementados; exercer contra CRM homologado antes de ativar. |
-| AUD-02 | P0 antes de ativar envio · 134 | A reprodução inicial aceitava conteúdo divergente. O cenário atual retorna `409`. | Manter contrato e testar adaptador comercial. |
-| AUD-03 | P0 antes de ativar envio · 144 | O limite dependia de `Content-Length`. O cenário atual mede bytes e retorna `413`; o limite distribuído também foi instalado no banco. | Validar cabeçalho de IP e WAF no proxy real antes de produção. |
-| AUD-04 | P1 · 117, 118 | URL inválida aparecia configurada. A capacidade e o POST agora usam a mesma validação; localhost só é aceito no desenvolvimento. | Definir receptor e política aprovados. |
-| AUD-05 | P1 · 144 | Sufixo de data era truncado. A entrada integral agora é rejeitada. | Definir regras comerciais de data além do calendário. |
-| AUD-06 | P0 antes de ampliar catálogo · 089, 127 | Fonte de 30 registros era truncada. O cenário atual confirma total 30 com paginação/contagem na fonte. | Testar expansão de curadoria com dados aprovados. |
-| AUD-09 | P1 · 056 | Ficha gravava seleção sem validade. A mesma serialização com `savedAt` é usada nas duas rotas. | Manter teste entre rotas. |
-| AUD-10 | P1 · 088 | Limpeza mantinha `q` na URL. Busca, categoria, página e ordenação agora registram histórico; voltar restaura a consulta na fonte. | Incluir futuras facetas no mesmo contrato de URL. |
-| AUD-11 | P0 antes de ativar envio · 117, 134 | Retry criava chave nova. A chave permanece estável para a mesma intenção. | Exercer resposta perdida e CRM homologado. |
-| AUD-12 | P1 · 114, 177 | Voltar apagava contato. Rascunho controlado em memória preserva os campos sem localStorage. | Revalidar ao mudar os campos. |
-| AUD-13 | P1 · 068, 178 | Rolagem ignorava reduced motion. A sonda atual não observa animação intermediária. | Incluir novas animações na sonda. |
-| AUD-21–22 | P0 antes de ativar envio · 117, 128 | O POST podia ler produto retirado ou mínimo antigo pelo cache. Agora consulta a publicação sem cache e rejeita a intenção desatualizada. | Testar em staging com publicação e CRM homologados. |
-| AUD-23–29, 32 | P0 antes de ampliar catálogo · 127, 130 | Drift de slug, data, mídia, duplicata, filtro, paginação e correspondência de ficha passa a falhar explicitamente. | Homologar contrato editorial completo, variantes e staging. |
-| AUD-30–31 | P0 antes de ativar envio · 118, 139 | Aceite do receptor seguido de falha no banco não é marcado como rejeição; falha real do receptor continua registrada. | Exigir idempotência do CRM e conciliação por protocolo. |
-| AUD-33–36 | P0 antes de ativar envio · 117, 118, 139 | Retry de entrega concluída após retirada recupera o protocolo sem novo webhook; pendência preserva o protocolo sem reenviar; conteúdo divergente retorna `409`, e normalização equivalente não gera conflito. | Validar com CRM homologado e implantar conciliação operacional de estados incertos. |
+| ID            | Prioridade e etapas                      | Cenário e resultado observado                                                                                                                                                                                 | Condição para encerrar                                                                     |
+| ------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| AUD-01        | P0 antes de ativar envio · 117, 134      | A reprodução inicial duplicava webhook sob concorrência. O cenário atual retorna `201` e `202`, com uma chamada externa.                                                                                      | Persistência/hash e lease já implementados; exercer contra CRM homologado antes de ativar. |
+| AUD-02        | P0 antes de ativar envio · 134           | A reprodução inicial aceitava conteúdo divergente. O cenário atual retorna `409`.                                                                                                                             | Manter contrato e testar adaptador comercial.                                              |
+| AUD-03        | P0 antes de ativar envio · 144           | O limite dependia de `Content-Length`. O cenário atual mede bytes e retorna `413`; o limite distribuído também foi instalado no banco.                                                                        | Validar cabeçalho de IP e WAF no proxy real antes de produção.                             |
+| AUD-04        | P1 · 117, 118                            | URL inválida aparecia configurada. A capacidade e o POST agora usam a mesma validação; localhost só é aceito no desenvolvimento.                                                                              | Definir receptor e política aprovados.                                                     |
+| AUD-05        | P1 · 144                                 | Sufixo de data era truncado. A entrada integral agora é rejeitada.                                                                                                                                            | Definir regras comerciais de data além do calendário.                                      |
+| AUD-06        | P0 antes de ampliar catálogo · 089, 127  | Fonte de 30 registros era truncada. O cenário atual confirma total 30 com paginação/contagem na fonte.                                                                                                        | Testar expansão de curadoria com dados aprovados.                                          |
+| AUD-09        | P1 · 056                                 | Ficha gravava seleção sem validade. A mesma serialização com `savedAt` é usada nas duas rotas.                                                                                                                | Manter teste entre rotas.                                                                  |
+| AUD-10        | P1 · 088                                 | Limpeza mantinha `q` na URL. Busca, categoria, página e ordenação agora registram histórico; voltar restaura a consulta na fonte.                                                                             | Incluir futuras facetas no mesmo contrato de URL.                                          |
+| AUD-11        | P0 antes de ativar envio · 117, 134      | Retry criava chave nova. A chave permanece estável para a mesma intenção.                                                                                                                                     | Exercer resposta perdida e CRM homologado.                                                 |
+| AUD-12        | P1 · 114, 177                            | Voltar apagava contato. Rascunho controlado em memória preserva os campos sem localStorage.                                                                                                                   | Revalidar ao mudar os campos.                                                              |
+| AUD-13        | P1 · 068, 178                            | Rolagem ignorava reduced motion. A sonda atual não observa animação intermediária.                                                                                                                            | Incluir novas animações na sonda.                                                          |
+| AUD-21–22     | P0 antes de ativar envio · 117, 128      | O POST podia ler produto retirado ou mínimo antigo pelo cache. Agora consulta a publicação sem cache e rejeita a intenção desatualizada.                                                                      | Testar em staging com publicação e CRM homologados.                                        |
+| AUD-23–29, 32 | P0 antes de ampliar catálogo · 127, 130  | Drift de slug, data, mídia, duplicata, filtro, paginação e correspondência de ficha passa a falhar explicitamente.                                                                                            | Homologar contrato editorial completo, variantes e staging.                                |
+| AUD-30–31     | P0 antes de ativar envio · 118, 139      | Aceite do receptor seguido de falha no banco não é marcado como rejeição; falha real do receptor continua registrada.                                                                                         | Exigir idempotência do CRM e conciliação por protocolo.                                    |
+| AUD-33–36     | P0 antes de ativar envio · 117, 118, 139 | Retry de entrega concluída após retirada recupera o protocolo sem novo webhook; pendência preserva o protocolo sem reenviar; conteúdo divergente retorna `409`, e normalização equivalente não gera conflito. | Validar com CRM homologado e implantar conciliação operacional de estados incertos.        |
 
 Os controles **AUD-07 e AUD-08 passam**: projeto operacional e host semelhante são rejeitados antes da leitura do catálogo.
 
-A validação passa em build, TypeScript, checagem integral do plano, orçamento de imagens, JavaScript, fontes e chunks, 43 cenários sintéticos e 165 execuções E2E em Chromium, Firefox e WebKit local. A cobertura inclui facetas em OR/AND, contagens contextuais, URL e histórico, sugestão de busca, API 503, offline, mídia 403, resposta atrasada, página fora do intervalo, protocolo ausente, seleção retirada ou com mínimo alterado antes do briefing, retry após retirada e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
+A validação passa em build, TypeScript, checagem integral do plano, contrato visual, orçamento de imagens, JavaScript, fontes e chunks, 43 cenários sintéticos, 13 contratos da biblioteca e 198 execuções E2E em Chromium, Firefox e WebKit local. A cobertura inclui facetas em OR/AND, recomendações publicadas, metadados, contrato exato, teclado, alvos, reflow, rede lenta, API 503, offline, mídia 403, resposta atrasada, protocolo ausente, seleção retirada ou com mínimo alterado antes do briefing, retry após retirada e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
 
 O painel atualizado também foi inspecionado em **390 e 1440 pixels**, com filtro de parciais e critério expandido: sem overflow horizontal e sem violações nas regras axe selecionadas. [Registro da inspeção](audit/plan-dashboard-check.json).
 
@@ -98,35 +98,35 @@ Resultados brutos: [módulos isolados](audit/plan-scenarios.json), [navegador](a
 
 ## Lacunas adicionais comprovadas por inspeção
 
-| Lacuna | Evidência | Etapas e efeito |
-|---|---|---|
-| Facetas futuras de busca | Busca, categoria, página e ordenação sincronizam URL e histórico. | 088 está concluída; incluir novas facetas no contrato de URL ao criá-las. |
-| Facetas comerciais incompletas | UI oferece ordenação e paginação na fonte, com ID como desempate; atributos comerciais ainda não estão aprovados para facetas combináveis. | 085–086 e 090: projetar e testar relevância/facetas com dados e compradores. |
-| Passagem comercial sem homologação | O protocolo é persistido e a entrega é reservada, mas não há receptor/CRM configurado. | 117–118, 139, 184: falta contrato vivo, conciliação operacional e aceite de vendedores. |
-| Controle de abuso em produção | A entrega configurada usa janela móvel atômica no PostgreSQL e HMAC do IP; sem cabeçalho declarado ou IP válido, falha fechado. A prévia desligada não grava contatos nem usa a janela. | 144: homologar que o proxy real sobrescreve o cabeçalho, validar WAF/múltiplas réplicas e acompanhar o cron de retenção. |
-| Retorno do CRM ainda não homologado | Cliente rejeita `2xx` sem protocolo válido e mantém o formulário; não há receptor comercial aprovado para testar confirmação real. | 117–118: homologar contrato, erro e conciliação do receptor. |
-| Aceite remoto sem confirmação local | Uma resposta 2xx do receptor seguida de falha do banco preserva estado incerto; após expirar a reserva, retry ainda pode reenviar. | 118, 139: receptor deve honrar chave de idempotência e permitir conciliação por protocolo antes de ativar entrega. |
-| Logs publicados ainda não inspecionados | Scanner cobre código público, scripts e build estático; não existe infraestrutura publicada com logs completos para revisar. | 143: incluir inspeção de logs no ambiente comercial. |
-| Domínio e SEO comercial sem aprovação | Canonical é específico por rota; a indexação exige URL HTTPS e catálogo configurado, e o sitemap lê itens publicados. A posse do domínio e redirects não foram homologados. | 152–156: aprovar domínio, slugs finais, redirects e conteúdo. |
-| Planejamento acessível na prévia | `/planejamento` continua acessível sem autenticação na prévia; configuração indexável retorna 404 para a rota. | 191, 194: manter o painel em ambiente interno ao expor a vitrine comercial. |
-| Deploy comercial ainda ausente | CI versionado executa os gates em push/PR; staging, domínio, release reversível e monitoramento não estão configurados. | 185, 191–195: executar pipeline remoto e preparar ambientes e operação. |
-| Medição de experiência | Gate mede imagens, fontes WOFF2, JavaScript gzip e chunks por rota; três rodadas móveis registram LCP 2,259–3,121 s, mediana 2,612 s. | 166 tem critério de medição comprovado; otimizar LCP, medir campo e instrumentar alertas nas etapas seguintes. |
+| Lacuna                                  | Evidência                                                                                                                                                                               | Etapas e efeito                                                                                                          |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Facetas futuras de busca                | Busca, categoria, página e ordenação sincronizam URL e histórico.                                                                                                                       | 088 está concluída; incluir novas facetas no contrato de URL ao criá-las.                                                |
+| Facetas comerciais incompletas          | UI oferece ordenação e paginação na fonte, com ID como desempate; atributos comerciais ainda não estão aprovados para facetas combináveis.                                              | 085–086 e 090: projetar e testar relevância/facetas com dados e compradores.                                             |
+| Passagem comercial sem homologação      | O protocolo é persistido e a entrega é reservada, mas não há receptor/CRM configurado.                                                                                                  | 117–118, 139, 184: falta contrato vivo, conciliação operacional e aceite de vendedores.                                  |
+| Controle de abuso em produção           | A entrega configurada usa janela móvel atômica no PostgreSQL e HMAC do IP; sem cabeçalho declarado ou IP válido, falha fechado. A prévia desligada não grava contatos nem usa a janela. | 144: homologar que o proxy real sobrescreve o cabeçalho, validar WAF/múltiplas réplicas e acompanhar o cron de retenção. |
+| Retorno do CRM ainda não homologado     | Cliente rejeita `2xx` sem protocolo válido e mantém o formulário; não há receptor comercial aprovado para testar confirmação real.                                                      | 117–118: homologar contrato, erro e conciliação do receptor.                                                             |
+| Aceite remoto sem confirmação local     | Uma resposta 2xx do receptor seguida de falha do banco preserva estado incerto; após expirar a reserva, retry ainda pode reenviar.                                                      | 118, 139: receptor deve honrar chave de idempotência e permitir conciliação por protocolo antes de ativar entrega.       |
+| Logs publicados ainda não inspecionados | Scanner cobre código público, scripts e build estático; não existe infraestrutura publicada com logs completos para revisar.                                                            | 143: incluir inspeção de logs no ambiente comercial.                                                                     |
+| Domínio e SEO comercial sem aprovação   | Canonical é específico por rota; a indexação exige URL HTTPS e catálogo configurado, e o sitemap lê itens publicados. A posse do domínio e redirects não foram homologados.             | 152–156: aprovar domínio, slugs finais, redirects e conteúdo.                                                            |
+| Planejamento acessível na prévia        | `/planejamento` continua acessível sem autenticação na prévia; configuração indexável retorna 404 para a rota.                                                                          | 191, 194: manter o painel em ambiente interno ao expor a vitrine comercial.                                              |
+| Deploy comercial ainda ausente          | CI versionado executa os gates em push/PR; staging, domínio, release reversível e monitoramento não estão configurados.                                                                 | 185, 191–195: executar pipeline remoto e preparar ambientes e operação.                                                  |
+| Medição de experiência                  | Gate mede imagens, fontes WOFF2, JavaScript gzip e chunks por rota; três rodadas móveis registram LCP 2,259–3,121 s, mediana 2,612 s.                                                   | 166 tem critério de medição comprovado; otimizar LCP, medir campo e instrumentar alertas nas etapas seguintes.           |
 
 Essas lacunas ainda exigem decisões, ambiente e evidências próprias. As correções técnicas reproduzidas nesta rodada constam no registro de cenários adicionais.
 
 ## Funções sugeridas ainda ausentes ou incompletas
 
-| Frente | O que funciona hoje | O que falta para a função desejada |
-|---|---|---|
-| Descoberta | Busca, quatro categorias, favoritos, ordenação e paginação consultam oito peças publicadas na fonte. | Atributos comerciais, facetas combináveis, sinônimos e relevância validada com compradores. |
-| Produto | Modal e ficha permanente com uma foto, descrição, SKU e mínimo cadastrado. | Galeria, variantes, ficha revisada, condições contextualizadas e recomendações elegíveis. |
-| Personalização e kits | Conteúdo explicativo e observações livres. | Técnicas/áreas por SKU, upload seguro, simulação, prova final, kit estruturado, embalagem, cartão e cálculo. |
-| Conversão | Seleção, download local e entrega opcional persistida/idempotente. | CRM homologado, confirmação comercial, atendimento e conciliação efetiva. |
-| Operação | Schema privado preparado e código publicado no GitHub. | Dono do lead, qualificação aprovada, distribuição, orçamento transacional, estados, SLA, fila e conciliação. |
-| Conteúdo/SEO | Home editorial, metadados iniciais, robots e sitemap condicionais. | Direitos, conteúdo aprovado, guias, redirects/canonical completos, domínio e Search Console. |
-| Qualidade | CI de build/tipos/checks, matriz E2E Chromium/Firefox/WebKit e axe em cenários representativos. | Aparelhos reais, Safari instalado, leitores de tela, carga, rede limitada e pilotos. |
-| Governança | Papéis sugeridos e avisos de prévia. | Pessoas responsáveis, controlador/canais reais, política comercial, retenção e processo de direitos. |
-| Crescimento | Métricas propostas em documento. | Instrumentação aprovada, baseline real, monitoramento, experimentos e revisão periódica. |
+| Frente                | O que funciona hoje                                                                                  | O que falta para a função desejada                                                                           |
+| --------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Descoberta            | Busca, quatro categorias, favoritos, ordenação e paginação consultam oito peças publicadas na fonte. | Atributos comerciais, facetas combináveis, sinônimos e relevância validada com compradores.                  |
+| Produto               | Modal e ficha permanente com uma foto, descrição, SKU e mínimo cadastrado.                           | Galeria, variantes, ficha revisada, condições contextualizadas e recomendações elegíveis.                    |
+| Personalização e kits | Conteúdo explicativo e observações livres.                                                           | Técnicas/áreas por SKU, upload seguro, simulação, prova final, kit estruturado, embalagem, cartão e cálculo. |
+| Conversão             | Seleção, download local e entrega opcional persistida/idempotente.                                   | CRM homologado, confirmação comercial, atendimento e conciliação efetiva.                                    |
+| Operação              | Schema privado preparado e código publicado no GitHub.                                               | Dono do lead, qualificação aprovada, distribuição, orçamento transacional, estados, SLA, fila e conciliação. |
+| Conteúdo/SEO          | Home editorial, metadados iniciais, robots e sitemap condicionais.                                   | Direitos, conteúdo aprovado, guias, redirects/canonical completos, domínio e Search Console.                 |
+| Qualidade             | CI de build/tipos/checks, matriz E2E Chromium/Firefox/WebKit e axe em cenários representativos.      | Aparelhos reais, Safari instalado, leitores de tela, carga, rede limitada e pilotos.                         |
+| Governança            | Papéis sugeridos e avisos de prévia.                                                                 | Pessoas responsáveis, controlador/canais reais, política comercial, retenção e processo de direitos.         |
+| Crescimento           | Métricas propostas em documento.                                                                     | Instrumentação aprovada, baseline real, monitoramento, experimentos e revisão periódica.                     |
 
 ## Banco e repositório
 
@@ -140,14 +140,14 @@ A migration nova foi aplicada ao banco dedicado e uma checagem posterior confirm
 
 ## Gates e sequência recomendada
 
-| Gate | Situação | Evidência ainda necessária |
-|---|---|---|
-| G1 · Direção | Aberto | Observação, entrevistas, identidade e MVP aprovados. |
-| G2 · Conteúdo | Aberto | Materiais, mínimos, condições, direitos e manutenção editorial. |
-| G3 · Experiência | Aberto | Correções de jornada, descoberta/produto completos e validação com compradores. |
-| G4 · Operação | Aberto | Persistência idempotente, CRM, segurança e fluxo comercial testado. |
-| G5 · Qualidade | Aberto | Desempenho, matriz de ambientes, acessibilidade manual e pilotos. |
-| G6 · Lançamento | Aberto | Domínio, release reversível, equipe, smoke e monitoramento real. |
+| Gate             | Situação | Evidência ainda necessária                                                      |
+| ---------------- | -------- | ------------------------------------------------------------------------------- |
+| G1 · Direção     | Aberto   | Observação, entrevistas, identidade e MVP aprovados.                            |
+| G2 · Conteúdo    | Aberto   | Materiais, mínimos, condições, direitos e manutenção editorial.                 |
+| G3 · Experiência | Aberto   | Correções de jornada, descoberta/produto completos e validação com compradores. |
+| G4 · Operação    | Aberto   | Persistência idempotente, CRM, segurança e fluxo comercial testado.             |
+| G5 · Qualidade   | Aberto   | Desempenho, matriz de ambientes, acessibilidade manual e pilotos.               |
+| G6 · Lançamento  | Aberto   | Domínio, release reversível, equipe, smoke e monitoramento real.                |
 
 1. **Correções técnicas independentes:** validade da seleção, URL/voltar, rascunho em memória, movimento reduzido, limite real de corpo e validação integral. Encerrar com testes que reproduzam os defeitos acima.
 2. **Fonte única publicada:** unificar home, ficha, seleção e validação no catálogo; adicionar paginação/contagem na fonte, estado vazio correto e retirada dentro do SLA. Testar mais de 24 itens e alteração de publicação em ambiente isolado.

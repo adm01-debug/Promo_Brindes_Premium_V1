@@ -9,6 +9,12 @@ test("catálogo público pagina, preserva o contrato e não expõe campos intern
   expect(response.status()).toBe(200);
   expect(response.headers()["x-catalog-contract-version"]).toBe("2026-09-22.2");
   expect(response.headers()["cache-control"]).toContain("s-maxage=300");
+  expect(response.headers()["x-request-id"]).toMatch(
+    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+  );
+  expect(response.headers()["server-timing"]).toMatch(
+    /^catalog;dur=\d+(?:\.\d)$/,
+  );
   const body = await response.json();
   expect(body).toMatchObject({
     contractVersion: "2026-09-22.2",
@@ -17,6 +23,58 @@ test("catálogo público pagina, preserva o contrato e não expõe campos intern
     total: 1,
     totalPages: 1,
   });
+  expect(Object.keys(body).sort()).toEqual(
+    [
+      "category",
+      "contractVersion",
+      "facets",
+      "items",
+      "occasions",
+      "page",
+      "pageSize",
+      "personalizable",
+      "quantity",
+      "query",
+      "sort",
+      "suggestedQuery",
+      "total",
+      "totalPages",
+    ].sort(),
+  );
+  expect(Object.keys(body.items[0]).sort()).toEqual(
+    [
+      "category",
+      "description",
+      "id",
+      "image",
+      "minimum",
+      "name",
+      "originalName",
+      "personalizable",
+      "sku",
+      "slug",
+      "sourceDate",
+      "tagline",
+    ].sort(),
+  );
+  expect(Object.keys(body.facets).sort()).toEqual(
+    ["categories", "occasions", "personalizable"].sort(),
+  );
+  expect(Object.keys(body.facets.categories)).toEqual([
+    "Todos",
+    "Kits & experiências",
+    "Escrita",
+    "Lifestyle",
+    "Viagem",
+  ]);
+  expect(Object.keys(body.facets.occasions)).toEqual([
+    "boas-vindas",
+    "relacoes-que-permanecem",
+    "conquistas-memoraveis",
+    "arte-de-receber",
+    "escrita-com-presenca",
+    "novos-destinos",
+  ]);
   expect(body.items[0]).toMatchObject({ sku: "08255", name: "Kit executivo" });
   for (const forbidden of [
     "cost_price",
@@ -231,6 +289,7 @@ test("página de produto é acessível diretamente e a prévia permanece bloquea
   const productHtml = await product.text();
   expect(productHtml).toContain("Kit executivo");
   expect(productHtml).toContain('rel="canonical"');
+  expect(productHtml).toContain('name="twitter:card"');
   expect(productHtml).toContain("application/ld+json");
   expect(productHtml).toContain('"sku":"08255"');
   expect(productHtml).not.toContain('"offers"');
@@ -239,6 +298,21 @@ test("página de produto é acessível diretamente e a prévia permanece bloquea
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Kit executivo",
   );
+  const recommendations = page.locator(".product-recommendation-card");
+  await expect(recommendations).toHaveCount(3);
+  await expect(
+    page.getByRole("heading", { name: "Continue sua curadoria." }),
+  ).toBeVisible();
+  expect(
+    (await recommendations.allTextContents()).every(
+      (text) => !text.includes("Kit executivo"),
+    ),
+  ).toBe(true);
+  await expect(
+    page.getByText(
+      "Sugestões publicadas nas mesmas coleções editoriais. Cada peça é escolhida separadamente; composição, disponibilidade e personalização são confirmadas na proposta.",
+    ),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Incluir no meu projeto" }).click();
   await expect(
     page.getByRole("button", { name: "Incluído na seleção" }),
@@ -258,6 +332,55 @@ test("consulta compartilhável abre a curadoria filtrada", async ({ page }) => {
   await expect(page.locator(".product-card")).toHaveCount(1);
   await expect(page.locator(".product-card h3")).toHaveText("Kit executivo");
   await expect(page).toHaveURL(/\?q=08255/);
+});
+
+test("templates públicos têm metadados sociais únicos e canonical sem filtros", async ({
+  page,
+}) => {
+  const cases = [
+    ["/", "/", "Promo Brindes Premium | Presentes que deixam uma marca"],
+    [
+      "/catalogos?q=boas-vindas",
+      "/catalogos",
+      "Catálogos de presentes corporativos | Promo Brindes Premium",
+    ],
+    [
+      "/catalogos/boas-vindas",
+      "/catalogos/boas-vindas",
+      "Um começo com significado | Catálogos Promo Brindes Premium",
+    ],
+    [
+      "/produtos/kit-executivo-2-pecas-08255",
+      "/produtos/kit-executivo-2-pecas-08255",
+      "Kit executivo | Promo Brindes Premium",
+    ],
+  ] as const;
+  const titles = new Set<string>();
+  for (const [path, canonicalPath, expectedTitle] of cases) {
+    await page.goto(path);
+    const title = await page.title();
+    expect(title).toBe(expectedTitle);
+    expect(titles.has(title)).toBe(false);
+    titles.add(title);
+    const description = await page
+      .locator('meta[name="description"]')
+      .getAttribute("content");
+    expect(description).toBeTruthy();
+    expect(description).not.toMatch(/(?:TODO|undefined|null)/i);
+    const canonical = await page
+      .locator('link[rel="canonical"]')
+      .getAttribute("href");
+    expect(new URL(canonical!).pathname).toBe(canonicalPath);
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      "content",
+      /\S/,
+    );
+    await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      "content",
+      "summary_large_image",
+    );
+  }
 });
 
 test("home entrega proposta e links úteis no HTML inicial", async ({

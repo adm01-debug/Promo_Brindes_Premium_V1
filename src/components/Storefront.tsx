@@ -79,6 +79,14 @@ type BriefingDraft = {
 };
 type VerifiedSelection = { products: Product[]; quantities: Selection };
 type DiscoveryHistoryMode = "push" | "replace";
+type BriefingField =
+  | "name"
+  | "company"
+  | "email"
+  | "date"
+  | "eventDate"
+  | "phone";
+type BriefingErrors = Partial<Record<BriefingField, string>>;
 const validProtocol = (value: unknown): value is string =>
   typeof value === "string" && /^PB-[A-Z0-9]{12}$/.test(value);
 
@@ -132,6 +140,7 @@ export default function Storefront({
   const [deliveryPending, setDeliveryPending] = useState(false);
   const [briefingDraft, setBriefingDraft] =
     useState<BriefingDraft>(emptyBriefingDraft);
+  const [briefingErrors, setBriefingErrors] = useState<BriefingErrors>({});
   const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
   const [catalog, setCatalog] = useState<CatalogPage | null>(initialCatalog);
   const [catalogLoading, setCatalogLoading] = useState(false);
@@ -671,10 +680,45 @@ export default function Storefront({
     const data = new FormData(event.currentTarget);
     const contact = String(data.get("name") ?? "").trim();
     const company = String(data.get("company") ?? "").trim();
-    if (!contact || !company) {
-      setNotice("Preencha seu nome e empresa.");
+    const email = String(data.get("email") ?? "").trim();
+    const desiredDate = String(data.get("date") ?? "");
+    const eventDate = String(data.get("eventDate") ?? "");
+    const phone = String(data.get("phone") ?? "").trim();
+    const errors: BriefingErrors = {};
+    if (!contact) errors.name = "Informe seu nome.";
+    if (!company) errors.company = "Informe a empresa.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      errors.email = "Informe um e-mail válido.";
+    const dateInput = event.currentTarget.elements.namedItem(
+      "date",
+    ) as HTMLInputElement | null;
+    const eventDateInput = event.currentTarget.elements.namedItem(
+      "eventDate",
+    ) as HTMLInputElement | null;
+    if (desiredDate && dateInput && !dateInput.validity.valid)
+      errors.date = "Escolha uma data de recebimento válida e futura.";
+    if (eventDate && eventDateInput && !eventDateInput.validity.valid)
+      errors.eventDate = "Escolha uma data de evento válida.";
+    if (desiredDate && eventDate && desiredDate > eventDate)
+      errors.date = "A data de recebimento não pode ser posterior à do evento.";
+    if (
+      (briefingDraft.contactChannel === "whatsapp" ||
+        briefingDraft.contactChannel === "phone") &&
+      phone.replace(/\D/g, "").length < 10
+    )
+      errors.phone = "Informe um telefone com DDD para o canal escolhido.";
+    else if (phone && !/^[+\d\s()\-.]{10,24}$/.test(phone))
+      errors.phone = "Use apenas números e os sinais comuns de telefone.";
+    if (Object.keys(errors).length) {
+      setBriefingErrors(errors);
+      setNotice("Revise os campos indicados no briefing.");
+      const first = Object.keys(errors)[0] as BriefingField;
+      requestAnimationFrame(() =>
+        document.getElementById(`briefing-${first}`)?.focus(),
+      );
       return;
     }
+    setBriefingErrors({});
     setSubmitting(true);
     try {
       const verified = await verifySelectedProducts();
@@ -682,17 +726,17 @@ export default function Storefront({
       const candidate = {
         name: contact,
         company,
-        email: String(data.get("email") ?? ""),
+        email,
         occasion,
-        date: String(data.get("date") ?? ""),
+        date: desiredDate,
         budget: String(data.get("budget") ?? ""),
         budgetScope: data.get("budget")
           ? String(data.get("budgetScope") ?? "")
           : "",
-        eventDate: String(data.get("eventDate") ?? ""),
+        eventDate,
         deadlineFlexibility: String(data.get("deadlineFlexibility") ?? ""),
         contactChannel: String(data.get("contactChannel") ?? ""),
-        phone: String(data.get("phone") ?? ""),
+        phone,
         logoStatus: String(data.get("logoStatus") ?? ""),
         message: String(data.get("message") ?? ""),
         items: verified.products.map((p) => ({
@@ -1859,62 +1903,122 @@ export default function Storefront({
             </>
           )}
           {step === 2 && (
-            <form className="briefing-form" onSubmit={createBriefing}>
+            <form
+              className="briefing-form"
+              onSubmit={createBriefing}
+              noValidate
+            >
+              {Object.values(briefingErrors).some(Boolean) && (
+                <div className="form-error-summary" role="alert">
+                  <strong>Revise os campos indicados.</strong>
+                  <p>
+                    Cada mensagem está associada ao respectivo campo. Seus
+                    outros dados foram preservados.
+                  </p>
+                </div>
+              )}
               <div className="form-row">
                 <label>
                   Seu nome
                   <input
+                    id="briefing-name"
                     required
                     name="name"
+                    aria-label="Seu nome"
                     pattern={".*\\S.*"}
                     autoComplete="name"
                     maxLength={120}
+                    aria-invalid={Boolean(briefingErrors.name)}
+                    aria-errormessage={
+                      briefingErrors.name ? "briefing-name-error" : undefined
+                    }
                     value={briefingDraft.name}
                     onChange={(event) => {
                       setBriefingDraft((draft) => ({
                         ...draft,
                         name: event.target.value,
                       }));
+                      setBriefingErrors((current) => ({
+                        ...current,
+                        name: undefined,
+                      }));
                       setIdempotencyKey(null);
                     }}
                   />
+                  {briefingErrors.name && (
+                    <span className="form-error" id="briefing-name-error">
+                      {briefingErrors.name}
+                    </span>
+                  )}
                 </label>
                 <label>
                   Empresa
                   <input
+                    id="briefing-company"
                     required
                     name="company"
+                    aria-label="Empresa"
                     pattern={".*\\S.*"}
                     autoComplete="organization"
                     maxLength={160}
+                    aria-invalid={Boolean(briefingErrors.company)}
+                    aria-errormessage={
+                      briefingErrors.company
+                        ? "briefing-company-error"
+                        : undefined
+                    }
                     value={briefingDraft.company}
                     onChange={(event) => {
                       setBriefingDraft((draft) => ({
                         ...draft,
                         company: event.target.value,
                       }));
+                      setBriefingErrors((current) => ({
+                        ...current,
+                        company: undefined,
+                      }));
                       setIdempotencyKey(null);
                     }}
                   />
+                  {briefingErrors.company && (
+                    <span className="form-error" id="briefing-company-error">
+                      {briefingErrors.company}
+                    </span>
+                  )}
                 </label>
               </div>
               <label>
                 E-mail corporativo
                 <input
+                  id="briefing-email"
                   required
                   name="email"
+                  aria-label="E-mail corporativo"
                   type="email"
                   autoComplete="email"
                   maxLength={200}
+                  aria-invalid={Boolean(briefingErrors.email)}
+                  aria-errormessage={
+                    briefingErrors.email ? "briefing-email-error" : undefined
+                  }
                   value={briefingDraft.email}
                   onChange={(event) => {
                     setBriefingDraft((draft) => ({
                       ...draft,
                       email: event.target.value,
                     }));
+                    setBriefingErrors((current) => ({
+                      ...current,
+                      email: undefined,
+                    }));
                     setIdempotencyKey(null);
                   }}
                 />
+                {briefingErrors.email && (
+                  <span className="form-error" id="briefing-email-error">
+                    {briefingErrors.email}
+                  </span>
+                )}
               </label>
               <label>
                 O que vamos celebrar?
@@ -1937,8 +2041,10 @@ export default function Storefront({
                 <label>
                   Quando precisa receber? <small>(opcional)</small>
                   <input
+                    id="briefing-date"
                     type="date"
                     name="date"
+                    aria-label="Quando precisa receber?"
                     min={
                       new Date(
                         Date.now() - new Date().getTimezoneOffset() * 60000,
@@ -1946,30 +2052,61 @@ export default function Storefront({
                         .toISOString()
                         .split("T")[0]
                     }
+                    aria-invalid={Boolean(briefingErrors.date)}
+                    aria-errormessage={
+                      briefingErrors.date ? "briefing-date-error" : undefined
+                    }
                     value={briefingDraft.date}
                     onChange={(event) => {
                       setBriefingDraft((draft) => ({
                         ...draft,
                         date: event.target.value,
                       }));
+                      setBriefingErrors((current) => ({
+                        ...current,
+                        date: undefined,
+                      }));
                       setIdempotencyKey(null);
                     }}
                   />
+                  {briefingErrors.date && (
+                    <span className="form-error" id="briefing-date-error">
+                      {briefingErrors.date}
+                    </span>
+                  )}
                 </label>
                 <label>
                   Data do evento <small>(opcional)</small>
                   <input
+                    id="briefing-eventDate"
                     type="date"
                     name="eventDate"
+                    aria-label="Data do evento"
+                    aria-invalid={Boolean(briefingErrors.eventDate)}
+                    aria-errormessage={
+                      briefingErrors.eventDate
+                        ? "briefing-event-date-error"
+                        : undefined
+                    }
                     value={briefingDraft.eventDate}
                     onChange={(event) => {
                       setBriefingDraft((draft) => ({
                         ...draft,
                         eventDate: event.target.value,
                       }));
+                      setBriefingErrors((current) => ({
+                        ...current,
+                        eventDate: undefined,
+                        date: undefined,
+                      }));
                       setIdempotencyKey(null);
                     }}
                   />
+                  {briefingErrors.eventDate && (
+                    <span className="form-error" id="briefing-event-date-error">
+                      {briefingErrors.eventDate}
+                    </span>
+                  )}
                 </label>
               </div>
               <div className="form-row">
@@ -2059,6 +2196,10 @@ export default function Storefront({
                         ...draft,
                         contactChannel: event.target.value,
                       }));
+                      setBriefingErrors((current) => ({
+                        ...current,
+                        phone: undefined,
+                      }));
                       setIdempotencyKey(null);
                     }}
                   >
@@ -2073,13 +2214,19 @@ export default function Storefront({
                 <label>
                   Telefone <small>(necessário para WhatsApp ou ligação)</small>
                   <input
+                    id="briefing-phone"
                     type="tel"
                     name="phone"
+                    aria-label="Telefone"
                     autoComplete="tel"
                     maxLength={24}
                     required={
                       briefingDraft.contactChannel === "whatsapp" ||
                       briefingDraft.contactChannel === "phone"
+                    }
+                    aria-invalid={Boolean(briefingErrors.phone)}
+                    aria-errormessage={
+                      briefingErrors.phone ? "briefing-phone-error" : undefined
                     }
                     value={briefingDraft.phone}
                     onChange={(event) => {
@@ -2087,9 +2234,18 @@ export default function Storefront({
                         ...draft,
                         phone: event.target.value,
                       }));
+                      setBriefingErrors((current) => ({
+                        ...current,
+                        phone: undefined,
+                      }));
                       setIdempotencyKey(null);
                     }}
                   />
+                  {briefingErrors.phone && (
+                    <span className="form-error" id="briefing-phone-error">
+                      {briefingErrors.phone}
+                    </span>
+                  )}
                 </label>
                 <label>
                   Sua identidade visual <small>(opcional)</small>

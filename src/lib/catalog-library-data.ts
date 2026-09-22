@@ -12,6 +12,32 @@ export async function getCollectionProducts(ids: readonly string[]) {
   return ids.flatMap((id) => (byId.has(id) ? [byId.get(id)!] : []));
 }
 
+/**
+ * Finds other published pieces that share an editorial collection with the
+ * current product. Collection order is the recommendation order; no physical
+ * compatibility, stock or kit composition is inferred here.
+ */
+export async function getContextualProducts(productId: string, limit = 3) {
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      productId,
+    ) ||
+    !Number.isInteger(limit) ||
+    limit < 1 ||
+    limit > 6
+  )
+    throw new Error("Contextual recommendation input is invalid.");
+  const relatedIds = [
+    ...new Set(
+      catalogCollections
+        .filter((collection) => collection.productIds.includes(productId))
+        .flatMap((collection) => collection.productIds)
+        .filter((id) => id !== productId),
+    ),
+  ].slice(0, limit);
+  return relatedIds.length ? getCollectionProducts(relatedIds) : [];
+}
+
 export async function getCatalogLibrary(): Promise<CatalogSummary[]> {
   const ids = [
     ...new Set(

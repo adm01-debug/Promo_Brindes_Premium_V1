@@ -4,13 +4,13 @@ Data: 22/09/2026. Escopo: aplicação local compilada, oito produtos publicados 
 
 ## Revisão posterior dos critérios
 
-A [revisão individual das 200 etapas](REVISAO_EXAUSTIVA_PLANO.md) registra **84 critérios comprovados no próprio escopo, 68 entregas parciais e 48 sem entrega comprovada**. Quarenta e três cenários sintéticos passam para concorrência idempotente, conflito de payload, corpo sem `Content-Length`, data inválida, paginação em múltiplos lotes, limite de catálogo, mudança de total, contagem exata da fonte, IDs sem cache, drift de campos e estados de entrega. As sondas de browser cobrem expiração iniciada na ficha, retorno do formulário e movimento reduzido. A suíte também reproduz retorno 503 da curadoria e 403 de mídia, preservando a seleção e exibindo fallback. Os resultados brutos estão em `audit/plan-scenarios.json` e `audit/plan-browser-scenarios.json`.
+A [revisão individual das 200 etapas](REVISAO_EXAUSTIVA_PLANO.md) registra **97 critérios comprovados no próprio escopo, 57 entregas parciais e 46 sem entrega comprovada**. Quarenta e três cenários sintéticos passam para concorrência idempotente, conflito de payload, corpo sem `Content-Length`, data inválida, paginação em múltiplos lotes, limite de catálogo, mudança de total, contagem exata da fonte, IDs sem cache, drift de campos e estados de entrega. As sondas de browser cobrem expiração iniciada na ficha, retorno do formulário e movimento reduzido. A suíte também reproduz retorno 503 da curadoria e 403 de mídia, preservando a seleção e exibindo fallback. Os resultados brutos estão em `audit/plan-scenarios.json` e `audit/plan-browser-scenarios.json`.
 
 Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu os defeitos técnicos listados, atualizou as verificações e o painel, mas não habilitou entrega comercial nem integrou CRM. O painel separa situação auditada de marcação pessoal e não reaplica automaticamente a conclusão de uma revisão antiga.
 
 ## Resultados funcionais
 
-**165 execuções E2E locais: 55 jornadas em cada Chromium, Firefox e WebKit** cobrem os fluxos da prévia e a auditoria do plano. A suíte garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. Os cenários incluem:
+**198 execuções E2E locais: 66 jornadas em cada Chromium, Firefox e WebKit** cobrem os fluxos da prévia e a auditoria do plano. A suíte garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. Os cenários incluem:
 
 1. Busca por SKU, resultado vazio, limpeza e filtro de categoria.
 2. Favoritos e seleção após recarregar, mínimo de quantidade e remoção.
@@ -53,12 +53,19 @@ Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu
 39. URL restaura múltiplas ocasiões, quantidade, busca corrigida, Voltar e Avançar.
 40. Painel em 390 × 844 permanece dentro da viewport com ação final visível.
 41. Painel de filtros passa a varredura axe automatizada nas regras A/AA selecionadas.
+42. Envelope, produto e facetas do catálogo têm chaves exatas; resposta expõe request ID e tempo de servidor sem dados pessoais.
+43. Ficha recomenda apenas peças publicadas da mesma coleção e nunca recomenda a própria peça.
+44. Home, biblioteca, coleção e produto têm títulos únicos, description, canonical, Open Graph e Twitter sem placeholder.
+45. Todos os templates públicos têm um `main`, um H1 e reflow sem overflow em 320 CSS px.
+46. Controles essenciais visíveis atendem 24 px; ações principais usam meta de 44 px e movimento reduzido zera transições.
+47. Jornada por teclado cobre filtro, quantidade, busca, favoritos, seleção, briefing, Escape e restauração de foco.
+48. Erros de briefing são anunciados, associados ao campo, focados em ordem e corrigidos sem apagar valores válidos.
 
 Comandos: `npm run build`, `npm run typecheck`, `npm run check:plan`, `npm run check:public-secrets`, `npm run check:performance-budget` e `npm run test:e2e`. A suíte usa servidor de produção na porta 3107, sem reutilizar processo estranho. A porta 3000 já servia outro aplicativo neste ambiente; o teste inicial foi descartado e a configuração foi corrigida.
 
 O workflow de CI executa instalação limpa, esses gates, cenários isolados e a matriz Chromium/Firefox/WebKit com um worker em push e pull request. `actionlint` validou a sintaxe localmente; a matriz anterior foi aprovada no [run remoto 35740802785](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35740802785), e a matriz ampliada passou localmente. [Matriz e correções](audit/2026-09-22-browser-matrix.md); [conferência pré-briefing](audit/2026-09-22-selection-freshness.md).
 
-O teste de teclado encontrou que o diálogo nativo permitia a sequência de Tab sair do ciclo esperado. Foi adicionado tratamento explícito das extremidades, mantendo Escape, inert nativo e restauração de foco. O teste de filtro do plano também foi corrigido para consultar o combobox pelo nome acessível, em vez de considerar todo o texto das opções como label.
+O teste de teclado encontrou que o diálogo nativo permitia a sequência de Tab sair do ciclo esperado e que um campo de busca podia consumir `Escape`. Foi adicionado tratamento explícito das extremidades e de `Escape`, mantendo inert nativo e restauração de foco. A jornada essencial agora também é exercitada por teclado. O teste de filtro do plano consulta o combobox pelo nome acessível, em vez de considerar todo o texto das opções como label.
 
 ## Layout e recursos
 
@@ -72,7 +79,7 @@ As fotos locais foram decodificadas e convertidas para WebP; a imagem conceitual
 
 Nas telas cobertas pela suíte, o axe não apontou violações nas regras selecionadas de WCAG A/AA, 2.1 AA e 2.2 AA. Foram implementados idioma, landmarks, link de salto, headings, labels, nomes de botões, feedback em região de status, foco visível, diálogo e preferência por movimento reduzido.
 
-Isso **não é declaração de conformidade integral**. Permanecem revisão manual extensa de contraste sobre fotografia, zoom de 200/400%, tarefas completas com leitores de tela, diferentes navegadores e pessoas que utilizam tecnologia assistiva. Essas etapas continuam abertas no plano.
+Isso **não é declaração de conformidade integral**. O gate matemático cobre 11 pares nucleares e os testes cobrem reflow equivalente a 400% em 1280 px, alvos e erros associados. Permanecem revisão manual de contraste sobre fotografia/capas, leitores de tela e pessoas que utilizam tecnologia assistiva no ambiente final.
 
 ## Conteúdo e integração
 
