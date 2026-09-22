@@ -57,7 +57,7 @@ Dezessete mutações negativas cobrem colisão de SKU/slug, slug e mídia insegu
 
 ## Defesas adicionadas após a auditoria
 
-- A migration `20260922152000_fence_delivery_leases.sql` espelha no banco Premium os limites, trim, formatos de slug/mídia e unicidade de `lower(sku)`. O preflight remoto confirmou que os oito registros atuais são compatíveis e não têm colisões.
+- A migration `20260922152000_fence_delivery_leases.sql`, aplicada ao banco Premium após o runtime compatível ficar pronto, espelha os limites, trim, formatos de slug/mídia e unicidade de `lower(sku)`. O preflight e a conferência posterior confirmaram que os oito registros atuais são compatíveis e não têm colisões.
 - O runtime aceita `SUPABASE_PUBLISHABLE_KEY` apenas no formato `sb_publishable_*` e `SUPABASE_SECRET_KEY` apenas como `sb_secret_*`; chave de classe errada falha antes da rede.
 - Toda leitura PostgREST usada pelo runtime e pelo verificador editorial declara GET e rejeita redirects.
 
