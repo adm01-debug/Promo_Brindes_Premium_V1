@@ -327,6 +327,36 @@ test("fonte indisponível impede exportar seleção sem conferência", async ({
   await expect(page.getByText("Seu briefing está pronto.")).toHaveCount(0);
 });
 
+test("seleção alterada durante conferência não exporta intenção antiga", async ({
+  page,
+}) => {
+  await openFilledBriefing(page);
+  const id = "0144f10f-c311-47eb-afd6-14b9ebef35b6";
+  const current = await (
+    await page.request.get(`/api/catalog?ids=${id}&pageSize=24`)
+  ).json();
+  let requestStarted!: () => void;
+  let releaseResponse!: () => void;
+  const started = new Promise<void>((resolve) => (requestStarted = resolve));
+  const release = new Promise<void>((resolve) => (releaseResponse = resolve));
+  await page.route(/\/api\/catalog\?ids=/, async (route) => {
+    requestStarted();
+    await release;
+    await route.fulfill({ json: current });
+  });
+  let downloads = 0;
+  page.on("download", () => downloads++);
+  await page.getByRole("button", { name: "Baixar meu briefing" }).click();
+  await started;
+  await page.getByRole("button", { name: "Voltar", exact: true }).click();
+  await page.getByRole("button", { name: "Limpar toda a seleção" }).click();
+  releaseResponse();
+  await expect(
+    page.getByText("Sua seleção mudou durante a conferência. Tente novamente."),
+  ).toBeVisible();
+  expect(downloads).toBe(0);
+});
+
 test("resposta sem protocolo não confirma envio comercial", async ({
   page,
 }) => {

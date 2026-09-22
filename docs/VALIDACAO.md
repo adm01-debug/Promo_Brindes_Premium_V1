@@ -10,7 +10,7 @@ Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu
 
 ## Resultados funcionais
 
-**96 execuções E2E locais: 32 jornadas em cada Chromium, Firefox e WebKit** cobrem os fluxos da prévia e a auditoria do plano. A suíte garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. Os cenários incluem:
+**99 execuções E2E locais: 33 jornadas em cada Chromium, Firefox e WebKit** cobrem os fluxos da prévia e a auditoria do plano. A suíte garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. Os cenários incluem:
 
 1. Busca por SKU, resultado vazio, limpeza e filtro de categoria.
 2. Favoritos e seleção após recarregar, mínimo de quantidade e remoção.
@@ -43,6 +43,7 @@ Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu
 29. Produto despublicado depois da seleção não entra no briefing; o usuário volta para revisar.
 30. Quantidade mínima alterada ajusta a seleção e exige revisão antes do briefing.
 31. Falha da consulta de conferência impede exportar um briefing de peças cuja situação é desconhecida.
+32. Alterar a seleção enquanto a conferência está pendente impede exportar a intenção anterior.
 
 Comandos: `npm run build`, `npm run typecheck`, `npm run check:plan`, `npm run check:public-secrets`, `npm run check:performance-budget` e `npm run test:e2e`. A suíte usa servidor de produção na porta 3107, sem reutilizar processo estranho. A porta 3000 já servia outro aplicativo neste ambiente; o teste inicial foi descartado e a configuração foi corrigida.
 

@@ -12,7 +12,7 @@
 
 O endpoint `GET /api/catalog?ids=…` responde `Cache-Control: no-store` e a leitura à fonte usa `cache: no-store`. A consulta geral continua com TTL de cinco minutos e `stale-while-revalidate` de dez minutos. O navegador envia apenas IDs de produto na conferência; nome, empresa, e-mail e mensagem não fazem parte dela.
 
-Evidência reproduzível: `node scripts/audit-plan-scenarios.mjs` aprovou **15 cenários**, incluindo `AUD-17` a `AUD-20` para contagem e cache. `npm run test:e2e` aprovou **96 execuções**, 32 por Chromium, Firefox e WebKit; três jornadas por motor exercitam retirada, mínimo e falha de conferência, e uma verifica o cabeçalho de IDs.
+Evidência reproduzível: `node scripts/audit-plan-scenarios.mjs` aprovou **15 cenários**, incluindo `AUD-17` a `AUD-20` para contagem e cache. `npm run test:e2e` aprovou **99 execuções**, 33 por Chromium, Firefox e WebKit; quatro jornadas por motor exercitam retirada, mínimo, falha de conferência e alteração da seleção em trânsito, e uma verifica o cabeçalho de IDs.
 
 ## Limite explícito
 

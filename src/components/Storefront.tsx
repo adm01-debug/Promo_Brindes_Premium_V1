@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -89,7 +89,9 @@ export default function Storefront({
   const [onlyFavorites, setOnlyFavorites] = useState(false);
   const [selected, setSelected] = useState<Selection>({});
   const selectedRef = useRef(selected);
-  selectedRef.current = selected;
+  useLayoutEffect(() => {
+    selectedRef.current = selected;
+  }, [selected]);
   const [selectionIssue, setSelectionIssue] = useState("");
   const [ready, setReady] = useState(false);
   const [detail, setDetail] = useState<Product | null>(null);
