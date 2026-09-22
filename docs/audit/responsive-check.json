@@ -1,0 +1,27 @@
+{
+  "date": "2026-09-20",
+  "browser": "Chromium",
+  "records": [
+    {
+      "width": 360,
+      "overflow": false,
+      "imagesLoaded": true
+    },
+    {
+      "width": 390,
+      "overflow": false,
+      "imagesLoaded": true
+    },
+    {
+      "width": 768,
+      "overflow": false,
+      "imagesLoaded": true
+    },
+    {
+      "width": 1440,
+      "overflow": false,
+      "imagesLoaded": true
+    }
+  ],
+  "pageErrors": []
+}

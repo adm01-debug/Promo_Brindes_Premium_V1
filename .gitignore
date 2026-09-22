@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+.env*
+!.env.example
+test-results/
+playwright-report/
+*.tsbuildinfo
+.DS_Store
+public/images/*.png
+design-assets/
+**/lighthouse.*/
+*lighthouse.*/
+graphify-out/*
+!graphify-out/GRAPH_REPORT.md
+!graphify-out/manifest.json

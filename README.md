@@ -1,0 +1,87 @@
+# Promo Brindes Premium
+
+Uma prévia funcional de site de presentes corporativos em preto, champanhe e marfim, acompanhada de pesquisa, auditoria do sistema comercial e plano de **200 etapas**.
+
+## Abrir localmente
+
+```bash
+npm ci
+npm run dev -- --port 3100
+```
+
+- Vitrine: <http://localhost:3100>
+- Plano interativo: <http://localhost:3100/planejamento>
+- Privacidade da prévia: <http://localhost:3100/privacidade>
+
+Para versão compilada: `npm run build`, seguido de `npm run start -- --port 3100`.
+
+Node 22.12+ ou 24 LTS recomendado. O projeto usa Next.js 16, React 19 e TypeScript. Dependências estão fixadas pelo `package-lock.json`; fontes e imagens são locais.
+
+## O que funciona
+
+- Home responsiva, coleções, personalização, processo e FAQ.
+- Oito produtos reais, com IDs e SKUs consultados no Supabase canônico em 20/09/2026.
+- Busca por nome/SKU/categoria, filtros, favoritos e seleção persistente.
+- Detalhe rápido, quantidades com mínimo cadastrado e remoção de itens.
+- Briefing com validação e download de arquivo local.
+- Plano interativo com 200 etapas, filtros, progresso local e exportação Markdown.
+- Páginas permanentes de produto, metadados por peça e infraestrutura de sitemap/robots preparada para lançamento autorizado.
+- Contrato público do catálogo e endpoint de briefing com validação, limite de tentativas, idempotência por processo e falha explícita quando não há receptor comercial.
+
+## Limites desta entrega
+
+Nesta instalação, a versão **não envia leads, não registra propostas e não reserva estoque**. O formulário gera um arquivo no navegador e informa isso explicitamente. O endpoint de briefing já existe, mas só habilita entrega quando há um receptor HTTPS aprovado em `BRIEFING_WEBHOOK_URL`; sem essa configuração, ele responde indisponibilidade e a interface permanece em download local. O catálogo é um snapshot selecionado; não há sincronização contínua. Valores, condições e disponibilidade devem ser confirmados pelo comercial.
+
+A imagem de campanha foi gerada por IA e é conceitual. Os cards usam fotografias reais de fornecedor; direitos de publicação comercial devem ser confirmados. Não foram alterados schema, policies, dados ou serviços do sistema comercial. O site está `noindex` e não foi publicado remotamente.
+
+O planejamento é uma ferramenta desta prévia. Antes de lançar a vitrine pública, mover `/planejamento` para ambiente interno ou protegê-lo com autenticação apropriada. `noindex` não é controle de acesso.
+
+## Documentação
+
+- [Pesquisa, posicionamento e referências](docs/ESTRATEGIA_E_PESQUISA.md)
+- [Auditoria dirigida de Promo_Gifts_V4](docs/AUDITORIA_PROJETO_INTERNO.md)
+- [Verificação ao vivo do catálogo canônico](docs/audit/CANONICAL_CATALOG_LIVE_CHECK_2026-09-22.md)
+- [Arquitetura e integração comercial](docs/ARQUITETURA_E_INTEGRACAO.md)
+- [Contrato público de catálogo v1](docs/CONTRATO_CATALOGO_PUBLICO_V1.md)
+- [Contrato de briefing v1](docs/CONTRATO_BRIEFING_V1.md)
+- [Simulação de cenários e gaps](docs/ANALISE_DE_CENARIOS_E_GAPS.md)
+- [Arquitetura da informação e fluxos](docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md)
+- [Modelo de ameaças da prévia](docs/MODELO_DE_AMEACAS_PREVIA.md)
+- [Orçamento de desempenho](docs/ORCAMENTO_DESEMPENHO.md)
+- [Design system e direção de arte](docs/DESIGN_SYSTEM.md)
+- [Plano de 200 etapas com checklists](docs/PLANO_200_ETAPAS.md)
+- [Plano em CSV](docs/PLANO_200_ETAPAS.csv)
+- [Validação e limitações](docs/VALIDACAO.md)
+- [Captura desktop](docs/screenshots/home-desktop.png)
+- [Captura mobile](docs/screenshots/home-mobile.png)
+- [Prompt e origem da imagem gerada](docs/IMAGE_PROMPT.txt)
+
+## Comandos de verificação
+
+```bash
+npm run typecheck
+npm run build
+npm run check:plan
+npm run check:public-secrets
+npm run check:performance-budget
+npm run test:e2e
+```
+
+Copie `.env.example` apenas para configurar um ambiente autorizado. `PROMO_PREMIUM_INDEXABLE` permanece `false` até o domínio, conteúdo, privacidade e operação passarem pelos gates de lançamento.
+
+Os testes iniciam o servidor de produção na porta 3107, que deve estar livre. Execute o build antes dos testes. Se necessário, instale o navegador com `npx playwright install chromium`.
+
+O plano tem fonte única em `src/lib/plan.json`. Após atualizar status/evidências, execute `node scripts/generate-plan.mjs` e `npm run check:plan`. Os checkboxes do navegador salvam um acompanhamento local separado; não alteram o arquivo do repositório nem validam entregas automaticamente.
+
+## Estrutura
+
+```text
+src/app/                 Rotas, metadados, estilos e páginas estáticas
+src/components/          Vitrine, diálogo e painel de planejamento
+src/lib/products.json    Seleção pública com proveniência por SKU
+src/lib/plan.json        Fonte estruturada das 200 etapas
+docs/                    Pesquisa, auditoria, contratos, plano e evidências
+public/images/           Hero conceitual e fotos locais dos produtos
+scripts/                 Geração e validação dos checklists
+tests/                   Fluxos E2E e verificações de acessibilidade
+```

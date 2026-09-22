@@ -1,0 +1,77 @@
+{
+  "date": "2026-09-20",
+  "method": "HTTP GET from this environment; not a browser/global availability claim",
+  "canonicalCatalogHost": "doufsxqlfjyuvxuezpln.supabase.co",
+  "primaryImageChecks": [
+    {
+      "sku": "KT-90455",
+      "status": 403
+    },
+    {
+      "sku": "13845",
+      "status": 403
+    },
+    {
+      "sku": "08255",
+      "status": 403
+    },
+    {
+      "sku": "MA-02801",
+      "status": 403
+    },
+    {
+      "sku": "KT-90231",
+      "status": 403
+    },
+    {
+      "sku": "KT-90307",
+      "status": 403
+    },
+    {
+      "sku": "CE-87001",
+      "status": 403
+    }
+  ],
+  "fallbackImageChecks": [
+    {
+      "sku": "08255",
+      "result": "downloaded and decoded",
+      "localAsset": "/images/executivo.webp"
+    },
+    {
+      "sku": "13845",
+      "result": "downloaded and decoded",
+      "localAsset": "/images/garrafa.webp"
+    },
+    {
+      "sku": "93586",
+      "result": "downloaded and decoded",
+      "localAsset": "/images/caderno.webp"
+    },
+    {
+      "sku": "CE-87001",
+      "result": "downloaded and decoded",
+      "localAsset": "/images/caneta.webp"
+    },
+    {
+      "sku": "KT-90231",
+      "result": "downloaded and decoded",
+      "localAsset": "/images/cafe.webp"
+    },
+    {
+      "sku": "KT-90307",
+      "result": "downloaded and decoded",
+      "localAsset": "/images/churrasco.webp"
+    },
+    {
+      "sku": "KT-90455",
+      "result": "downloaded and decoded",
+      "localAsset": "/images/cha.webp"
+    },
+    {
+      "sku": "MA-02801",
+      "result": "downloaded and decoded",
+      "localAsset": "/images/mochila.webp"
+    }
+  ]
+}

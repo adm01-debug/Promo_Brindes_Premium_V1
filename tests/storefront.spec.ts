@@ -1,0 +1,255 @@
+import { test, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+import { readFile } from "node:fs/promises";
+
+test("busca por SKU, recuperação de resultado vazio e filtro por categoria", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Buscar presentes", exact: true })
+    .click();
+  await page.getByLabel("Nome, categoria ou código do produto").fill("08255");
+  await page
+    .getByRole("button", { name: "Ver resultados", exact: true })
+    .click();
+  await expect(page.locator(".product-card")).toHaveCount(1);
+  await expect(page.locator(".product-card h3")).toHaveText("Kit executivo");
+  await page
+    .getByRole("button", { name: "Buscar presentes", exact: true })
+    .click();
+  await page
+    .getByLabel("Nome, categoria ou código do produto")
+    .fill("inexistente-000");
+  await page
+    .getByRole("button", { name: "Ver resultados", exact: true })
+    .click();
+  await expect(
+    page.getByText("Vamos encontrar outra possibilidade."),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Explorar todas as peças" }).click();
+  await page.getByRole("button", { name: "Escrita", exact: true }).click();
+  await expect(page.locator(".product-card")).toHaveCount(2);
+});
+
+test("favoritos e seleção persistem, mínimo é respeitado e remoção funciona", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", {
+      name: "Adicionar Kit executivo aos favoritos",
+      exact: true,
+    })
+    .click();
+  await page
+    .getByRole("button", {
+      name: "Adicionar Kit executivo à seleção",
+      exact: true,
+    })
+    .click();
+  await page.reload();
+  await page.getByRole("button", { name: "Minha seleção, 1 produtos" }).click();
+  const qty = page.getByLabel("Quantidade de Kit executivo", { exact: true });
+  await expect(qty).toHaveValue("5");
+  await expect(
+    page.getByRole("button", { name: "Diminuir quantidade de Kit executivo" }),
+  ).toBeDisabled();
+  await qty.fill("50");
+  await page
+    .getByRole("button", { name: "Aumentar quantidade de Kit executivo" })
+    .click();
+  await expect(qty).toHaveValue("51");
+  await page.getByRole("button", { name: "Remover", exact: true }).click();
+  await expect(page.getByText("Ainda está buscando inspiração?")).toBeVisible();
+  await page
+    .getByRole("button", { name: "Fechar janela", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Ver favoritos", exact: true })
+    .click();
+  await expect(page.locator(".product-card")).toHaveCount(1);
+});
+
+test("briefing exporta dados reais e não envia formulário a serviço remoto", async ({
+  page,
+}) => {
+  const posts: string[] = [];
+  page.on("request", (req) => {
+    if (req.method() === "POST") posts.push(req.url());
+  });
+  await page.goto("/");
+  await page
+    .getByRole("button", {
+      name: "Adicionar Kit executivo à seleção",
+      exact: true,
+    })
+    .click();
+  await page.getByRole("button", { name: "Minha seleção, 1 produtos" }).click();
+  await page
+    .getByRole("button", { name: "Preparar meu briefing", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Baixar meu briefing", exact: true })
+    .click();
+  await expect(page.getByLabel("Seu nome", { exact: true })).toBeFocused();
+  await page.getByLabel("Seu nome", { exact: true }).fill("Pessoa de teste");
+  await page.getByLabel("Empresa", { exact: true }).fill("Empresa de teste");
+  await page
+    .getByLabel("E-mail corporativo", { exact: true })
+    .fill("teste@example.com");
+  const downloadPromise = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "Baixar meu briefing", exact: true })
+    .click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("briefing-promo-premium.txt");
+  const body = await readFile((await download.path())!, "utf8");
+  expect(body).toContain("SKU 08255");
+  expect(body).toContain("5 unidades");
+  expect(body).toContain("0144f10f-c311-47eb-afd6-14b9ebef35b6");
+  expect(body).toContain("não foi enviado");
+  await expect(
+    page.getByText("Seu briefing está pronto.", { exact: true }),
+  ).toBeVisible();
+  expect(posts).toEqual([]);
+  const local = await page.evaluate(() => JSON.stringify(localStorage));
+  expect(local).not.toContain("teste@example.com");
+});
+
+test("diálogo contém foco e Escape restaura o acionador", async ({ page }) => {
+  await page.goto("/");
+  const trigger = page.getByRole("button", {
+    name: "Conhecer Kit executivo",
+    exact: true,
+  });
+  await trigger.click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  for (let i = 0; i < 8; i++) {
+    await page.keyboard.press("Tab");
+    expect(
+      await page.evaluate(() => !!document.activeElement?.closest("dialog")),
+    ).toBe(true);
+  }
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+});
+
+test("dados locais inválidos não corrompem seleção", async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "promo-premium-selection-v1",
+      '{"unknown":10,"0144f10f-c311-47eb-afd6-14b9ebef35b6":-50}',
+    );
+    localStorage.setItem("promo-premium-favorites-v1", "not-json");
+  });
+  await page.goto("/");
+  await expect(
+    page.getByRole("button", { name: "Minha seleção, 0 produtos" }),
+  ).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+});
+
+test("seleção local expira e pode ser apagada explicitamente", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "promo-premium-selection-v1",
+      JSON.stringify({
+        version: 1,
+        savedAt: Date.now() - 15 * 24 * 60 * 60 * 1000,
+        items: { "0144f10f-c311-47eb-afd6-14b9ebef35b6": 5 },
+      }),
+    );
+  });
+  await page.goto("/");
+  await expect(
+    page.getByRole("button", { name: "Minha seleção, 0 produtos" }),
+  ).toBeVisible();
+
+  await page
+    .getByRole("button", {
+      name: "Adicionar Kit executivo à seleção",
+      exact: true,
+    })
+    .click();
+  await page.getByRole("button", { name: "Minha seleção, 1 produtos" }).click();
+  await page.getByRole("button", { name: "Limpar toda a seleção" }).click();
+  await expect(page.getByText("Ainda está buscando inspiração?")).toBeVisible();
+});
+
+test("mobile mantém conteúdo sem overflow e navegação funcional", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  await page.getByRole("button", { name: "Abrir menu" }).click();
+  await page
+    .getByRole("navigation", { name: "Menu móvel" })
+    .getByRole("button", { name: "A curadoria" })
+    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "O extraordinário está na escolha." }),
+  ).toBeInViewport();
+  await page
+    .getByRole("button", { name: "Conhecer Kit executivo", exact: true })
+    .click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  expect(
+    await page
+      .getByRole("dialog")
+      .evaluate((el) => el.scrollWidth <= el.clientWidth),
+  ).toBe(true);
+});
+
+test("layout permanece operável na largura equivalente a reflow", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  await page.goto("/");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  await page.getByRole("button", { name: "Minha seleção, 0 produtos" }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+});
+
+test("axe: home e diálogo de projeto sem violações automatizadas", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
+  let result = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+    .analyze();
+  expect(result.violations).toEqual([]);
+  await page.getByRole("button", { name: "Minha seleção, 0 produtos" }).click();
+  await page
+    .getByRole("button", { name: "Preparar meu briefing", exact: true })
+    .click();
+  result = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+    .analyze();
+  expect(result.violations).toEqual([]);
+});
+
+test("axe: página permanente de produto sem violações automatizadas", async ({
+  page,
+}) => {
+  await page.goto("/produtos/kit-executivo-2-pecas-08255");
+  await page.evaluate(() => document.fonts.ready);
+  const result = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+    .analyze();
+  expect(result.violations).toEqual([]);
+});

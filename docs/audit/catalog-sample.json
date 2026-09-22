@@ -1,0 +1,575 @@
+[
+  {
+    "id": "003c8bd0-8c02-46d2-9b6a-8464858fee97",
+    "name": "Kit para chá - 3 pçs",
+    "sku": "KT-90455",
+    "short_description": "Composto por Caixa para chás em Bambu/Poliestireno; colher de 13 cm em Bambu e caneca em cerâmica branca.\nNão acompanha chás.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/sm-kt-90455-main/public",
+    "sale_price": 173.1,
+    "min_quantity": 1,
+    "materials": [
+      "Bambu"
+    ],
+    "allows_personalization": true,
+    "slug": "kit-para-cha-3-pcs-kt-90455"
+  },
+  {
+    "id": "009cf7a5-4a96-45e6-a265-f6c7d5fc4cce",
+    "name": "Caderno A5 couchê",
+    "sku": "15194",
+    "short_description": "Buscando uma caderneta para manter suas anotações e planejamentos organizados e todos registrados? Nossa Caderneta é a escolha perfeita! Possui capa impressa...",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-caderno-a5-couche-21706-1732622022/public",
+    "sale_price": 22.47,
+    "min_quantity": 10,
+    "materials": [
+      "EVA (Acetato de Vinila)"
+    ],
+    "allows_personalization": true,
+    "slug": "caderno-a5-couche"
+  },
+  {
+    "id": "00acb9f9-b594-43f9-a766-fe029e4ce95b",
+    "name": "Garrafa plastica 700ml",
+    "sku": "18626",
+    "short_description": "Squeeze plástico 700ml com alça para transporte, possui tampa principal rosqueável e tampa de proteção plástica com trava para o bocal.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-18626-01/public",
+    "sale_price": 22.47,
+    "min_quantity": 10,
+    "materials": [
+      "Plástico Genérico"
+    ],
+    "allows_personalization": true,
+    "slug": "garrafa-plastica-700ml-18626"
+  },
+  {
+    "id": "00c6db7b-46e3-4724-8135-ba4dd660df99",
+    "name": "Garrafa térmica 600ml",
+    "sku": "09182",
+    "short_description": "Garrafa térmica em inox 304 com capacidade máxima de até 600ml.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-09182-01/public",
+    "sale_price": 70.71,
+    "min_quantity": 1,
+    "materials": [
+      "Aço Inox"
+    ],
+    "allows_personalization": true,
+    "slug": "garrafa-termica-600ml-1"
+  },
+  {
+    "id": "0111829b-9072-46cb-8cb9-9c620f55a14d",
+    "name": "Garrafa térmica 500 ml",
+    "sku": "13845",
+    "short_description": "Garrafa térmica parede dupla 500ml em inox com tampa rosqueável.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-garrafa-termica-inox-500ml-15032-1663158301/public",
+    "sale_price": 73.32,
+    "min_quantity": 5,
+    "materials": [
+      "Aço Inox"
+    ],
+    "allows_personalization": true,
+    "slug": "garrafa-termica-500-ml"
+  },
+  {
+    "id": "01305d65-e0ca-45b2-a775-528ec9e78079",
+    "name": "Mochila nylon USB 20L",
+    "sku": "P@01316",
+    "short_description": "Mochila Nylon USB 20L",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-p01316-14095/public",
+    "sale_price": 78.02,
+    "min_quantity": 1,
+    "materials": [
+      "Nylon"
+    ],
+    "allows_personalization": false,
+    "slug": "mochila-nylon-usb-20l"
+  },
+  {
+    "id": "0144f10f-c311-47eb-afd6-14b9ebef35b6",
+    "name": "Kit executivo 2 peças",
+    "sku": "08255",
+    "short_description": "Anote tudo e organize os cartões com o nosso Kit Executivo! Ele vem com uma caneta metálica super sofisticada de 1.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-08255-01/public",
+    "sale_price": 82.78,
+    "min_quantity": 5,
+    "materials": [
+      "Couro Legítimo",
+      "Couro Sintético (Ecológico)"
+    ],
+    "allows_personalization": true,
+    "slug": "kit-executivo-2-pecas-08255"
+  },
+  {
+    "id": "015e9f0a-dd0f-444e-9a76-8404c2576ee6",
+    "name": "Mochila em polyester/PU - premium - 22L - preta",
+    "sku": "MA-02801",
+    "short_description": "Mochila preta em Polyester / PU.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/sm-ma-02801-00/public",
+    "sale_price": 266.87,
+    "min_quantity": 1,
+    "materials": [
+      "Poliéster"
+    ],
+    "allows_personalization": true,
+    "slug": "mochila-em-polyesterpu-executive-22l-preta-ma-02801"
+  },
+  {
+    "id": "017c5ac0-3559-4c93-a52d-83f4b8d8bd91",
+    "name": "Caneta plástica - transparente",
+    "sku": "CP0305T",
+    "short_description": "Caneta Plástica",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/asia-cp0305t-01/public",
+    "sale_price": 88.8,
+    "min_quantity": 1,
+    "materials": [
+      "Plástico Genérico"
+    ],
+    "allows_personalization": false,
+    "slug": "caneta-plastica-3"
+  },
+  {
+    "id": "0195ecd0-acb7-4690-b005-0b86ae4df5e6",
+    "name": "Garrafa inox 250ml",
+    "sku": "18549A",
+    "short_description": "Garrafa térmica 275ml em inox com tampa rosqueável.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-garrafa-inox-250ml-27089-1769524784/public",
+    "sale_price": 41.62,
+    "min_quantity": 10,
+    "materials": [
+      "Aço Inox"
+    ],
+    "allows_personalization": true,
+    "slug": "garrafa-termica-inox-275ml"
+  },
+  {
+    "id": "01a22943-6283-4db0-b77b-3a8b56ca09fe",
+    "name": "Kit para café - 2 pçs",
+    "sku": "KT-90231",
+    "short_description": "Kit para café.\nConta com cafeteira italiana em alumínio e caneca em cerâmica 230ml.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/sm-kt-90231-00/public",
+    "sale_price": 180.78,
+    "min_quantity": 1,
+    "materials": [
+      "Alumínio"
+    ],
+    "allows_personalization": true,
+    "slug": "kit-para-cafe-2-pcs-kt-90231"
+  },
+  {
+    "id": "01a343d7-c727-4a71-bcf5-4b81f92447e4",
+    "name": "Caderno A5 capa em bambu e PU",
+    "sku": "CAD007P",
+    "short_description": "Caderno de anotações, capa de bambu e PU com elástico e miolo com 70 folhas.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/asia-cad007p-01/public",
+    "sale_price": 21.29,
+    "min_quantity": 1,
+    "materials": [
+      "PVC (Policloreto de Vinila)",
+      "PVC Flocado (Veludo)",
+      "Bambu",
+      "PVC Flexível",
+      "PVC Rígido"
+    ],
+    "allows_personalization": false,
+    "slug": "caderno-a5-capa-em-bambu-e-pu-1"
+  },
+  {
+    "id": "01a722ab-3219-4455-adc5-0568a35abf31",
+    "name": "Kit café marilyn monroe 6 peças",
+    "sku": "P@6590M",
+    "short_description": "Kit Café Marilyn Monroe 6 Peças",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-p6590m-18964/public",
+    "sale_price": 40.18,
+    "min_quantity": 1,
+    "materials": [
+      "Plástico Genérico"
+    ],
+    "allows_personalization": false,
+    "slug": "kit-cafe-marilyn-monroe-6-pecas"
+  },
+  {
+    "id": "01b67184-c336-4208-8d10-db132abe2380",
+    "name": "Caneta plástica caveira",
+    "sku": "P@15191",
+    "short_description": "O toque de ousadia que o seu cotidiano precisava está nesta caneta estilizada, decorada com uma caveira em cores vibrantes.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-p15191-21684/public",
+    "sale_price": 6.36,
+    "min_quantity": 1,
+    "materials": [
+      "Plástico Genérico"
+    ],
+    "allows_personalization": false,
+    "slug": "caneta-plastica-caveira"
+  },
+  {
+    "id": "01c9d9b2-3f9b-4e1a-96fe-96059ed333a5",
+    "name": "Mochila em poliéster reciclado 290T e sarja com compartimento para sapatos 25 l",
+    "sku": "92334",
+    "short_description": "Mochila em poliéster reciclado 290T e sarja com forro em poliéster reciclado 210D. Possui um compartimento principal e um compartimento inferior ideal para guardar sapatos. Mochila totalmente forrada com costas e alças almofadadas. Contém duas faixas pretas refletoras na parte da frente. Capacidade até 25 L",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/spot-92334_103/public",
+    "sale_price": 204.12,
+    "min_quantity": 10,
+    "materials": [
+      "Pongee"
+    ],
+    "allows_personalization": true,
+    "slug": "mochila-em-poliester-reciclado-290t-e-sarja-com-compartimento-para-sapatos-25-l"
+  },
+  {
+    "id": "01e2211d-9b58-4b09-a8b1-213c722abe46",
+    "name": "Kit churrasco em estojo de 210D e tábua em bambu com 5 utensílios em aço inox e madeira de seringueira",
+    "sku": "94142",
+    "short_description": "Kit churrasco em estojo de 210D. Composto por tábua em bambu e 5 utensílios em aço inox e madeira de Seringueira: faca chefe, faca média, pinça, garfo e afiador. Certificação EU Food Grade. A cor e o resultado da impressão nos materiais naturais pode variar entre produtos",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/spot-94142_103/public",
+    "sale_price": 182.21,
+    "min_quantity": 1,
+    "materials": [
+      "Aço Inox",
+      "Madeira"
+    ],
+    "allows_personalization": true,
+    "slug": "kit-churrasco-em-estojo-de-210d-e-tabua-em-bambu-com-5-utensilios-em-aco-inox-e-madeira-de-seringuei"
+  },
+  {
+    "id": "01ef2a97-a599-488e-9ce5-8ef3465b0393",
+    "name": "Garrafa térmica 500ml",
+    "sku": "15157",
+    "short_description": "Mantenha suas bebidas na temperatura ideal com a garrafa térmica de aço inox 304, com parede dupla que conserva a temperatura por muito mais tempo.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-garrafa-termica-500ml-21659-1732048226/public",
+    "sale_price": 52.98,
+    "min_quantity": 5,
+    "materials": [
+      "Silicone",
+      "Aço Inox"
+    ],
+    "allows_personalization": true,
+    "slug": "garrafa-termica-500ml-15157"
+  },
+  {
+    "id": "02095e72-4ede-4e44-af95-8fc335015f94",
+    "name": "Kit para churrasco em bambu / madeira / inox - 5 pçs",
+    "sku": "KT-90307",
+    "short_description": "Kit para Churrasco em Bambu/Madeira/Inox. Composto por tábua em Bambu; garfo trinchante, faca 8'' e dois garfos de 5 dentes com abridor de garrafa em Madeira/Inox.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/sm-kt-90307-cdn-00/public",
+    "sale_price": 225.12,
+    "min_quantity": 1,
+    "materials": [
+      "Aço Inox",
+      "Bambu",
+      "Madeira"
+    ],
+    "allows_personalization": true,
+    "slug": "kit-para-churrasco-em-bambu-madeira-inox-5-pcs-kt-90307"
+  },
+  {
+    "id": "0224663d-1058-4c9e-be2e-bc1903f3fe4c",
+    "name": "Garrafa termica inox 620ml",
+    "sku": "P@06095",
+    "short_description": "Garrafa Térmica em inox de parede dupla com capacidade de 620ml.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-p06095-17331/public",
+    "sale_price": 82.75,
+    "min_quantity": 1,
+    "materials": [
+      "Aço Inox"
+    ],
+    "allows_personalization": false,
+    "slug": "garrafa-termica-inox-620ml"
+  },
+  {
+    "id": "0236dd43-6fa5-4102-bb73-126d62e6f3d5",
+    "name": "Kit caneta e chaveiro bambu",
+    "sku": "18835",
+    "short_description": "Este kit é a escolha ideal para quem aprecia praticidade e um design natural.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-kit-caneta-e-chaveiro-bambu-21425-1731606768/public",
+    "sale_price": 23.41,
+    "min_quantity": 10,
+    "materials": [
+      "Bambu",
+      "Espuma",
+      "Metal Genérico"
+    ],
+    "allows_personalization": true,
+    "slug": "kit-caneta-e-chaveiro-bambu"
+  },
+  {
+    "id": "0256794c-6d87-41fe-ba26-1990e54c174d",
+    "name": "Sacola/mochila poliéster 210D e PU (43x35cm)",
+    "sku": "BP0009",
+    "short_description": "Sacola/Mochila Poliéster 210D e PU (43x35cm)",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/asia-bp0009-az/public",
+    "sale_price": 56.12,
+    "min_quantity": 1,
+    "materials": [
+      "Poliéster"
+    ],
+    "allows_personalization": false,
+    "slug": "sacolamochila-poliester-210d-e-pu-43x35cm"
+  },
+  {
+    "id": "027f9489-caa7-438e-bf3f-9631b0663626",
+    "name": "Caneta metal coroa",
+    "sku": "P@15049",
+    "short_description": "Caneta metálica com carga esferográfica azul 1,0mm e acionamento por rotação.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-p15049-18877/public",
+    "sale_price": 9.44,
+    "min_quantity": 1,
+    "materials": [
+      "Metal Genérico"
+    ],
+    "allows_personalization": false,
+    "slug": "caneta-metal-coroa-p15049"
+  },
+  {
+    "id": "02861b95-e644-4836-8ab2-dac9bf7894fb",
+    "name": "Kit boas vindas - branco - 3 pçs",
+    "sku": "KT-90448",
+    "short_description": "Kit boas vindas.\nConta com garrafa branca em alumínio com capacidade de 600 ml; caderno para anotações branco com capa dura e caneta esferográfica em alumínio branca.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/sm-kt-90448-main/public",
+    "sale_price": 96.69,
+    "min_quantity": 1,
+    "materials": [
+      "Alumínio"
+    ],
+    "allows_personalization": true,
+    "slug": "kit-boas-vindas-branco-3-pcs-kt-90448"
+  },
+  {
+    "id": "028c3389-e4d4-41f5-9b95-063c669d2bb9",
+    "name": "Kit canetinhas ponta dupla 36 cores",
+    "sku": "08332B-36",
+    "short_description": "Kit com 36 canetinhas coloridas de pontas duplas: uma fina e outra em formato de pincel.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-kit-canetinhas-ponta-dupla-36-cores-23773-1752678379/public",
+    "sale_price": 24.83,
+    "min_quantity": 1,
+    "materials": [
+      "Plástico Genérico"
+    ],
+    "allows_personalization": true,
+    "slug": "kit-canetinhas-ponta-dupla-36-cores-08332b-36"
+  },
+  {
+    "id": "028ffe8c-a5c3-4770-89c9-c257990f9551",
+    "name": "Caneta metálica",
+    "sku": "CM1027GP",
+    "short_description": "Caneta esferográfica de alumínio escrita em azul.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/asia-028ffe8c-legacy/public",
+    "sale_price": 16.99,
+    "min_quantity": 1,
+    "materials": [
+      "Alumínio"
+    ],
+    "allows_personalization": false,
+    "slug": "caneta-metalica-69"
+  },
+  {
+    "id": "02bb5c7b-007d-4e87-b0ad-c270293ac10e",
+    "name": "Estojo para kit tecnológico",
+    "sku": "18673N",
+    "short_description": "Estojo para Kit Tecnológico",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-estojo-para-kit-tecnologico-24247-1755712933/public",
+    "sale_price": 32.87,
+    "min_quantity": 30,
+    "materials": [
+      "Nylon",
+      "Poliéster"
+    ],
+    "allows_personalization": true,
+    "slug": "estojo-para-kit-tecnologico"
+  },
+  {
+    "id": "02d8eccb-1e06-4f80-914b-c85791fcb04c",
+    "name": "Caneta metal touch",
+    "sku": "15408",
+    "short_description": "Caneta metálica com acionamento por rotação, carga esferográfica azul de 1.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-caneta-metal-touch-26702-1765891011/public",
+    "sale_price": 10.88,
+    "min_quantity": 10,
+    "materials": [
+      "Borracha",
+      "Metal Genérico"
+    ],
+    "allows_personalization": true,
+    "slug": "caneta-metal-touch-15408"
+  },
+  {
+    "id": "02f09b32-0b61-407d-b1df-9126088cd5b1",
+    "name": "Kit drink",
+    "sku": "KWS100PP",
+    "short_description": "O Kit Drink inclui copo de vidro (200 ml), pegador de gelo em aço inox, sacola pequena em veludo para guardar as pedras,  4 pedras de granito para gelo reutilizáveis e caixa de madeira elegante.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/asia-02f09b32-legacy/public",
+    "sale_price": 81.7,
+    "min_quantity": 1,
+    "materials": [
+      "Aço Inox",
+      "Madeira",
+      "Vidro"
+    ],
+    "allows_personalization": false,
+    "slug": "kit-drink-3"
+  },
+  {
+    "id": "02f0c9ff-d55c-4c7c-9323-ea80149db421",
+    "name": "Mochila em polyester/PU - premium - 20L - preta",
+    "sku": "MA-02701",
+    "short_description": "Mochila preta em Polyester / PU.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/sm-ma-02701-main/public",
+    "sale_price": 281.03,
+    "min_quantity": 1,
+    "materials": [
+      "Poliéster"
+    ],
+    "allows_personalization": true,
+    "slug": "mochila-em-polyesterpu-executive-20l-preta-ma-02701"
+  },
+  {
+    "id": "032de2e4-a912-4bdb-860c-fe2d648b99f7",
+    "name": "Caneta metálica",
+    "sku": "CM1103DP",
+    "short_description": "Caneta esferográfica de metal escrita em azul.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/asia-032de2e4-legacy/public",
+    "sale_price": 7.12,
+    "min_quantity": 1,
+    "materials": [
+      "Metal Genérico"
+    ],
+    "allows_personalization": false,
+    "slug": "caneta-metalica-77"
+  },
+  {
+    "id": "033353f4-4768-4e34-9cec-7b7c615b4fa5",
+    "name": "Garrafa térmica inox 700ml",
+    "sku": "P@08117",
+    "short_description": "Garrafa Térmica feita em inox 304 com capacidade de 700ml, tampa rosqueável de inox e que também pode ser utilizada como copo, tampa interna em plástico resi...",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-p08117-20756/public",
+    "sale_price": 42.33,
+    "min_quantity": 1,
+    "materials": [
+      "Aço Inox"
+    ],
+    "allows_personalization": false,
+    "slug": "garrafa-termica-inox-700ml"
+  },
+  {
+    "id": "0348ab11-495b-4f8c-a055-eca217ce7574",
+    "name": "Caneta metálica",
+    "sku": "CM0107AP",
+    "short_description": "Caneta esferográfica em metal com ponta touch escrita em azul",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/asia-0348ab11-legacy/public",
+    "sale_price": 9.78,
+    "min_quantity": 1,
+    "materials": [
+      "Metal Genérico"
+    ],
+    "allows_personalization": false,
+    "slug": "caneta-metalica-62"
+  },
+  {
+    "id": "035dc223-9863-4832-aad3-0ac86e4b9bf1",
+    "name": "Capa para garrafa nylon",
+    "sku": "P@05027M",
+    "short_description": "Capa para garrafa em nylon média com alça.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-p05027m-15762/public",
+    "sale_price": 34.29,
+    "min_quantity": 10,
+    "materials": [
+      "Nylon"
+    ],
+    "allows_personalization": false,
+    "slug": "capa-para-garrafa-nylon-p05027m"
+  },
+  {
+    "id": "0360e2fe-5c3e-4d29-b4dc-dde997db9a0c",
+    "name": "Caneta metálica",
+    "sku": "CM0240P",
+    "short_description": "Caneta com corpo em alumínio reciclado, acionador e clipe cromado, escrita esferográfica em azul.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/asia-0360e2fe-legacy/public",
+    "sale_price": 8.92,
+    "min_quantity": 1,
+    "materials": [
+      "Alumínio"
+    ],
+    "allows_personalization": false,
+    "slug": "caneta-metalica-65"
+  },
+  {
+    "id": "036f419c-8776-4f40-b39e-d2daf719d3cd",
+    "name": "Kit petisco, pate e cerveja - 7 pçs",
+    "sku": "KT-9021B",
+    "short_description": "Conta com base, espátula, 2 potes em bambu e duas taças em vidro.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/sm-kt-9021b-00/public",
+    "sale_price": 156.69,
+    "min_quantity": 1,
+    "materials": [
+      "Bambu"
+    ],
+    "allows_personalization": true,
+    "slug": "kit-petisco-pate-e-cerveja-7-pcs-kt-9021b"
+  },
+  {
+    "id": "03790a90-6282-4b89-9196-9570b0e1dc5f",
+    "name": "Kit manicure 5 peças",
+    "sku": "19229",
+    "short_description": " Kit manicure composto por cinco itens: três cortadores de tamanhos diferentes em aço carbono, uma lixa feita de vidro e uma espátula para ouvido em inox.",
+    "primary_image_url": "https://cdn.xbzbrindes.com.br/img/produtos/3/Kit-Manicure-5-Pecas-VERMELHO-29877-1789473227.jpg",
+    "sale_price": 16.32,
+    "min_quantity": 10,
+    "materials": [],
+    "allows_personalization": false,
+    "slug": "kit-manicure-c-5-pecas"
+  },
+  {
+    "id": "037dd26a-db69-4445-90c7-b8f12237a6c7",
+    "name": "Kit queijo 3 peças",
+    "sku": "15038",
+    "short_description": "Kit Queijo 3 Peças",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/xbz-15038-18711/public",
+    "sale_price": 54.16,
+    "min_quantity": 5,
+    "materials": [
+      "Bambu"
+    ],
+    "allows_personalization": false,
+    "slug": "kit-queijo-3-pecas"
+  },
+  {
+    "id": "03854ce5-b90f-4c3d-97c4-6c72cc74972c",
+    "name": "Kit drink - madeira, 200ml",
+    "sku": "KWS100P",
+    "short_description": "Kit Drink",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/asia-kws100p-01/public",
+    "sale_price": 7.61,
+    "min_quantity": 1,
+    "materials": [
+      "Aço Inox"
+    ],
+    "allows_personalization": false,
+    "slug": "kit-drink"
+  },
+  {
+    "id": "039712b9-a92a-463c-8e11-4fe013ecba34",
+    "name": "Kit para churrasco - 3 pçs",
+    "sku": "MB-21303",
+    "short_description": "Composto por tábua para Churrasco/Cozinha em Bambu; faca Santoku 7” em Bambu/Inox e garfo trinchante em Madeira/Inox.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/sm-mb-21303-main/public",
+    "sale_price": 86.46,
+    "min_quantity": 1,
+    "materials": [
+      "Aço Inox"
+    ],
+    "allows_personalization": true,
+    "slug": "kit-para-churrasco-3-pcs-mb-21303"
+  },
+  {
+    "id": "03ad1da3-68c5-40ed-9465-e1aad642d384",
+    "name": "Caneta esferográfica em alumínio com ponta touch - preta",
+    "sku": "CE-87001",
+    "short_description": "Caneta esferográfica em alumínio preto. \nConta com acabamento fosco, clipe e ponteira Touch em silicone preto.\nCarga esferográfica azul acionada por um click na extremidade da caneta.",
+    "primary_image_url": "https://imagedelivery.net/vKMs9Ow8bA_enuhLXZ2HAw/sm-ce-87001-00/public",
+    "sale_price": 9.23,
+    "min_quantity": 1,
+    "materials": [
+      "Alumínio"
+    ],
+    "allows_personalization": true,
+    "slug": "caneta-esferografica-em-aluminio-com-ponta-touch-preta"
+  }
+]
