@@ -37,7 +37,7 @@ Cada item pode conter somente `id`, `sku`, `slug`, `name`, `originalName`, `cate
 
 Parâmetro fora da forma pública retorna `400` com `INVALID_CATALOG_QUERY` e não é silenciosamente convertido em outra busca. Uma consulta válida sem peças retorna `200` e `items: []`. Falha ou timeout da fonte canônica retorna `503 CATALOG_UNAVAILABLE` com um estado recuperável na interface, jamais uma lista vazia tratada como sucesso.
 
-Quando a fonte responde `416` para uma página além do total e informa a contagem exata no cabeçalho `Content-Range`, o servidor consulta a última página válida. Um `416` sem essa contagem continua sendo tratado como indisponibilidade, para não inventar resultados. Uma resposta `200` sem contagem exata ou com intervalo incompatível também retorna `503`; o tamanho da página não é uma contagem total válida.
+Quando a fonte responde `416` para uma página além do total e informa a contagem exata no cabeçalho `Content-Range`, o servidor consulta a última página válida. Um `416` sem essa contagem continua sendo tratado como indisponibilidade, para não inventar resultados. Uma resposta `200` sem contagem exata ou com intervalo incompatível também retorna `503`; o tamanho da página não é uma contagem total válida. UUID, slug, data e caminho de mídia precisam ser válidos; duplicatas, itens não solicitados e páginas acima do limite também são tratados como drift da fonte. A ficha permanente rejeita resposta cujo slug difere do endereço pedido.
 
 ## Limite atual e migração segura
 

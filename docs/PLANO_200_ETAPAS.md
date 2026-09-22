@@ -1058,16 +1058,16 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **117. Implementar envio real no backend.** Enviar briefing validado com chave de idempotência e proteção contra abuso.
   - **Situação auditada:** Parcial.
   - **Aceite:** Duplo clique e retry não geram oportunidades duplicadas.
-  - **Constatação:** Entrega opcional usa chave estável, persistência/hash, lease atômica e rate limit compartilhado no banco; falta receptor comercial homologado e validar o cabeçalho de IP no proxy real.
-  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`, `supabase/migrations/20260922142000_add_briefing_rate_limit.sql`.
+  - **Constatação:** Entrega opcional usa chave estável, persistência/hash, lease atômica, leitura sem cache do catálogo no POST e rate limit compartilhado no banco; falta receptor comercial homologado e validar o cabeçalho de IP no proxy real.
+  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`, `supabase/migrations/20260922142000_add_briefing_rate_limit.sql`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
   - **Próxima ação:** Integrar o destino aprovado e validar a criação de oportunidade sem duplicação.
   - **Dependências:** 116 (Parcial), 126 (Parcial), 134 (Concluída no escopo).
 
 - [ ] **118. Implementar resposta confiável.** Apresentar protocolo somente após confirmação persistida no servidor.
   - **Situação auditada:** Parcial.
   - **Aceite:** Falha permite tentar novamente e sucesso nunca é simulado por temporizador.
-  - **Constatação:** Protocolo é persistido antes da entrega; a interface rejeita 2xx sem protocolo válido e mantém o formulário. Falta validar retorno e conciliação do CRM homologado.
-  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `docs/audit/plan-database-check.json`, `tests/storefront.spec.ts`.
+  - **Constatação:** Protocolo é persistido antes da entrega; a interface rejeita 2xx sem protocolo válido e mantém o formulário. Aceite do receptor seguido de falha na confirmação do banco não é marcado como entrega rejeitada. Falta validar retorno e conciliação do CRM homologado.
+  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `docs/audit/plan-database-check.json`, `tests/storefront.spec.ts`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
   - **Próxima ação:** Testar resposta, erro e conciliação com o receptor comercial aprovado.
   - **Dependências:** 117 (Parcial).
 
@@ -1153,8 +1153,8 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **128. Implementar cache e atualização.** Definir TTL e invalidação por mudanças relevantes de produto e publicação.
   - **Situação auditada:** Parcial.
   - **Aceite:** Produto retirado deixa de aparecer dentro do SLA definido.
-  - **Constatação:** Consultas gerais usam TTL/SWR e a seleção é conferida por IDs sem cache; sitemap consulta a publicação viva. Páginas pré-renderizadas ainda dependem do TTL e não têm invalidação imediata por despublicação.
-  - **Evidências e referências:** `src/app/api/catalog/route.ts`, `src/lib/site-database.ts`, `src/app/produtos/[slug]/page.tsx`, `src/app/sitemap.ts`.
+  - **Constatação:** Consultas gerais usam TTL/SWR; a seleção e a validação do POST de briefing leem o catálogo sem cache. O sitemap consulta a publicação viva. Páginas pré-renderizadas ainda dependem do TTL e não têm invalidação imediata por despublicação.
+  - **Evidências e referências:** `src/app/api/catalog/route.ts`, `src/lib/site-database.ts`, `src/app/produtos/[slug]/page.tsx`, `src/app/sitemap.ts`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
   - **Próxima ação:** Definir SLA e testar retirada completa, revalidação e cache.
   - **Dependências:** 127 (Concluída no escopo).
 
@@ -1169,8 +1169,8 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **130. Testar contrato ponta a ponta.** Conferir nomes, IDs, variantes, preço e resposta pública no staging.
   - **Situação auditada:** Parcial.
   - **Aceite:** Suite rejeita campo sensível e acompanha drift do contrato.
-  - **Constatação:** E2E checam subset do DTO, oito produtos e IDs sem cache; sondas rejeitam contagem ausente ou inconsistente. Não há staging nem teste de drift completo.
-  - **Evidências e referências:** `tests/public-api.spec.ts`.
+  - **Constatação:** E2E checam subset do DTO, oito produtos e IDs sem cache; sondas rejeitam contagem ausente ou inconsistente, campo malformado, duplicata, item fora do filtro e detalhe com slug divergente. Não há staging nem teste de drift completo.
+  - **Evidências e referências:** `tests/public-api.spec.ts`, `scripts/audit-plan-scenarios.mjs`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
   - **Próxima ação:** Testar contrato exato, estados, variantes e alteração/despublicação em staging.
   - **Dependências:** 127 (Concluída no escopo), 128 (Parcial), 129 (Concluída no escopo).
 
@@ -1248,8 +1248,8 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **139. Implementar retries e conciliação.** Prever fila, tentativas controladas e tratamento de falhas de integração.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Uma falha parcial não perde briefing e pode ser reprocessada por usuário autorizado.
-  - **Constatação:** Timeout não equivale a fila: não existe outbox, retry persistente ou conciliação.
-  - **Evidências e referências:** `src/app/api/briefings/route.ts`.
+  - **Constatação:** Aceite do receptor seguido de falha na confirmação local não é registrado como rejeição; o estado incerto permanece para conciliação. Ainda não há outbox, retry persistente ou processo de reconciliação homologado.
+  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
   - **Próxima ação:** Persistir envio e reprocessamento com rastreabilidade e sem perda.
   - **Dependências:** 136 (Sem entrega comprovada).
 
@@ -1271,8 +1271,8 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **141. Modelar ameaças do fluxo público.** Analisar coleta abusiva, spam, upload, acesso indevido e exposição comercial.
   - **Situação auditada:** Parcial.
   - **Aceite:** Modelo tem responsáveis e controles proporcionais ao risco observado.
-  - **Constatação:** Modelo de ameaças da prévia existe; integrações finais, responsáveis nomeados e controles efetivos faltam.
-  - **Evidências e referências:** `docs/MODELO_DE_AMEACAS_PREVIA.md`, `docs/audit/plan-scenarios.json`.
+  - **Constatação:** Modelo de ameaças da prévia inclui despublicação durante briefing, drift do catálogo e aceite do receptor sem confirmação no banco; integrações finais, responsáveis nomeados e controles efetivos faltam.
+  - **Evidências e referências:** `docs/MODELO_DE_AMEACAS_PREVIA.md`, `docs/audit/plan-scenarios.json`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
   - **Próxima ação:** Atualizar modelo com achados desta auditoria e aprovar riscos operacionais.
   - **Dependências:** 126 (Parcial), 133 (Parcial).
 

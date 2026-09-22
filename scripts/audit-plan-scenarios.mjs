@@ -394,6 +394,165 @@ await probe("AUD-20-selection-bypasses-source-cache", "no-store", async () => {
   return cacheMode;
 });
 
+for (const [id, freshRow] of [
+  ["AUD-21-server-rejects-unpublished-item", null],
+  ["AUD-22-server-rejects-raised-minimum", { ...item, minimum: 10 }],
+]) {
+  await probe(id, "422;no-store;0", async () => {
+    const harness = deliveryHarness();
+    let catalogCache = "missing";
+    const api = load(
+      "src/app/api/briefings/route.ts",
+      activeEnv,
+      async (input, init = {}) => {
+        if (
+          new URL(String(input)).pathname === "/rest/v1/premium_catalog_items"
+        ) {
+          catalogCache = init.cache ?? "missing";
+          const rows =
+            catalogCache === "no-store" ? (freshRow ? [freshRow] : []) : [item];
+          return new Response(JSON.stringify(rows), {
+            headers: { "content-range": rows.length ? "0-0/1" : "*/0" },
+          });
+        }
+        return harness.fetcher(input, init);
+      },
+    );
+    const response = await api.POST(request(`audit-fresh-${id}-0001`));
+    return `${response.status};${catalogCache};${harness.webhookCalls()}`;
+  });
+}
+
+for (const [id, changedRow] of [
+  ["AUD-23-invalid-slug", { ...item, slug: "../private" }],
+  ["AUD-24-invalid-date", { ...item, source_date: "2026-02-31" }],
+  [
+    "AUD-25-unsafe-media-path",
+    { ...item, image_path: "/images/../private.webp" },
+  ],
+]) {
+  await probe(id, true, async () => {
+    const api = load(
+      "src/lib/site-database.ts",
+      activeEnv,
+      async () =>
+        new Response(JSON.stringify([changedRow]), {
+          headers: { "content-range": "0-0/1" },
+        }),
+    );
+    try {
+      await api.getSiteCatalogPage();
+      return false;
+    } catch {
+      return true;
+    }
+  });
+}
+
+for (const [id, input, rows] of [
+  ["AUD-26-duplicate-item", {}, [item, item]],
+  [
+    "AUD-27-unrequested-item",
+    { ids: [item.id] },
+    [{ ...item, id: "03b447a0-930f-43f9-a51f-5fce910bfc4a" }],
+  ],
+  [
+    "AUD-28-overfilled-page",
+    { pageSize: 1 },
+    [
+      item,
+      {
+        ...item,
+        id: "03b447a0-930f-43f9-a51f-5fce910bfc4a",
+        sku: "93586",
+        slug: "other-item",
+      },
+    ],
+  ],
+  ["AUD-32-category-filter-drift", { category: "Escrita" }, [item]],
+]) {
+  await probe(id, true, async () => {
+    const api = load(
+      "src/lib/site-database.ts",
+      activeEnv,
+      async () =>
+        new Response(JSON.stringify(rows), {
+          headers: {
+            "content-range": `0-${rows.length - 1}/${rows.length}`,
+          },
+        }),
+    );
+    try {
+      await api.getSiteCatalogPage(input);
+      return false;
+    } catch {
+      return true;
+    }
+  });
+}
+
+await probe("AUD-29-product-slug-mismatch", true, async () => {
+  const api = load(
+    "src/lib/site-database.ts",
+    activeEnv,
+    async () => new Response(JSON.stringify([{ ...item, slug: "other-item" }])),
+  );
+  try {
+    await api.getSiteProductBySlug(item.slug);
+    return false;
+  } catch {
+    return true;
+  }
+});
+
+await probe(
+  "AUD-30-accepted-webhook-not-marked-failed",
+  "503;1;0",
+  async () => {
+    const harness = deliveryHarness();
+    let falseRecords = 0;
+    const api = load(
+      "src/app/api/briefings/route.ts",
+      activeEnv,
+      async (input, init = {}) => {
+        if (
+          new URL(String(input)).pathname.endsWith(
+            "/record_premium_briefing_delivery",
+          )
+        ) {
+          const body = JSON.parse(String(init.body));
+          if (body.p_delivered) throw new Error("SYNTHETIC_DB_FAILURE");
+          falseRecords++;
+        }
+        return harness.fetcher(input, init);
+      },
+    );
+    const response = await api.POST(request("audit-confirmation-0001"));
+    return `${response.status};${harness.webhookCalls()};${falseRecords}`;
+  },
+);
+
+await probe("AUD-31-rejected-webhook-marked-failed", "503;1", async () => {
+  const harness = deliveryHarness();
+  let falseRecords = 0;
+  const api = load(
+    "src/app/api/briefings/route.ts",
+    activeEnv,
+    async (input, init = {}) => {
+      const url = new URL(String(input));
+      if (url.hostname === "localhost")
+        return new Response("unavailable", { status: 503 });
+      if (url.pathname.endsWith("/record_premium_briefing_delivery")) {
+        const body = JSON.parse(String(init.body));
+        if (!body.p_delivered) falseRecords++;
+      }
+      return harness.fetcher(input, init);
+    },
+  );
+  const response = await api.POST(request("audit-rejection-0001"));
+  return `${response.status};${falseRecords}`;
+});
+
 for (const [id, url] of [
   ["AUD-07-reject-legacy-project", "https://doufsxqlfjyuvxuezpln.supabase.co"],
   [

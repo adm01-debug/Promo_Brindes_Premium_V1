@@ -263,10 +263,13 @@ export async function POST(request: NextRequest) {
   let catalog;
   try {
     catalog = (
-      await getSiteCatalogPage({
-        ids: submittedProductIds(input),
-        pageSize: 24,
-      })
+      await getSiteCatalogPage(
+        {
+          ids: submittedProductIds(input),
+          pageSize: 24,
+        },
+        { fresh: true },
+      )
     ).items;
   } catch {
     return jsonNoStore({ error: "CATALOG_UNAVAILABLE" }, 503);
@@ -326,13 +329,22 @@ export async function POST(request: NextRequest) {
       cache: "no-store",
     });
     if (!response.ok) throw new Error("DESTINATION_FAILED");
-    await recordDelivery(config.database, key!, true);
   } catch {
     try {
       await recordDelivery(config.database, key!, false, "destination_failed");
     } catch {
       // The briefing row remains durable and can be reconciled by an operator.
     }
+    return jsonNoStore(
+      { error: "BRIEFING_PENDING", protocol: persisted.row.protocol },
+      503,
+    );
+  }
+  try {
+    await recordDelivery(config.database, key!, true);
+  } catch {
+    // The receiver accepted the request. Do not mislabel it as a failed
+    // delivery; a later reconciliation must resolve the uncertain DB state.
     return jsonNoStore(
       { error: "BRIEFING_PENDING", protocol: persisted.row.protocol },
       503,

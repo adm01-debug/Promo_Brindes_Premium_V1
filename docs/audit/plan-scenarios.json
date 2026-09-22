@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-22T14:59:06.745Z",
+  "generatedAt": "2026-09-22T15:23:34.164Z",
   "scope": "Isolated source modules; synthetic inputs; no external network or database writes",
   "results": [
     {
@@ -81,6 +81,78 @@
       "passed": true
     },
     {
+      "id": "AUD-21-server-rejects-unpublished-item",
+      "expected": "422;no-store;0",
+      "observed": "422;no-store;0",
+      "passed": true
+    },
+    {
+      "id": "AUD-22-server-rejects-raised-minimum",
+      "expected": "422;no-store;0",
+      "observed": "422;no-store;0",
+      "passed": true
+    },
+    {
+      "id": "AUD-23-invalid-slug",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "id": "AUD-24-invalid-date",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "id": "AUD-25-unsafe-media-path",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "id": "AUD-26-duplicate-item",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "id": "AUD-27-unrequested-item",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "id": "AUD-28-overfilled-page",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "id": "AUD-32-category-filter-drift",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "id": "AUD-29-product-slug-mismatch",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "id": "AUD-30-accepted-webhook-not-marked-failed",
+      "expected": "503;1;0",
+      "observed": "503;1;0",
+      "passed": true
+    },
+    {
+      "id": "AUD-31-rejected-webhook-marked-failed",
+      "expected": "503;1",
+      "observed": "503;1",
+      "passed": true
+    },
+    {
       "id": "AUD-07-reject-legacy-project",
       "expected": true,
       "observed": true,
@@ -93,6 +165,6 @@
       "passed": true
     }
   ],
-  "passed": 15,
+  "passed": 27,
   "failed": 0
 }

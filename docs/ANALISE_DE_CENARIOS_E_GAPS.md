@@ -15,6 +15,8 @@ Data da revisão: 21/09/2026. Esta análise foi executada antes da expansão té
 | Múltiplas réplicas ou reinicialização | Estado de idempotência ou limite perdido | Registro, lease e janela móvel no banco sobrevivem ao processo | WAF, proxy confiável, conciliação e rollback operacional exercitados |
 | Filtros rápidos, link para página inexistente e resposta de envio malformada | Resultado antigo substituir consulta nova, `416` parecer indisponibilidade ou `200` sem protocolo parecer sucesso | Cancelamento da consulta antiga, normalização pela contagem da fonte e confirmação apenas com protocolo válido | [Cenários reproduzidos](audit/2026-09-22-regression-scenarios.md) e homologação do receptor comercial |
 | Flag de indexação em ambiente errado | Preview ser indexado ou plano interno ficar público | HTTPS e catálogo da vitrine são pré-condições; sitemap lê peças publicadas; planejamento retorna 404 quando a configuração libera índice | Confirmar domínio próprio, conteúdo, direitos e release antes de ativar a flag |
+| Produto é retirado entre a seleção e o POST | Briefing aceitar SKU despublicado por cache no servidor | Navegador e POST consultam IDs sem cache; campo e paginação malformados falham de modo explícito | [Sondas de contrato e entrega](audit/2026-09-22-server-catalog-and-delivery.md), SLA de retirada em todas as páginas |
+| Receptor aceita, banco falha ao confirmar | Marcar uma entrega aceita como rejeitada e induzir reenvio | O estado permanece incerto, com protocolo, sem falsa marcação de falha | CRM idempotente, conciliação por protocolo e operador responsável |
 
 ## Leitura honesta do plano de 200 etapas
 

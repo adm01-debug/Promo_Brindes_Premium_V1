@@ -87,12 +87,26 @@ function isCatalogRow(value: unknown): value is CatalogRow {
     ].every((field) => typeof row[field] === "string" && row[field] !== "") &&
     categories.includes(row.category as (typeof categories)[number]) &&
     row.category !== "Todos" &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      row.id as string,
+    ) &&
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(row.slug as string) &&
+    typeof row.sku === "string" &&
+    row.sku.trim() === row.sku &&
+    row.sku.length <= 64 &&
+    /^\d{4}-\d{2}-\d{2}$/.test(row.source_date as string) &&
+    !Number.isNaN(Date.parse(row.source_date as string)) &&
+    new Date(row.source_date as string).toISOString().slice(0, 10) ===
+      row.source_date &&
     typeof row.minimum === "number" &&
     Number.isInteger(row.minimum) &&
     row.minimum >= 1 &&
     row.minimum <= 10000 &&
     typeof row.personalizable === "boolean" &&
-    (row.image_path as string).startsWith("/images/")
+    /^\/images\/[a-zA-Z0-9][a-zA-Z0-9._-]*\.(?:webp|avif|png|jpe?g)$/.test(
+      row.image_path as string,
+    ) &&
+    !(row.image_path as string).includes("..")
   );
 }
 
@@ -213,6 +227,19 @@ export async function getSiteCatalogPage(
   const rows: unknown = await response.json();
   if (!Array.isArray(rows) || !rows.every(isCatalogRow))
     throw new Error("Site catalog did not satisfy the public contract.");
+  if (
+    rows.length > resolved.pageSize ||
+    ["id", "sku", "slug"].some(
+      (field) =>
+        new Set(rows.map((row) => row[field as keyof CatalogRow])).size !==
+        rows.length,
+    ) ||
+    (resolved.ids.length > 0 &&
+      rows.some((row) => !resolved.ids.includes(row.id))) ||
+    (resolved.category !== "Todos" &&
+      rows.some((row) => row.category !== resolved.category))
+  )
+    throw new Error("Site catalog returned inconsistent products.");
   const total = exactCount(
     response,
     rows.length,
@@ -250,7 +277,12 @@ export async function getSiteProductBySlug(
   });
   if (!response.ok) throw new Error("Site product is unavailable.");
   const rows: unknown = await response.json();
-  if (!Array.isArray(rows) || rows.length > 1 || !rows.every(isCatalogRow))
+  if (
+    !Array.isArray(rows) ||
+    rows.length > 1 ||
+    !rows.every(isCatalogRow) ||
+    rows.some((row) => row.slug !== slug)
+  )
     throw new Error("Site product did not satisfy the public contract.");
   return rows[0] ? toProduct(rows[0]) : null;
 }
