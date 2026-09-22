@@ -2,7 +2,7 @@
 
 Revisão: **22/09/2026**, identificador `2026-09-22-audit-1`. Código base examinado: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. Projeto: **Promo_Brindes_Premium_V1**. A referência histórica de `Promo_Gifts_V4` continua sendo a auditoria dirigida do commit `44857d5`.
 
-**Não implementamos todas as melhorias.** Há **103 etapas com o próprio critério comprovado, 51 parciais e 46 sem entrega comprovada**. São **97 etapas abertas**, das quais **71 são P0**. O site tem catálogo curado com vigência temporal, descoberta multifacetada, recomendações editoriais, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
+**Não implementamos todas as melhorias.** Há **104 etapas com o próprio critério comprovado, 50 parciais e 46 sem entrega comprovada**. São **96 etapas abertas**, das quais **70 são P0**. O site tem catálogo curado com vigência temporal e operação editorial protegida, descoberta multifacetada, recomendações editoriais, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
 
 Esses números contam critérios do plano, não esforço restante ou porcentagem de prontidão comercial. Entrevistas, licenças, homologações e monitoramento têm peso diferente de um componente visual. A conclusão de uma entrega isolada não libera suas dependências nem os gates de lançamento.
 
@@ -11,7 +11,7 @@ Esses números contam critérios do plano, não esforço restante ou porcentagem
 - Foram lidos os **200 títulos, ações, critérios, dependências e estados anteriores**. Cada etapa recebeu uma constatação individual, referências e próxima ação em [`src/lib/plan.json`](../src/lib/plan.json).
 - Foram confrontados componentes, rotas, helpers, configurações, migration, scripts, três arquivos de testes e documentação de pesquisa/arquitetura/validação. Não se atribuiu conclusão apenas à existência de um arquivo.
 - O grafo local orientou o levantamento de relações; arquivos atuais prevaleceram quando houve alteração posterior à extração. Não se confundiu esse grafo com o artefato histórico do aplicativo comercial.
-- Foram executados 57 cenários sintéticos em módulos TypeScript, 70 contratos unitários, 64 contratos pgTAP e 213 execuções E2E nos três motores. Os sintéticos confirmam idempotência concorrente, fencing de lease expirada, rollout incompatível sem webhook, recuperação de protocolo após retirada, conflito de payload, limite de corpo com cancelamento do fluxo, data, paginação em múltiplos lotes, limite e mudança de total do catálogo, contagem exata, consulta por IDs sem cache, filtro temporal de publicação, allowlist exata/SSRF, redirects e limite compartilhado entre instâncias. A matriz de browser cobre facetas, histórico, metadados, recomendações, teclado, alvos, reflow, privacidade de runtime, rede lenta e acessibilidade automatizada. Não são uma certificação de produção.
+- Foram executados 57 cenários sintéticos em módulos TypeScript, 86 contratos unitários, 64 contratos pgTAP e 213 execuções E2E nos três motores. Os sintéticos confirmam idempotência concorrente, fencing de lease expirada, rollout incompatível sem webhook, recuperação de protocolo após retirada, conflito de payload, limite de corpo com cancelamento do fluxo, data, paginação em múltiplos lotes, limite e mudança de total do catálogo, contagem exata, consulta por IDs sem cache, filtro temporal de publicação, allowlist exata/SSRF, redirects e limite compartilhado entre instâncias. Os unitários também cobrem dry-run, destino, janela, confirmação e concorrência da operação editorial. A matriz de browser cobre facetas, histórico, metadados, recomendações, teclado, alvos, reflow, privacidade de runtime, rede lenta e acessibilidade automatizada. Não são uma certificação de produção.
 - O PostgreSQL da vitrine foi consultado para conferir migrations, contagens, RLS e privilégios. As funções de entrega foram exercitadas dentro de uma transação revertida; nenhum dado comercial foi mantido e nenhuma mensagem foi enviada.
 - Referências externas e estudos de mercado foram avaliados como evidência documental histórica de 20/09; não houve nova pesquisa de mercado, entrevistas ou auditoria administrativa do banco operacional nesta revisão.
 
@@ -26,14 +26,14 @@ A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [
 | 03 · Posicionamento, descoberta e mensuração   |                   1 |       7 |                      2 |
 | 04 · Identidade, direção de arte e voz         |                   7 |       2 |                      1 |
 | 05 · Curadoria e qualidade do catálogo         |                   3 |       5 |                      2 |
-| 06 · Arquitetura de informação e jornadas      |                   5 |       4 |                      1 |
+| 06 · Arquitetura de informação e jornadas      |                   6 |       3 |                      1 |
 | 07 · Sistema de design e componentes           |                   9 |       1 |                      0 |
 | 08 · Página inicial e narrativa de marca       |                   8 |       1 |                      1 |
 | 09 · Busca, filtros e descoberta               |                   8 |       2 |                      0 |
 | 10 · Página de produto e confiança             |                   3 |       5 |                      2 |
 | 11 · Personalização e montagem de kits         |                   0 |       2 |                      8 |
 | 12 · Seleção, briefing e conversão             |                   5 |       3 |                      2 |
-| 13 · Contrato público e integração de catálogo |                   4 |       6 |                      0 |
+| 13 · Contrato público e integração de catálogo |                   6 |       4 |                      0 |
 | 14 · Passagem para o comercial e CRM           |                   1 |       3 |                      6 |
 | 15 · Segurança, privacidade e governança       |                   3 |       4 |                      3 |
 | 16 · Conteúdo, SEO e descoberta orgânica       |                   4 |       4 |                      2 |
@@ -41,7 +41,7 @@ A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [
 | 18 · Acessibilidade e inclusão                 |                   9 |       0 |                      1 |
 | 19 · Qualidade, homologação e piloto           |                   4 |       2 |                      4 |
 | 20 · Lançamento, operação e evolução           |                   0 |       2 |                      8 |
-| **Total**                                      |             **101** |  **53** |                 **46** |
+| **Total**                                      |             **104** |  **50** |                 **46** |
 
 A entrega posterior da [biblioteca de catálogos](CATALOGOS.md) concluiu o vínculo estrutural da etapa 053 e tornou a etapa 157 parcial: existem seis páginas editoriais com produtos publicados, mas ainda faltam guias aprofundados com participação comercial. Os totais acima incorporam essa entrega.
 
@@ -91,7 +91,7 @@ Os endpoints foram carregados com `fetch` simulado e as interações de envio fo
 
 Os controles **AUD-07 e AUD-08 passam**: projeto operacional e host semelhante são rejeitados antes da leitura do catálogo.
 
-A validação passa em build, TypeScript, checagem integral do plano, contrato visual, orçamento de imagens, JavaScript, fontes e chunks, 57 cenários sintéticos, 70 contratos unitários, 64 contratos pgTAP e 213 execuções E2E em Chromium, Firefox e WebKit local. A cobertura inclui facetas em OR/AND, recomendações publicadas, metadados, contrato exato, vigência editorial, teclado, alvos, reflow, ausência de cookies/terceiros, rede lenta, API 503, offline, mídia 403, resposta atrasada, protocolo ausente, seleção retirada ou com mínimo alterado antes do briefing, retry após retirada, SSRF/redirects, rollout incompatível e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
+A validação passa em build, TypeScript, checagem integral do plano, contrato visual, orçamento de imagens, JavaScript, fontes e chunks, 57 cenários sintéticos, 86 contratos unitários, 64 contratos pgTAP e 213 execuções E2E em Chromium, Firefox e WebKit local. A cobertura inclui facetas em OR/AND, recomendações publicadas, metadados, contrato exato, vigência e operação editorial, teclado, alvos, reflow, ausência de cookies/terceiros, rede lenta, API 503, offline, mídia 403, resposta atrasada, protocolo ausente, seleção retirada ou com mínimo alterado antes do briefing, retry após retirada, SSRF/redirects, rollout incompatível e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
 
 O painel atualizado também foi inspecionado em **390 e 1440 pixels**, com filtro de parciais e critério expandido: sem overflow horizontal e sem violações nas regras axe selecionadas. [Registro da inspeção](audit/plan-dashboard-check.json).
 

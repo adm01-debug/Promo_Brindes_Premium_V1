@@ -2,7 +2,7 @@
 
 Referência: **2026-09-22** · **20 fases × 10 etapas = 200 etapas**.
 
-Status auditado: **103 concluídas no próprio escopo; 51 parciais; 46 sem entrega comprovada**. São 97 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
+Status auditado: **104 concluídas no próprio escopo; 50 parciais; 46 sem entrega comprovada**. São 96 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
 
 Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatório e prioridades](REVISAO_EXAUSTIVA_PLANO.md).
 
@@ -1126,12 +1126,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Comparar definições reais das views com contratos antes de criar adaptador.
   - **Dependências:** 123 (Parcial).
 
-- [ ] **125. Projetar publicação editorial.** Definir como seleção premium, ordem, texto e visibilidade referenciam IDs canônicos.
-  - **Situação auditada:** Parcial.
+- [x] **125. Projetar publicação editorial.** Definir como seleção premium, ordem, texto e visibilidade referenciam IDs canônicos.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Modelo não duplica o catálogo operacional e suporta despublicação.
-  - **Constatação:** Tabela curada mantém IDs, ordem e published; faltam governança e sincronização de ciclo de vida.
-  - **Evidências e referências:** `supabase/migrations/20260922110900_create_premium_site_core.sql`, `scripts/sync-site-catalog.mjs`, `docs/ARQUITETURA_E_INTEGRACAO.md`.
-  - **Próxima ação:** Definir fonte de cada campo, edição autorizada e retirada em todas as superfícies.
+  - **Constatação:** A projeção Premium referencia IDs canônicos e separa campos de origem, editoriais e de publicação. A sincronização valida a fonte operacional somente por leitura, preserva retirada e janelas; o comando editorial usa dry-run, confirmação por SKU e trava de revisão para retirar, republicar ou agendar sem tocar o banco operacional.
+  - **Evidências e referências:** `supabase/migrations/20260922110900_create_premium_site_core.sql`, `supabase/migrations/20260922221500_add_catalog_publication_window.sql`, `scripts/sync-site-catalog.mjs`, `scripts/manage-site-publication.mjs`, `scripts/tests/publication-management.test.mjs`, `docs/FLUXO_PUBLICACAO_EDITORIAL.md`, `docs/audit/2026-09-22-editorial-publication-control.md`.
+  - **Próxima ação:** Usar o fluxo documentado somente após a decisão editorial concreta e registrar a evidência de cada alteração.
   - **Dependências:** 041 (Parcial), 124 (Parcial).
 
 - [ ] **126. Preparar contrato versionado.** Especificar paginação, filtros, erros, datas e disponibilidade da API.
@@ -1148,7 +1148,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Home, ficha de produto, API, seleção recuperada e validação de briefing consultam a projeção publicada com a mesma validação de contrato.
   - **Evidências e referências:** `src/lib/site-database.ts`, `src/components/Storefront.tsx`, `src/lib/briefing.ts`.
   - **Próxima ação:** Testar despublicação e conteúdo novo em um ambiente de staging quando houver dados aprovados.
-  - **Dependências:** 125 (Parcial), 126 (Parcial).
+  - **Dependências:** 125 (Concluída no escopo), 126 (Parcial).
 
 - [x] **128. Implementar cache e atualização.** Definir TTL e invalidação por mudanças relevantes de produto e publicação.
   - **Situação auditada:** Concluída no escopo.

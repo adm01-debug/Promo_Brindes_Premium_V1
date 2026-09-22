@@ -71,6 +71,7 @@ O planejamento é uma ferramenta desta prévia. Antes de lançar a vitrine públ
 - [Auditoria de acessibilidade do conteúdo](docs/AUDITORIA_ACESSIBILIDADE_CONTEUDO.md)
 - [Validação do ambiente Vercel e catálogo canônico](docs/audit/2026-09-22-production-environment.md)
 - [Vigência, retirada e SLA do catálogo público](docs/audit/2026-09-22-catalog-publication-window.md)
+- [Fluxo seguro de publicação editorial](docs/FLUXO_PUBLICACAO_EDITORIAL.md)
 - [Auditoria de release, produção e rollback](docs/audit/2026-09-22-release-operations.md)
 - [Plano de 200 etapas com checklists](docs/PLANO_200_ETAPAS.md)
 - [Plano em CSV](docs/PLANO_200_ETAPAS.csv)

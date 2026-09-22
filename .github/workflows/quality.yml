@@ -35,6 +35,7 @@ jobs:
           npm run check:ui-contract
           npm run test:catalog-boundary
           npm run test:catalog-library
+          npm run test:publication-management
           npm run test:runtime-environment
       - name: Build production site
         run: npm run build

@@ -2740,18 +2740,22 @@
       "acceptance": "Modelo não duplica o catálogo operacional e suporta despublicação.",
       "owner": "Arquitetura + backend + dados",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "supabase/migrations/20260922110900_create_premium_site_core.sql",
       "dependencies": [41, 124],
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Tabela curada mantém IDs, ordem e published; faltam governança e sincronização de ciclo de vida.",
-        "nextAction": "Definir fonte de cada campo, edição autorizada e retirada em todas as superfícies.",
+        "finding": "A projeção Premium referencia IDs canônicos e separa campos de origem, editoriais e de publicação. A sincronização valida a fonte operacional somente por leitura, preserva retirada e janelas; o comando editorial usa dry-run, confirmação por SKU e trava de revisão para retirar, republicar ou agendar sem tocar o banco operacional.",
+        "nextAction": "Usar o fluxo documentado somente após a decisão editorial concreta e registrar a evidência de cada alteração.",
         "evidence": [
           "supabase/migrations/20260922110900_create_premium_site_core.sql",
+          "supabase/migrations/20260922221500_add_catalog_publication_window.sql",
           "scripts/sync-site-catalog.mjs",
-          "docs/ARQUITETURA_E_INTEGRACAO.md"
+          "scripts/manage-site-publication.mjs",
+          "scripts/tests/publication-management.test.mjs",
+          "docs/FLUXO_PUBLICACAO_EDITORIAL.md",
+          "docs/audit/2026-09-22-editorial-publication-control.md"
         ]
       }
     },
