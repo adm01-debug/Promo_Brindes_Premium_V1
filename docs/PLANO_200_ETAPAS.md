@@ -2,7 +2,7 @@
 
 Referência: **2026-09-22** · **20 fases × 10 etapas = 200 etapas**.
 
-Status auditado: **81 concluídas no próprio escopo; 67 parciais; 52 sem entrega comprovada**. São 119 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
+Status auditado: **82 concluídas no próprio escopo; 66 parciais; 52 sem entrega comprovada**. São 118 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
 
 Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatório e prioridades](REVISAO_EXAUSTIVA_PLANO.md).
 
@@ -1482,12 +1482,12 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Manter a separação ao adicionar ferramentas comerciais e medir novamente o orçamento por rota.
   - **Dependências:** 153 (Concluída no escopo).
 
-- [ ] **166. Medir laboratório móvel.** Executar Lighthouse repetido com cenário e ambiente registrados.
-  - **Situação auditada:** Parcial.
+- [x] **166. Medir laboratório móvel.** Executar Lighthouse repetido com cenário e ambiente registrados.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Resultados não são apresentados como percentil real de usuários.
-  - **Constatação:** Última coleta válida é única: LCP 3,0 s; repetição posterior falhou no ambiente.
-  - **Evidências e referências:** `docs/audit/lighthouse-mobile.json`, `docs/VALIDACAO.md`.
-  - **Próxima ação:** Executar rodadas repetidas reproduzíveis e atender orçamento.
+  - **Constatação:** Três rodadas móveis sequenciais em build de produção têm ambiente e relatórios completos: LCP 2,259–3,121 s, mediana 2,612 s. Resultado não é p75 real; a meta de 2,5 s ainda não foi atingida de forma estável.
+  - **Evidências e referências:** `docs/audit/lighthouse-mobile.json`, `docs/audit/2026-09-22-lighthouse-repeat.md`, `docs/VALIDACAO.md`.
+  - **Próxima ação:** Repetir após otimizações de LCP; medir p75 de campo na etapa 167 quando houver lançamento e política aprovados.
   - **Dependências:** 161 (Concluída no escopo), 162 (Concluída no escopo), 163 (Concluída no escopo), 164 (Concluída no escopo), 165 (Concluída no escopo).
 
 - [ ] **167. Medir Core Web Vitals em campo.** Instrumentar métricas reais conforme decisão de privacidade e consentimento.
@@ -1686,7 +1686,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Esta revisão organiza evidências e gaps; ainda faltam testes e operação para fechar gates.
   - **Evidências e referências:** `docs/REVISAO_EXAUSTIVA_PLANO.md`, `docs/VALIDACAO.md`.
   - **Próxima ação:** Completar evidências de segurança, desempenho, acesso, CRM e rollback.
-  - **Dependências:** 150 (Parcial), 166 (Parcial), 170 (Sem entrega comprovada), 180 (Sem entrega comprovada), 181 (Concluída no escopo), 182 (Concluída no escopo), 183 (Concluída no escopo), 184 (Sem entrega comprovada), 185 (Parcial), 186 (Parcial), 187 (Sem entrega comprovada), 188 (Sem entrega comprovada).
+  - **Dependências:** 150 (Parcial), 166 (Concluída no escopo), 170 (Sem entrega comprovada), 180 (Sem entrega comprovada), 181 (Concluída no escopo), 182 (Concluída no escopo), 183 (Concluída no escopo), 184 (Sem entrega comprovada), 185 (Parcial), 186 (Parcial), 187 (Sem entrega comprovada), 188 (Sem entrega comprovada).
 
 - [ ] **190. Decidir prontidão comercial.** Revisar critérios P0 com os responsáveis de negócio e tecnologia.
   - **Situação auditada:** Sem entrega comprovada.

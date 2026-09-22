@@ -4257,8 +4257,8 @@
       "acceptance": "Resultados não são apresentados como percentil real de usuários.",
       "owner": "Frontend + SRE + backend",
       "priority": "P0",
-      "status": "partial",
-      "evidence": "docs/audit/lighthouse-mobile.json",
+      "status": "done",
+      "evidence": "docs/audit/2026-09-22-lighthouse-repeat.md",
       "dependencies": [
         161,
         162,
@@ -4269,10 +4269,11 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "Última coleta válida é única: LCP 3,0 s; repetição posterior falhou no ambiente.",
-        "nextAction": "Executar rodadas repetidas reproduzíveis e atender orçamento.",
+        "finding": "Três rodadas móveis sequenciais em build de produção têm ambiente e relatórios completos: LCP 2,259–3,121 s, mediana 2,612 s. Resultado não é p75 real; a meta de 2,5 s ainda não foi atingida de forma estável.",
+        "nextAction": "Repetir após otimizações de LCP; medir p75 de campo na etapa 167 quando houver lançamento e política aprovados.",
         "evidence": [
           "docs/audit/lighthouse-mobile.json",
+          "docs/audit/2026-09-22-lighthouse-repeat.md",
           "docs/VALIDACAO.md"
         ]
       }

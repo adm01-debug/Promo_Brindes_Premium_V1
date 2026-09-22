@@ -2,7 +2,7 @@
 
 Revisão: **22/09/2026**, identificador `2026-09-22-audit-1`. Código base examinado: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. Projeto: **Promo_Brindes_Premium_V1**. A referência histórica de `Promo_Gifts_V4` continua sendo a auditoria dirigida do commit `44857d5`.
 
-**Não implementamos todas as melhorias.** Há **81 etapas com o próprio critério comprovado, 67 parciais e 52 sem entrega comprovada**. São **119 etapas abertas**, das quais **90 são P0**. O site tem catálogo curado, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
+**Não implementamos todas as melhorias.** Há **82 etapas com o próprio critério comprovado, 66 parciais e 52 sem entrega comprovada**. São **118 etapas abertas**, das quais **89 são P0**. O site tem catálogo curado, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
 
 Esses números contam critérios do plano, não esforço restante ou porcentagem de prontidão comercial. Entrevistas, licenças, homologações e monitoramento têm peso diferente de um componente visual. A conclusão de uma entrega isolada não libera suas dependências nem os gates de lançamento.
 
@@ -37,11 +37,11 @@ A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [
 | 14 · Passagem para o comercial e CRM | 1 | 3 | 6 |
 | 15 · Segurança, privacidade e governança | 0 | 7 | 3 |
 | 16 · Conteúdo, SEO e descoberta orgânica | 1 | 6 | 3 |
-| 17 · Desempenho e confiabilidade | 6 | 1 | 3 |
+| 17 · Desempenho e confiabilidade | 7 | 0 | 3 |
 | 18 · Acessibilidade e inclusão | 3 | 6 | 1 |
 | 19 · Qualidade, homologação e piloto | 3 | 3 | 4 |
 | 20 · Lançamento, operação e evolução | 0 | 2 | 8 |
-| **Total** | **81** | **67** | **52** |
+| **Total** | **82** | **66** | **52** |
 
 ## Correções do acompanhamento
 
@@ -55,6 +55,8 @@ O registro anterior mostrava **63 concluídas e 137 pendentes**. A revisão não
 As regressões inicialmente encontradas nas etapas **056, 068, 087, 089, 114, 127, 134, 168 e 178** foram corrigidas. A revalidação cobre envelope de seleção, reduced motion, ordenação e paginação na fonte, rascunho em memória, fonte única publicada, chave/hash com lease atômica e distinção entre vazio e indisponibilidade. A revalidação posterior acrescentou histórico de navegação, fallback de mídia para 403 e o gate de JavaScript, fontes e chunks do build.
 
 Nove critérios próprios já atendidos tecnicamente apareciam como pendentes: **051, 054, 055, 092, 122, 153, 162, 163 e 179**. A classificação revisada reconhece essas entregas isoladas e passa a mostrar suas dependências separadamente. Foram verificadas evidências de mapa, jornada sem conta, natureza consultiva, páginas permanentes, host, HTML inicial, imagens e varredura automatizada. Não são nove funções novas criadas nesta revisão; também não aprovam indexação, integração viva, LCP de campo ou conformidade integral de acessibilidade.
+
+A etapa **166** passou de parcial para concluída no próprio critério após [três rodadas móveis reproduzíveis](audit/2026-09-22-lighthouse-repeat.md), com configuração e relatórios completos. O LCP mediano de 2,612 s ainda excede a meta de 2,5 s; medição concluída não significa desempenho aprovado para lançamento nem p75 de usuários.
 
 O critério 004 foi atualizado para a decisão posterior do usuário: banco **da vitrine** `whwloseshzraipljisqo`, banco **operacional** `doufsxqlfjyuvxuezpln`. O critério 006 explicita a qual repositório se refere a ausência histórica de `graph.json`.
 
@@ -105,7 +107,7 @@ Resultados brutos: [módulos isolados](audit/plan-scenarios.json), [navegador](a
 | Domínio e SEO comercial sem aprovação | Canonical é específico por rota; a indexação exige URL HTTPS e catálogo configurado, e o sitemap lê itens publicados. A posse do domínio e redirects não foram homologados. | 152–156: aprovar domínio, slugs finais, redirects e conteúdo. |
 | Planejamento acessível na prévia | `/planejamento` continua acessível sem autenticação na prévia; configuração indexável retorna 404 para a rota. | 191, 194: manter o painel em ambiente interno ao expor a vitrine comercial. |
 | Deploy comercial ainda ausente | CI versionado executa os gates em push/PR; staging, domínio, release reversível e monitoramento não estão configurados. | 185, 191–195: executar pipeline remoto e preparar ambientes e operação. |
-| Medição de experiência | Gate mede imagens, fontes WOFF2, JavaScript gzip e chunks por rota; a última coleta válida registra LCP 3,0 s. | 166–170: repetir laboratório, medir campo e instrumentar alertas. |
+| Medição de experiência | Gate mede imagens, fontes WOFF2, JavaScript gzip e chunks por rota; três rodadas móveis registram LCP 2,259–3,121 s, mediana 2,612 s. | 166 tem critério de medição comprovado; otimizar LCP, medir campo e instrumentar alertas nas etapas seguintes. |
 
 Essas lacunas ainda exigem decisões, ambiente e evidências próprias. As correções técnicas reproduzidas nesta rodada constam no registro de cenários adicionais.
 
