@@ -1,10 +1,10 @@
 # Promo Brindes Premium — plano de 200 etapas
 
-Referência: **2026-09-22** · **20 fases × 10 etapas = 200 etapas**.
+Referência: **2026-09-23** · **20 fases × 10 etapas = 200 etapas**.
 
-Status auditado: **105 concluídas no próprio escopo; 49 parciais; 46 sem entrega comprovada**. São 95 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
+Status auditado: **106 concluídas no próprio escopo; 48 parciais; 46 sem entrega comprovada**. São 94 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
 
-Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatório e prioridades](REVISAO_EXAUSTIVA_PLANO.md).
+Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatório e prioridades](REVISAO_EXAUSTIVA_PLANO.md).
 
 ## Como utilizar
 
@@ -1058,16 +1058,16 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **117. Implementar envio real no backend.** Enviar briefing validado com chave de idempotência e proteção contra abuso.
   - **Situação auditada:** Parcial.
   - **Aceite:** Duplo clique e retry não geram oportunidades duplicadas.
-  - **Constatação:** Entrega opcional usa chave estável, hash da intenção normalizada, consulta prévia de protocolo, lease atômica, leitura sem cache do catálogo para novos envios e rate limit compartilhado no banco. Retry entregue recupera o protocolo após retirada do produto; novo envio da peça retirada é rejeitado. Falta receptor comercial homologado e validar o cabeçalho de IP no proxy real.
-  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`, `supabase/migrations/20260922142000_add_briefing_rate_limit.sql`, `supabase/migrations/20260922150000_lookup_briefing_intent.sql`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
+  - **Constatação:** Entrega opcional usa chave estável, hash da intenção normalizada, consulta prévia de protocolo, lease atômica, leitura sem cache, rate limit compartilhado e chamada assinada por HMAC. O receptor precisa confirmar o mesmo protocolo em JSON limitado. Falta receptor comercial homologado e validar o cabeçalho de IP no proxy real.
+  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`, `supabase/migrations/20260922142000_add_briefing_rate_limit.sql`, `supabase/migrations/20260922150000_lookup_briefing_intent.sql`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`, `docs/audit/2026-09-23-security-release-hardening.md`, `docs/CONTRATO_BRIEFING_V1.md`.
   - **Próxima ação:** Integrar o destino aprovado e validar a criação de oportunidade sem duplicação.
   - **Dependências:** 116 (Parcial), 126 (Parcial), 134 (Concluída no escopo).
 
 - [ ] **118. Implementar resposta confiável.** Apresentar protocolo somente após confirmação persistida no servidor.
   - **Situação auditada:** Parcial.
   - **Aceite:** Falha permite tentar novamente e sucesso nunca é simulado por temporizador.
-  - **Constatação:** Protocolo é persistido antes da entrega; a interface rejeita 2xx sem protocolo válido e mantém o formulário. Retry de entrega concluída recupera o protocolo mesmo após retirada do produto; uma entrega ainda pendente com produto retirado preserva o protocolo sem novo disparo. Aceite do receptor seguido de falha na confirmação do banco não é marcado como entrega rejeitada. Falta validar retorno e conciliação do CRM homologado.
-  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `docs/audit/plan-database-check.json`, `tests/storefront.spec.ts`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
+  - **Constatação:** Protocolo é persistido antes da entrega; a interface rejeita 2xx sem protocolo válido. O servidor só conclui quando o receptor devolve JSON limitado com accepted:true e o mesmo protocolo. Retry entregue recupera o protocolo; estado incerto não é marcado como rejeição. Falta validar retorno e conciliação do CRM homologado.
+  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `docs/audit/plan-database-check.json`, `tests/storefront.spec.ts`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`, `docs/audit/2026-09-23-security-release-hardening.md`, `docs/CONTRATO_BRIEFING_V1.md`.
   - **Próxima ação:** Testar resposta, erro e conciliação com o receptor comercial aprovado.
   - **Dependências:** 117 (Parcial).
 
@@ -1248,8 +1248,8 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **139. Implementar retries e conciliação.** Prever fila, tentativas controladas e tratamento de falhas de integração.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Uma falha parcial não perde briefing e pode ser reprocessada por usuário autorizado.
-  - **Constatação:** Aceite do receptor seguido de falha na confirmação local não é registrado como rejeição; o estado incerto permanece para conciliação. Retry com produto retirado preserva o protocolo sem novo envio, mas ainda não há outbox, retry persistente ou processo de reconciliação homologado.
-  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`.
+  - **Constatação:** Aceite remoto exige confirmação estruturada e assinatura HMAC; falha de confirmação local permanece incerta e retry com produto retirado preserva o protocolo sem novo envio. Ainda não há outbox, retry persistente ou processo de reconciliação homologado.
+  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`, `docs/audit/2026-09-23-security-release-hardening.md`.
   - **Próxima ação:** Persistir envio e reprocessamento com rastreabilidade e sem perda.
   - **Dependências:** 136 (Sem entrega comprovada).
 
@@ -1276,27 +1276,27 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Próxima ação:** Reabrir a modelagem quando CRM, upload, proxy ou tratamento de dados mudar; aprovar os riscos residuais antes da abertura.
   - **Dependências:** 126 (Parcial), 133 (Parcial).
 
-- [ ] **142. Revisar permissões anônimas.** Testar leitura e negativa de escrita com anon no projeto correto.
-  - **Situação auditada:** Parcial.
+- [x] **142. Revisar permissões anônimas.** Testar leitura e negativa de escrita com anon no projeto correto.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Custos e PII permanecem protegidos; nenhum grant amplo é adicionado para destravar UI.
-  - **Constatação:** Banco da vitrine nega escrita anon e acesso a briefings; acesso cruzado e escopo operacional não foram testados.
-  - **Evidências e referências:** `docs/audit/plan-database-check.json`, `supabase/migrations/20260922110900_create_premium_site_core.sql`.
-  - **Próxima ação:** Completar matriz de papéis e cenários no ambiente integrado.
+  - **Constatação:** Migration normaliza as ACLs atuais e revoga defaults futuros. pgTAP prova somente SELECT do catálogo para anon/authenticated, nenhuma mutação ou RPC privada e capacidades explícitas para service_role; a consulta remota confirmou a mesma matriz no projeto Premium.
+  - **Evidências e referências:** `supabase/migrations/20260923071500_harden_default_privileges.sql`, `supabase/tests/database/premium_default_privileges.test.sql`, `docs/audit/2026-09-23-security-release-hardening.md`, `docs/audit/plan-database-check.json`.
+  - **Próxima ação:** Manter o teste de menor privilégio e exigir grants explícitos em toda nova migration.
   - **Dependências:** 123 (Parcial).
 
 - [x] **143. Proteger segredos de servidor.** Manter service role e integrações exclusivamente no servidor.
   - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Build público e logs são verificados e não contêm segredos.
-  - **Constatação:** Credenciais administrativas permanecem exclusivas do servidor; o CI examina código e build público, e o deploy Vercel teve logs de build/runtime confrontados com segredos exatos e padrões sensíveis sem ocorrência.
-  - **Evidências e referências:** `scripts/check-public-secrets.mjs`, `docs/SUPABASE_SITE_DATABASE.md`, `docs/audit/plan-secret-scan.json`, `docs/audit/2026-09-22-production-environment.md`, `.github/workflows/quality.yml`, `src/lib/runtime-environment.mjs`, `scripts/tests/runtime-environment.test.mjs`.
+  - **Constatação:** Credenciais administrativas permanecem exclusivas do servidor; o CI examina código e build público, fixa Actions por SHA, audita dependências e preserva traces de falha. Dezessete nomes legados ou administrativos foram removidos da Vercel, mantendo sete variáveis consumidas.
+  - **Evidências e referências:** `scripts/check-public-secrets.mjs`, `docs/SUPABASE_SITE_DATABASE.md`, `docs/audit/plan-secret-scan.json`, `docs/audit/2026-09-22-production-environment.md`, `.github/workflows/quality.yml`, `src/lib/runtime-environment.mjs`, `scripts/tests/runtime-environment.test.mjs`, `docs/audit/2026-09-23-security-release-hardening.md`.
   - **Próxima ação:** Manter o gate de segredos e repetir a inspeção automatizada de artefatos e logs em cada ambiente publicado.
   - **Dependências:** 122 (Concluída no escopo).
 
 - [ ] **144. Isolar requisições de orçamento.** Validar origem, tamanho, campos e limites; usar proteção conforme arquitetura.
   - **Situação auditada:** Parcial.
   - **Aceite:** Abuso, payload inesperado e repetição recebem respostas controladas.
-  - **Constatação:** Corpo, origem e campos são validados; quando a entrega é habilitada, o limite de cinco tentativas em dez minutos é atômico no banco, usa HMAC do IP fornecido por proxy configurado e falha fechado. A implantação e o proxy real não foram homologados.
-  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/lib/briefing.ts`, `docs/audit/plan-scenarios.json`, `docs/audit/2026-09-22-rate-limit.md`.
+  - **Constatação:** Corpo, Origin obrigatório, UTF-8, campos e limites são validados. Quando a entrega é habilitada, o limite distribuído usa HMAC do IP; a chamada ao receptor também é assinada e exige confirmação estruturada. A implantação, o proxy real e o WAF não foram homologados.
+  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/lib/briefing.ts`, `docs/audit/plan-scenarios.json`, `docs/audit/2026-09-22-rate-limit.md`, `docs/CONTRATO_BRIEFING_V1.md`, `docs/audit/2026-09-23-security-release-hardening.md`.
   - **Próxima ação:** Validar em staging que o proxy sobrescreve o cabeçalho de IP, testar múltiplas réplicas e acompanhar a limpeza agendada e o WAF.
   - **Dependências:** 141 (Concluída no escopo).
 
@@ -1346,7 +1346,7 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
   - **Constatação:** Build, dependências e headers têm checks; há falhas de lógica e gates de segurança abertos.
   - **Evidências e referências:** `next.config.ts`, `docs/VALIDACAO.md`, `docs/audit/plan-scenarios.json`.
   - **Próxima ação:** Corrigir achados, testar acesso/logs/recuperação e registrar revisão de abertura.
-  - **Dependências:** 142 (Parcial), 143 (Concluída no escopo), 144 (Parcial), 145 (Sem entrega comprovada), 147 (Parcial), 148 (Concluída no escopo), 149 (Sem entrega comprovada).
+  - **Dependências:** 142 (Concluída no escopo), 143 (Concluída no escopo), 144 (Parcial), 145 (Sem entrega comprovada), 147 (Parcial), 148 (Concluída no escopo), 149 (Sem entrega comprovada).
 
 
 ## Fase 16 — Conteúdo, SEO e descoberta orgânica
@@ -1398,8 +1398,8 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **156. Implementar sitemap e robots.** Incluir apenas URLs canônicas publicáveis e manter preview fora do índice.
   - **Situação auditada:** Parcial.
   - **Aceite:** Staging permanece noindex e domínio final é validado antes de liberar indexação.
-  - **Constatação:** Indexação exige flag, URL HTTPS de domínio e configuração da fonte pública; sitemap consulta peças publicadas e planejamento retorna 404 nessa configuração. Posse do domínio e liberação comercial ainda não foram validadas.
-  - **Evidências e referências:** `src/app/robots.ts`, `src/app/sitemap.ts`, `src/app/layout.tsx`, `src/lib/publication.ts`, `docs/audit/2026-09-22-regression-scenarios.md`.
+  - **Constatação:** Indexação exige flag, URL HTTPS de domínio e fonte pública; sitemap consulta peças publicadas. O planejamento exige opt-in local e retorna 404 em todo ambiente implantado na Vercel. Posse do domínio e liberação comercial ainda não foram validadas.
+  - **Evidências e referências:** `src/app/robots.ts`, `src/app/sitemap.ts`, `src/app/layout.tsx`, `src/lib/publication.ts`, `docs/audit/2026-09-22-regression-scenarios.md`, `src/lib/planning-access.mjs`, `docs/audit/2026-09-23-security-release-hardening.md`.
   - **Próxima ação:** Confirmar posse do domínio, conteúdo, direitos e gates comerciais antes de ativar a flag em produção.
   - **Dependências:** 152 (Concluída no escopo), 154 (Concluída no escopo).
 
@@ -1477,8 +1477,8 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [x] **165. Separar código por necessidade.** Adiar componentes pesados de configuração e planejamento.
   - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Visitante da home não carrega ferramentas do backoffice ou integrações administrativas.
-  - **Constatação:** Bundles da home e do planejamento têm chunks exclusivos; gate do build rejeita marcador do painel no JavaScript inicial da home. Não há provider administrativo na vitrine.
-  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/layout.tsx`, `docs/ORCAMENTO_DESEMPENHO.md`, `scripts/check-performance-budget.mjs`.
+  - **Constatação:** O plano é carregado no servidor e entregue ao componente somente no ambiente local autorizado. Preview, staging e produção retornam 404; o gate rejeita marcadores internos em qualquer chunk JavaScript público. Não há provider administrativo na vitrine.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/layout.tsx`, `docs/ORCAMENTO_DESEMPENHO.md`, `scripts/check-performance-budget.mjs`, `src/lib/planning-access.mjs`, `src/app/planejamento/page.tsx`, `docs/audit/2026-09-23-security-release-hardening.md`.
   - **Próxima ação:** Manter a separação ao adicionar ferramentas comerciais e medir novamente o orçamento por rota.
   - **Dependências:** 153 (Concluída no escopo).
 
@@ -1706,8 +1706,8 @@ Revisão do código base: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. [Relatóri
 - [ ] **191. Preparar domínio e ambientes.** Configurar preview, staging e produção com variáveis distintas.
   - **Situação auditada:** Parcial.
   - **Aceite:** Domínio, certificados e configuração são verificados sem expor staging ao índice.
-  - **Constatação:** Produção e preview da Vercel receberam variáveis segregadas do Supabase Premium, o deploy está Ready, protegido por SSO e sem indexação; ainda faltam staging independente, domínio comercial e certificados finais.
-  - **Evidências e referências:** `docs/SUPABASE_SITE_DATABASE.md`, `README.md`, `docs/audit/2026-09-22-production-environment.md`.
+  - **Constatação:** Produção e preview usam apenas sete variáveis consumidas, catálogo Premium segregado, SSO e noindex; o plano interno falha fechado em deploy. Ainda faltam staging independente, domínio comercial, certificados finais e gate de promoção condicionado ao CI.
+  - **Evidências e referências:** `docs/SUPABASE_SITE_DATABASE.md`, `README.md`, `docs/audit/2026-09-22-production-environment.md`, `docs/audit/2026-09-23-security-release-hardening.md`.
   - **Próxima ação:** Configurar ambientes e certificados com segregação de variáveis.
   - **Dependências:** 190 (Sem entrega comprovada).
 

@@ -1,6 +1,6 @@
 {
   "title": "Promo Brindes Premium — Plano de execução",
-  "version": "2026-09-22",
+  "version": "2026-09-23",
   "total": 200,
   "phases": [
     {
@@ -2569,7 +2569,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Entrega opcional usa chave estável, hash da intenção normalizada, consulta prévia de protocolo, lease atômica, leitura sem cache do catálogo para novos envios e rate limit compartilhado no banco. Retry entregue recupera o protocolo após retirada do produto; novo envio da peça retirada é rejeitado. Falta receptor comercial homologado e validar o cabeçalho de IP no proxy real.",
+        "finding": "Entrega opcional usa chave estável, hash da intenção normalizada, consulta prévia de protocolo, lease atômica, leitura sem cache, rate limit compartilhado e chamada assinada por HMAC. O receptor precisa confirmar o mesmo protocolo em JSON limitado. Falta receptor comercial homologado e validar o cabeçalho de IP no proxy real.",
         "nextAction": "Integrar o destino aprovado e validar a criação de oportunidade sem duplicação.",
         "evidence": [
           "src/app/api/briefings/route.ts",
@@ -2577,7 +2577,9 @@
           "docs/audit/plan-browser-scenarios.json",
           "supabase/migrations/20260922142000_add_briefing_rate_limit.sql",
           "supabase/migrations/20260922150000_lookup_briefing_intent.sql",
-          "docs/audit/2026-09-22-server-catalog-and-delivery.md"
+          "docs/audit/2026-09-22-server-catalog-and-delivery.md",
+          "docs/audit/2026-09-23-security-release-hardening.md",
+          "docs/CONTRATO_BRIEFING_V1.md"
         ]
       }
     },
@@ -2595,13 +2597,15 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Protocolo é persistido antes da entrega; a interface rejeita 2xx sem protocolo válido e mantém o formulário. Retry de entrega concluída recupera o protocolo mesmo após retirada do produto; uma entrega ainda pendente com produto retirado preserva o protocolo sem novo disparo. Aceite do receptor seguido de falha na confirmação do banco não é marcado como entrega rejeitada. Falta validar retorno e conciliação do CRM homologado.",
+        "finding": "Protocolo é persistido antes da entrega; a interface rejeita 2xx sem protocolo válido. O servidor só conclui quando o receptor devolve JSON limitado com accepted:true e o mesmo protocolo. Retry entregue recupera o protocolo; estado incerto não é marcado como rejeição. Falta validar retorno e conciliação do CRM homologado.",
         "nextAction": "Testar resposta, erro e conciliação com o receptor comercial aprovado.",
         "evidence": [
           "src/app/api/briefings/route.ts",
           "docs/audit/plan-database-check.json",
           "tests/storefront.spec.ts",
-          "docs/audit/2026-09-22-server-catalog-and-delivery.md"
+          "docs/audit/2026-09-22-server-catalog-and-delivery.md",
+          "docs/audit/2026-09-23-security-release-hardening.md",
+          "docs/CONTRATO_BRIEFING_V1.md"
         ]
       }
     },
@@ -3062,11 +3066,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Aceite do receptor seguido de falha na confirmação local não é registrado como rejeição; o estado incerto permanece para conciliação. Retry com produto retirado preserva o protocolo sem novo envio, mas ainda não há outbox, retry persistente ou processo de reconciliação homologado.",
+        "finding": "Aceite remoto exige confirmação estruturada e assinatura HMAC; falha de confirmação local permanece incerta e retry com produto retirado preserva o protocolo sem novo envio. Ainda não há outbox, retry persistente ou processo de reconciliação homologado.",
         "nextAction": "Persistir envio e reprocessamento com rastreabilidade e sem perda.",
         "evidence": [
           "src/app/api/briefings/route.ts",
-          "docs/audit/2026-09-22-server-catalog-and-delivery.md"
+          "docs/audit/2026-09-22-server-catalog-and-delivery.md",
+          "docs/audit/2026-09-23-security-release-hardening.md"
         ]
       }
     },
@@ -3120,17 +3125,19 @@
       "acceptance": "Custos e PII permanecem protegidos; nenhum grant amplo é adicionado para destravar UI.",
       "owner": "Segurança + jurídico + backend",
       "priority": "P0",
-      "status": "partial",
+      "status": "done",
       "evidence": "docs/audit/plan-database-check.json",
       "dependencies": [123],
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "Banco da vitrine nega escrita anon e acesso a briefings; acesso cruzado e escopo operacional não foram testados.",
-        "nextAction": "Completar matriz de papéis e cenários no ambiente integrado.",
+        "finding": "Migration normaliza as ACLs atuais e revoga defaults futuros. pgTAP prova somente SELECT do catálogo para anon/authenticated, nenhuma mutação ou RPC privada e capacidades explícitas para service_role; a consulta remota confirmou a mesma matriz no projeto Premium.",
+        "nextAction": "Manter o teste de menor privilégio e exigir grants explícitos em toda nova migration.",
         "evidence": [
-          "docs/audit/plan-database-check.json",
-          "supabase/migrations/20260922110900_create_premium_site_core.sql"
+          "supabase/migrations/20260923071500_harden_default_privileges.sql",
+          "supabase/tests/database/premium_default_privileges.test.sql",
+          "docs/audit/2026-09-23-security-release-hardening.md",
+          "docs/audit/plan-database-check.json"
         ]
       }
     },
@@ -3148,7 +3155,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Credenciais administrativas permanecem exclusivas do servidor; o CI examina código e build público, e o deploy Vercel teve logs de build/runtime confrontados com segredos exatos e padrões sensíveis sem ocorrência.",
+        "finding": "Credenciais administrativas permanecem exclusivas do servidor; o CI examina código e build público, fixa Actions por SHA, audita dependências e preserva traces de falha. Dezessete nomes legados ou administrativos foram removidos da Vercel, mantendo sete variáveis consumidas.",
         "nextAction": "Manter o gate de segredos e repetir a inspeção automatizada de artefatos e logs em cada ambiente publicado.",
         "evidence": [
           "scripts/check-public-secrets.mjs",
@@ -3157,7 +3164,8 @@
           "docs/audit/2026-09-22-production-environment.md",
           ".github/workflows/quality.yml",
           "src/lib/runtime-environment.mjs",
-          "scripts/tests/runtime-environment.test.mjs"
+          "scripts/tests/runtime-environment.test.mjs",
+          "docs/audit/2026-09-23-security-release-hardening.md"
         ]
       }
     },
@@ -3175,13 +3183,15 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Corpo, origem e campos são validados; quando a entrega é habilitada, o limite de cinco tentativas em dez minutos é atômico no banco, usa HMAC do IP fornecido por proxy configurado e falha fechado. A implantação e o proxy real não foram homologados.",
+        "finding": "Corpo, Origin obrigatório, UTF-8, campos e limites são validados. Quando a entrega é habilitada, o limite distribuído usa HMAC do IP; a chamada ao receptor também é assinada e exige confirmação estruturada. A implantação, o proxy real e o WAF não foram homologados.",
         "nextAction": "Validar em staging que o proxy sobrescreve o cabeçalho de IP, testar múltiplas réplicas e acompanhar a limpeza agendada e o WAF.",
         "evidence": [
           "src/app/api/briefings/route.ts",
           "src/lib/briefing.ts",
           "docs/audit/plan-scenarios.json",
-          "docs/audit/2026-09-22-rate-limit.md"
+          "docs/audit/2026-09-22-rate-limit.md",
+          "docs/CONTRATO_BRIEFING_V1.md",
+          "docs/audit/2026-09-23-security-release-hardening.md"
         ]
       }
     },
@@ -3443,14 +3453,16 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Indexação exige flag, URL HTTPS de domínio e configuração da fonte pública; sitemap consulta peças publicadas e planejamento retorna 404 nessa configuração. Posse do domínio e liberação comercial ainda não foram validadas.",
+        "finding": "Indexação exige flag, URL HTTPS de domínio e fonte pública; sitemap consulta peças publicadas. O planejamento exige opt-in local e retorna 404 em todo ambiente implantado na Vercel. Posse do domínio e liberação comercial ainda não foram validadas.",
         "nextAction": "Confirmar posse do domínio, conteúdo, direitos e gates comerciais antes de ativar a flag em produção.",
         "evidence": [
           "src/app/robots.ts",
           "src/app/sitemap.ts",
           "src/app/layout.tsx",
           "src/lib/publication.ts",
-          "docs/audit/2026-09-22-regression-scenarios.md"
+          "docs/audit/2026-09-22-regression-scenarios.md",
+          "src/lib/planning-access.mjs",
+          "docs/audit/2026-09-23-security-release-hardening.md"
         ]
       }
     },
@@ -3640,13 +3652,16 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Bundles da home e do planejamento têm chunks exclusivos; gate do build rejeita marcador do painel no JavaScript inicial da home. Não há provider administrativo na vitrine.",
+        "finding": "O plano é carregado no servidor e entregue ao componente somente no ambiente local autorizado. Preview, staging e produção retornam 404; o gate rejeita marcadores internos em qualquer chunk JavaScript público. Não há provider administrativo na vitrine.",
         "nextAction": "Manter a separação ao adicionar ferramentas comerciais e medir novamente o orçamento por rota.",
         "evidence": [
           "src/components/Storefront.tsx",
           "src/app/layout.tsx",
           "docs/ORCAMENTO_DESEMPENHO.md",
-          "scripts/check-performance-budget.mjs"
+          "scripts/check-performance-budget.mjs",
+          "src/lib/planning-access.mjs",
+          "src/app/planejamento/page.tsx",
+          "docs/audit/2026-09-23-security-release-hardening.md"
         ]
       }
     },
@@ -4182,12 +4197,13 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Produção e preview da Vercel receberam variáveis segregadas do Supabase Premium, o deploy está Ready, protegido por SSO e sem indexação; ainda faltam staging independente, domínio comercial e certificados finais.",
+        "finding": "Produção e preview usam apenas sete variáveis consumidas, catálogo Premium segregado, SSO e noindex; o plano interno falha fechado em deploy. Ainda faltam staging independente, domínio comercial, certificados finais e gate de promoção condicionado ao CI.",
         "nextAction": "Configurar ambientes e certificados com segregação de variáveis.",
         "evidence": [
           "docs/SUPABASE_SITE_DATABASE.md",
           "README.md",
-          "docs/audit/2026-09-22-production-environment.md"
+          "docs/audit/2026-09-22-production-environment.md",
+          "docs/audit/2026-09-23-security-release-hardening.md"
         ]
       }
     },
@@ -4374,13 +4390,13 @@
     }
   ],
   "review": {
-    "id": "2026-09-22-audit-1",
-    "reviewedCommit": "0e6d5d0793e9b50d3ece235d7b1a00394d28b18a",
+    "id": "2026-09-23-audit-2",
+    "reviewedCommit": "844056f5b427ff1589ce7c13a40dc0c8938a6807",
     "baseline": {
       "done": 63,
       "pending": 137
     },
-    "scope": "200 critérios individuais; código, documentação, testes e banco dedicado. Pesquisa externa histórica, operação comercial e evidências humanas não foram reexecutadas.",
+    "scope": "200 critérios individuais; código, documentação, testes, CI, deploy Vercel e banco dedicado. Pesquisa com pessoas, homologação de CRM, decisões jurídicas e operação comercial continuam externas.",
     "statusMeaning": "done: critério próprio comprovado no escopo declarado; partial: artefato ou implementação existe com lacuna; pending: entrega exigida sem evidência. Dependências abertas bloqueiam prontidão integrada e são exibidas separadamente."
   }
 }

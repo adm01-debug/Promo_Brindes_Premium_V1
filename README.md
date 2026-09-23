@@ -26,7 +26,7 @@ Node 22.12+ ou 24 LTS recomendado. O projeto usa Next.js 16, React 19 e TypeScri
 - Detalhe rápido, quantidades com mínimo cadastrado e remoção de itens.
 - Briefing com validação e download de arquivo local.
 - Plano interativo local com 200 etapas, filtros, progresso local e exportação Markdown; a rota e seus dados retornam 404 em ambientes implantados na Vercel.
-- Revisão individual das 200 etapas: **105 critérios comprovados no escopo, 49 entregas parciais e 46 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
+- Revisão individual das 200 etapas: **106 critérios comprovados no escopo, 48 entregas parciais e 46 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
 - Fichas com recomendações publicadas da mesma coleção editorial, sem inferir estoque ou compatibilidade de kit.
 - Metadados Open Graph/Twitter por template, request ID e tempo de servidor no catálogo público.
 - Páginas permanentes de produto, metadados por peça e infraestrutura de sitemap/robots preparada para lançamento autorizado.

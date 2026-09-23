@@ -1,6 +1,6 @@
 # Banco oficial da vitrine premium
 
-Verificado em 22/09/2026. Projeto da **vitrine premium**: `whwloseshzraipljisqo` (`https://whwloseshzraipljisqo.supabase.co`). O projeto `doufsxqlfjyuvxuezpln` continua sendo a fonte operacional do aplicativo comercial `Promo_Gifts_V4`, da qual veio a amostra editorial original. Não foi alterado.
+Verificado em 23/09/2026. Projeto da **vitrine premium**: `whwloseshzraipljisqo` (`https://whwloseshzraipljisqo.supabase.co`). O projeto `doufsxqlfjyuvxuezpln` continua sendo a fonte operacional do aplicativo comercial `Promo_Gifts_V4`, da qual veio a amostra editorial original. Não foi alterado.
 
 ## Configuração local
 
@@ -23,6 +23,8 @@ As migrations `20260922120000_persist_idempotent_briefings.sql`, `20260922123000
 
 `20260922221500_add_catalog_publication_window.sql` acrescenta `published_from` e `published_until`, rejeita intervalo invertido, indexa a consulta publicada e faz a RLS excluir itens futuros ou expirados. A migration foi aplicada antes do runtime consumidor; os oito itens existentes preservaram vigência aberta. O registro completo está na [auditoria de vigência do catálogo](audit/2026-09-22-catalog-publication-window.md).
 
+`20260923071500_harden_default_privileges.sql` revoga privilégios padrão futuros e normaliza as ACLs atuais. `anon` e `authenticated` recebem somente `SELECT` no catálogo; `service_role` recebe as onze capacidades de tabela e as seis RPCs exigidas pelo runtime, sem `DELETE` em briefings nem execução direta do trigger. O teste pgTAP dedicado prova a matriz e o remoto confirmou zero grants padrão ou RPC pública.
+
 Os comandos reproduzíveis são `npm run db:migrate -- --dry-run`, `npm run db:migrate` e `npm run db:sync-catalog`. O sincronizador primeiro confere os oito IDs, atividade, SKUs, nomes originais, mínimos e personalização na origem operacional usando a chave publishable. Divergência, resposta incompleta ou indisponibilidade interrompe a execução antes de qualquer gravação. Depois verifica a publicação no destino e importa os oito registros de `src/lib/products.json` exclusivamente no banco premium, usando sua chave de servidor. `npm run db:sync-catalog -- --dry-run` valida esse caminho sem escrever. A rota `GET /api/catalog`, a home, as fichas permanentes e a validação do briefing leem a projeção pública paginada quando o ambiente está configurado e respondem uma indisponibilidade explícita em falhas do upstream. Sem configuração, o snapshot local permanece somente como fallback de prévia e testes offline.
 
 ## Verificação pós-migration
@@ -30,7 +32,7 @@ Os comandos reproduzíveis são `npm run db:migrate -- --dry-run`, `npm run db:m
 | Verificação                          | Resultado                                                                                                                                        |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Ensaio da SQL em transação revertida | Passou; 0 objetos residuais após rollback                                                                                                        |
-| Histórico remoto                     | Versões `20260922110900` até `20260922221500` registradas; dry-run posterior sem migrations pendentes                                            |
+| Histórico remoto                     | Versões `20260922110900` até `20260923071500` registradas; dry-run posterior sem migrations pendentes                                            |
 | Catálogo                             | 8 registros, 8 publicados e vigentes, 8 SKUs distintos; 2 colunas temporais, constraint, índice e policy confirmados                             |
 | Briefings                            | 0 registros comerciais; teste de funções executado em transação revertida                                                                        |
 | RLS                                  | Ativo nas três tabelas do domínio Premium                                                                                                        |

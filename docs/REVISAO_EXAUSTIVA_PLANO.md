@@ -1,8 +1,8 @@
 # Revisão exaustiva do plano de 200 etapas
 
-Revisão: **22/09/2026**, identificador `2026-09-22-audit-1`. Código base examinado: `0e6d5d0793e9b50d3ece235d7b1a00394d28b18a`. Projeto: **Promo_Brindes_Premium_V1**. A referência histórica de `Promo_Gifts_V4` continua sendo a auditoria dirigida do commit `44857d5`.
+Revisão: **23/09/2026**, identificador `2026-09-23-audit-2`. Código técnico examinado: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. Projeto: **Promo_Brindes_Premium_V1**. A referência histórica de `Promo_Gifts_V4` continua sendo a auditoria dirigida do commit `44857d5`.
 
-**Não implementamos todas as melhorias.** Há **105 etapas com o próprio critério comprovado, 49 parciais e 46 sem entrega comprovada**. São **95 etapas abertas**, das quais **69 são P0**. O site tem catálogo curado com vigência temporal e operação editorial protegida, descoberta multifacetada, recomendações editoriais, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
+**Não implementamos todas as melhorias.** Há **106 etapas com o próprio critério comprovado, 48 parciais e 46 sem entrega comprovada**. São **94 etapas abertas**, das quais **68 são P0**. O site tem catálogo curado com vigência temporal e operação editorial protegida, descoberta multifacetada, recomendações editoriais, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
 
 Esses números contam critérios do plano, não esforço restante ou porcentagem de prontidão comercial. Entrevistas, licenças, homologações e monitoramento têm peso diferente de um componente visual. A conclusão de uma entrega isolada não libera suas dependências nem os gates de lançamento.
 
@@ -11,11 +11,11 @@ Esses números contam critérios do plano, não esforço restante ou porcentagem
 - Foram lidos os **200 títulos, ações, critérios, dependências e estados anteriores**. Cada etapa recebeu uma constatação individual, referências e próxima ação em [`src/lib/plan.json`](../src/lib/plan.json).
 - Foram confrontados componentes, rotas, helpers, configurações, migration, scripts, três arquivos de testes e documentação de pesquisa/arquitetura/validação. Não se atribuiu conclusão apenas à existência de um arquivo.
 - O grafo local orientou o levantamento de relações; arquivos atuais prevaleceram quando houve alteração posterior à extração. Não se confundiu esse grafo com o artefato histórico do aplicativo comercial.
-- Foram executados 57 cenários sintéticos em módulos TypeScript, 86 contratos unitários, 64 contratos pgTAP e 213 execuções E2E nos três motores. Os sintéticos confirmam idempotência concorrente, fencing de lease expirada, rollout incompatível sem webhook, recuperação de protocolo após retirada, conflito de payload, limite de corpo com cancelamento do fluxo, data, paginação em múltiplos lotes, limite e mudança de total do catálogo, contagem exata, consulta por IDs sem cache, filtro temporal de publicação, allowlist exata/SSRF, redirects e limite compartilhado entre instâncias. Os unitários também cobrem dry-run, destino, janela, confirmação e concorrência da operação editorial. A matriz de browser cobre facetas, histórico, metadados, recomendações, teclado, alvos, reflow, privacidade de runtime, rede lenta e acessibilidade automatizada. Não são uma certificação de produção.
+- Foram executados 61 cenários sintéticos em módulos TypeScript, 91 contratos unitários, 75 contratos pgTAP e 213 execuções E2E nos três motores. Os sintéticos confirmam idempotência concorrente, fencing de lease expirada, rollout incompatível sem webhook, recuperação de protocolo após retirada, conflito de payload, limite de corpo com cancelamento do fluxo, data, paginação em múltiplos lotes, limite e mudança de total do catálogo, contagem exata, consulta por IDs sem cache, filtro temporal de publicação, allowlist exata/SSRF, redirects e limite compartilhado entre instâncias. Os unitários também cobrem dry-run, destino, janela, confirmação e concorrência da operação editorial. A matriz de browser cobre facetas, histórico, metadados, recomendações, teclado, alvos, reflow, privacidade de runtime, rede lenta e acessibilidade automatizada. Não são uma certificação de produção.
 - O PostgreSQL da vitrine foi consultado para conferir migrations, contagens, RLS e privilégios. As funções de entrega foram exercitadas dentro de uma transação revertida; nenhum dado comercial foi mantido e nenhuma mensagem foi enviada.
 - Referências externas e estudos de mercado foram avaliados como evidência documental histórica de 20/09; não houve nova pesquisa de mercado, entrevistas ou auditoria administrativa do banco operacional nesta revisão.
 
-A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [CSV](PLANO_200_ETAPAS.csv). O painel `/planejamento` permite filtrar os três estados auditados, consultar lacunas e exportar o acompanhamento.
+A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [CSV](PLANO_200_ETAPAS.csv). O painel local `/planejamento`, disponível somente com opt-in fora de ambientes implantados, permite filtrar os três estados auditados, consultar lacunas e exportar o acompanhamento.
 
 ## Resultado por fase
 
@@ -35,13 +35,13 @@ A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [
 | 12 · Seleção, briefing e conversão             |                   5 |       3 |                      2 |
 | 13 · Contrato público e integração de catálogo |                   6 |       4 |                      0 |
 | 14 · Passagem para o comercial e CRM           |                   1 |       3 |                      6 |
-| 15 · Segurança, privacidade e governança       |                   3 |       4 |                      3 |
+| 15 · Segurança, privacidade e governança       |                   4 |       3 |                      3 |
 | 16 · Conteúdo, SEO e descoberta orgânica       |                   4 |       4 |                      2 |
 | 17 · Desempenho e confiabilidade               |                   8 |       0 |                      2 |
 | 18 · Acessibilidade e inclusão                 |                   9 |       0 |                      1 |
 | 19 · Qualidade, homologação e piloto           |                   4 |       2 |                      4 |
 | 20 · Lançamento, operação e evolução           |                   0 |       2 |                      8 |
-| **Total**                                      |             **105** |  **49** |                 **46** |
+| **Total**                                      |             **106** |  **48** |                 **46** |
 
 A entrega posterior da [biblioteca de catálogos](CATALOGOS.md) concluiu o vínculo estrutural da etapa 053 e tornou a etapa 157 parcial: existem seis páginas editoriais com produtos publicados, mas ainda faltam guias aprofundados com participação comercial. Os totais acima incorporam essa entrega.
 
@@ -91,7 +91,7 @@ Os endpoints foram carregados com `fetch` simulado e as interações de envio fo
 
 Os controles **AUD-07 e AUD-08 passam**: projeto operacional e host semelhante são rejeitados antes da leitura do catálogo.
 
-A validação passa em build, TypeScript, checagem integral do plano, contrato visual, orçamento de imagens, JavaScript, fontes e chunks, 57 cenários sintéticos, 86 contratos unitários, 64 contratos pgTAP e 213 execuções E2E em Chromium, Firefox e WebKit local. A cobertura inclui facetas em OR/AND, recomendações publicadas, metadados, contrato exato, vigência e operação editorial, teclado, alvos, reflow, ausência de cookies/terceiros, rede lenta, API 503, offline, mídia 403, resposta atrasada, protocolo ausente, seleção retirada ou com mínimo alterado antes do briefing, retry após retirada, SSRF/redirects, rollout incompatível e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
+A validação passa em build, TypeScript, checagem integral do plano, contrato visual, orçamento de imagens, JavaScript, fontes e chunks, 61 cenários sintéticos, 91 contratos unitários, 75 contratos pgTAP e 213 execuções E2E em Chromium, Firefox e WebKit local. A cobertura inclui facetas em OR/AND, recomendações publicadas, metadados, contrato exato, vigência e operação editorial, teclado, alvos, reflow, ausência de cookies/terceiros, rede lenta, API 503, offline, mídia 403, resposta atrasada, protocolo ausente, seleção retirada ou com mínimo alterado antes do briefing, retry após retirada, SSRF/redirects, rollout incompatível e limite compartilhado simulado entre instâncias. Os gates externos continuam abertos; uma suíte verde não homologa CRM, operação ou lançamento.
 
 O painel atualizado também foi inspecionado em **390 e 1440 pixels**, com filtro de parciais e critério expandido: sem overflow horizontal e sem violações nas regras axe selecionadas. [Registro da inspeção](audit/plan-dashboard-check.json).
 
@@ -109,7 +109,7 @@ Resultados brutos: [módulos isolados](audit/plan-scenarios.json), [navegador](a
 | Aceite remoto sem confirmação local     | Uma resposta 2xx do receptor seguida de falha do banco preserva estado incerto; após expirar a reserva, retry ainda pode reenviar.                                                      | 118, 139: receptor deve honrar chave de idempotência e permitir conciliação por protocolo antes de ativar entrega.       |
 | Logs publicados ainda não inspecionados | Scanner cobre código público, scripts e build estático; não existe infraestrutura publicada com logs completos para revisar.                                                            | 143: incluir inspeção de logs no ambiente comercial.                                                                     |
 | Domínio e SEO comercial sem aprovação   | Canonical é específico por rota; a indexação exige URL HTTPS e catálogo configurado, e o sitemap lê itens publicados. A posse do domínio e redirects não foram homologados.             | 152–156: aprovar domínio, slugs finais, redirects e conteúdo.                                                            |
-| Planejamento acessível na prévia        | `/planejamento` continua acessível sem autenticação na prévia; configuração indexável retorna 404 para a rota.                                                                          | 191, 194: manter o painel em ambiente interno ao expor a vitrine comercial.                                              |
+| Planejamento acessível na prévia        | `/planejamento` exige opt-in local e retorna 404 em preview, staging e produção Vercel; o plano não integra os chunks JavaScript públicos.                                              | 191, 194: manter o painel em ambiente interno ao expor a vitrine comercial.                                              |
 | Deploy comercial ainda ausente          | CI versionado executa os gates em push/PR; staging, domínio, release reversível e monitoramento não estão configurados.                                                                 | 185, 191–195: executar pipeline remoto e preparar ambientes e operação.                                                  |
 | Medição de experiência                  | Gate mede imagens, fontes WOFF2, JavaScript gzip e chunks por rota; três rodadas móveis registram LCP 2,259–3,121 s, mediana 2,612 s.                                                   | 166 tem critério de medição comprovado; otimizar LCP, medir campo e instrumentar alertas nas etapas seguintes.           |
 
