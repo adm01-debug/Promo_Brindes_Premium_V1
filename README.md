@@ -61,6 +61,7 @@ O planejamento é uma ferramenta interna local. `PROMO_PREMIUM_PLANNING_ENABLED=
 - [Pesquisa, posicionamento e referências](docs/ESTRATEGIA_E_PESQUISA.md)
 - [Auditoria dirigida de Promo_Gifts_V4](docs/AUDITORIA_PROJETO_INTERNO.md)
 - [Verificação ao vivo do catálogo canônico](docs/audit/CANONICAL_CATALOG_LIVE_CHECK_2026-09-22.md)
+- [Correção da contagem do catálogo operacional](docs/audit/2026-09-23-catalog-source-count-correction.md)
 - [Banco dedicado da vitrine premium](docs/SUPABASE_SITE_DATABASE.md)
 - [Arquitetura e integração comercial](docs/ARQUITETURA_E_INTEGRACAO.md)
 - [Contrato público de catálogo v1](docs/CONTRATO_CATALOGO_PUBLICO_V1.md)
@@ -103,7 +104,7 @@ Copie `.env.example` apenas para configurar um ambiente autorizado. `PROMO_PREMI
 
 Para o banco dedicado da vitrine, preencha `.env.local` com as credenciais do projeto correto e use `npm run db:migrate -- --dry-run`, `npm run db:migrate` e `npm run db:sync-catalog`. O procedimento, as permissões e a validação do projeto atual estão em [SUPABASE_SITE_DATABASE.md](docs/SUPABASE_SITE_DATABASE.md).
 
-O catálogo central `doufsxqlfjyuvxuezpln` é **somente leitura** para este projeto. Configure sua URL e chave publishable em `CATALOG_SOURCE_SUPABASE_*`; `SUPABASE_*` continua apontando exclusivamente ao banco premium. `npm run check:catalog-source` confere os oito produtos por GET na view `v_products_public`. `npm run db:sync-catalog -- --dry-run` também verifica o destino sem gravar. A sincronização efetiva grava somente no banco premium e para se houver divergência na origem ou despublicação no destino. Não há atualização automática; o fluxo e os limites estão em [CATALOGO_ORIGEM_SOMENTE_LEITURA.md](docs/CATALOGO_ORIGEM_SOMENTE_LEITURA.md).
+O catálogo central `doufsxqlfjyuvxuezpln` é **somente leitura** para este projeto. Configure sua URL e chave publishable em `CATALOG_SOURCE_SUPABASE_*`; `SUPABASE_*` continua apontando exclusivamente ao banco premium. `npm run check:catalog-source` conta o catálogo público ativo e confere separadamente os oito IDs escolhidos para a curadoria por GET na view `v_products_public`. `npm run db:sync-catalog -- --dry-run` também verifica o destino sem gravar. A sincronização efetiva grava somente no banco premium e para se houver divergência na origem ou despublicação no destino. Não há atualização automática; o fluxo e os limites estão em [CATALOGO_ORIGEM_SOMENTE_LEITURA.md](docs/CATALOGO_ORIGEM_SOMENTE_LEITURA.md).
 
 Os testes iniciam o servidor de produção na porta 3107, que deve estar livre. Execute o build antes dos testes. Se necessário, instale o navegador com `npx playwright install chromium`.
 

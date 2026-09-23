@@ -34,7 +34,7 @@ A resposta `2026-09-22.2` inclui total, página, critérios normalizados, sugest
 | Plano de 200 etapas                                 | 200 IDs/revisões; Markdown e CSV sincronizados        |
 | Segredos em arquivos públicos/build                 | 70 arquivos verificados; aprovado                     |
 | Orçamento de mídia e build                          | Aprovado                                              |
-| Origem operacional ao vivo                          | 8 produtos ativos por GET; nenhuma escrita            |
+| Origem operacional ao vivo                          | 8 IDs da curadoria ativos por GET; nenhuma escrita    |
 | Dependências de produção                            | `npm audit --omit=dev`: 0 vulnerabilidades conhecidas |
 
 Capturas revisadas: [desktop](../screenshots/super-filtro-desktop.png) e [mobile](../screenshots/super-filtro-mobile.png).

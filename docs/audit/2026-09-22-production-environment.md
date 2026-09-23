@@ -34,5 +34,5 @@ O endpoint protegido foi acessado com o bypass temporário administrado pela pr�
 - GitHub Actions de qualidade: `35782380054`, aprovado com 198 execuções E2E.
 - GitHub Actions de banco isolado: `35782380065`, aprovado com rebuild das migrações, pgTAP e lint.
 - `npm run db:migrate -- --dry-run`: banco Premium remoto sem migrações pendentes.
-- `npm run check:catalog-source`: oito produtos conferidos por GET no banco operacional, sem escrita.
+- `npm run check:catalog-source`: oito IDs da curadoria conferidos por GET no banco operacional, sem escrita; não era uma contagem do catálogo.
 - `npm run db:sync-catalog -- --dry-run`: origem e destino conferidos, sem escrita.

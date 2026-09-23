@@ -107,6 +107,55 @@ export async function readSourceProducts(
   }));
 }
 
+/** Count the public active catalog without downloading or mutating its rows. */
+export async function countActiveSourceProducts({
+  env = process.env,
+  fetcher = fetch,
+} = {}) {
+  const url = approvedProjectUrl(
+    env.CATALOG_SOURCE_SUPABASE_URL,
+    SOURCE_PROJECT_REF,
+  );
+  const key = env.CATALOG_SOURCE_SUPABASE_PUBLISHABLE_KEY;
+  if (typeof key !== "string" || !/^sb_publishable_[A-Za-z0-9_-]+$/.test(key))
+    throw new Error(
+      "The catalog source requires a publishable key, never a secret key.",
+    );
+
+  const endpoint = new URL("/rest/v1/v_products_public", url);
+  endpoint.search = new URLSearchParams({
+    select: "id",
+    is_active: "eq.true",
+    limit: "1",
+  }).toString();
+  const response = await fetcher(endpoint, {
+    method: "GET",
+    redirect: "error",
+    cache: "no-store",
+    headers: { apikey: key, Accept: "application/json", Prefer: "count=exact" },
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!response.ok)
+    throw new Error(
+      `Operational catalog count failed (HTTP ${response.status}).`,
+    );
+
+  const rows = await response.json();
+  const range = response.headers.get("content-range");
+  const populated = /^0-0\/([1-9]\d*)$/.exec(range ?? "");
+  const count = range === "*/0" ? 0 : populated ? Number(populated[1]) : NaN;
+  if (
+    !Array.isArray(rows) ||
+    !Number.isSafeInteger(count) ||
+    count < 0 ||
+    (count === 0 ? rows.length !== 0 : rows.length !== 1)
+  )
+    throw new Error(
+      "Operational catalog count is missing or violates the source contract.",
+    );
+  return count;
+}
+
 /** Source drift needs editorial review before copying it to the public site. */
 export async function verifyCuratedSource(snapshot, options) {
   const rows = await readSourceProducts(
