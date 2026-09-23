@@ -177,7 +177,9 @@ export async function GET(request: NextRequest) {
       headers: {
         "Cache-Control": selectedIds.length
           ? "no-store"
-          : "public, s-maxage=60, must-revalidate",
+          : query
+            ? "private, no-store"
+            : "public, s-maxage=60, must-revalidate",
         "X-Catalog-Contract-Version": result.contractVersion,
         "X-Catalog-Source": process.env.SUPABASE_URL
           ? "site-database"

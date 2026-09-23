@@ -104,6 +104,10 @@ export default function CatalogFilters({
             <ArrowRight size={24} />
           </button>
         </div>
+        <p className="catalog-filter-help">
+          Pesquise somente produtos, categorias ou códigos. Não informe nomes,
+          e-mails, telefones ou outros dados pessoais.
+        </p>
         <div className="search-suggestions" aria-label="Sugestões de busca">
           {["Onboarding", "Caderno", "Garrafa", "Kit"].map((word) => (
             <button

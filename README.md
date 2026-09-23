@@ -10,7 +10,7 @@ npm run dev -- --port 3100
 ```
 
 - Vitrine: <http://localhost:3100>
-- Plano interativo: <http://localhost:3100/planejamento>
+- Plano interativo local: defina `PROMO_PREMIUM_PLANNING_ENABLED=true` e abra <http://localhost:3100/planejamento>
 - Privacidade da prévia: <http://localhost:3100/privacidade>
 
 Para versão compilada: `npm run build`, seguido de `npm run start -- --port 3100`.
@@ -25,8 +25,8 @@ Node 22.12+ ou 24 LTS recomendado. O projeto usa Next.js 16, React 19 e TypeScri
 - Busca normalizada por nome/SKU/categoria e contexto editorial, sugestão explícita para erro de digitação, filtros combináveis de ocasião, tipo, personalização e quantidade mínima, favoritos e seleção persistente.
 - Detalhe rápido, quantidades com mínimo cadastrado e remoção de itens.
 - Briefing com validação e download de arquivo local.
-- Plano interativo com 200 etapas, filtros, progresso local e exportação Markdown.
-- Revisão individual das 200 etapas: **103 critérios comprovados no escopo, 51 entregas parciais e 46 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
+- Plano interativo local com 200 etapas, filtros, progresso local e exportação Markdown; a rota e seus dados retornam 404 em ambientes implantados na Vercel.
+- Revisão individual das 200 etapas: **105 critérios comprovados no escopo, 49 entregas parciais e 46 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
 - Fichas com recomendações publicadas da mesma coleção editorial, sem inferir estoque ou compatibilidade de kit.
 - Metadados Open Graph/Twitter por template, request ID e tempo de servidor no catálogo público.
 - Páginas permanentes de produto, metadados por peça e infraestrutura de sitemap/robots preparada para lançamento autorizado.
@@ -34,11 +34,11 @@ Node 22.12+ ou 24 LTS recomendado. O projeto usa Next.js 16, React 19 e TypeScri
 
 ## Limites desta entrega
 
-Nesta instalação, a versão **não envia leads, não registra propostas e não reserva estoque**. O formulário gera um arquivo no navegador e informa isso explicitamente. O endpoint de briefing só habilita entrega quando `BRIEFING_DELIVERY_ENABLED=true`, há um receptor HTTPS aprovado em `BRIEFING_WEBHOOK_URL`, seu hostname exato consta em `BRIEFING_WEBHOOK_ALLOWED_HOSTS`, o banco dedicado está configurado e um cabeçalho de IP confiável foi declarado em `PROMO_PREMIUM_CLIENT_IP_HEADER`; sem essas condições, ele responde indisponibilidade e a interface permanece em download local. A allowlist não aceita IP, localhost, host semelhante, credenciais, fragmento ou porta não padrão em produção, e redirects de rede falham fechados. A curadoria contém oito peças sincronizadas no banco da vitrine, que alimenta home, fichas e validação de briefing. Valores, condições e disponibilidade devem ser confirmados pelo comercial.
+Nesta instalação, a versão **não envia leads, não registra propostas e não reserva estoque**. O formulário gera um arquivo no navegador e informa isso explicitamente. O endpoint de briefing só habilita entrega quando `BRIEFING_DELIVERY_ENABLED=true`, há um receptor HTTPS aprovado em `BRIEFING_WEBHOOK_URL`, seu hostname exato consta em `BRIEFING_WEBHOOK_ALLOWED_HOSTS`, existe `BRIEFING_WEBHOOK_SECRET`, o banco dedicado está configurado e um cabeçalho de IP confiável foi declarado em `PROMO_PREMIUM_CLIENT_IP_HEADER`; sem essas condições, ele responde indisponibilidade e a interface permanece em download local. A chamada é assinada por HMAC e só confirma sucesso quando o receptor devolve JSON com aceite e o mesmo protocolo. A allowlist não aceita IP, localhost, host semelhante, credenciais, fragmento ou porta não padrão em produção, e redirects de rede falham fechados. A curadoria contém oito peças sincronizadas no banco da vitrine, que alimenta home, fichas e validação de briefing. Valores, condições e disponibilidade devem ser confirmados pelo comercial.
 
 A imagem de campanha foi gerada por IA e é conceitual. Os cards usam fotografias reais de fornecedor; direitos de publicação comercial devem ser confirmados. Não foram alterados schema, policies, dados ou serviços do sistema comercial. O site está `noindex` em uma prévia protegida, sem domínio comercial.
 
-O planejamento é uma ferramenta desta prévia. Antes de lançar a vitrine pública, mover `/planejamento` para ambiente interno ou protegê-lo com autenticação apropriada. `noindex` não é controle de acesso.
+O planejamento é uma ferramenta interna local. `PROMO_PREMIUM_PLANNING_ENABLED=true` funciona fora da Vercel; preview, staging e produção implantados falham fechados com 404, mesmo se a flag for definida por engano. O JSON do plano não integra os artefatos JavaScript públicos quando a rota está indisponível.
 
 ## Documentação
 

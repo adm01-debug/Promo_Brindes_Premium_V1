@@ -1,7 +1,31 @@
 {
-  "generatedAt": "2026-09-22T22:15:41.485Z",
+  "generatedAt": "2026-09-23T10:32:47.794Z",
   "scope": "Isolated source modules; synthetic inputs; no external network or database writes",
   "results": [
+    {
+      "id": "AUD-58-signed-confirmed-receiver",
+      "expected": "201;true",
+      "observed": "201;true",
+      "passed": true
+    },
+    {
+      "id": "AUD-59-reject-missing-origin",
+      "expected": 403,
+      "observed": 403,
+      "passed": true
+    },
+    {
+      "id": "AUD-60-reject-invalid-utf8",
+      "expected": 422,
+      "observed": 422,
+      "passed": true
+    },
+    {
+      "id": "AUD-61-reject-unconfirmed-receiver",
+      "expected": 503,
+      "observed": 503,
+      "passed": true
+    },
     {
       "id": "AUD-01-concurrent-idempotency",
       "expected": "201,202;1",
@@ -345,6 +369,6 @@
       "passed": true
     }
   ],
-  "passed": 57,
+  "passed": 61,
   "failed": 0
 }

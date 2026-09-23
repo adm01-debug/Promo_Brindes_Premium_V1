@@ -18,6 +18,7 @@ import {
 export const dynamic = "force-dynamic";
 
 const MAX_BODY_BYTES = 16 * 1024;
+const MAX_RECEIVER_RESPONSE_BYTES = 4 * 1024;
 
 type PersistedBriefing = {
   protocol: string;
@@ -41,7 +42,7 @@ const uuidPattern =
 
 function originIsAllowed(request: NextRequest) {
   const origin = request.headers.get("origin");
-  if (!origin) return true;
+  if (!origin) return false;
   const configured = process.env.PROMO_PREMIUM_SITE_ORIGIN;
   return origin === (configured || request.nextUrl.origin);
 }
@@ -108,9 +109,58 @@ async function parseBody(request: NextRequest): Promise<unknown | null> {
     offset += chunk.byteLength;
   }
   try {
-    return JSON.parse(new TextDecoder().decode(bytes));
+    return JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
   } catch {
     return null;
+  }
+}
+
+async function receiverAccepted(response: Response, protocol: string) {
+  if (!response.ok || !hasJsonContentType(response.headers.get("content-type")))
+    return false;
+  const declaredLength = Number(response.headers.get("content-length"));
+  if (
+    Number.isFinite(declaredLength) &&
+    declaredLength > MAX_RECEIVER_RESPONSE_BYTES
+  )
+    return false;
+  if (!response.body) return false;
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > MAX_RECEIVER_RESPONSE_BYTES) {
+        await reader.cancel();
+        return false;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  try {
+    const value: unknown = JSON.parse(
+      new TextDecoder("utf-8", { fatal: true }).decode(bytes),
+    );
+    return (
+      Boolean(value) &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      (value as Record<string, unknown>).accepted === true &&
+      (value as Record<string, unknown>).protocol === protocol
+    );
+  } catch {
+    return false;
   }
 }
 
@@ -408,6 +458,14 @@ export async function POST(request: NextRequest) {
     );
 
   try {
+    const receiverBody = JSON.stringify({
+      protocol: persisted.row.protocol,
+      ...persisted.commercial,
+    });
+    const receiverTimestamp = Math.floor(Date.now() / 1000).toString();
+    const receiverSignature = createHmac("sha256", config.webhookSecret)
+      .update(`${receiverTimestamp}.${key!}.${receiverBody}`)
+      .digest("hex");
     const response = await fetch(config.destination, {
       method: "POST",
       redirect: "error",
@@ -415,15 +473,15 @@ export async function POST(request: NextRequest) {
         "Content-Type": "application/json",
         "Idempotency-Key": key!,
         "X-Promo-Contract-Version": BRIEFING_CONTRACT_VERSION,
+        "X-Promo-Timestamp": receiverTimestamp,
+        "X-Promo-Signature": `v1=${receiverSignature}`,
       },
-      body: JSON.stringify({
-        protocol: persisted.row.protocol,
-        ...persisted.commercial,
-      }),
+      body: receiverBody,
       signal: AbortSignal.timeout(8000),
       cache: "no-store",
     });
-    if (!response.ok) throw new Error("DESTINATION_FAILED");
+    if (!(await receiverAccepted(response, persisted.row.protocol)))
+      throw new Error("DESTINATION_FAILED");
   } catch {
     try {
       await recordDelivery(

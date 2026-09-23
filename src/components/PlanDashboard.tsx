@@ -9,22 +9,31 @@ import {
   Download,
   Search,
 } from "lucide-react";
-import plan from "@/lib/plan.json";
+import type planShape from "@/lib/plan.json";
 import { downloadText, normalize } from "@/lib/catalog";
 
-const baseline = Object.fromEntries(
-  plan.tasks.map((t) => [t.id, t.status === "done"]),
-);
+type Plan = typeof planShape;
 const storageKey = "promo-premium-plan-v2";
 const statusLabels: Record<string, string> = {
   done: "Concluída no escopo",
   partial: "Parcial",
   pending: "Sem entrega comprovada",
 };
-const auditedDone = plan.tasks.filter((t) => t.status === "done").length;
-const auditedPartial = plan.tasks.filter((t) => t.status === "partial").length;
-const auditedPending = plan.tasks.filter((t) => t.status === "pending").length;
-export default function PlanDashboard() {
+export default function PlanDashboard({ plan }: { plan: Plan }) {
+  const baseline = useMemo(
+    () =>
+      Object.fromEntries(
+        plan.tasks.map((task) => [task.id, task.status === "done"]),
+      ),
+    [plan],
+  );
+  const auditedDone = plan.tasks.filter((t) => t.status === "done").length;
+  const auditedPartial = plan.tasks.filter(
+    (t) => t.status === "partial",
+  ).length;
+  const auditedPending = plan.tasks.filter(
+    (t) => t.status === "pending",
+  ).length;
   const [checked, setChecked] = useState<Record<string, boolean>>(baseline);
   const [phase, setPhase] = useState(0);
   const [status, setStatus] = useState("all");
@@ -54,7 +63,7 @@ export default function PlanDashboard() {
       /* Local state is optional. */
     }
     setLoaded(true);
-  }, []);
+  }, [baseline, plan.review.id]);
   useEffect(() => {
     if (!loaded) return;
     try {
@@ -68,7 +77,7 @@ export default function PlanDashboard() {
     } catch {
       /* Storage may be disabled. */
     }
-  }, [checked, loaded]);
+  }, [baseline, checked, loaded, plan.review.id]);
   const count = Object.values(checked).filter(Boolean).length;
   const visible = useMemo(
     () =>

@@ -15,6 +15,11 @@ export default defineConfig({
   webServer: {
     command: "npm run start -- --port 3107",
     url: "http://localhost:3107",
+    env: {
+      ...process.env,
+      PROMO_PREMIUM_PLANNING_ENABLED: "true",
+      PROMO_PREMIUM_SITE_ORIGIN: "http://localhost:3107",
+    },
     reuseExistingServer: false,
     timeout: 30000,
   },

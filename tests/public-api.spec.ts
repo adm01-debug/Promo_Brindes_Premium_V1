@@ -8,11 +8,7 @@ test("catálogo público pagina, preserva o contrato e não expõe campos intern
   );
   expect(response.status()).toBe(200);
   expect(response.headers()["x-catalog-contract-version"]).toBe("2026-09-22.2");
-  expect(response.headers()["cache-control"]).toContain("s-maxage=60");
-  expect(response.headers()["cache-control"]).toContain("must-revalidate");
-  expect(response.headers()["cache-control"]).not.toContain(
-    "stale-while-revalidate",
-  );
+  expect(response.headers()["cache-control"]).toBe("private, no-store");
   expect(response.headers()["x-request-id"]).toMatch(
     /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
   );
@@ -233,12 +229,16 @@ test("endpoint de briefing falha de forma explícita sem destinatário comercial
   expect(await capability.json()).toEqual({ configured: false });
 
   const missingKey = await request.post("/api/briefings", {
+    headers: { Origin: "http://localhost:3107" },
     data: {},
   });
   expect(missingKey.status()).toBe(400);
 
   const unavailable = await request.post("/api/briefings", {
-    headers: { "Idempotency-Key": "briefing-e2e-key-0001" },
+    headers: {
+      Origin: "http://localhost:3107",
+      "Idempotency-Key": "briefing-e2e-key-0001",
+    },
     data: {
       name: "Pessoa de teste",
       company: "Empresa de teste",
@@ -269,6 +269,7 @@ test("endpoint de briefing falha de forma explícita sem destinatário comercial
 
   const impossibleDate = await request.post("/api/briefings", {
     headers: {
+      Origin: "http://localhost:3107",
       "Idempotency-Key": "briefing-e2e-key-0003",
     },
     data: {
@@ -281,6 +282,29 @@ test("endpoint de briefing falha de forma explícita sem destinatário comercial
     },
   });
   expect(impossibleDate.status()).toBe(422);
+
+  const missingOrigin = await request.post("/api/briefings", {
+    headers: {
+      "Idempotency-Key": "briefing-e2e-key-0004",
+      "Content-Type": "application/json",
+    },
+    data: {},
+  });
+  expect(missingOrigin.status()).toBe(403);
+
+  const invalidUtf8 = await request.post("/api/briefings", {
+    headers: {
+      Origin: "http://localhost:3107",
+      "Idempotency-Key": "briefing-e2e-key-0005",
+      "Content-Type": "application/json",
+    },
+    data: Buffer.from([
+      ...Buffer.from('{"name":"Pessoa","company":"'),
+      0xff,
+      ...Buffer.from('"}'),
+    ]),
+  });
+  expect(invalidUtf8.status()).toBe(422);
 });
 
 test("página de produto é acessível diretamente e a prévia permanece bloqueada para índice", async ({

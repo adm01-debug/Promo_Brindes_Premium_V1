@@ -8,6 +8,7 @@ export type TrustedIpHeader =
 
 export type BriefingDeliveryConfig = {
   destination: string;
+  webhookSecret: string;
   database: SiteServerConfig;
   ipHeader: TrustedIpHeader;
 };
@@ -74,8 +75,16 @@ function destinationIsSafe(
 export function briefingDeliveryConfig(): BriefingDeliveryConfig | null {
   if (process.env.BRIEFING_DELIVERY_ENABLED !== "true") return null;
   const destination = process.env.BRIEFING_WEBHOOK_URL;
+  const webhookSecret = process.env.BRIEFING_WEBHOOK_SECRET;
   if (
-    !destinationIsSafe(destination, process.env.BRIEFING_WEBHOOK_ALLOWED_HOSTS)
+    !destinationIsSafe(
+      destination,
+      process.env.BRIEFING_WEBHOOK_ALLOWED_HOSTS,
+    ) ||
+    !webhookSecret ||
+    webhookSecret.length < 32 ||
+    webhookSecret.length > 256 ||
+    webhookSecret.trim() !== webhookSecret
   )
     return null;
   const ipHeader = process.env.PROMO_PREMIUM_CLIENT_IP_HEADER;
@@ -87,7 +96,9 @@ export function briefingDeliveryConfig(): BriefingDeliveryConfig | null {
     return null;
   try {
     const database = siteServerConfig();
-    return database ? { destination: destination!, database, ipHeader } : null;
+    return database
+      ? { destination: destination!, webhookSecret, database, ipHeader }
+      : null;
   } catch {
     return null;
   }

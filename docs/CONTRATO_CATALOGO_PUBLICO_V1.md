@@ -2,7 +2,7 @@
 
 Status: implementado para a tabela pública curada do projeto da vitrine `whwloseshzraipljisqo`, com snapshot editorial apenas como fallback offline. Este contrato não autoriza acesso direto do navegador a tabelas internas, à aplicação comercial ou a campos de custo.
 
-`GET /api/catalog` entrega uma projeção editorial versionada. A resposta carrega `X-Catalog-Contract-Version: 2026-09-22.2`. Consultas gerais usam cache compartilhado de um minuto com `must-revalidate`. A consulta por `ids` usa `Cache-Control: no-store` e lê a fonte sem cache para conferir a seleção imediatamente antes do briefing.
+`GET /api/catalog` entrega uma projeção editorial versionada. A resposta carrega `X-Catalog-Contract-Version: 2026-09-22.2`. Consultas gerais sem texto livre usam cache compartilhado de um minuto com `must-revalidate`. Respostas de busca com `q` usam `Cache-Control: private, no-store`; a consulta por `ids` também usa `no-store` e lê a fonte sem cache para conferir a seleção imediatamente antes do briefing. A interface orienta que `q` contenha somente produto, categoria ou código, nunca nome, e-mail ou telefone.
 
 A semântica é **OR entre ocasiões** e **AND entre dimensões**. Exemplo: `occasion=boas-vindas,novos-destinos&category=Escrita&quantity=100` aceita uma das duas ocasiões, exige categoria Escrita e exige mínimo cadastrado menor ou igual a 100. Quantidade representa compatibilidade com o pedido mínimo; não representa estoque.
 

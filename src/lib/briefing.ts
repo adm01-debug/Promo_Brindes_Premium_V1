@@ -1,6 +1,6 @@
 import { products, type Product } from "@/lib/catalog";
 
-export const BRIEFING_CONTRACT_VERSION = "2026-09-22";
+export const BRIEFING_CONTRACT_VERSION = "2026-09-23";
 
 export const budgetScopes = ["per-gift", "total"] as const;
 export const deadlineFlexibilities = ["flexible", "fixed"] as const;

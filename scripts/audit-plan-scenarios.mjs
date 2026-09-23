@@ -1,6 +1,7 @@
 // Release probes for source pagination and delivery semantics. Everything is
 // synthetic: this script never contacts Supabase or a commercial destination.
 import assert from "node:assert/strict";
+import { createHmac } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, extname, resolve } from "node:path";
@@ -12,6 +13,7 @@ const { NextRequest } = require("next/server");
 const products = JSON.parse(readFileSync("src/lib/products.json", "utf8"));
 const project = "whwloseshzraipljisqo";
 const results = [];
+const webhookSecret = "synthetic-webhook-secret-32-bytes-minimum";
 
 function load(
   file,
@@ -103,6 +105,7 @@ function request(key, body = payload, headers = {}) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Origin: "http://localhost:3111",
       "Idempotency-Key": key,
       "x-vercel-forwarded-for": "203.0.113.42",
       ...headers,
@@ -115,6 +118,7 @@ function deliveryHarness() {
   const records = new Map();
   const rateAttempts = new Map();
   let webhookCalls = 0;
+  let signedWebhookCalls = 0;
   let leaseSequence = 0;
   const fetcher = async (input, init = {}) => {
     const url = new URL(String(input));
@@ -216,13 +220,27 @@ function deliveryHarness() {
     if (url.hostname === "localhost") {
       webhookCalls += 1;
       await new Promise((resolve) => setTimeout(resolve, 20));
-      return Response.json({ accepted: true });
+      const receiverBody = String(init.body);
+      const receiver = JSON.parse(receiverBody);
+      const headers = new Headers(init.headers);
+      const timestamp = headers.get("x-promo-timestamp");
+      const idempotencyKey = headers.get("idempotency-key");
+      const expected = createHmac("sha256", webhookSecret)
+        .update(`${timestamp}.${idempotencyKey}.${receiverBody}`)
+        .digest("hex");
+      if (
+        /^\d{10}$/.test(timestamp ?? "") &&
+        headers.get("x-promo-signature") === `v1=${expected}`
+      )
+        signedWebhookCalls += 1;
+      return Response.json({ accepted: true, protocol: receiver.protocol });
     }
     throw new Error(`Unexpected synthetic request: ${url}`);
   };
   return {
     fetcher,
     webhookCalls: () => webhookCalls,
+    signedWebhookCalls: () => signedWebhookCalls,
     expireLease(key) {
       const record = records.get(key);
       if (record) record.expired = true;
@@ -237,12 +255,81 @@ const activeEnv = {
   NODE_ENV: "development",
   BRIEFING_DELIVERY_ENABLED: "true",
   BRIEFING_WEBHOOK_URL: "http://localhost:3999/mock",
+  BRIEFING_WEBHOOK_SECRET: webhookSecret,
   PROMO_PREMIUM_CLIENT_IP_HEADER: "x-vercel-forwarded-for",
   SUPABASE_PROJECT_REF: project,
   SUPABASE_URL: `https://${project}.supabase.co`,
   SUPABASE_PUBLISHABLE_KEY: "sb_publishable_synthetic",
   ["SUPABASE" + "_SECRET_KEY"]: "sb_secret_synthetic",
 };
+
+await probe("AUD-58-signed-confirmed-receiver", "201;true", async () => {
+  const harness = deliveryHarness();
+  const api = load(
+    "src/app/api/briefings/route.ts",
+    activeEnv,
+    harness.fetcher,
+  );
+  const response = await api.POST(request("audit-signed-receiver-0001"));
+  return `${response.status};${harness.signedWebhookCalls() === 1}`;
+});
+
+await probe("AUD-59-reject-missing-origin", 403, async () => {
+  const api = load(
+    "src/app/api/briefings/route.ts",
+    activeEnv,
+    deliveryHarness().fetcher,
+  );
+  const withoutOrigin = request("audit-missing-origin-0001");
+  withoutOrigin.headers.delete("origin");
+  return (await api.POST(withoutOrigin)).status;
+});
+
+await probe("AUD-60-reject-invalid-utf8", 422, async () => {
+  const api = load(
+    "src/app/api/briefings/route.ts",
+    activeEnv,
+    deliveryHarness().fetcher,
+  );
+  const prefix = new TextEncoder().encode(
+    '{"name":"Pessoa","company":"Empresa ',
+  );
+  const suffix = new TextEncoder().encode(
+    `","email":"teste@example.com","occasion":"Teste","items":[{"productId":"${item.id}","quantity":5}]}`,
+  );
+  const body = new Uint8Array(prefix.length + 1 + suffix.length);
+  body.set(prefix);
+  body[prefix.length] = 0xff;
+  body.set(suffix, prefix.length + 1);
+  return (
+    await api.POST(
+      new NextRequest("http://localhost:3111/api/briefings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Origin: "http://localhost:3111",
+          "Idempotency-Key": "audit-invalid-utf8-0001",
+          "x-vercel-forwarded-for": "203.0.113.42",
+        },
+        body,
+      }),
+    )
+  ).status;
+});
+
+await probe("AUD-61-reject-unconfirmed-receiver", 503, async () => {
+  const harness = deliveryHarness();
+  const api = load(
+    "src/app/api/briefings/route.ts",
+    activeEnv,
+    async (input, init = {}) => {
+      if (new URL(String(input)).hostname === "localhost")
+        return Response.json({ accepted: true, protocol: "PB-WRONG000001" });
+      return harness.fetcher(input, init);
+    },
+  );
+  return (await api.POST(request("audit-unconfirmed-0001"))).status;
+});
 
 await probe("AUD-01-concurrent-idempotency", "201,202;1", async () => {
   const harness = deliveryHarness();
@@ -429,6 +516,7 @@ await probe("AUD-16-stream-body-limit", "413;true", async () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Origin: "http://localhost:3111",
         "Idempotency-Key": "audit-stream-0001",
         "x-vercel-forwarded-for": "203.0.113.42",
       },
@@ -1223,7 +1311,11 @@ await probe(
             notifyFirst();
             await firstGate;
           }
-          return Response.json({ accepted: true });
+          const receiver = JSON.parse(String(init.body));
+          return Response.json({
+            accepted: true,
+            protocol: receiver.protocol,
+          });
         }
         return harness.fetcher(input, init);
       },

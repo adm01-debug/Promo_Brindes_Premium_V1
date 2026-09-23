@@ -76,6 +76,17 @@ else {
       "o JavaScript inicial da home contém o painel de planejamento",
     );
 }
+
+const privatePlanMarkers = [
+  "Entrevistar compradores",
+  "Não existe decisão formal de prontidão",
+  "Implementar retries e conciliação",
+];
+for (const marker of privatePlanMarkers)
+  if ([...chunkContent.values()].some((content) => content.includes(marker)))
+    failures.push(
+      `o JavaScript público contém conteúdo interno do plano: ${marker}`,
+    );
 if (failures.length) {
   console.error(`Orçamento de assets reprovado: ${failures.join("; ")}`);
   process.exit(1);
