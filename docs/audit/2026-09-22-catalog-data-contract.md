@@ -5,7 +5,7 @@ Escopo: `doufsxqlfjyuvxuezpln` (somente GET) → conferência/sincronizador → 
 
 ## Resultado
 
-O fluxo preservou a fronteira entre os bancos em todos os ensaios. A origem operacional recebeu somente GET com chave publishable, view e seis colunas fixas. O dry-run consultou os dois projetos e não executou escrita. A conferência ao vivo encontrou oito produtos ativos na origem e oito produtos publicados no banco premium, com os 12 campos públicos iguais ao snapshot editorial.
+O fluxo preservou a fronteira entre os bancos em todos os ensaios. A origem operacional recebeu somente GET com chave publishable, view e seis colunas fixas. O dry-run consultou os dois projetos e não executou escrita. A conferência ao vivo encontrou os oito IDs da curadoria ativos na origem e oito produtos publicados no banco premium, com os 12 campos públicos iguais ao snapshot editorial. “Oito” descreve a seleção consultada, não o total da origem.
 
 O sincronizador passou a validar integralmente o snapshot antes de qualquer chamada de rede. Dados malformados, ambíguos ou excessivos agora falham antes de ler a origem e antes de alcançar o destino.
 

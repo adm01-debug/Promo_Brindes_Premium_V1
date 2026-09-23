@@ -30,7 +30,7 @@ Uma regressão foi encontrada pela própria matriz: o cenário de corpo em strea
 
 O dry-run remoto apontou somente `20260923071500_harden_default_privileges.sql`. A migration foi aplicada em `whwloseshzraipljisqo`; o dry-run seguinte retornou banco atualizado. Uma consulta administrativa somente leitura confirmou: migration registrada, zero grants padrão para `public`/`anon`/`authenticated`/`service_role`, um grant de tabela para `anon`, um para `authenticated`, onze capacidades de tabela para `service_role` e zero RPCs públicas para `anon` ou `authenticated`.
 
-A fonte operacional `doufsxqlfjyuvxuezpln` foi reconferida pelo cliente limitado: oito produtos ativos retornados por GET, nenhuma escrita. O formulário continua em download local porque `BRIEFING_DELIVERY_ENABLED=false`.
+A fonte operacional `doufsxqlfjyuvxuezpln` foi reconferida pelo cliente limitado: os oito IDs da curadoria retornaram ativos por GET, sem escrita. Essa consulta não mediu o total do catálogo. O formulário continua em download local porque `BRIEFING_DELIVERY_ENABLED=false`.
 
 ## Estado de implantação
 

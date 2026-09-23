@@ -39,7 +39,7 @@ npm run check:editorial:live
 
 O primeiro comando apenas consulta a origem. O segundo também confere a publicação no destino, sem gravação em nenhum banco. O terceiro repete as conferências e grava somente no banco premium. O último compara os 12 campos públicos publicados com o snapshot editorial.
 
-A seleção existente permanece com oito produtos. IDs, SKU, nome original, mínimo e elegibilidade de personalização precisam coincidir com a origem e todos devem estar ativos. Títulos editoriais, descrições, categorias, slugs, imagens e demais decisões públicas permanecem no snapshot revisável. A validação não certifica estoque, preços, alegações dos textos nem direitos das imagens.
+A seleção editorial existente permanece com oito produtos; ela não representa o tamanho do catálogo operacional. IDs, SKU, nome original, mínimo e elegibilidade de personalização precisam coincidir com a origem e os oito candidatos devem estar ativos. Títulos editoriais, descrições, categorias, slugs, imagens e demais decisões públicas permanecem no snapshot revisável. A validação não certifica estoque, preços, alegações dos textos nem direitos das imagens.
 
 Resposta incompleta, IDs ausentes/duplicados, item inativo, dados inválidos, divergência ou indisponibilidade **interrompem a sincronização antes de qualquer escrita**. Uma despublicação no destino também interrompe o processo para não ser desfeita. Não se interpreta uma falha de leitura como autorização para apagar ou publicar produtos.
 
@@ -47,7 +47,8 @@ Não há cron nem sincronização automática. Mudanças no catálogo central n�
 
 ## Evidências desta implementação
 
-- Leitura real da origem com chave publishable: HTTP 200; oito produtos ativos e coincidentes nos campos conferidos.
+- Contagem exata somente leitura em 23/09/2026: a view pública informou **7.678 produtos ativos**; a consulta transferiu apenas um ID e não representa contagem de tabelas internas.
+- Conferência da curadoria: os oito IDs escolhidos retornaram ativos e coincidentes nos campos conferidos. Isso não significa que a origem possua somente oito produtos.
 - Ensaio real de sincronização: oito produtos validados; destino premium confirmado; nenhuma gravação no ensaio.
 - Sincronização efetiva executada depois dos testes: oito registros gravados exclusivamente em `whwloseshzraipljisqo`; a origem recebeu somente GET. A conferência posterior encontrou oito publicados com os 12 campos públicos iguais ao snapshot.
 - Testes isolados cobrem separação das credenciais e hosts, método GET na origem, bloqueio de chave administrativa, divergências, falhas, respostas incompletas, despublicação e ausência de redirecionamentos.

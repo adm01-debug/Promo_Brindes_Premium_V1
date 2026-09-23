@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { readSourceProducts, SOURCE_COLUMNS } from "../lib/catalog-source.mjs";
+import {
+  countActiveSourceProducts,
+  readSourceProducts,
+  SOURCE_COLUMNS,
+} from "../lib/catalog-source.mjs";
 import {
   CATALOG_FIELD_LIMITS,
   syncSiteCatalog,
@@ -101,6 +105,51 @@ test("dry run performs no writes in either project", async () => {
   assert.equal(result.dryRun, true);
   assert.equal(h.calls.length, 2);
   assert.ok(h.calls.every(({ init }) => init.method === "GET"));
+});
+
+test("counts the complete active public source separately from the curated IDs", async () => {
+  let calls = 0;
+  const count = await countActiveSourceProducts({
+    env,
+    fetcher: async (input, init) => {
+      calls += 1;
+      const url = new URL(input);
+      assert.equal(url.hostname, sourceHost);
+      assert.equal(url.pathname, "/rest/v1/v_products_public");
+      assert.equal(url.searchParams.get("select"), "id");
+      assert.equal(url.searchParams.get("is_active"), "eq.true");
+      assert.equal(url.searchParams.get("limit"), "1");
+      assert.equal(init.method, "GET");
+      assert.equal(init.body, undefined);
+      assert.equal(init.redirect, "error");
+      assert.equal(init.headers.Prefer, "count=exact");
+      return Response.json([{ id: snapshot[0].id }], {
+        status: 206,
+        headers: { "content-range": "0-0/7678" },
+      });
+    },
+  });
+  assert.equal(count, 7678);
+  assert.equal(calls, 1);
+});
+
+test("accepts an exact empty active source count", async () => {
+  const count = await countActiveSourceProducts({
+    env,
+    fetcher: async () =>
+      Response.json([], { headers: { "content-range": "*/0" } }),
+  });
+  assert.equal(count, 0);
+});
+
+test("rejects a source count without an exact content range", async () => {
+  await assert.rejects(
+    countActiveSourceProducts({
+      env,
+      fetcher: async () => Response.json([{ id: snapshot[0].id }]),
+    }),
+    /count is missing/,
+  );
 });
 
 const mutate = (changes, index = 0) =>

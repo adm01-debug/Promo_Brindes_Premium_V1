@@ -52,7 +52,7 @@ O smoke test autenticado no deploy confirmou:
 - `X-Robots-Tag: noindex, nofollow`, CSP, HSTS, `nosniff` e `DENY` presentes;
 - logs do deploy: quatro requisições informativas observadas, sem erro de runtime.
 
-O dry-run de migrations confirmou o remoto atualizado e sem migration pendente. O dry-run do catálogo verificou os oito produtos ativos e não escreveu. O dry-run de retirada foi seguido por nova inspeção com `published=true`, limites nulos e o mesmo `updated_at`.
+O dry-run de migrations confirmou o remoto atualizado e sem migration pendente. O dry-run do catálogo verificou os oito IDs da curadoria como ativos e não escreveu. O dry-run de retirada foi seguido por nova inspeção com `published=true`, limites nulos e o mesmo `updated_at`.
 
 ## Limites
 
