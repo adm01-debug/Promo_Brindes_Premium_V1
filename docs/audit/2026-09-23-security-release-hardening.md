@@ -34,7 +34,11 @@ A fonte operacional `doufsxqlfjyuvxuezpln` foi reconferida pelo cliente limitado
 
 ## Estado de implantação
 
-O resultado remoto de GitHub Actions, o deployment imutável, o smoke de produção e a proteção da branch serão registrados nesta seção após a publicação do commit final. A rota de planejamento deve responder 404 no alias e seus marcadores não podem aparecer nos assets públicos. O catálogo deve continuar com oito itens e `X-Catalog-Source: site-database`; briefing deve continuar `configured:false`.
+O commit final `e2b7c10f4fb295524b11107f47316473c40e553e` passou no [Quality gates 35850222515](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35850222515), incluindo os 213 testes de browser, e no [Isolated database contracts 35850222551](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35850222551). O deployment imutável `dpl_AnmXxuvfRsatcfuJdjvn69k9d7td` ficou Ready em `promo-brindes-premium-v1-qmsmwmzzw-juca1.vercel.app`.
+
+O smoke autenticado confirmou `/planejamento` em 404, catálogo 200 com oito itens e `X-Catalog-Source: site-database`, busca com `private, no-store`, briefing 200 com `configured:false` e `X-Robots-Tag: noindex, nofollow`. Onze scripts públicos, somando 725.870 bytes com o HTML, foram varridos sem encontrar os três marcadores internos usados pelo gate.
+
+A branch `main` passou a exigir pull request, histórico linear, resolução de conversas e os checks `verify` e `test`, inclusive para administradores. Force-push e deleção permanecem bloqueados. Isso impede que um commit futuro seja mesclado antes dos dois gates; a Vercel recebe em produção apenas o commit que já passou no PR. A mudança documental posterior usa o próprio fluxo protegido como prova.
 
 ## Pendências externas preservadas
 

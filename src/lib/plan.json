@@ -4197,7 +4197,7 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Produção e preview usam apenas sete variáveis consumidas, catálogo Premium segregado, SSO e noindex; o plano interno falha fechado em deploy. Ainda faltam staging independente, domínio comercial, certificados finais e gate de promoção condicionado ao CI.",
+        "finding": "Produção e preview usam apenas sete variáveis consumidas, catálogo Premium segregado, SSO e noindex; o plano interno falha fechado. A main exige PR e checks verify/test, inclusive para administradores. Ainda faltam staging independente, domínio comercial e certificados finais.",
         "nextAction": "Configurar ambientes e certificados com segregação de variáveis.",
         "evidence": [
           "docs/SUPABASE_SITE_DATABASE.md",
