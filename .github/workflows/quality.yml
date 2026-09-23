@@ -33,6 +33,7 @@ jobs:
         run: |
           npm run typecheck
           npm run check:plan
+          npm run check:governance
           npm run check:editorial
           npm run check:ui-contract
           npm run test:catalog-boundary

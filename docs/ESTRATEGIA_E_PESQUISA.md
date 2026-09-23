@@ -101,6 +101,8 @@ A prévia implementa exploração, detalhe rápido, favoritos, seleção e downl
 
 Metas de conversão dependem do baseline e do mix de tráfego; não existe percentual de ganho garantido por usar um visual premium. Instrumentação deve evitar texto livre, e-mail, telefone e logotipo nos eventos de analytics. Eventos sugeridos: `view_collection`, `search_catalog`, `view_product`, `add_to_selection`, `start_briefing`, `submit_briefing_success` e `lead_qualified`. O último é produzido pelo fluxo de negócio, não pelo clique do usuário.
 
+As fórmulas, fontes, janelas, papéis responsáveis, baselines e hipóteses priorizadas foram fechados no [dicionário de KPIs e hipóteses](KPIS_FUNIL_E_HIPOTESES.md). A instrumentação continua condicionada à decisão de privacidade.
+
 ## 9. Sequenciamento e investimento
 
 O plano possui 20 fases de 10 etapas. Janelas de semanas são **estimativas de organização**, contando do início aprovado, para um time com design/conteúdo, frontend, backend/dados e apoio comercial/QA. Não são uma promessa de prazo nem 200 dias de trabalho. Pesquisa, fotografia, autorização de mídia e integração podem alterar o caminho crítico.

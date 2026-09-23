@@ -1,0 +1,86 @@
+{
+  "version": "2026-09-23",
+  "decision": "defer-commercial-launch",
+  "releaseMode": "technical-preview",
+  "publicIndexing": false,
+  "commercialDataCollection": false,
+  "analytics": false,
+  "fileUpload": false,
+  "publicPricing": "quote-only",
+  "catalogExpansion": false,
+  "canonicalIntake": "premium_briefings",
+  "downstreamIntegration": "signed-https-webhook-after-approval",
+  "decisions": [
+    {
+      "id": "D01",
+      "subject": "release",
+      "choice": "Manter a versão implantada como prévia técnica privada e noindex; adiar o lançamento comercial.",
+      "reopenWhen": "Todos os gates obrigatórios estiverem comprovados."
+    },
+    {
+      "id": "D02",
+      "subject": "mvp",
+      "choice": "Manter catálogo editorial, descoberta, seleção e briefing baixável no MVP; entrega ao CRM, conta, upload, preço, estoque, variantes, kits e tracking ficam fora até homologação.",
+      "reopenWhen": "Produto e comercial aprovarem por nome o escopo comercial."
+    },
+    {
+      "id": "D03",
+      "subject": "pricing",
+      "choice": "Exibir preço somente sob consulta até haver quantidade, personalização, impostos, frete e validade homologados por SKU.",
+      "reopenWhen": "A matriz comercial de preço estiver aprovada."
+    },
+    {
+      "id": "D04",
+      "subject": "uploads",
+      "choice": "Não receber logotipo ou anexos no MVP; registrar apenas a situação da identidade visual.",
+      "reopenWhen": "Contrato, storage privado, retenção, antivírus, autorização e testes entre clientes estiverem aprovados."
+    },
+    {
+      "id": "D05",
+      "subject": "crm",
+      "choice": "Usar premium_briefings como registro canônico de entrada; nenhum CRM será declarado canônico antes de um receptor homologado confirmar o mesmo protocolo.",
+      "reopenWhen": "Receptor, proprietário comercial e conciliação passarem em staging."
+    },
+    {
+      "id": "D06",
+      "subject": "privacy",
+      "choice": "Não coletar dados comerciais, analytics ou arquivos enquanto controlador, canal de direitos, retenção e fornecedores não estiverem aprovados.",
+      "reopenWhen": "Mapa de tratamento e política forem aprovados pelos responsáveis."
+    },
+    {
+      "id": "D07",
+      "subject": "seo",
+      "choice": "Manter noindex e criar somente páginas com intenção distinta; não gerar páginas em massa por palavra-chave.",
+      "reopenWhen": "Domínio, conteúdo, direitos, privacidade e lançamento comercial forem aprovados."
+    },
+    {
+      "id": "D08",
+      "subject": "catalog",
+      "choice": "Congelar a curadoria nos oito SKUs atuais; novos itens exigem os mesmos gates editoriais e comerciais.",
+      "reopenWhen": "Os oito itens atuais estiverem aprovados e a operação tiver capacidade medida."
+    }
+  ],
+  "requiredGates": [
+    { "id": "legal-controller", "state": "blocked", "evidence": null },
+    { "id": "privacy-channel", "state": "blocked", "evidence": null },
+    { "id": "privacy-policy", "state": "blocked", "evidence": null },
+    {
+      "id": "content-rights",
+      "state": "blocked",
+      "evidence": "docs/editorial/product-review.json"
+    },
+    {
+      "id": "commercial-product-review",
+      "state": "blocked",
+      "evidence": "docs/editorial/product-review.json"
+    },
+    { "id": "named-commercial-owner", "state": "blocked", "evidence": null },
+    { "id": "approved-crm-receiver", "state": "blocked", "evidence": null },
+    { "id": "failure-reconciliation", "state": "blocked", "evidence": null },
+    { "id": "isolated-staging", "state": "blocked", "evidence": null },
+    { "id": "seller-pilot", "state": "blocked", "evidence": null },
+    { "id": "buyer-pilot", "state": "blocked", "evidence": null },
+    { "id": "commercial-domain", "state": "blocked", "evidence": null },
+    { "id": "rollback-rehearsal", "state": "blocked", "evidence": null }
+  ]
+}

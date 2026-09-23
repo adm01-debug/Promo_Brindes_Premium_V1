@@ -1,8 +1,8 @@
 # Revisão exaustiva do plano de 200 etapas
 
-Revisão: **23/09/2026**, identificador `2026-09-23-audit-2`. Código técnico examinado: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. Projeto: **Promo_Brindes_Premium_V1**. A referência histórica de `Promo_Gifts_V4` continua sendo a auditoria dirigida do commit `44857d5`.
+Revisão: **23/09/2026**, identificador `2026-09-23-decision-1`. Código técnico de partida: `e4c1031cb9701e3434b391487abdd2e4a5a321fa`. Projeto: **Promo_Brindes_Premium_V1**. A referência histórica de `Promo_Gifts_V4` continua sendo a auditoria dirigida do commit `44857d5`.
 
-**Não implementamos todas as melhorias.** Há **106 etapas com o próprio critério comprovado, 48 parciais e 46 sem entrega comprovada**. São **94 etapas abertas**, das quais **68 são P0**. O site tem catálogo curado com vigência temporal e operação editorial protegida, descoberta multifacetada, recomendações editoriais, paginação e ordenação na fonte, persistência idempotente pronta e download de briefing; a jornada comercial integrada e o lançamento permanecem incompletos.
+**Não implementamos todas as melhorias.** Há **116 etapas com o próprio critério comprovado, 41 parciais e 43 sem entrega comprovada**. São **84 etapas abertas**, das quais **60 são P0**. As decisões reversíveis de escopo, segmentos, métricas, curadoria, intake, qualificação, estados, SEO, prontidão e revisão trimestral foram fechadas. A decisão formal é adiar o lançamento comercial e manter a implantação como prévia técnica privada, noindex e sem coleta; evidências humanas e operacionais continuam abertas.
 
 Esses números contam critérios do plano, não esforço restante ou porcentagem de prontidão comercial. Entrevistas, licenças, homologações e monitoramento têm peso diferente de um componente visual. A conclusão de uma entrega isolada não libera suas dependências nem os gates de lançamento.
 
@@ -23,9 +23,9 @@ A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [
 | ---------------------------------------------- | ------------------: | ------: | ---------------------: |
 | 01 · Diagnóstico e patrimônio existente        |                   9 |       0 |                      1 |
 | 02 · Pesquisa de mercado e evidências de UX    |                  10 |       0 |                      0 |
-| 03 · Posicionamento, descoberta e mensuração   |                   1 |       7 |                      2 |
+| 03 · Posicionamento, descoberta e mensuração   |                   4 |       4 |                      2 |
 | 04 · Identidade, direção de arte e voz         |                   7 |       2 |                      1 |
-| 05 · Curadoria e qualidade do catálogo         |                   3 |       5 |                      2 |
+| 05 · Curadoria e qualidade do catálogo         |                   4 |       4 |                      2 |
 | 06 · Arquitetura de informação e jornadas      |                   6 |       3 |                      1 |
 | 07 · Sistema de design e componentes           |                  10 |       0 |                      0 |
 | 08 · Página inicial e narrativa de marca       |                   8 |       1 |                      1 |
@@ -34,14 +34,14 @@ A matriz integral está no [checklist de 200 etapas](PLANO_200_ETAPAS.md) e no [
 | 11 · Personalização e montagem de kits         |                   0 |       2 |                      8 |
 | 12 · Seleção, briefing e conversão             |                   5 |       3 |                      2 |
 | 13 · Contrato público e integração de catálogo |                   6 |       4 |                      0 |
-| 14 · Passagem para o comercial e CRM           |                   1 |       3 |                      6 |
+| 14 · Passagem para o comercial e CRM           |                   4 |       1 |                      5 |
 | 15 · Segurança, privacidade e governança       |                   4 |       3 |                      3 |
-| 16 · Conteúdo, SEO e descoberta orgânica       |                   4 |       4 |                      2 |
+| 16 · Conteúdo, SEO e descoberta orgânica       |                   5 |       3 |                      2 |
 | 17 · Desempenho e confiabilidade               |                   8 |       0 |                      2 |
 | 18 · Acessibilidade e inclusão                 |                   9 |       0 |                      1 |
-| 19 · Qualidade, homologação e piloto           |                   4 |       2 |                      4 |
-| 20 · Lançamento, operação e evolução           |                   0 |       2 |                      8 |
-| **Total**                                      |             **106** |  **48** |                 **46** |
+| 19 · Qualidade, homologação e piloto           |                   5 |       2 |                      3 |
+| 20 · Lançamento, operação e evolução           |                   1 |       2 |                      7 |
+| **Total**                                      |             **116** |  **41** |                 **43** |
 
 A entrega posterior da [biblioteca de catálogos](CATALOGOS.md) concluiu o vínculo estrutural da etapa 053 e tornou a etapa 157 parcial: existem seis páginas editoriais com produtos publicados, mas ainda faltam guias aprofundados com participação comercial. Os totais acima incorporam essa entrega.
 
@@ -113,7 +113,7 @@ Resultados brutos: [módulos isolados](audit/plan-scenarios.json), [navegador](a
 | Deploy comercial ainda ausente          | CI versionado executa os gates em push/PR; staging, domínio, release reversível e monitoramento não estão configurados.                                                                 | 185, 191–195: executar pipeline remoto e preparar ambientes e operação.                                                  |
 | Medição de experiência                  | Gate mede imagens, fontes WOFF2, JavaScript gzip e chunks por rota; três rodadas móveis registram LCP 2,259–3,121 s, mediana 2,612 s.                                                   | 166 tem critério de medição comprovado; otimizar LCP, medir campo e instrumentar alertas nas etapas seguintes.           |
 
-Essas lacunas ainda exigem decisões, ambiente e evidências próprias. As correções técnicas reproduzidas nesta rodada constam no registro de cenários adicionais.
+Essas lacunas ainda exigem fatos externos, ambiente e evidências próprias; as decisões reversíveis estão no pacote de governança. As correções técnicas reproduzidas nesta rodada constam no registro de cenários adicionais.
 
 ## Funções sugeridas ainda ausentes ou incompletas
 
@@ -123,11 +123,11 @@ Essas lacunas ainda exigem decisões, ambiente e evidências próprias. As corre
 | Produto               | Modal e ficha permanente com uma foto, descrição, SKU e mínimo cadastrado.                           | Galeria, variantes, ficha revisada, condições contextualizadas e recomendações elegíveis.                    |
 | Personalização e kits | Conteúdo explicativo e observações livres.                                                           | Técnicas/áreas por SKU, upload seguro, simulação, prova final, kit estruturado, embalagem, cartão e cálculo. |
 | Conversão             | Seleção, download local e entrega opcional persistida/idempotente.                                   | CRM homologado, confirmação comercial, atendimento e conciliação efetiva.                                    |
-| Operação              | Schema privado preparado e código publicado no GitHub.                                               | Dono do lead, qualificação aprovada, distribuição, orçamento transacional, estados, SLA, fila e conciliação. |
+| Operação              | Intake canônico, dono funcional, qualificação, atribuição, estados, SLA e algoritmo de conciliação definidos. | Receptor homologado, pessoas nomeadas, distribuição, orçamento transacional, instrumentação e conciliação executada. |
 | Conteúdo/SEO          | Home editorial, metadados iniciais, robots e sitemap condicionais.                                   | Direitos, conteúdo aprovado, guias, redirects/canonical completos, domínio e Search Console.                 |
 | Qualidade             | CI de build/tipos/checks, matriz E2E Chromium/Firefox/WebKit e axe em cenários representativos.      | Aparelhos reais, Safari instalado, leitores de tela, carga, rede limitada e pilotos.                         |
 | Governança            | Papéis sugeridos e avisos de prévia.                                                                 | Pessoas responsáveis, controlador/canais reais, política comercial, retenção e processo de direitos.         |
-| Crescimento           | Métricas propostas em documento.                                                                     | Instrumentação aprovada, baseline real, monitoramento, experimentos e revisão periódica.                     |
+| Crescimento           | KPIs com fórmula/fonte/janela/dono, hipóteses priorizadas e calendário trimestral.                    | Instrumentação aprovada, baseline real, monitoramento e experimentos executados.                             |
 
 ## Banco e repositório
 
@@ -152,9 +152,9 @@ A migration nova foi aplicada ao banco dedicado e uma checagem posterior confirm
 
 1. **Correções técnicas independentes:** validade da seleção, URL/voltar, rascunho em memória, movimento reduzido, limite real de corpo e validação integral. Encerrar com testes que reproduzam os defeitos acima.
 2. **Fonte única publicada:** unificar home, ficha, seleção e validação no catálogo; adicionar paginação/contagem na fonte, estado vazio correto e retirada dentro do SLA. Testar mais de 24 itens e alteração de publicação em ambiente isolado.
-3. **Decisões comerciais e de dados:** definir receptor, donos, campos, política, retenção e condições por SKU. Essas decisões podem avançar enquanto as correções técnicas são feitas.
+3. **Completar fatos e aprovações:** informar controlador e canal, nomear titulares/substitutos, homologar receptor e aprovar direitos e condições por SKU. As regras e o escopo já estão registrados no pacote de decisões.
 4. **Persistência e passagem ao comercial:** chave estável, hash, aquisição atômica, fila/outbox, confirmação e conciliação. Testar simultaneidade, duas instâncias, reinício, resposta perdida e payload conflitante antes de habilitar envio real.
-5. **Amplitude de produto:** variantes, mídia, filtros e personalização conforme dados aprovados. Kit/configurador é P1 no plano; eventual adiamento exige decisão explícita de escopo, não marcação como entregue.
+5. **Amplitude de produto:** variantes, mídia, filtros e personalização somente conforme dados aprovados. Kit/configurador, upload e preço público foram retirados do MVP e continuam pendentes como evolução, sem marcação indevida de entrega.
 6. **Homologação e publicação:** metadados/domínio, acesso ao planejamento, CI, testes de navegadores/rede/acessibilidade, laboratório repetido, piloto, release e rollback. Somente após esses gates, acompanhar o funil e as primeiras 48 horas.
 
 Para encerrar uma etapa, anexar evidência do seu aceite, corrigir a constatação, registrar a revisão e regenerar o plano. Marcar uma caixa no navegador não executa nem valida a melhoria.

@@ -578,15 +578,18 @@
       "acceptance": "Cada segmento tem ocasião, ticket a investigar e contexto de decisão.",
       "owner": "Estratégia + comercial",
       "priority": "P0",
-      "status": "partial",
-      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "status": "done",
+      "evidence": "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md",
       "dependencies": [21],
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Cinco segmentos hipotéticos estão descritos; faltam prioridade e ticket a investigar por segmento.",
-        "nextAction": "Completar contexto, faixa a investigar e prioridade comercial.",
-        "evidence": ["docs/ESTRATEGIA_E_PESQUISA.md"]
+        "finding": "Cinco segmentos têm ordem provisória, ocasiões, três faixas de ticket a investigar e contexto de decisão; o documento separa hipótese de fato comercial.",
+        "nextAction": "Validar ou reordenar após entrevistas e dados reais, sem reabrir a definição necessária à pesquisa.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
+        ]
       }
     },
     {
@@ -663,11 +666,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Ocasiões aparecem no formulário, sem priorização por demanda e capacidade.",
-        "nextAction": "Aprovar prioridade usando dados comerciais e disponibilidade.",
+        "finding": "A ordem provisória de cinco ocasiões foi decidida, mas ainda não usa demanda e disponibilidade reais, exigidas pelo aceite.",
+        "nextAction": "Executar entrevistas e cruzar oportunidades, disponibilidade e capacidade antes de aprovar a prioridade.",
         "evidence": [
           "src/components/Storefront.tsx",
-          "docs/ESTRATEGIA_E_PESQUISA.md"
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -698,15 +702,18 @@
       "acceptance": "Cada KPI tem fórmula, fonte, janela, responsável e baseline ainda a medir.",
       "owner": "Estratégia + comercial",
       "priority": "P0",
-      "status": "partial",
-      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "status": "done",
+      "evidence": "docs/KPIS_FUNIL_E_HIPOTESES.md",
       "dependencies": [25],
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "KPIs e fórmulas estão propostos; faltam fontes operacionais, janelas e donos.",
-        "nextAction": "Definir medição, responsáveis e baseline para cada KPI.",
-        "evidence": ["docs/ESTRATEGIA_E_PESQUISA.md"]
+        "finding": "Treze KPIs têm fórmula, fonte, janela, papel responsável e baseline explicitamente a medir.",
+        "nextAction": "Substituir os baselines após ativação autorizada e registrar qualquer mudança de definição.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "docs/KPIS_FUNIL_E_HIPOTESES.md"
+        ]
       }
     },
     {
@@ -717,15 +724,18 @@
       "acceptance": "Backlog separa evidência de opinião e inclui método de avaliação.",
       "owner": "Estratégia + comercial",
       "priority": "P0",
-      "status": "partial",
-      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "status": "done",
+      "evidence": "docs/KPIS_FUNIL_E_HIPOTESES.md",
       "dependencies": [28],
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Existem recomendações de conversão, sem backlog de hipóteses priorizado e método por item.",
-        "nextAction": "Formalizar hipóteses com evidência, impacto esperado e método de avaliação.",
-        "evidence": ["docs/ESTRATEGIA_E_PESQUISA.md"]
+        "finding": "Sete hipóteses estão priorizadas e distinguem evidência técnica, referência externa, opinião e decisão de risco, com método e proteção contra conclusão falsa.",
+        "nextAction": "Executar os métodos somente quando seus gates de privacidade, staging ou pesquisa estiverem atendidos.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "docs/KPIS_FUNIL_E_HIPOTESES.md"
+        ]
       }
     },
     {
@@ -742,9 +752,13 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "MVP consultivo é recomendado, mas não há aceite documentado de PO e comercial.",
-        "nextAction": "Aprovar escopo de entrada e saída e responsáveis.",
-        "evidence": ["docs/ESTRATEGIA_E_PESQUISA.md", "README.md"]
+        "finding": "A lista de entrada e saída do MVP está pronta e tecnicamente aplicada; faltam os nomes e o aceite explícito de PO e comercial.",
+        "nextAction": "Registrar aprovação nominal de PO e comercial ou os ajustes solicitados.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "README.md",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
+        ]
       }
     },
     {
@@ -945,15 +959,19 @@
       "acceptance": "Cada produto candidato recebe justificativa e status de validação comercial.",
       "owner": "Conteúdo + dados + comercial",
       "priority": "P0",
-      "status": "partial",
-      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "status": "done",
+      "evidence": "docs/GOVERNANCA_EDITORIAL_E_CURADORIA.md",
       "dependencies": [27],
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Valor percebido e utilidade são diretrizes gerais; faltam fichas de avaliação por candidato.",
-        "nextAction": "Pontuar cada produto e registrar validação comercial.",
-        "evidence": ["docs/ESTRATEGIA_E_PESQUISA.md", "src/lib/products.json"]
+        "finding": "Os seis critérios de seleção foram definidos e cada um dos oito candidatos tem justificativa, lacuna decisiva e status comercial pendente explícito.",
+        "nextAction": "Coletar as evidências por SKU e alterar o status apenas após aprovação humana real.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "src/lib/products.json",
+          "docs/GOVERNANCA_EDITORIAL_E_CURADORIA.md"
+        ]
       }
     },
     {
@@ -1055,11 +1073,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "A UI mantém valores sob consulta, mas não existe tabela de faixas e condições aprovada.",
-        "nextAction": "Validar composição, quantidade, impostos, frete e validade.",
+        "finding": "A decisão mantém toda oferta pública sob consulta até quantidade, personalização, tributos, frete e validade estarem homologados por SKU.",
+        "nextAction": "Produzir e aprovar a matriz comercial antes de publicar qualquer preço.",
         "evidence": [
           "src/components/Storefront.tsx",
-          "src/app/produtos/[slug]/page.tsx"
+          "src/app/produtos/[slug]/page.tsx",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -1134,9 +1153,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Não há responsável editorial nomeado nem SLA acordado de retirada.",
-        "nextAction": "Designar responsáveis e aprovar revisão e retirada.",
-        "evidence": ["docs/ARQUITETURA_E_INTEGRACAO.md"]
+        "finding": "Processo de retirada e SLA interno estão definidos por papel; faltam titular, substituto e acordo nominal da equipe.",
+        "nextAction": "Nomear responsáveis e ensaiar retirada de um SKU em staging.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "docs/GOVERNANCA_EDITORIAL_E_CURADORIA.md"
+        ]
       }
     },
     {
@@ -1880,13 +1902,14 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Quantidade desejada usa o mínimo cadastrado e deixa explícito que não confirma estoque. Material, investimento e prazo continuam sem dados e regras públicas homologadas.",
-        "nextAction": "Homologar os atributos comerciais restantes antes de oferecer material, investimento ou prazo como filtros.",
+        "finding": "Quantidade usa mínimo publicado; material, investimento, prazo e estoque foram deliberadamente excluídos até haver dados comerciais confiáveis.",
+        "nextAction": "Homologar atributos antes de acrescentar facetas comerciais.",
         "evidence": [
           "src/components/Storefront.tsx",
           "src/lib/products.json",
           "docs/CONTRATO_CATALOGO_PUBLICO_V1.md",
-          "tests/storefront.spec.ts"
+          "tests/storefront.spec.ts",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -2088,11 +2111,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Modelo e UI não oferecem variantes de cor/tamanho com SKU e disponibilidade.",
-        "nextAction": "Homologar variantes e implementar seleção sincronizada.",
+        "finding": "Variantes foram excluídas do MVP até existir contrato com SKU, mídia e disponibilidade sincronizados; não há implementação.",
+        "nextAction": "Homologar dados e implementar seleção sincronizada em versão posterior.",
         "evidence": [
           "src/lib/products.json",
-          "src/app/produtos/[slug]/page.tsx"
+          "src/app/produtos/[slug]/page.tsx",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -2132,11 +2156,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Valores estão sob consulta e FAQ cita fatores; preço contextual por produto não está definido.",
-        "nextAction": "Validar condições e apresentá-las junto da oferta quando houver preço.",
+        "finding": "Preço permanece sob consulta por decisão formal; condição contextual ainda depende de matriz comercial por SKU.",
+        "nextAction": "Publicar preço somente após quantidade, personalização, tributos, frete e validade aprovados.",
         "evidence": [
           "src/components/Storefront.tsx",
-          "src/app/produtos/[slug]/page.tsx"
+          "src/app/produtos/[slug]/page.tsx",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -2154,11 +2179,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Aviso impede promessa de estoque, mas não há consulta nem estimativa por etapas reais.",
-        "nextAction": "Implementar disponibilidade e prazos confirmáveis com a operação.",
+        "finding": "Prazo e estoque não são prometidos; fonte operacional, validade e fallback continuam inexistentes.",
+        "nextAction": "Homologar a fonte e testar estados antes de exibir estimativa.",
         "evidence": [
           "src/app/produtos/[slug]/page.tsx",
-          "docs/ARQUITETURA_E_INTEGRACAO.md"
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -2176,11 +2202,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Apenas booleano personalizable e texto genérico; técnicas e áreas por peça estão ausentes.",
-        "nextAction": "Vincular técnicas, áreas e limites homologados por SKU.",
+        "finding": "Conteúdo genérico não enumera técnicas não comprovadas; técnica e área por SKU continuam pendentes.",
+        "nextAction": "Obter elegibilidade aprovada antes de ampliar a ficha.",
         "evidence": [
           "src/lib/products.json",
-          "src/app/produtos/[slug]/page.tsx"
+          "src/app/produtos/[slug]/page.tsx",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -2241,11 +2268,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Auditoria interna localiza recursos de personalização; vitrine não mapeia técnicas e áreas.",
-        "nextAction": "Inspecionar dados autorizados e publicar elegibilidade por produto.",
+        "finding": "A decisão proíbe técnicas universais e exige elegibilidade, área, limite e resultado por SKU; os dados ainda não foram homologados.",
+        "nextAction": "Mapear e aprovar técnicas na fonte operacional.",
         "evidence": [
           "docs/AUDITORIA_PROJETO_INTERNO.md",
-          "src/lib/products.json"
+          "src/lib/products.json",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -2263,9 +2291,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "UI não permite escolher posição, técnica ou cores de gravação.",
-        "nextAction": "Desenhar e implementar combinações válidas.",
-        "evidence": ["src/components/Storefront.tsx"]
+        "finding": "O configurador de gravação ficou fora do MVP enquanto técnicas e combinações não forem homologadas.",
+        "nextAction": "Projetar o fluxo depois do contrato por SKU.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
+        ]
       }
     },
     {
@@ -2282,11 +2313,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Arquitetura exige storage privado e validação; tipos, tamanho e retenção não estão fechados.",
-        "nextAction": "Especificar limites, validação de conteúdo, retenção e acesso.",
+        "finding": "O MVP registra apenas o status da identidade visual e não recebe arquivos; o gate futuro de upload está especificado.",
+        "nextAction": "Definir tipos, tamanho, retenção e acesso somente quando a função entrar no escopo aprovado.",
         "evidence": [
           "docs/ARQUITETURA_E_INTEGRACAO.md",
-          "docs/MODELO_DE_AMEACAS_PREVIA.md"
+          "docs/MODELO_DE_AMEACAS_PREVIA.md",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -2304,9 +2336,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Não há endpoint, storage ou UI de upload.",
-        "nextAction": "Implementar upload validado após contrato e autorização de acesso.",
-        "evidence": ["docs/MODELO_DE_AMEACAS_PREVIA.md"]
+        "finding": "Upload está formalmente fora do MVP e não há endpoint ou storage; isso evita coleta insegura, mas não conclui a função.",
+        "nextAction": "Implementar e testar somente após contrato e aprovação de privacidade.",
+        "evidence": [
+          "docs/MODELO_DE_AMEACAS_PREVIA.md",
+          "docs/GOVERNANCA_PRIVACIDADE_PRE_LANCAMENTO.md"
+        ]
       }
     },
     {
@@ -2323,11 +2358,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Não existe simulação de arte nem fluxo de prova final; imagem de campanha não é esse recurso.",
-        "nextAction": "Projetar aviso e aprovação versionada da arte.",
+        "finding": "Imagens conceituais não são tratadas como prova; fluxo versionado de simulação e aceite ainda não existe.",
+        "nextAction": "Projetar aprovação de arte quando técnicas e upload estiverem homologados.",
         "evidence": [
           "src/components/Storefront.tsx",
-          "docs/ARQUITETURA_E_INTEGRACAO.md"
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -2345,9 +2381,13 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Seleção de peças não modela kit, componentes, múltiplos e compatibilidade.",
-        "nextAction": "Definir composição estruturada com regras aprovadas.",
-        "evidence": ["src/lib/catalog.ts", "docs/ARQUITETURA_E_INTEGRACAO.md"]
+        "finding": "Kits configuráveis ficaram fora do MVP; seleção atual não representa componentes, múltiplos ou compatibilidade.",
+        "nextAction": "Modelar componentes somente após dados e regras aprovados.",
+        "evidence": [
+          "src/lib/catalog.ts",
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
+        ]
       }
     },
     {
@@ -2364,9 +2404,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Embalagem só aparece como intenção em texto livre.",
-        "nextAction": "Modelar opções com capacidade, dimensão e disponibilidade.",
-        "evidence": ["src/components/Storefront.tsx"]
+        "finding": "Embalagem é intenção sob consulta e não promessa de inclusão; opções estruturadas ainda não existem.",
+        "nextAction": "Homologar capacidade, dimensão, disponibilidade e preço.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
+        ]
       }
     },
     {
@@ -2383,9 +2426,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Textarea genérico não equivale a cartão com limites e revisão de produção.",
-        "nextAction": "Definir e implementar mensagem e aprovação do cartão.",
-        "evidence": ["src/components/Storefront.tsx"]
+        "finding": "Cartão personalizado ficou fora do MVP; limites e aprovação de produção ainda não existem.",
+        "nextAction": "Definir contrato e fluxo quando kit e embalagem estiverem aprovados.",
+        "evidence": [
+          "src/components/Storefront.tsx",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
+        ]
       }
     },
     {
@@ -2402,11 +2448,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Não há adaptador de cálculo público para peça e personalização.",
-        "nextAction": "Integrar cálculo validado sem expor custos e margens.",
+        "finding": "Preço público e cálculo ficaram fora do MVP para não expor ou inferir custo e margem; adaptador ainda não existe.",
+        "nextAction": "Integrar cálculo autorizado depois da homologação comercial.",
         "evidence": [
           "docs/ARQUITETURA_E_INTEGRACAO.md",
-          "docs/AUDITORIA_PROJETO_INTERNO.md"
+          "docs/AUDITORIA_PROJETO_INTERNO.md",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -2547,11 +2594,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Campos iniciais e aviso local existem; finalidade e dados de produção não foram aprovados.",
-        "nextAction": "Homologar formulário e política com responsáveis comercial e jurídico.",
+        "finding": "O briefing baixável separa a prévia de qualquer atendimento; coleta real permanece bloqueada até privacidade e comercial aprovarem o formulário.",
+        "nextAction": "Obter controlador, finalidade, retenção e aceite comercial antes de habilitar envio.",
         "evidence": [
           "src/components/Storefront.tsx",
-          "src/app/privacidade/page.tsx"
+          "src/app/privacidade/page.tsx",
+          "docs/GOVERNANCA_PRIVACIDADE_PRE_LANCAMENTO.md"
         ]
       }
     },
@@ -2569,8 +2617,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Entrega opcional usa chave estável, hash da intenção normalizada, consulta prévia de protocolo, lease atômica, leitura sem cache, rate limit compartilhado e chamada assinada por HMAC. O receptor precisa confirmar o mesmo protocolo em JSON limitado. Falta receptor comercial homologado e validar o cabeçalho de IP no proxy real.",
-        "nextAction": "Integrar o destino aprovado e validar a criação de oportunidade sem duplicação.",
+        "finding": "Entrega idempotente existe e continua desligada por decisão formal até receptor, proprietário, IP confiável e conciliação passarem em staging.",
+        "nextAction": "Homologar receptor e executar a matriz comercial de integração.",
         "evidence": [
           "src/app/api/briefings/route.ts",
           "src/components/Storefront.tsx",
@@ -2579,7 +2627,8 @@
           "supabase/migrations/20260922150000_lookup_briefing_intent.sql",
           "docs/audit/2026-09-22-server-catalog-and-delivery.md",
           "docs/audit/2026-09-23-security-release-hardening.md",
-          "docs/CONTRATO_BRIEFING_V1.md"
+          "docs/CONTRATO_BRIEFING_V1.md",
+          "docs/OPERACAO_COMERCIAL_E_SLA.md"
         ]
       }
     },
@@ -2623,9 +2672,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Não existe canal de confirmação transacional implementado ou teste de entrega.",
-        "nextAction": "Escolher canal e template e testar com destino autorizado.",
-        "evidence": ["docs/CONTRATO_BRIEFING_V1.md"]
+        "finding": "Canal transacional não foi escolhido sem receptor real; confirmação só poderá ocorrer após aceite persistido com o mesmo protocolo.",
+        "nextAction": "Escolher canal e template com privacidade e testar entrega autorizada.",
+        "evidence": [
+          "docs/CONTRATO_BRIEFING_V1.md",
+          "docs/OPERACAO_COMERCIAL_E_SLA.md"
+        ]
       }
     },
     {
@@ -2890,17 +2942,18 @@
       "acceptance": "Fluxo aprovado identifica sistema canônico e dono de cada oportunidade.",
       "owner": "Backend + comercial + operações",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "docs/ARQUITETURA_E_INTEGRACAO.md",
+      "status": "done",
+      "evidence": "docs/OPERACAO_COMERCIAL_E_SLA.md",
       "dependencies": [24],
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Nenhum CRM/receptor e dono de oportunidade foi formalizado.",
-        "nextAction": "Definir destino canônico, organização e proprietário de cada briefing.",
+        "finding": "O fluxo define premium_briefings como intake canônico, confirmação pelo mesmo protocolo, Coordenação Comercial Premium como dona funcional e requisito de titular e substituto nominais.",
+        "nextAction": "Nomear pessoas e homologar o receptor antes de ativar a entrega.",
         "evidence": [
           "docs/ARQUITETURA_E_INTEGRACAO.md",
-          "docs/SUPABASE_SITE_DATABASE.md"
+          "docs/SUPABASE_SITE_DATABASE.md",
+          "docs/OPERACAO_COMERCIAL_E_SLA.md"
         ]
       }
     },
@@ -2912,17 +2965,18 @@
       "acceptance": "Regras não excluem oportunidades por inferências opacas sobre o comprador.",
       "owner": "Backend + comercial + operações",
       "priority": "P0",
-      "status": "partial",
-      "evidence": "src/components/Storefront.tsx",
+      "status": "done",
+      "evidence": "docs/OPERACAO_COMERCIAL_E_SLA.md",
       "dependencies": [131],
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Ocasião, orçamento e data são coletados; regras de qualificação não foram aprovadas.",
-        "nextAction": "Definir critérios auditáveis com comercial.",
+        "finding": "Qualificação possui resultados, regras objetivas, códigos de razão e proibição de inferências opacas sobre o comprador.",
+        "nextAction": "Validar as regras no piloto comercial e versionar ajustes.",
         "evidence": [
           "src/components/Storefront.tsx",
-          "docs/CONTRATO_BRIEFING_V1.md"
+          "docs/CONTRATO_BRIEFING_V1.md",
+          "docs/OPERACAO_COMERCIAL_E_SLA.md"
         ]
       }
     },
@@ -2940,9 +2994,13 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Payload básico preserva ID/SKU/quantidade; variantes, arte e consumidor comercial faltam.",
-        "nextAction": "Homologar contrato e adaptar o receptor sem redigitação.",
-        "evidence": ["src/lib/briefing.ts", "docs/CONTRATO_BRIEFING_V1.md"]
+        "finding": "Contrato preserva SKU, quantidade e contexto, mas o consumidor comercial, arte e variantes não estão homologados; redigitação será critério do piloto.",
+        "nextAction": "Adaptar o receptor real e medir redigitação com vendedores.",
+        "evidence": [
+          "src/lib/briefing.ts",
+          "docs/CONTRATO_BRIEFING_V1.md",
+          "docs/OPERACAO_COMERCIAL_E_SLA.md"
+        ]
       }
     },
     {
@@ -2982,9 +3040,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Não existem regras ou implementação de atribuição de vendedor.",
-        "nextAction": "Aprovar carteira/região/distribuição e fallback.",
-        "evidence": ["docs/ARQUITETURA_E_INTEGRACAO.md"]
+        "finding": "Rodízio, fila da coordenação, ausência, redistribuição e rastreabilidade estão decididos; implementação depende do receptor.",
+        "nextAction": "Implementar a regra no CRM homologado e simular ausências.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "docs/OPERACAO_COMERCIAL_E_SLA.md"
+        ]
       }
     },
     {
@@ -3017,16 +3078,17 @@
       "acceptance": "Cliente vê apenas estados úteis sem expor notas internas ou margem.",
       "owner": "Backend + comercial + operações",
       "priority": "P0",
-      "status": "partial",
-      "evidence": "supabase/migrations/20260922110900_create_premium_site_core.sql",
+      "status": "done",
+      "evidence": "docs/OPERACAO_COMERCIAL_E_SLA.md",
       "dependencies": [136],
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Tabela tem received/qualified/closed, sem workflow ou acompanhamento implementado.",
-        "nextAction": "Definir estados e autorização antes de expor acompanhamento.",
+        "finding": "Estados internos e estados públicos úteis foram definidos, com exclusão explícita de notas, custo, margem, score e dados de outros clientes.",
+        "nextAction": "Implementar estados no receptor e testar autorização antes de qualquer acompanhamento público.",
         "evidence": [
-          "supabase/migrations/20260922110900_create_premium_site_core.sql"
+          "supabase/migrations/20260922110900_create_premium_site_core.sql",
+          "docs/OPERACAO_COMERCIAL_E_SLA.md"
         ]
       }
     },
@@ -3044,11 +3106,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Não há medição de recebimento, resposta, horário útil ou proposta.",
-        "nextAction": "Instrumentar eventos e dashboard de SLA.",
+        "finding": "SLA do piloto, pausas, alertas e janelas de conciliação estão decididos; não há instrumentação ou calendário útil configurado.",
+        "nextAction": "Implementar no receptor e medir por quatro semanas antes de promessa pública.",
         "evidence": [
           "docs/ESTRATEGIA_E_PESQUISA.md",
-          "docs/ARQUITETURA_E_INTEGRACAO.md"
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "docs/OPERACAO_COMERCIAL_E_SLA.md"
         ]
       }
     },
@@ -3066,12 +3129,13 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Aceite remoto exige confirmação estruturada e assinatura HMAC; falha de confirmação local permanece incerta e retry com produto retirado preserva o protocolo sem novo envio. Ainda não há outbox, retry persistente ou processo de reconciliação homologado.",
-        "nextAction": "Persistir envio e reprocessamento com rastreabilidade e sem perda.",
+        "finding": "Algoritmo de conciliação, estados incertos e matriz de falhas estão definidos; outbox/job autorizado não foi implementado.",
+        "nextAction": "Implementar reprocessamento e conciliação no staging do receptor.",
         "evidence": [
           "src/app/api/briefings/route.ts",
           "docs/audit/2026-09-22-server-catalog-and-delivery.md",
-          "docs/audit/2026-09-23-security-release-hardening.md"
+          "docs/audit/2026-09-23-security-release-hardening.md",
+          "docs/OPERACAO_COMERCIAL_E_SLA.md"
         ]
       }
     },
@@ -3231,11 +3295,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Não há controlador identificado, mapa de tratamento aprovado ou política de retenção comercial.",
-        "nextAction": "Obter definições dos responsáveis e mapear o fluxo real.",
+        "finding": "Mapa mínimo reflete a prévia e o fluxo futuro, mas razão social, CNPJ, canal, bases, retenção e fornecedores não foram aprovados.",
+        "nextAction": "Preencher os fatos com controlador e responsável reais.",
         "evidence": [
           "src/app/privacidade/page.tsx",
-          "docs/ARQUITETURA_E_INTEGRACAO.md"
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "docs/GOVERNANCA_PRIVACIDADE_PRE_LANCAMENTO.md"
         ]
       }
     },
@@ -3253,9 +3318,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Página de privacidade descreve a prévia; não é política comercial aprovada.",
-        "nextAction": "Redigir e aprovar texto com controlador e contato reais.",
-        "evidence": ["src/app/privacidade/page.tsx"]
+        "finding": "A prévia continua fiel ao modo sem coleta; política comercial permanece bloqueada até completar o mapa e a identidade do controlador.",
+        "nextAction": "Redigir e aprovar a política a partir dos fatos reais.",
+        "evidence": [
+          "src/app/privacidade/page.tsx",
+          "docs/GOVERNANCA_PRIVACIDADE_PRE_LANCAMENTO.md"
+        ]
       }
     },
     {
@@ -3296,9 +3364,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Não existe canal/processo testado para acesso, correção e exclusão.",
-        "nextAction": "Definir responsável, procedimento e evidência de solicitação teste.",
-        "evidence": ["src/app/privacidade/page.tsx"]
+        "finding": "Processo de direitos em sete passos foi especificado; canal, responsável e teste rastreável ainda não existem.",
+        "nextAction": "Nomear responsável, publicar o canal e executar solicitação sintética ponta a ponta.",
+        "evidence": [
+          "src/app/privacidade/page.tsx",
+          "docs/GOVERNANCA_PRIVACIDADE_PRE_LANCAMENTO.md"
+        ]
       }
     },
     {
@@ -3332,17 +3403,18 @@
       "acceptance": "Não há páginas em massa criadas apenas por variações de palavra-chave.",
       "owner": "Conteúdo + SEO + frontend",
       "priority": "P1",
-      "status": "partial",
-      "evidence": "docs/ESTRATEGIA_E_PESQUISA.md",
+      "status": "done",
+      "evidence": "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md",
       "dependencies": [23, 26],
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Categorias e ocasiões são propostas; mapa de intenção não foi pesquisado com compradores.",
-        "nextAction": "Definir páginas por demanda real e intenção distinta.",
+        "finding": "Quatro intenções distintas foram mapeadas; nova página exige necessidade própria, produtos elegíveis e conteúdo revisado, vedando geração em massa por variação de palavra-chave.",
+        "nextAction": "Validar linguagem e prioridade com compradores antes da indexação.",
         "evidence": [
           "docs/ESTRATEGIA_E_PESQUISA.md",
-          "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md"
+          "docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -3453,8 +3525,8 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Indexação exige flag, URL HTTPS de domínio e fonte pública; sitemap consulta peças publicadas. O planejamento exige opt-in local e retorna 404 em todo ambiente implantado na Vercel. Posse do domínio e liberação comercial ainda não foram validadas.",
-        "nextAction": "Confirmar posse do domínio, conteúdo, direitos e gates comerciais antes de ativar a flag em produção.",
+        "finding": "Noindex permanece decisão formal; sitemap e robots só serão liberados após domínio, direitos, privacidade e release comercial.",
+        "nextAction": "Validar domínio e todos os gates antes de alterar a flag.",
         "evidence": [
           "src/app/robots.ts",
           "src/app/sitemap.ts",
@@ -3462,7 +3534,8 @@
           "src/lib/publication.ts",
           "docs/audit/2026-09-22-regression-scenarios.md",
           "src/lib/planning-access.mjs",
-          "docs/audit/2026-09-23-security-release-hardening.md"
+          "docs/audit/2026-09-23-security-release-hardening.md",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -3528,9 +3601,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Não há domínio verificado ou configuração de Search Console.",
-        "nextAction": "Configurar após domínio e publicação aprovados.",
-        "evidence": ["README.md"]
+        "finding": "Search Console foi deliberadamente adiado até domínio e indexação aprovados.",
+        "nextAction": "Configurar e inspecionar páginas somente após o lançamento comercial.",
+        "evidence": [
+          "README.md",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
+        ]
       }
     },
     {
@@ -3547,9 +3623,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Não há tráfego orgânico medido ou associação com briefings qualificados.",
-        "nextAction": "Instrumentar relatório após lançamento e decisão de privacidade.",
-        "evidence": ["docs/ESTRATEGIA_E_PESQUISA.md"]
+        "finding": "Medição orgânica foi adiada até analytics, privacidade e indexação aprovados.",
+        "nextAction": "Definir relatório e baseline após lançamento.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "docs/KPIS_FUNIL_E_HIPOTESES.md"
+        ]
       }
     },
     {
@@ -3702,9 +3781,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Não há coleta de Web Vitals de usuários reais nem dashboard p75.",
-        "nextAction": "Instrumentar após definição de privacidade e ambiente publicado.",
-        "evidence": ["docs/ORCAMENTO_DESEMPENHO.md"]
+        "finding": "RUM permanece desligado até ferramenta, finalidade e política aprovadas; definição de p75 e janela está registrada.",
+        "nextAction": "Instrumentar por dispositivo após aprovação de privacidade.",
+        "evidence": [
+          "docs/ORCAMENTO_DESEMPENHO.md",
+          "docs/KPIS_FUNIL_E_HIPOTESES.md"
+        ]
       }
     },
     {
@@ -3740,9 +3822,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "Não há ambiente de staging ou teste de carga autorizado registrado.",
-        "nextAction": "Definir orçamento e executar carga controlada em staging.",
-        "evidence": ["docs/ARQUITETURA_E_INTEGRACAO.md"]
+        "finding": "Orçamento de 20 req/s por 15 minutos e pico de 40 req/s por 60 segundos está decidido para staging; o teste não foi executado.",
+        "nextAction": "Provisionar staging isolado e executar com dados sintéticos.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
+        ]
       }
     },
     {
@@ -4053,9 +4138,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "Não existe teste integrado em staging com persistência e CRM.",
-        "nextAction": "Validar sucesso, falha, concorrência, reinício e reconciliação.",
-        "evidence": ["docs/ARQUITETURA_E_INTEGRACAO.md"]
+        "finding": "A matriz de homologação está definida, porém não há staging integrado nem CRM receptor.",
+        "nextAction": "Executar a matriz após provisionar o receptor de staging.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "docs/OPERACAO_COMERCIAL_E_SLA.md"
+        ]
       }
     },
     {
@@ -4115,9 +4203,9 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Não há aceite comercial por peça e por promessa pública.",
-        "nextAction": "Homologar dados, técnicas, condições e textos com responsáveis.",
-        "evidence": ["README.md"]
+        "finding": "Os critérios e oito fichas candidatas existem, todas corretamente pendentes de aprovação comercial e de direitos.",
+        "nextAction": "Responsáveis nominais devem aprovar ou rejeitar cada SKU e promessa.",
+        "evidence": ["README.md", "docs/GOVERNANCA_EDITORIAL_E_CURADORIA.md"]
       }
     },
     {
@@ -4155,12 +4243,13 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "Build, testes, banco isolado, contrato visual, segredos e ambiente Vercel têm evidência consolidada; ainda faltam CRM/staging, aparelhos reais, usuários, direitos, operação e rollback.",
-        "nextAction": "Completar evidências de segurança, desempenho, acesso, CRM e rollback.",
+        "finding": "Gates técnicos comprovados e treze bloqueios de lançamento estão explícitos em fonte validada automaticamente.",
+        "nextAction": "Substituir cada estado blocked por proven somente com evidência.",
         "evidence": [
           "docs/REVISAO_EXAUSTIVA_PLANO.md",
           "docs/VALIDACAO.md",
-          "docs/audit/2026-09-22-production-environment.md"
+          "docs/audit/2026-09-22-production-environment.md",
+          "docs/governance/release-governance.json"
         ]
       }
     },
@@ -4172,15 +4261,18 @@
       "acceptance": "Registro explicita liberar, adiar ou reduzir escopo, com razões verificáveis.",
       "owner": "QA + produto + comercial",
       "priority": "P0",
-      "status": "pending",
-      "evidence": "src/lib/plan.json",
+      "status": "done",
+      "evidence": "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md",
       "dependencies": [189],
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Não existe decisão formal de prontidão por negócio e tecnologia.",
-        "nextAction": "Registrar liberar, adiar ou reduzir escopo após revisão dos P0.",
-        "evidence": ["src/lib/plan.json"]
+        "finding": "A decisão formal é adiar o lançamento comercial e manter apenas prévia técnica privada, noindex e sem coleta, com treze gates verificáveis.",
+        "nextAction": "Reavaliar somente quando os gates bloqueados tiverem evidência.",
+        "evidence": [
+          "src/lib/plan.json",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
+        ]
       }
     },
     {
@@ -4197,13 +4289,14 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Produção e preview usam apenas sete variáveis consumidas, catálogo Premium segregado, SSO e noindex; o plano interno falha fechado. A main exige PR e checks verify/test, inclusive para administradores. Ainda faltam staging independente, domínio comercial e certificados finais.",
-        "nextAction": "Configurar ambientes e certificados com segregação de variáveis.",
+        "finding": "A prévia técnica permanece segregada e noindex por decisão; domínio e staging comercial seguem bloqueados.",
+        "nextAction": "Provisionar staging isolado e validar o domínio comercial.",
         "evidence": [
           "docs/SUPABASE_SITE_DATABASE.md",
           "README.md",
           "docs/audit/2026-09-22-production-environment.md",
-          "docs/audit/2026-09-23-security-release-hardening.md"
+          "docs/audit/2026-09-23-security-release-hardening.md",
+          "docs/governance/release-governance.json"
         ]
       }
     },
@@ -4243,9 +4336,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Não há treinamento ou exercício de atendimento de solicitação teste.",
-        "nextAction": "Preparar equipe, horários e expectativa de resposta.",
-        "evidence": ["docs/ARQUITETURA_E_INTEGRACAO.md"]
+        "finding": "Papéis, fila, atribuição, SLA e conciliação foram decididos; equipe nominal e exercício ainda não existem.",
+        "nextAction": "Nomear e treinar a equipe no receptor de staging.",
+        "evidence": [
+          "docs/ARQUITETURA_E_INTEGRACAO.md",
+          "docs/OPERACAO_COMERCIAL_E_SLA.md"
+        ]
       }
     },
     {
@@ -4262,12 +4358,13 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "tecnica",
-        "finding": "Uma versão técnica protegida foi implantada na Vercel e o smoke autenticado confirmou catálogo canônico, ficha, privacidade e bloqueio de indexação. Não é publicação comercial: CRM, política aprovada, domínio, direitos e operação permanecem ausentes.",
-        "nextAction": "Implantar como versão comercial somente após a decisão de prontidão e validar catálogo, briefing, CRM, privacidade e domínio no ambiente aprovado.",
+        "finding": "A decisão formal adia a versão comercial; a prévia técnica não equivale a lançamento.",
+        "nextAction": "Publicar somente quando os treze gates estiverem comprovados.",
         "evidence": [
           "README.md",
           "docs/SUPABASE_SITE_DATABASE.md",
-          "docs/audit/2026-09-22-production-environment.md"
+          "docs/audit/2026-09-22-production-environment.md",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -4285,9 +4382,9 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "Não ocorreu lançamento comercial nem monitoramento das primeiras 48 horas.",
-        "nextAction": "Monitorar e reconciliar solicitações após publicação.",
-        "evidence": ["src/lib/plan.json"]
+        "finding": "Plano define conciliação e responsáveis por papel, mas as primeiras 48 horas dependem de lançamento comercial.",
+        "nextAction": "Executar após publicação com equipe nominal de plantão.",
+        "evidence": ["src/lib/plan.json", "docs/OPERACAO_COMERCIAL_E_SLA.md"]
       }
     },
     {
@@ -4304,9 +4401,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Não existe baseline do funil real.",
-        "nextAction": "Medir eventos e qualificação após operação iniciada.",
-        "evidence": ["docs/ESTRATEGIA_E_PESQUISA.md"]
+        "finding": "Dicionário do funil está fechado e todos os baselines reais permanecem explicitamente a medir.",
+        "nextAction": "Coletar e revisar após operação autorizada.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "docs/KPIS_FUNIL_E_HIPOTESES.md"
+        ]
       }
     },
     {
@@ -4323,9 +4423,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "validacao",
-        "finding": "Não houve experimento de melhoria com resultado medido no funil.",
-        "nextAction": "Priorizar atrito observado e medir intervenção adequada ao volume.",
-        "evidence": ["docs/ESTRATEGIA_E_PESQUISA.md"]
+        "finding": "Backlog priorizado e métodos estão definidos; nenhuma melhoria pode ser declarada validada antes do baseline e experimento.",
+        "nextAction": "Escolher o primeiro atrito observado após o funil real.",
+        "evidence": [
+          "docs/ESTRATEGIA_E_PESQUISA.md",
+          "docs/KPIS_FUNIL_E_HIPOTESES.md"
+        ]
       }
     },
     {
@@ -4342,11 +4445,12 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "misto",
-        "finding": "Catálogo permanece com oito peças, sem expansão homologada.",
-        "nextAction": "Aprovar novos produtos e mídia e testar escala antes de expandir.",
+        "finding": "A expansão foi formalmente congelada nos oito SKUs até aprovação editorial e capacidade medida; nenhuma expansão ocorreu.",
+        "nextAction": "Reavaliar após o primeiro ciclo comercial.",
         "evidence": [
           "src/lib/products.json",
-          "docs/audit/plan-database-check.json"
+          "docs/audit/plan-database-check.json",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
         ]
       }
     },
@@ -4358,15 +4462,18 @@
       "acceptance": "Calendário tem donos, indicadores e procedimento para corrigir drift.",
       "owner": "PO + operações + crescimento",
       "priority": "P0/P1",
-      "status": "pending",
-      "evidence": "src/lib/plan.json",
+      "status": "done",
+      "evidence": "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md",
       "dependencies": [195],
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Não há calendário trimestral com donos e indicadores.",
-        "nextAction": "Estabelecer revisão e processo de correção de drift.",
-        "evidence": ["src/lib/plan.json"]
+        "finding": "Revisões foram calendarizadas para a primeira semana útil de janeiro, abril, julho e outubro, com papéis, indicadores e procedimento de correção de drift.",
+        "nextAction": "Nomear as pessoas antes do primeiro ciclo e registrar sua ata.",
+        "evidence": [
+          "src/lib/plan.json",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
+        ]
       }
     },
     {
@@ -4383,20 +4490,23 @@
       "audit": {
         "previousStatus": "pending",
         "kind": "negocio",
-        "finding": "Relatório de revisão não encerra ciclo comercial; metas e resultados de operação faltam.",
-        "nextAction": "Consolidar aprendizados após os marcos 197–199.",
-        "evidence": ["src/lib/plan.json"]
+        "finding": "O calendário e a regra de fechamento existem, mas não há resultado comercial para encerrar o ciclo.",
+        "nextAction": "Consolidar metas, evidências e decisões após as etapas operacionais.",
+        "evidence": [
+          "src/lib/plan.json",
+          "docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md"
+        ]
       }
     }
   ],
   "review": {
-    "id": "2026-09-23-audit-2",
-    "reviewedCommit": "844056f5b427ff1589ce7c13a40dc0c8938a6807",
+    "id": "2026-09-23-decision-1",
+    "reviewedCommit": "e4c1031cb9701e3434b391487abdd2e4a5a321fa",
     "baseline": {
       "done": 63,
       "pending": 137
     },
-    "scope": "200 critérios individuais; código, documentação, testes, CI, deploy Vercel e banco dedicado. Pesquisa com pessoas, homologação de CRM, decisões jurídicas e operação comercial continuam externas.",
+    "scope": "200 critérios individuais; decisões de produto, escopo, operação, medição, privacidade e release; código, documentação, testes, CI, deploy Vercel e banco dedicado. Entrevistas, licenças, nomes responsáveis, CRM, staging e pilotos permanecem evidências externas.",
     "statusMeaning": "done: critério próprio comprovado no escopo declarado; partial: artefato ou implementação existe com lacuna; pending: entrega exigida sem evidência. Dependências abertas bloqueiam prontidão integrada e são exibidas separadamente."
   }
 }

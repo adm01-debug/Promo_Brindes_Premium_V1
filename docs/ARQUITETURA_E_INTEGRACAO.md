@@ -71,6 +71,8 @@ Contrato de referência a implementar:
 
 Isso é uma proposta de contrato para passagem ao comercial. A tabela privada `premium_briefings` persiste o briefing apenas quando a entrega é ativada por variável explícita. A chave e o hash do conteúdo são únicos, e uma lease no banco impede duas chamadas concorrentes ao receptor. Arquivos devem ter upload validado e acesso privado; a referência ao arquivo fica no briefing, não um blob/base64 em eventos de analytics.
 
+O [contrato operacional](OPERACAO_COMERCIAL_E_SLA.md) decidiu que `premium_briefings` é o intake canônico até a confirmação do receptor pelo mesmo protocolo. Ele também define dono funcional, qualificação, atribuição, estados, SLA, conciliação e a matriz que ainda precisa ser executada em staging.
+
 O servidor valida esquema e regras; resolve novamente produto e variante; aplica proteção contra abuso; persiste com idempotência; encaminha conforme regras aprovadas; confirma protocolo somente depois do commit. A ação de converter em proposta utiliza as funções transacionais e de aprovação existentes. Nomes concretos do destino de lead e do adaptador CRM dependem de inventário e revisão com a operação.
 
 Resposta implementada: 201 para criado; 200 para replay entregue; 202 para outra chamada enquanto a mesma entrega está reservada; 409 para chave reutilizada com conteúdo diferente; 422 para validação; 429 para excesso e 503 para indisponibilidade recuperável. Nunca usar uma mensagem de sucesso gerada apenas por timer. Logs têm `request_id`, resultado, latência e IDs técnicos mínimos; não devem carregar e-mail, texto livre ou arquivos completos.
