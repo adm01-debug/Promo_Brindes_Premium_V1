@@ -26,7 +26,7 @@ Node 22.12+ ou 24 LTS recomendado. O projeto usa Next.js 16, React 19 e TypeScri
 - Detalhe rápido, quantidades com mínimo cadastrado e remoção de itens.
 - Briefing com validação e download de arquivo local.
 - Plano interativo local com 200 etapas, filtros, progresso local e exportação Markdown; a rota e seus dados retornam 404 em ambientes implantados na Vercel.
-- Revisão individual das 200 etapas: **106 critérios comprovados no escopo, 48 entregas parciais e 46 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
+- Revisão individual das 200 etapas: **116 critérios comprovados no escopo, 41 entregas parciais e 43 sem entrega comprovada**. O painel distingue a auditoria das marcações pessoais.
 - Fichas com recomendações publicadas da mesma coleção editorial, sem inferir estoque ou compatibilidade de kit.
 - Metadados Open Graph/Twitter por template, request ID e tempo de servidor no catálogo público.
 - Páginas permanentes de produto, metadados por peça e infraestrutura de sitemap/robots preparada para lançamento autorizado.
@@ -42,6 +42,12 @@ O planejamento é uma ferramenta interna local. `PROMO_PREMIUM_PLANNING_ENABLED=
 
 ## Documentação
 
+- [Decisões de produto, operação, escopo e lançamento](docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md)
+- [KPIs e hipóteses priorizadas do funil](docs/KPIS_FUNIL_E_HIPOTESES.md)
+- [Operação comercial, SLA e conciliação](docs/OPERACAO_COMERCIAL_E_SLA.md)
+- [Governança editorial e critérios dos oito produtos](docs/GOVERNANCA_EDITORIAL_E_CURADORIA.md)
+- [Governança de privacidade antes do lançamento](docs/GOVERNANCA_PRIVACIDADE_PRE_LANCAMENTO.md)
+- [Validação do pacote de decisões e governança](docs/audit/2026-09-23-decision-governance.md)
 - [Auditoria do Super Filtro V4: padrões, riscos, simulações e adaptação premium](docs/AUDITORIA_SUPER_FILTRO.md)
 - [Backlog do Super Filtro: 30 recomendações com critérios de aceite](docs/BACKLOG_SUPER_FILTRO.csv)
 - [Implementação e validação da descoberta premium](docs/audit/2026-09-22-super-filter-implementation.md)
@@ -86,6 +92,7 @@ O planejamento é uma ferramenta interna local. `PROMO_PREMIUM_PLANNING_ENABLED=
 npm run typecheck
 npm run build
 npm run check:plan
+npm run check:governance
 npm run check:public-secrets
 npm run check:performance-budget
 npm run check:ui-contract

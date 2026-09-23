@@ -2,9 +2,9 @@
 
 Referência: **2026-09-23** · **20 fases × 10 etapas = 200 etapas**.
 
-Status auditado: **106 concluídas no próprio escopo; 48 parciais; 46 sem entrega comprovada**. São 94 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
+Status auditado: **116 concluídas no próprio escopo; 41 parciais; 43 sem entrega comprovada**. São 84 etapas abertas. Conclusão isolada não representa aprovação comercial, integração em produção ou lançamento.
 
-Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatório e prioridades](REVISAO_EXAUSTIVA_PLANO.md).
+Revisão do código base: `e4c1031cb9701e3434b391487abdd2e4a5a321fa`. [Relatório e prioridades](REVISAO_EXAUSTIVA_PLANO.md).
 
 ## Como utilizar
 
@@ -232,12 +232,12 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
   - **Próxima ação:** Validar hipótese nas entrevistas e no piloto.
   - **Dependências:** 020 (Concluída no escopo).
 
-- [ ] **022. Definir segmentos prioritários.** Separar RH, marketing, compras, agências e relacionamento executivo.
-  - **Situação auditada:** Parcial.
+- [x] **022. Definir segmentos prioritários.** Separar RH, marketing, compras, agências e relacionamento executivo.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Cada segmento tem ocasião, ticket a investigar e contexto de decisão.
-  - **Constatação:** Cinco segmentos hipotéticos estão descritos; faltam prioridade e ticket a investigar por segmento.
-  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`.
-  - **Próxima ação:** Completar contexto, faixa a investigar e prioridade comercial.
+  - **Constatação:** Cinco segmentos têm ordem provisória, ocasiões, três faixas de ticket a investigar e contexto de decisão; o documento separa hipótese de fato comercial.
+  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Validar ou reordenar após entrevistas e dados reais, sem reabrir a definição necessária à pesquisa.
   - **Dependências:** 021 (Concluída no escopo).
 
 - [ ] **023. Entrevistar compradores.** Realizar entrevistas sobre compras anteriores, dificuldades e critérios de aprovação.
@@ -246,7 +246,7 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
   - **Constatação:** Nenhuma das seis entrevistas com compradores foi realizada ou anexada.
   - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`.
   - **Próxima ação:** Recrutar compradores e registrar evidências e síntese.
-  - **Dependências:** 022 (Parcial).
+  - **Dependências:** 022 (Concluída no escopo).
 
 - [ ] **024. Entrevistar vendedores.** Identificar informações indispensáveis para transformar interesse em proposta.
   - **Situação auditada:** Sem entrega comprovada.
@@ -267,9 +267,9 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **026. Priorizar ocasiões.** Avaliar onboarding, reconhecimento, fim de ano, relacionamento e eventos.
   - **Situação auditada:** Parcial.
   - **Aceite:** Prioridade é aprovada usando demanda comercial e disponibilidade reais.
-  - **Constatação:** Ocasiões aparecem no formulário, sem priorização por demanda e capacidade.
-  - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/ESTRATEGIA_E_PESQUISA.md`.
-  - **Próxima ação:** Aprovar prioridade usando dados comerciais e disponibilidade.
+  - **Constatação:** A ordem provisória de cinco ocasiões foi decidida, mas ainda não usa demanda e disponibilidade reais, exigidas pelo aceite.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/ESTRATEGIA_E_PESQUISA.md`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Executar entrevistas e cruzar oportunidades, disponibilidade e capacidade antes de aprovar a prioridade.
   - **Dependências:** 025 (Parcial).
 
 - [ ] **027. Definir oferta de entrada.** Selecionar um escopo inicial de produtos e serviços que a operação pode cumprir.
@@ -280,29 +280,29 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
   - **Próxima ação:** Validar escopo de produtos e serviços entregáveis e exclusões.
   - **Dependências:** 026 (Parcial).
 
-- [ ] **028. Definir métricas de negócio.** Estabelecer briefing qualificado, proposta emitida e receita como resultados do funil.
-  - **Situação auditada:** Parcial.
+- [x] **028. Definir métricas de negócio.** Estabelecer briefing qualificado, proposta emitida e receita como resultados do funil.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Cada KPI tem fórmula, fonte, janela, responsável e baseline ainda a medir.
-  - **Constatação:** KPIs e fórmulas estão propostos; faltam fontes operacionais, janelas e donos.
-  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`.
-  - **Próxima ação:** Definir medição, responsáveis e baseline para cada KPI.
+  - **Constatação:** Treze KPIs têm fórmula, fonte, janela, papel responsável e baseline explicitamente a medir.
+  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `docs/KPIS_FUNIL_E_HIPOTESES.md`.
+  - **Próxima ação:** Substituir os baselines após ativação autorizada e registrar qualquer mudança de definição.
   - **Dependências:** 025 (Parcial).
 
-- [ ] **029. Priorizar hipóteses de conversão.** Listar hipóteses de impacto para busca, preço e atendimento consultivo.
-  - **Situação auditada:** Parcial.
+- [x] **029. Priorizar hipóteses de conversão.** Listar hipóteses de impacto para busca, preço e atendimento consultivo.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Backlog separa evidência de opinião e inclui método de avaliação.
-  - **Constatação:** Existem recomendações de conversão, sem backlog de hipóteses priorizado e método por item.
-  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`.
-  - **Próxima ação:** Formalizar hipóteses com evidência, impacto esperado e método de avaliação.
-  - **Dependências:** 028 (Parcial).
+  - **Constatação:** Sete hipóteses estão priorizadas e distinguem evidência técnica, referência externa, opinião e decisão de risco, com método e proteção contra conclusão falsa.
+  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `docs/KPIS_FUNIL_E_HIPOTESES.md`.
+  - **Próxima ação:** Executar os métodos somente quando seus gates de privacidade, staging ou pesquisa estiverem atendidos.
+  - **Dependências:** 028 (Concluída no escopo).
 
 - [ ] **030. Validar o escopo do MVP.** Alinhar funcionalidades do primeiro lançamento com operação e capacidade.
   - **Situação auditada:** Parcial.
   - **Aceite:** PO e comercial aprovam uma lista de entrada e saída do MVP.
-  - **Constatação:** MVP consultivo é recomendado, mas não há aceite documentado de PO e comercial.
-  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `README.md`.
-  - **Próxima ação:** Aprovar escopo de entrada e saída e responsáveis.
-  - **Dependências:** 027 (Parcial), 029 (Parcial).
+  - **Constatação:** A lista de entrada e saída do MVP está pronta e tecnicamente aplicada; faltam os nomes e o aceite explícito de PO e comercial.
+  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `README.md`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Registrar aprovação nominal de PO e comercial ou os ajustes solicitados.
+  - **Dependências:** 027 (Parcial), 029 (Concluída no escopo).
 
 
 ## Fase 04 — Identidade, direção de arte e voz
@@ -398,12 +398,12 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 
 **Articulação:** fase 01, fase 03.
 
-- [ ] **041. Criar critérios da seleção premium.** Definir valor percebido, utilidade, acabamento e viabilidade como critérios.
-  - **Situação auditada:** Parcial.
+- [x] **041. Criar critérios da seleção premium.** Definir valor percebido, utilidade, acabamento e viabilidade como critérios.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Cada produto candidato recebe justificativa e status de validação comercial.
-  - **Constatação:** Valor percebido e utilidade são diretrizes gerais; faltam fichas de avaliação por candidato.
-  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `src/lib/products.json`.
-  - **Próxima ação:** Pontuar cada produto e registrar validação comercial.
+  - **Constatação:** Os seis critérios de seleção foram definidos e cada um dos oito candidatos tem justificativa, lacuna decisiva e status comercial pendente explícito.
+  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `src/lib/products.json`, `docs/GOVERNANCA_EDITORIAL_E_CURADORIA.md`.
+  - **Próxima ação:** Coletar as evidências por SKU e alterar o status apenas após aprovação humana real.
   - **Dependências:** 027 (Parcial).
 
 - [x] **042. Selecionar peças iniciais reais.** Usar produtos identificáveis do catálogo para a prévia.
@@ -441,9 +441,9 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **046. Revalidar preços e faixas.** Conferir venda, quantidade, gravação, impostos, validade e frete.
   - **Situação auditada:** Parcial.
   - **Aceite:** Toda oferta pública informa sua base; preço sem contexto permanece sob consulta.
-  - **Constatação:** A UI mantém valores sob consulta, mas não existe tabela de faixas e condições aprovada.
-  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/produtos/[slug]/page.tsx`.
-  - **Próxima ação:** Validar composição, quantidade, impostos, frete e validade.
+  - **Constatação:** A decisão mantém toda oferta pública sob consulta até quantidade, personalização, tributos, frete e validade estarem homologados por SKU.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/produtos/[slug]/page.tsx`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Produzir e aprovar a matriz comercial antes de publicar qualquer preço.
   - **Dependências:** 042 (Concluída no escopo), 024 (Sem entrega comprovada).
 
 - [x] **047. Verificar mídia por amostragem.** Testar URLs principais e alternativas das peças escolhidas.
@@ -473,9 +473,9 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **050. Definir manutenção editorial.** Atribuir responsável por dados, imagens e expiração de coleções.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** SLA interno e processo de retirada de conteúdo incorreto estão acordados.
-  - **Constatação:** Não há responsável editorial nomeado nem SLA acordado de retirada.
-  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`.
-  - **Próxima ação:** Designar responsáveis e aprovar revisão e retirada.
+  - **Constatação:** Processo de retirada e SLA interno estão definidos por papel; faltam titular, substituto e acordo nominal da equipe.
+  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/GOVERNANCA_EDITORIAL_E_CURADORIA.md`.
+  - **Próxima ação:** Nomear responsáveis e ensaiar retirada de um SKU em staging.
   - **Dependências:** 043 (Parcial), 044 (Parcial), 045 (Parcial), 046 (Parcial), 049 (Sem entrega comprovada).
 
 
@@ -781,9 +781,9 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **085. Projetar filtros comerciais reais.** Incluir material, faixa de investimento, prazo e mínimo conforme dados aprovados.
   - **Situação auditada:** Parcial.
   - **Aceite:** Filtros usam atributos confiáveis e não prometem estoque ou prazo inexistentes.
-  - **Constatação:** Quantidade desejada usa o mínimo cadastrado e deixa explícito que não confirma estoque. Material, investimento e prazo continuam sem dados e regras públicas homologadas.
-  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/lib/products.json`, `docs/CONTRATO_CATALOGO_PUBLICO_V1.md`, `tests/storefront.spec.ts`.
-  - **Próxima ação:** Homologar os atributos comerciais restantes antes de oferecer material, investimento ou prazo como filtros.
+  - **Constatação:** Quantidade usa mínimo publicado; material, investimento, prazo e estoque foram deliberadamente excluídos até haver dados comerciais confiáveis.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/lib/products.json`, `docs/CONTRATO_CATALOGO_PUBLICO_V1.md`, `tests/storefront.spec.ts`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Homologar atributos antes de acrescentar facetas comerciais.
   - **Dependências:** 045 (Parcial), 046 (Parcial).
 
 - [x] **086. Implementar facetas combináveis.** Permitir múltiplas escolhas por atributo e indicar quantidade de resultados.
@@ -860,9 +860,9 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **094. Exibir variantes confirmadas.** Oferecer apenas cores e tamanhos existentes para a peça.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Seleção de variante atualiza imagem, SKU e condições de disponibilidade.
-  - **Constatação:** Modelo e UI não oferecem variantes de cor/tamanho com SKU e disponibilidade.
-  - **Evidências e referências:** `src/lib/products.json`, `src/app/produtos/[slug]/page.tsx`.
-  - **Próxima ação:** Homologar variantes e implementar seleção sincronizada.
+  - **Constatação:** Variantes foram excluídas do MVP até existir contrato com SKU, mídia e disponibilidade sincronizados; não há implementação.
+  - **Evidências e referências:** `src/lib/products.json`, `src/app/produtos/[slug]/page.tsx`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Homologar dados e implementar seleção sincronizada em versão posterior.
   - **Dependências:** 124 (Parcial).
 
 - [ ] **095. Exibir informação técnica revisada.** Organizar materiais, medidas, capacidade e itens inclusos.
@@ -876,25 +876,25 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **096. Explicar condições de preço.** Diferenciar item, personalização, embalagem, frete e impostos.
   - **Situação auditada:** Parcial.
   - **Aceite:** Qualquer preço de entrada tem quantidade de referência e validade explícitas.
-  - **Constatação:** Valores estão sob consulta e FAQ cita fatores; preço contextual por produto não está definido.
-  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/produtos/[slug]/page.tsx`.
-  - **Próxima ação:** Validar condições e apresentá-las junto da oferta quando houver preço.
+  - **Constatação:** Preço permanece sob consulta por decisão formal; condição contextual ainda depende de matriz comercial por SKU.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/produtos/[slug]/page.tsx`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Publicar preço somente após quantidade, personalização, tributos, frete e validade aprovados.
   - **Dependências:** 046 (Parcial).
 
 - [ ] **097. Explicar prazo e disponibilidade.** Mostrar estimativas condicionadas às etapas reais de produção.
   - **Situação auditada:** Parcial.
   - **Aceite:** Consulta de estoque não é apresentada como reserva garantida.
-  - **Constatação:** Aviso impede promessa de estoque, mas não há consulta nem estimativa por etapas reais.
-  - **Evidências e referências:** `src/app/produtos/[slug]/page.tsx`, `docs/ARQUITETURA_E_INTEGRACAO.md`.
-  - **Próxima ação:** Implementar disponibilidade e prazos confirmáveis com a operação.
+  - **Constatação:** Prazo e estoque não são prometidos; fonte operacional, validade e fallback continuam inexistentes.
+  - **Evidências e referências:** `src/app/produtos/[slug]/page.tsx`, `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Homologar a fonte e testar estados antes de exibir estimativa.
   - **Dependências:** 124 (Parcial).
 
 - [ ] **098. Criar conteúdo de personalização por peça.** Relacionar técnica, local de gravação e limites aplicáveis.
   - **Situação auditada:** Parcial.
   - **Aceite:** Informações são consistentes com áreas e técnicas aprovadas no sistema.
-  - **Constatação:** Apenas booleano personalizable e texto genérico; técnicas e áreas por peça estão ausentes.
-  - **Evidências e referências:** `src/lib/products.json`, `src/app/produtos/[slug]/page.tsx`.
-  - **Próxima ação:** Vincular técnicas, áreas e limites homologados por SKU.
+  - **Constatação:** Conteúdo genérico não enumera técnicas não comprovadas; técnica e área por SKU continuam pendentes.
+  - **Evidências e referências:** `src/lib/products.json`, `src/app/produtos/[slug]/page.tsx`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Obter elegibilidade aprovada antes de ampliar a ficha.
   - **Dependências:** 101 (Parcial).
 
 - [x] **099. Criar recomendação contextual.** Sugerir complementos ou alternativas compatíveis com ocasião e faixa.
@@ -923,73 +923,73 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **101. Mapear técnicas disponíveis.** Relacionar técnicas e áreas reais ao catálogo público aprovado.
   - **Situação auditada:** Parcial.
   - **Aceite:** Não há enumeração de técnica universal sem elegibilidade por produto.
-  - **Constatação:** Auditoria interna localiza recursos de personalização; vitrine não mapeia técnicas e áreas.
-  - **Evidências e referências:** `docs/AUDITORIA_PROJETO_INTERNO.md`, `src/lib/products.json`.
-  - **Próxima ação:** Inspecionar dados autorizados e publicar elegibilidade por produto.
+  - **Constatação:** A decisão proíbe técnicas universais e exige elegibilidade, área, limite e resultado por SKU; os dados ainda não foram homologados.
+  - **Evidências e referências:** `docs/AUDITORIA_PROJETO_INTERNO.md`, `src/lib/products.json`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Mapear e aprovar técnicas na fonte operacional.
   - **Dependências:** 123 (Parcial), 124 (Parcial).
 
 - [ ] **102. Projetar escolha de gravação.** Desenhar seleção de posição, técnica, cores e observações.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Fluxo mantém dependências claras e previne combinações inválidas.
-  - **Constatação:** UI não permite escolher posição, técnica ou cores de gravação.
-  - **Evidências e referências:** `src/components/Storefront.tsx`.
-  - **Próxima ação:** Desenhar e implementar combinações válidas.
+  - **Constatação:** O configurador de gravação ficou fora do MVP enquanto técnicas e combinações não forem homologadas.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Projetar o fluxo depois do contrato por SKU.
   - **Dependências:** 101 (Parcial).
 
 - [ ] **103. Definir envio de logotipo.** Especificar tipos permitidos, tamanho máximo, retenção e acesso.
   - **Situação auditada:** Parcial.
   - **Aceite:** Contrato exige validação de conteúdo e armazenamento privado.
-  - **Constatação:** Arquitetura exige storage privado e validação; tipos, tamanho e retenção não estão fechados.
-  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/MODELO_DE_AMEACAS_PREVIA.md`.
-  - **Próxima ação:** Especificar limites, validação de conteúdo, retenção e acesso.
+  - **Constatação:** O MVP registra apenas o status da identidade visual e não recebe arquivos; o gate futuro de upload está especificado.
+  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/MODELO_DE_AMEACAS_PREVIA.md`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Definir tipos, tamanho, retenção e acesso somente quando a função entrar no escopo aprovado.
   - **Dependências:** 141 (Concluída no escopo).
 
 - [ ] **104. Implementar upload seguro.** Receber arquivo pelo backend autorizado com verificação adequada.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Arquivo inválido, excessivo ou sem autorização é rejeitado e registrado sem conteúdo sensível.
-  - **Constatação:** Não há endpoint, storage ou UI de upload.
-  - **Evidências e referências:** `docs/MODELO_DE_AMEACAS_PREVIA.md`.
-  - **Próxima ação:** Implementar upload validado após contrato e autorização de acesso.
+  - **Constatação:** Upload está formalmente fora do MVP e não há endpoint ou storage; isso evita coleta insegura, mas não conclui a função.
+  - **Evidências e referências:** `docs/MODELO_DE_AMEACAS_PREVIA.md`, `docs/GOVERNANCA_PRIVACIDADE_PRE_LANCAMENTO.md`.
+  - **Próxima ação:** Implementar e testar somente após contrato e aprovação de privacidade.
   - **Dependências:** 103 (Parcial), 145 (Sem entrega comprovada).
 
 - [ ] **105. Distinguir simulação de prova final.** Identificar visualização como aproximada e prever aprovação de arte.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Nenhum preview é tratado como ordem de produção automaticamente.
-  - **Constatação:** Não existe simulação de arte nem fluxo de prova final; imagem de campanha não é esse recurso.
-  - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/ARQUITETURA_E_INTEGRACAO.md`.
-  - **Próxima ação:** Projetar aviso e aprovação versionada da arte.
+  - **Constatação:** Imagens conceituais não são tratadas como prova; fluxo versionado de simulação e aceite ainda não existe.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Projetar aprovação de arte quando técnicas e upload estiverem homologados.
   - **Dependências:** 102 (Sem entrega comprovada).
 
 - [ ] **106. Definir composição de kits.** Mapear componentes, quantidades, embalagem e compatibilidade.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Um kit preserva IDs de todos os componentes e regras de múltiplos.
-  - **Constatação:** Seleção de peças não modela kit, componentes, múltiplos e compatibilidade.
-  - **Evidências e referências:** `src/lib/catalog.ts`, `docs/ARQUITETURA_E_INTEGRACAO.md`.
-  - **Próxima ação:** Definir composição estruturada com regras aprovadas.
+  - **Constatação:** Kits configuráveis ficaram fora do MVP; seleção atual não representa componentes, múltiplos ou compatibilidade.
+  - **Evidências e referências:** `src/lib/catalog.ts`, `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Modelar componentes somente após dados e regras aprovados.
   - **Dependências:** 101 (Parcial).
 
 - [ ] **107. Definir apresentação do kit.** Oferecer embalagens de acordo com capacidade e disponibilidade.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Dimensões e inclusão da embalagem são confirmadas no orçamento.
-  - **Constatação:** Embalagem só aparece como intenção em texto livre.
-  - **Evidências e referências:** `src/components/Storefront.tsx`.
-  - **Próxima ação:** Modelar opções com capacidade, dimensão e disponibilidade.
+  - **Constatação:** Embalagem é intenção sob consulta e não promessa de inclusão; opções estruturadas ainda não existem.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Homologar capacidade, dimensão, disponibilidade e preço.
   - **Dependências:** 106 (Sem entrega comprovada).
 
 - [ ] **108. Projetar cartão e mensagem.** Permitir texto com limites adequados à produção e revisão.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Limites de caracteres e necessidade de aprovação ficam claros.
-  - **Constatação:** Textarea genérico não equivale a cartão com limites e revisão de produção.
-  - **Evidências e referências:** `src/components/Storefront.tsx`.
-  - **Próxima ação:** Definir e implementar mensagem e aprovação do cartão.
+  - **Constatação:** Cartão personalizado ficou fora do MVP; limites e aprovação de produção ainda não existem.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Definir contrato e fluxo quando kit e embalagem estiverem aprovados.
   - **Dependências:** 107 (Sem entrega comprovada).
 
 - [ ] **109. Implementar cálculo consistente.** Reutilizar cálculo validado no backend para peças e personalização.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Preço público não revela custo, margem ou regras comerciais internas.
-  - **Constatação:** Não há adaptador de cálculo público para peça e personalização.
-  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/AUDITORIA_PROJETO_INTERNO.md`.
-  - **Próxima ação:** Integrar cálculo validado sem expor custos e margens.
+  - **Constatação:** Preço público e cálculo ficaram fora do MVP para não expor ou inferir custo e margem; adaptador ainda não existe.
+  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/AUDITORIA_PROJETO_INTERNO.md`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Integrar cálculo autorizado depois da homologação comercial.
   - **Dependências:** 106 (Sem entrega comprovada), 136 (Sem entrega comprovada).
 
 - [ ] **110. Testar passagem da arte à produção.** Simular kit completo com peça, gravação, embalagem e mensagem.
@@ -1050,17 +1050,17 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **116. Definir formulário de produção.** Validar dados indispensáveis, aviso de privacidade e finalidade com comercial.
   - **Situação auditada:** Parcial.
   - **Aceite:** Solicitação de marketing fica separada do atendimento quando aplicável.
-  - **Constatação:** Campos iniciais e aviso local existem; finalidade e dados de produção não foram aprovados.
-  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/privacidade/page.tsx`.
-  - **Próxima ação:** Homologar formulário e política com responsáveis comercial e jurídico.
+  - **Constatação:** O briefing baixável separa a prévia de qualquer atendimento; coleta real permanece bloqueada até privacidade e comercial aprovarem o formulário.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `src/app/privacidade/page.tsx`, `docs/GOVERNANCA_PRIVACIDADE_PRE_LANCAMENTO.md`.
+  - **Próxima ação:** Obter controlador, finalidade, retenção e aceite comercial antes de habilitar envio.
   - **Dependências:** 024 (Sem entrega comprovada), 146 (Sem entrega comprovada).
 
 - [ ] **117. Implementar envio real no backend.** Enviar briefing validado com chave de idempotência e proteção contra abuso.
   - **Situação auditada:** Parcial.
   - **Aceite:** Duplo clique e retry não geram oportunidades duplicadas.
-  - **Constatação:** Entrega opcional usa chave estável, hash da intenção normalizada, consulta prévia de protocolo, lease atômica, leitura sem cache, rate limit compartilhado e chamada assinada por HMAC. O receptor precisa confirmar o mesmo protocolo em JSON limitado. Falta receptor comercial homologado e validar o cabeçalho de IP no proxy real.
-  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`, `supabase/migrations/20260922142000_add_briefing_rate_limit.sql`, `supabase/migrations/20260922150000_lookup_briefing_intent.sql`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`, `docs/audit/2026-09-23-security-release-hardening.md`, `docs/CONTRATO_BRIEFING_V1.md`.
-  - **Próxima ação:** Integrar o destino aprovado e validar a criação de oportunidade sem duplicação.
+  - **Constatação:** Entrega idempotente existe e continua desligada por decisão formal até receptor, proprietário, IP confiável e conciliação passarem em staging.
+  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `src/components/Storefront.tsx`, `docs/audit/plan-browser-scenarios.json`, `supabase/migrations/20260922142000_add_briefing_rate_limit.sql`, `supabase/migrations/20260922150000_lookup_briefing_intent.sql`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`, `docs/audit/2026-09-23-security-release-hardening.md`, `docs/CONTRATO_BRIEFING_V1.md`, `docs/OPERACAO_COMERCIAL_E_SLA.md`.
+  - **Próxima ação:** Homologar receptor e executar a matriz comercial de integração.
   - **Dependências:** 116 (Parcial), 126 (Parcial), 134 (Concluída no escopo).
 
 - [ ] **118. Implementar resposta confiável.** Apresentar protocolo somente após confirmação persistida no servidor.
@@ -1074,9 +1074,9 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **119. Implementar confirmação transacional.** Enviar confirmação pelo canal aprovado com resumo e próximos passos.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Mensagem contém protocolo correto e passa por teste de entrega autorizado.
-  - **Constatação:** Não existe canal de confirmação transacional implementado ou teste de entrega.
-  - **Evidências e referências:** `docs/CONTRATO_BRIEFING_V1.md`.
-  - **Próxima ação:** Escolher canal e template e testar com destino autorizado.
+  - **Constatação:** Canal transacional não foi escolhido sem receptor real; confirmação só poderá ocorrer após aceite persistido com o mesmo protocolo.
+  - **Evidências e referências:** `docs/CONTRATO_BRIEFING_V1.md`, `docs/OPERACAO_COMERCIAL_E_SLA.md`.
+  - **Próxima ação:** Escolher canal e template com privacidade e testar entrega autorizada.
   - **Dependências:** 118 (Parcial).
 
 - [ ] **120. Testar continuidade da jornada.** Acompanhar um briefing do navegador até o atendimento efetivo.
@@ -1132,7 +1132,7 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
   - **Constatação:** A projeção Premium referencia IDs canônicos e separa campos de origem, editoriais e de publicação. A sincronização valida a fonte operacional somente por leitura, preserva retirada e janelas; o comando editorial usa dry-run, confirmação por SKU e trava de revisão para retirar, republicar ou agendar sem tocar o banco operacional.
   - **Evidências e referências:** `supabase/migrations/20260922110900_create_premium_site_core.sql`, `supabase/migrations/20260922221500_add_catalog_publication_window.sql`, `scripts/sync-site-catalog.mjs`, `scripts/manage-site-publication.mjs`, `scripts/tests/publication-management.test.mjs`, `docs/FLUXO_PUBLICACAO_EDITORIAL.md`, `docs/audit/2026-09-22-editorial-publication-control.md`.
   - **Próxima ação:** Usar o fluxo documentado somente após a decisão editorial concreta e registrar a evidência de cada alteração.
-  - **Dependências:** 041 (Parcial), 124 (Parcial).
+  - **Dependências:** 041 (Concluída no escopo), 124 (Parcial).
 
 - [ ] **126. Preparar contrato versionado.** Especificar paginação, filtros, erros, datas e disponibilidade da API.
   - **Situação auditada:** Parcial.
@@ -1181,29 +1181,29 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 
 **Articulação:** fase 12, fase 13.
 
-- [ ] **131. Mapear oportunidade e proprietário.** Definir destino dos briefings e relação com organizações e vendedores.
-  - **Situação auditada:** Sem entrega comprovada.
+- [x] **131. Mapear oportunidade e proprietário.** Definir destino dos briefings e relação com organizações e vendedores.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Fluxo aprovado identifica sistema canônico e dono de cada oportunidade.
-  - **Constatação:** Nenhum CRM/receptor e dono de oportunidade foi formalizado.
-  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/SUPABASE_SITE_DATABASE.md`.
-  - **Próxima ação:** Definir destino canônico, organização e proprietário de cada briefing.
+  - **Constatação:** O fluxo define premium_briefings como intake canônico, confirmação pelo mesmo protocolo, Coordenação Comercial Premium como dona funcional e requisito de titular e substituto nominais.
+  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/SUPABASE_SITE_DATABASE.md`, `docs/OPERACAO_COMERCIAL_E_SLA.md`.
+  - **Próxima ação:** Nomear pessoas e homologar o receptor antes de ativar a entrega.
   - **Dependências:** 024 (Sem entrega comprovada).
 
-- [ ] **132. Definir qualificação comercial.** Estabelecer ocasião, quantidade, orçamento, prazo e critérios de elegibilidade.
-  - **Situação auditada:** Parcial.
+- [x] **132. Definir qualificação comercial.** Estabelecer ocasião, quantidade, orçamento, prazo e critérios de elegibilidade.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Regras não excluem oportunidades por inferências opacas sobre o comprador.
-  - **Constatação:** Ocasião, orçamento e data são coletados; regras de qualificação não foram aprovadas.
-  - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/CONTRATO_BRIEFING_V1.md`.
-  - **Próxima ação:** Definir critérios auditáveis com comercial.
-  - **Dependências:** 131 (Sem entrega comprovada).
+  - **Constatação:** Qualificação possui resultados, regras objetivas, códigos de razão e proibição de inferências opacas sobre o comprador.
+  - **Evidências e referências:** `src/components/Storefront.tsx`, `docs/CONTRATO_BRIEFING_V1.md`, `docs/OPERACAO_COMERCIAL_E_SLA.md`.
+  - **Próxima ação:** Validar as regras no piloto comercial e versionar ajustes.
+  - **Dependências:** 131 (Concluída no escopo).
 
 - [ ] **133. Definir payload de passagem.** Preservar IDs, SKUs, variantes, arte, quantidades e observações.
   - **Situação auditada:** Parcial.
   - **Aceite:** Contrato é consumível pelo comercial sem recuperar dados de texto livre.
-  - **Constatação:** Payload básico preserva ID/SKU/quantidade; variantes, arte e consumidor comercial faltam.
-  - **Evidências e referências:** `src/lib/briefing.ts`, `docs/CONTRATO_BRIEFING_V1.md`.
-  - **Próxima ação:** Homologar contrato e adaptar o receptor sem redigitação.
-  - **Dependências:** 126 (Parcial), 131 (Sem entrega comprovada), 132 (Parcial).
+  - **Constatação:** Contrato preserva SKU, quantidade e contexto, mas o consumidor comercial, arte e variantes não estão homologados; redigitação será critério do piloto.
+  - **Evidências e referências:** `src/lib/briefing.ts`, `docs/CONTRATO_BRIEFING_V1.md`, `docs/OPERACAO_COMERCIAL_E_SLA.md`.
+  - **Próxima ação:** Adaptar o receptor real e medir redigitação com vendedores.
+  - **Dependências:** 126 (Parcial), 131 (Concluída no escopo), 132 (Concluída no escopo).
 
 - [x] **134. Implementar deduplicação.** Tratar mesma solicitação e contato com idempotência e janela definida.
   - **Situação auditada:** Concluída no escopo.
@@ -1216,10 +1216,10 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **135. Implementar atribuição de vendedor.** Aplicar regras aprovadas de carteira, região ou distribuição.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Cenários de ausência e redistribuição mantêm rastreabilidade.
-  - **Constatação:** Não existem regras ou implementação de atribuição de vendedor.
-  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`.
-  - **Próxima ação:** Aprovar carteira/região/distribuição e fallback.
-  - **Dependências:** 131 (Sem entrega comprovada).
+  - **Constatação:** Rodízio, fila da coordenação, ausência, redistribuição e rastreabilidade estão decididos; implementação depende do receptor.
+  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/OPERACAO_COMERCIAL_E_SLA.md`.
+  - **Próxima ação:** Implementar a regra no CRM homologado e simular ausências.
+  - **Dependências:** 131 (Concluída no escopo).
 
 - [ ] **136. Reutilizar orçamento transacional.** Integrar criação e aprovação pelas capacidades existentes do sistema.
   - **Situação auditada:** Sem entrega comprovada.
@@ -1229,28 +1229,28 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
   - **Próxima ação:** Integrar criação/aprovação autorizadas e testar atomicidade.
   - **Dependências:** 133 (Parcial), 134 (Concluída no escopo), 135 (Sem entrega comprovada).
 
-- [ ] **137. Definir estados de acompanhamento.** Relacionar recebido, qualificado, proposta, aprovado e encerrado.
-  - **Situação auditada:** Parcial.
+- [x] **137. Definir estados de acompanhamento.** Relacionar recebido, qualificado, proposta, aprovado e encerrado.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Cliente vê apenas estados úteis sem expor notas internas ou margem.
-  - **Constatação:** Tabela tem received/qualified/closed, sem workflow ou acompanhamento implementado.
-  - **Evidências e referências:** `supabase/migrations/20260922110900_create_premium_site_core.sql`.
-  - **Próxima ação:** Definir estados e autorização antes de expor acompanhamento.
+  - **Constatação:** Estados internos e estados públicos úteis foram definidos, com exclusão explícita de notas, custo, margem, score e dados de outros clientes.
+  - **Evidências e referências:** `supabase/migrations/20260922110900_create_premium_site_core.sql`, `docs/OPERACAO_COMERCIAL_E_SLA.md`.
+  - **Próxima ação:** Implementar estados no receptor e testar autorização antes de qualquer acompanhamento público.
   - **Dependências:** 136 (Sem entrega comprovada).
 
 - [ ] **138. Instrumentar SLA de atendimento.** Medir recebimento, primeira resposta e emissão de proposta.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Dashboard distingue horário útil e espera pelo cliente.
-  - **Constatação:** Não há medição de recebimento, resposta, horário útil ou proposta.
-  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `docs/ARQUITETURA_E_INTEGRACAO.md`.
-  - **Próxima ação:** Instrumentar eventos e dashboard de SLA.
-  - **Dependências:** 137 (Parcial).
+  - **Constatação:** SLA do piloto, pausas, alertas e janelas de conciliação estão decididos; não há instrumentação ou calendário útil configurado.
+  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/OPERACAO_COMERCIAL_E_SLA.md`.
+  - **Próxima ação:** Implementar no receptor e medir por quatro semanas antes de promessa pública.
+  - **Dependências:** 137 (Concluída no escopo).
 
 - [ ] **139. Implementar retries e conciliação.** Prever fila, tentativas controladas e tratamento de falhas de integração.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Uma falha parcial não perde briefing e pode ser reprocessada por usuário autorizado.
-  - **Constatação:** Aceite remoto exige confirmação estruturada e assinatura HMAC; falha de confirmação local permanece incerta e retry com produto retirado preserva o protocolo sem novo envio. Ainda não há outbox, retry persistente ou processo de reconciliação homologado.
-  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`, `docs/audit/2026-09-23-security-release-hardening.md`.
-  - **Próxima ação:** Persistir envio e reprocessamento com rastreabilidade e sem perda.
+  - **Constatação:** Algoritmo de conciliação, estados incertos e matriz de falhas estão definidos; outbox/job autorizado não foi implementado.
+  - **Evidências e referências:** `src/app/api/briefings/route.ts`, `docs/audit/2026-09-22-server-catalog-and-delivery.md`, `docs/audit/2026-09-23-security-release-hardening.md`, `docs/OPERACAO_COMERCIAL_E_SLA.md`.
+  - **Próxima ação:** Implementar reprocessamento e conciliação no staging do receptor.
   - **Dependências:** 136 (Sem entrega comprovada).
 
 - [ ] **140. Executar piloto com vendedores.** Acompanhar solicitações de teste até proposta revisada.
@@ -1311,17 +1311,17 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **146. Definir tratamento de dados.** Documentar finalidade, base legal, operadores, retenção e direitos com responsável jurídico.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Mapa corresponde ao sistema implementado e identifica o controlador.
-  - **Constatação:** Não há controlador identificado, mapa de tratamento aprovado ou política de retenção comercial.
-  - **Evidências e referências:** `src/app/privacidade/page.tsx`, `docs/ARQUITETURA_E_INTEGRACAO.md`.
-  - **Próxima ação:** Obter definições dos responsáveis e mapear o fluxo real.
-  - **Dependências:** 024 (Sem entrega comprovada), 131 (Sem entrega comprovada).
+  - **Constatação:** Mapa mínimo reflete a prévia e o fluxo futuro, mas razão social, CNPJ, canal, bases, retenção e fornecedores não foram aprovados.
+  - **Evidências e referências:** `src/app/privacidade/page.tsx`, `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/GOVERNANCA_PRIVACIDADE_PRE_LANCAMENTO.md`.
+  - **Próxima ação:** Preencher os fatos com controlador e responsável reais.
+  - **Dependências:** 024 (Sem entrega comprovada), 131 (Concluída no escopo).
 
 - [ ] **147. Publicar política adequada.** Redigir política e contato de privacidade da empresa para a versão comercial.
   - **Situação auditada:** Parcial.
   - **Aceite:** Texto aprovado descreve coleta real sem promessas impossíveis de cumprir.
-  - **Constatação:** Página de privacidade descreve a prévia; não é política comercial aprovada.
-  - **Evidências e referências:** `src/app/privacidade/page.tsx`.
-  - **Próxima ação:** Redigir e aprovar texto com controlador e contato reais.
+  - **Constatação:** A prévia continua fiel ao modo sem coleta; política comercial permanece bloqueada até completar o mapa e a identidade do controlador.
+  - **Evidências e referências:** `src/app/privacidade/page.tsx`, `docs/GOVERNANCA_PRIVACIDADE_PRE_LANCAMENTO.md`.
+  - **Próxima ação:** Redigir e aprovar a política a partir dos fatos reais.
   - **Dependências:** 146 (Sem entrega comprovada).
 
 - [x] **148. Controlar cookies não essenciais.** Separar preferências necessárias de publicidade e analytics dependentes de consentimento.
@@ -1335,9 +1335,9 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **149. Definir atendimento a titulares.** Implementar processo de acesso, correção, exclusão e retenção aplicável.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Solicitação de teste é rastreável e concluída conforme política aprovada.
-  - **Constatação:** Não existe canal/processo testado para acesso, correção e exclusão.
-  - **Evidências e referências:** `src/app/privacidade/page.tsx`.
-  - **Próxima ação:** Definir responsável, procedimento e evidência de solicitação teste.
+  - **Constatação:** Processo de direitos em sete passos foi especificado; canal, responsável e teste rastreável ainda não existem.
+  - **Evidências e referências:** `src/app/privacidade/page.tsx`, `docs/GOVERNANCA_PRIVACIDADE_PRE_LANCAMENTO.md`.
+  - **Próxima ação:** Nomear responsável, publicar o canal e executar solicitação sintética ponta a ponta.
   - **Dependências:** 146 (Sem entrega comprovada).
 
 - [ ] **150. Revisar segurança antes da abertura.** Aplicar checks de dependências, headers, acesso, logs e recuperação.
@@ -1355,12 +1355,12 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 
 **Articulação:** fase 06, fase 10, fase 13.
 
-- [ ] **151. Definir mapa de intenção de busca.** Separar páginas por categoria, ocasião e dúvida de compra real.
-  - **Situação auditada:** Parcial.
+- [x] **151. Definir mapa de intenção de busca.** Separar páginas por categoria, ocasião e dúvida de compra real.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Não há páginas em massa criadas apenas por variações de palavra-chave.
-  - **Constatação:** Categorias e ocasiões são propostas; mapa de intenção não foi pesquisado com compradores.
-  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md`.
-  - **Próxima ação:** Definir páginas por demanda real e intenção distinta.
+  - **Constatação:** Quatro intenções distintas foram mapeadas; nova página exige necessidade própria, produtos elegíveis e conteúdo revisado, vedando geração em massa por variação de palavra-chave.
+  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `docs/ARQUITETURA_INFORMACAO_E_FLUXOS.md`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Validar linguagem e prioridade com compradores antes da indexação.
   - **Dependências:** 023 (Sem entrega comprovada), 026 (Parcial).
 
 - [x] **152. Definir URLs e canonical.** Estabelecer slugs estáveis, redirects e política de facetas.
@@ -1369,7 +1369,7 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
   - **Constatação:** Política define uma URL por entidade, canonical dos estados com facetas, padrão de slug, 404 e redirect direto para futuras mudanças; E2E valida canonical sem filtros.
   - **Evidências e referências:** `docs/POLITICA_DE_URLS_E_CANONICAL.md`, `src/app/layout.tsx`, `src/app/produtos/[slug]/page.tsx`, `tests/public-api.spec.ts`.
   - **Próxima ação:** Adicionar redirect permanente e teste apenas quando um slug publicado for substituído.
-  - **Dependências:** 051 (Concluída no escopo), 151 (Parcial).
+  - **Dependências:** 051 (Concluída no escopo), 151 (Concluída no escopo).
 
 - [x] **153. Renderizar conteúdo no servidor.** Gerar HTML inicial com proposta, produtos e links úteis.
   - **Situação auditada:** Concluída no escopo.
@@ -1398,9 +1398,9 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **156. Implementar sitemap e robots.** Incluir apenas URLs canônicas publicáveis e manter preview fora do índice.
   - **Situação auditada:** Parcial.
   - **Aceite:** Staging permanece noindex e domínio final é validado antes de liberar indexação.
-  - **Constatação:** Indexação exige flag, URL HTTPS de domínio e fonte pública; sitemap consulta peças publicadas. O planejamento exige opt-in local e retorna 404 em todo ambiente implantado na Vercel. Posse do domínio e liberação comercial ainda não foram validadas.
-  - **Evidências e referências:** `src/app/robots.ts`, `src/app/sitemap.ts`, `src/app/layout.tsx`, `src/lib/publication.ts`, `docs/audit/2026-09-22-regression-scenarios.md`, `src/lib/planning-access.mjs`, `docs/audit/2026-09-23-security-release-hardening.md`.
-  - **Próxima ação:** Confirmar posse do domínio, conteúdo, direitos e gates comerciais antes de ativar a flag em produção.
+  - **Constatação:** Noindex permanece decisão formal; sitemap e robots só serão liberados após domínio, direitos, privacidade e release comercial.
+  - **Evidências e referências:** `src/app/robots.ts`, `src/app/sitemap.ts`, `src/app/layout.tsx`, `src/lib/publication.ts`, `docs/audit/2026-09-22-regression-scenarios.md`, `src/lib/planning-access.mjs`, `docs/audit/2026-09-23-security-release-hardening.md`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Validar domínio e todos os gates antes de alterar a flag.
   - **Dependências:** 152 (Concluída no escopo), 154 (Concluída no escopo).
 
 - [ ] **157. Produzir páginas editoriais úteis.** Escrever guias de ocasião, técnica e planejamento com participação comercial.
@@ -1409,7 +1409,7 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
   - **Constatação:** Seis páginas editoriais por ocasião têm introdução própria, orientação e produtos elegíveis. Ainda faltam guias completos de técnica e planejamento com participação comercial.
   - **Evidências e referências:** `src/lib/catalog-library.ts`, `src/app/catalogos/[slug]/page.tsx`, `docs/CATALOGOS.md`.
   - **Próxima ação:** Desenvolver guias aprofundados a partir de dúvidas reais do comercial e compradores.
-  - **Dependências:** 151 (Parcial).
+  - **Dependências:** 151 (Concluída no escopo).
 
 - [x] **158. Revisar acessibilidade de conteúdo.** Redigir alt texts, links descritivos e títulos com hierarquia.
   - **Situação auditada:** Concluída no escopo.
@@ -1422,17 +1422,17 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **159. Configurar Search Console.** Verificar domínio autorizado e acompanhar rastreamento e indexação.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Sitemap processado e páginas estratégicas inspecionadas após lançamento.
-  - **Constatação:** Não há domínio verificado ou configuração de Search Console.
-  - **Evidências e referências:** `README.md`.
-  - **Próxima ação:** Configurar após domínio e publicação aprovados.
+  - **Constatação:** Search Console foi deliberadamente adiado até domínio e indexação aprovados.
+  - **Evidências e referências:** `README.md`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Configurar e inspecionar páginas somente após o lançamento comercial.
   - **Dependências:** 156 (Parcial), 194 (Sem entrega comprovada).
 
 - [ ] **160. Medir qualidade do tráfego orgânico.** Relacionar entradas orgânicas a briefings qualificados, com privacidade.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Relatório diferencia visibilidade, tráfego e resultado comercial.
-  - **Constatação:** Não há tráfego orgânico medido ou associação com briefings qualificados.
-  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`.
-  - **Próxima ação:** Instrumentar relatório após lançamento e decisão de privacidade.
+  - **Constatação:** Medição orgânica foi adiada até analytics, privacidade e indexação aprovados.
+  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `docs/KPIS_FUNIL_E_HIPOTESES.md`.
+  - **Próxima ação:** Definir relatório e baseline após lançamento.
   - **Dependências:** 159 (Sem entrega comprovada).
 
 
@@ -1493,9 +1493,9 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **167. Medir Core Web Vitals em campo.** Instrumentar métricas reais conforme decisão de privacidade e consentimento.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Dashboard por dispositivo calcula p75 com amostra e janela explícitas.
-  - **Constatação:** Não há coleta de Web Vitals de usuários reais nem dashboard p75.
-  - **Evidências e referências:** `docs/ORCAMENTO_DESEMPENHO.md`.
-  - **Próxima ação:** Instrumentar após definição de privacidade e ambiente publicado.
+  - **Constatação:** RUM permanece desligado até ferramenta, finalidade e política aprovadas; definição de p75 e janela está registrada.
+  - **Evidências e referências:** `docs/ORCAMENTO_DESEMPENHO.md`, `docs/KPIS_FUNIL_E_HIPOTESES.md`.
+  - **Próxima ação:** Instrumentar por dispositivo após aprovação de privacidade.
   - **Dependências:** 148 (Concluída no escopo), 194 (Sem entrega comprovada).
 
 - [x] **168. Definir indisponibilidade e retries.** Projetar timeout, circuit breaker e mensagens úteis para falha de catálogo.
@@ -1509,9 +1509,9 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **169. Validar capacidade do backend.** Executar teste de carga controlado em staging com orçamento acordado.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Limites e comportamento sob excesso de tráfego são medidos sem afetar produção.
-  - **Constatação:** Não há ambiente de staging ou teste de carga autorizado registrado.
-  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`.
-  - **Próxima ação:** Definir orçamento e executar carga controlada em staging.
+  - **Constatação:** Orçamento de 20 req/s por 15 minutos e pico de 40 req/s por 60 segundos está decidido para staging; o teste não foi executado.
+  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Provisionar staging isolado e executar com dados sintéticos.
   - **Dependências:** 168 (Concluída no escopo).
 
 - [x] **170. Definir observabilidade e alertas.** Acompanhar disponibilidade, mídia, latência e falha de briefings.
@@ -1643,9 +1643,9 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **184. Testar integração em staging.** Cobrir erro, sucesso, idempotência e rastreabilidade com CRM.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Protocolo corresponde a registro persistido e oportunidades não se duplicam.
-  - **Constatação:** Não existe teste integrado em staging com persistência e CRM.
-  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`.
-  - **Próxima ação:** Validar sucesso, falha, concorrência, reinício e reconciliação.
+  - **Constatação:** A matriz de homologação está definida, porém não há staging integrado nem CRM receptor.
+  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/OPERACAO_COMERCIAL_E_SLA.md`.
+  - **Próxima ação:** Executar a matriz após provisionar o receptor de staging.
   - **Dependências:** 120 (Sem entrega comprovada), 140 (Sem entrega comprovada).
 
 - [ ] **185. Testar navegadores e dispositivos.** Verificar Chromium, Safari/WebKit e Firefox em larguras acordadas.
@@ -1667,9 +1667,9 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **187. Executar revisão comercial.** Validar nomes, técnicas, quantidades, preços e textos institucionais.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Responsáveis aprovam todas as peças publicadas e as promessas exibidas.
-  - **Constatação:** Não há aceite comercial por peça e por promessa pública.
-  - **Evidências e referências:** `README.md`.
-  - **Próxima ação:** Homologar dados, técnicas, condições e textos com responsáveis.
+  - **Constatação:** Os critérios e oito fichas candidatas existem, todas corretamente pendentes de aprovação comercial e de direitos.
+  - **Evidências e referências:** `README.md`, `docs/GOVERNANCA_EDITORIAL_E_CURADORIA.md`.
+  - **Próxima ação:** Responsáveis nominais devem aprovar ou rejeitar cada SKU e promessa.
   - **Dependências:** 050 (Sem entrega comprovada), 095 (Parcial), 096 (Parcial), 097 (Parcial), 098 (Parcial).
 
 - [ ] **188. Executar piloto de compradores.** Convidar grupo autorizado para tarefas representativas.
@@ -1683,17 +1683,17 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **189. Revisar evidências de lançamento.** Consolidar testes, acessibilidade, observabilidade e rollback.
   - **Situação auditada:** Parcial.
   - **Aceite:** Checklist tem evidência por gate e responsáveis para pendências aceitas.
-  - **Constatação:** Build, testes, banco isolado, contrato visual, segredos e ambiente Vercel têm evidência consolidada; ainda faltam CRM/staging, aparelhos reais, usuários, direitos, operação e rollback.
-  - **Evidências e referências:** `docs/REVISAO_EXAUSTIVA_PLANO.md`, `docs/VALIDACAO.md`, `docs/audit/2026-09-22-production-environment.md`.
-  - **Próxima ação:** Completar evidências de segurança, desempenho, acesso, CRM e rollback.
+  - **Constatação:** Gates técnicos comprovados e treze bloqueios de lançamento estão explícitos em fonte validada automaticamente.
+  - **Evidências e referências:** `docs/REVISAO_EXAUSTIVA_PLANO.md`, `docs/VALIDACAO.md`, `docs/audit/2026-09-22-production-environment.md`, `docs/governance/release-governance.json`.
+  - **Próxima ação:** Substituir cada estado blocked por proven somente com evidência.
   - **Dependências:** 150 (Parcial), 166 (Concluída no escopo), 170 (Concluída no escopo), 180 (Sem entrega comprovada), 181 (Concluída no escopo), 182 (Concluída no escopo), 183 (Concluída no escopo), 184 (Sem entrega comprovada), 185 (Parcial), 186 (Concluída no escopo), 187 (Sem entrega comprovada), 188 (Sem entrega comprovada).
 
-- [ ] **190. Decidir prontidão comercial.** Revisar critérios P0 com os responsáveis de negócio e tecnologia.
-  - **Situação auditada:** Sem entrega comprovada.
+- [x] **190. Decidir prontidão comercial.** Revisar critérios P0 com os responsáveis de negócio e tecnologia.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Registro explicita liberar, adiar ou reduzir escopo, com razões verificáveis.
-  - **Constatação:** Não existe decisão formal de prontidão por negócio e tecnologia.
-  - **Evidências e referências:** `src/lib/plan.json`.
-  - **Próxima ação:** Registrar liberar, adiar ou reduzir escopo após revisão dos P0.
+  - **Constatação:** A decisão formal é adiar o lançamento comercial e manter apenas prévia técnica privada, noindex e sem coleta, com treze gates verificáveis.
+  - **Evidências e referências:** `src/lib/plan.json`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Reavaliar somente quando os gates bloqueados tiverem evidência.
   - **Dependências:** 189 (Parcial).
 
 
@@ -1706,10 +1706,10 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **191. Preparar domínio e ambientes.** Configurar preview, staging e produção com variáveis distintas.
   - **Situação auditada:** Parcial.
   - **Aceite:** Domínio, certificados e configuração são verificados sem expor staging ao índice.
-  - **Constatação:** Produção e preview usam apenas sete variáveis consumidas, catálogo Premium segregado, SSO e noindex; o plano interno falha fechado. A main exige PR e checks verify/test, inclusive para administradores. Ainda faltam staging independente, domínio comercial e certificados finais.
-  - **Evidências e referências:** `docs/SUPABASE_SITE_DATABASE.md`, `README.md`, `docs/audit/2026-09-22-production-environment.md`, `docs/audit/2026-09-23-security-release-hardening.md`.
-  - **Próxima ação:** Configurar ambientes e certificados com segregação de variáveis.
-  - **Dependências:** 190 (Sem entrega comprovada).
+  - **Constatação:** A prévia técnica permanece segregada e noindex por decisão; domínio e staging comercial seguem bloqueados.
+  - **Evidências e referências:** `docs/SUPABASE_SITE_DATABASE.md`, `README.md`, `docs/audit/2026-09-22-production-environment.md`, `docs/audit/2026-09-23-security-release-hardening.md`, `docs/governance/release-governance.json`.
+  - **Próxima ação:** Provisionar staging isolado e validar o domínio comercial.
+  - **Dependências:** 190 (Concluída no escopo).
 
 - [ ] **192. Preparar publicação reversível.** Criar release identificável com artefato e versão anterior disponível.
   - **Situação auditada:** Parcial.
@@ -1722,66 +1722,66 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **193. Preparar operação comercial.** Treinar atendimento, validar horários e definir expectativas de resposta.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Equipe encontra, assume e responde uma solicitação de teste.
-  - **Constatação:** Não há treinamento ou exercício de atendimento de solicitação teste.
-  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`.
-  - **Próxima ação:** Preparar equipe, horários e expectativa de resposta.
+  - **Constatação:** Papéis, fila, atribuição, SLA e conciliação foram decididos; equipe nominal e exercício ainda não existem.
+  - **Evidências e referências:** `docs/ARQUITETURA_E_INTEGRACAO.md`, `docs/OPERACAO_COMERCIAL_E_SLA.md`.
+  - **Próxima ação:** Nomear e treinar a equipe no receptor de staging.
   - **Dependências:** 140 (Sem entrega comprovada).
 
 - [ ] **194. Publicar versão comercial.** Implantar somente a versão que passou pelos gates de prontidão.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Smoke de produção confirma catálogo, briefing, CRM e privacidade.
-  - **Constatação:** Uma versão técnica protegida foi implantada na Vercel e o smoke autenticado confirmou catálogo canônico, ficha, privacidade e bloqueio de indexação. Não é publicação comercial: CRM, política aprovada, domínio, direitos e operação permanecem ausentes.
-  - **Evidências e referências:** `README.md`, `docs/SUPABASE_SITE_DATABASE.md`, `docs/audit/2026-09-22-production-environment.md`.
-  - **Próxima ação:** Implantar como versão comercial somente após a decisão de prontidão e validar catálogo, briefing, CRM, privacidade e domínio no ambiente aprovado.
-  - **Dependências:** 190 (Sem entrega comprovada), 192 (Parcial), 193 (Sem entrega comprovada).
+  - **Constatação:** A decisão formal adia a versão comercial; a prévia técnica não equivale a lançamento.
+  - **Evidências e referências:** `README.md`, `docs/SUPABASE_SITE_DATABASE.md`, `docs/audit/2026-09-22-production-environment.md`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Publicar somente quando os treze gates estiverem comprovados.
+  - **Dependências:** 190 (Concluída no escopo), 192 (Parcial), 193 (Sem entrega comprovada).
 
 - [ ] **195. Monitorar primeiras 48 horas.** Acompanhar erros, mídia, velocidade e solicitações recebidas.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Incidentes têm responsável e reconciliação confirma ausência de leads perdidos.
-  - **Constatação:** Não ocorreu lançamento comercial nem monitoramento das primeiras 48 horas.
-  - **Evidências e referências:** `src/lib/plan.json`.
-  - **Próxima ação:** Monitorar e reconciliar solicitações após publicação.
+  - **Constatação:** Plano define conciliação e responsáveis por papel, mas as primeiras 48 horas dependem de lançamento comercial.
+  - **Evidências e referências:** `src/lib/plan.json`, `docs/OPERACAO_COMERCIAL_E_SLA.md`.
+  - **Próxima ação:** Executar após publicação com equipe nominal de plantão.
   - **Dependências:** 194 (Sem entrega comprovada).
 
 - [ ] **196. Revisar funil inicial.** Comparar visita, seleção, início de briefing, envio e qualificação.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Baseline real substitui hipóteses sem atribuir causalidade prematura ao design.
-  - **Constatação:** Não existe baseline do funil real.
-  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`.
-  - **Próxima ação:** Medir eventos e qualificação após operação iniciada.
+  - **Constatação:** Dicionário do funil está fechado e todos os baselines reais permanecem explicitamente a medir.
+  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `docs/KPIS_FUNIL_E_HIPOTESES.md`.
+  - **Próxima ação:** Coletar e revisar após operação autorizada.
   - **Dependências:** 195 (Sem entrega comprovada).
 
 - [ ] **197. Executar primeira melhoria validada.** Priorizar o principal atrito encontrado em pesquisa e dados.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Resultado é medido com método compatível com volume e sem promessa de uplift.
-  - **Constatação:** Não houve experimento de melhoria com resultado medido no funil.
-  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`.
-  - **Próxima ação:** Priorizar atrito observado e medir intervenção adequada ao volume.
+  - **Constatação:** Backlog priorizado e métodos estão definidos; nenhuma melhoria pode ser declarada validada antes do baseline e experimento.
+  - **Evidências e referências:** `docs/ESTRATEGIA_E_PESQUISA.md`, `docs/KPIS_FUNIL_E_HIPOTESES.md`.
+  - **Próxima ação:** Escolher o primeiro atrito observado após o funil real.
   - **Dependências:** 196 (Sem entrega comprovada).
 
 - [ ] **198. Expandir curadoria com qualidade.** Adicionar produtos e ocasiões somente com dados e mídia aprovados.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Expansão mantém SLA, atributos confiáveis e identidade fotográfica.
-  - **Constatação:** Catálogo permanece com oito peças, sem expansão homologada.
-  - **Evidências e referências:** `src/lib/products.json`, `docs/audit/plan-database-check.json`.
-  - **Próxima ação:** Aprovar novos produtos e mídia e testar escala antes de expandir.
+  - **Constatação:** A expansão foi formalmente congelada nos oito SKUs até aprovação editorial e capacidade medida; nenhuma expansão ocorreu.
+  - **Evidências e referências:** `src/lib/products.json`, `docs/audit/plan-database-check.json`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Reavaliar após o primeiro ciclo comercial.
   - **Dependências:** 050 (Sem entrega comprovada), 196 (Sem entrega comprovada).
 
-- [ ] **199. Estabelecer revisão trimestral.** Revisar catálogo, conteúdo, segurança, acessibilidade e integração.
-  - **Situação auditada:** Sem entrega comprovada.
+- [x] **199. Estabelecer revisão trimestral.** Revisar catálogo, conteúdo, segurança, acessibilidade e integração.
+  - **Situação auditada:** Concluída no escopo.
   - **Aceite:** Calendário tem donos, indicadores e procedimento para corrigir drift.
-  - **Constatação:** Não há calendário trimestral com donos e indicadores.
-  - **Evidências e referências:** `src/lib/plan.json`.
-  - **Próxima ação:** Estabelecer revisão e processo de correção de drift.
+  - **Constatação:** Revisões foram calendarizadas para a primeira semana útil de janeiro, abril, julho e outubro, com papéis, indicadores e procedimento de correção de drift.
+  - **Evidências e referências:** `src/lib/plan.json`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Nomear as pessoas antes do primeiro ciclo e registrar sua ata.
   - **Dependências:** 195 (Sem entrega comprovada).
 
 - [ ] **200. Encerrar ciclo e abrir próxima versão.** Consolidar resultados, aprendizados, riscos e backlog priorizado.
   - **Situação auditada:** Sem entrega comprovada.
   - **Aceite:** Relatório vincula metas, evidências, entregas concluídas e decisões da evolução.
-  - **Constatação:** Relatório de revisão não encerra ciclo comercial; metas e resultados de operação faltam.
-  - **Evidências e referências:** `src/lib/plan.json`.
-  - **Próxima ação:** Consolidar aprendizados após os marcos 197–199.
-  - **Dependências:** 197 (Sem entrega comprovada), 198 (Sem entrega comprovada), 199 (Sem entrega comprovada).
+  - **Constatação:** O calendário e a regra de fechamento existem, mas não há resultado comercial para encerrar o ciclo.
+  - **Evidências e referências:** `src/lib/plan.json`, `docs/DECISOES_PRODUTO_OPERACAO_2026-09-23.md`.
+  - **Próxima ação:** Consolidar metas, evidências e decisões após as etapas operacionais.
+  - **Dependências:** 197 (Sem entrega comprovada), 198 (Sem entrega comprovada), 199 (Concluída no escopo).
 
 ---
 

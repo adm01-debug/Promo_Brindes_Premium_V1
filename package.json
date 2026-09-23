@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
     "check:plan": "node scripts/check-plan.mjs",
+    "check:governance": "node scripts/check-governance.mjs",
     "check:editorial": "node scripts/check-editorial-review.mjs",
     "check:editorial:ready": "node scripts/check-editorial-review.mjs --ready",
     "check:editorial:live": "node --env-file=.env.local scripts/check-editorial-live.mjs",
