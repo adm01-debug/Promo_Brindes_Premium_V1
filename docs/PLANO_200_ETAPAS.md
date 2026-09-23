@@ -1706,7 +1706,7 @@ Revisão do código base: `844056f5b427ff1589ce7c13a40dc0c8938a6807`. [Relatóri
 - [ ] **191. Preparar domínio e ambientes.** Configurar preview, staging e produção com variáveis distintas.
   - **Situação auditada:** Parcial.
   - **Aceite:** Domínio, certificados e configuração são verificados sem expor staging ao índice.
-  - **Constatação:** Produção e preview usam apenas sete variáveis consumidas, catálogo Premium segregado, SSO e noindex; o plano interno falha fechado em deploy. Ainda faltam staging independente, domínio comercial, certificados finais e gate de promoção condicionado ao CI.
+  - **Constatação:** Produção e preview usam apenas sete variáveis consumidas, catálogo Premium segregado, SSO e noindex; o plano interno falha fechado. A main exige PR e checks verify/test, inclusive para administradores. Ainda faltam staging independente, domínio comercial e certificados finais.
   - **Evidências e referências:** `docs/SUPABASE_SITE_DATABASE.md`, `README.md`, `docs/audit/2026-09-22-production-environment.md`, `docs/audit/2026-09-23-security-release-hardening.md`.
   - **Próxima ação:** Configurar ambientes e certificados com segregação de variáveis.
   - **Dependências:** 190 (Sem entrega comprovada).
