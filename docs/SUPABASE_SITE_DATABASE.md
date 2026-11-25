@@ -42,3 +42,31 @@ Os comandos reproduzíveis são `npm run db:migrate -- --dry-run`, `npm run db:m
 | Retenção                             | Limpeza de linha antiga aprovada em rollback; job ativo a cada cinco minutos, primeiro disparo remoto com `succeeded`                            |
 
 O formulário continua em download local porque `BRIEFING_DELIVERY_ENABLED=false`. A tabela privada e a capacidade técnica não equivalem a entrega a vendedores ou integração com CRM. O contato só deve passar a ser persistido após definir política de privacidade, retenção, operador, atendimento comercial e receptor homologado.
+
+## Corte e rollback de privilégios
+
+O corte por capacidade aplicado por `20260923071500_harden_default_privileges.sql` é a matriz em vigor; nenhuma outra role alcança o domínio Premium.
+
+| Objeto                                                | `anon` / `authenticated`                         | `service_role`                                     |
+| ----------------------------------------------------- | ------------------------------------------------ | -------------------------------------------------- |
+| `premium_catalog_items`                               | `SELECT` (RLS limita a publicado e vigente)      | `SELECT`, `INSERT`, `UPDATE`, `DELETE`             |
+| `premium_briefings`                                   | nenhum (RLS ligado, sem policy)                  | `SELECT`, `INSERT`, `UPDATE`                       |
+| `premium_briefing_rate_limits`                        | nenhum                                           | `SELECT`, `INSERT`, `UPDATE`, `DELETE`             |
+| RPCs de briefing (`persist_`, `lookup_`, `claim_…_v2`, `record_…_v2`, `allow_…`, `prune_…`) | nenhum                    | `EXECUTE`                                          |
+| `set_premium_catalog_updated_at()` (trigger de auditoria) | nenhum                                       | nenhum                                             |
+
+Os `ALTER DEFAULT PRIVILEGES` da mesma migration revogam tabelas, sequências e funções **criadas pela role `postgres` no schema `public`** para `public`, `anon`, `authenticated` e `service_role`; por isso toda capacidade nova criada por `postgres` precisa ser concedida de forma explícita na migration seguinte, e não herdada. Objetos criados por outras roles não são alcançados por esse `ALTER DEFAULT PRIVILEGES`, e o contrato pgTAP confere apenas o caso criado por `postgres`.
+
+Corte: `npm run db:migrate` aplica migrations pendentes e `npm run db:migrate -- --dry-run` confere se há alguma; nenhum dos dois reaplica ACLs, porque versões já registradas são puladas. Para restaurar a matriz em vigor sobre o banco oficial, aplique os `REVOKE`/`GRANT` de `20260923071500_harden_default_privileges.sql` em uma migration nova com as mesmas instruções (o ensaio isolado equivalente é `supabase start … --yes`, `supabase db reset --local`, `supabase test db --local`).
+
+Rollback de emergência: se um fluxo legítimo receber `permission denied`, conceda **somente** a capacidade que falta, na migration seguinte:
+
+```sql
+grant select, insert, update, delete
+  on table public.premium_catalog_items to service_role;
+grant execute on function public.lookup_premium_briefing(text, text) to service_role;
+```
+
+Nunca restaure o padrão amplo (`grant all on all tables in schema public to anon`) nem devolva `SELECT`/`EXECUTE` de briefings a `anon` ou `authenticated`: `supabase/tests/database/premium_default_privileges.test.sql` reprova a matriz nesses casos e `premium_access_and_idempotency.test.sql` nega leitura de contato por essas roles.
+
+O corte não tem script de desfazer: a migration de hardening é idempotente para reaplicar a matriz restritiva, não para devolver privilégios anteriores. Se ela removeu uma ou várias capacidades legítimas, o caminho reversível é uma migration nova com todos os `GRANT` necessários (bloco acima). Restaurar o banco a um ponto anterior ao corte não é caminho para privilégio: isso também reverteria catálogo, briefings e registros de entrega gravados depois, e o estado de acesso desejado deve ser escrito explicitamente em `GRANT`, nunca herdado de padrão amplo.
