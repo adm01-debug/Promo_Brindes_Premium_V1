@@ -41,13 +41,23 @@ export async function generateMetadata({
         description: product.tagline,
         type: "website",
         url: `/produtos/${product.slug}`,
-        images: [{ url: product.image, alt: product.originalName }],
+        images: [
+          {
+            url: product.image,
+            alt: `${product.name} · SKU ${product.sku}`,
+          },
+        ],
       },
       twitter: {
         card: "summary_large_image",
         title: `${product.name} | Promo Brindes Premium`,
         description: product.tagline,
-        images: [{ url: product.image, alt: product.originalName }],
+        images: [
+          {
+            url: product.image,
+            alt: `${product.name} · SKU ${product.sku}`,
+          },
+        ],
       },
       alternates: { canonical: `/produtos/${product.slug}` },
     };
@@ -127,7 +137,7 @@ export default async function ProductPage({
         <div className="product-page-image">
           <Image
             src={product.image}
-            alt={product.originalName}
+            alt={`${product.name} · SKU ${product.sku}`}
             fill
             priority
             sizes="(max-width: 820px) 100vw, 50vw"

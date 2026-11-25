@@ -28,7 +28,7 @@ Um produto só fica `approved` quando as seis dimensões têm evidência. Falha 
 | KT-90307 | Kit gourmet · 5 peças       | Proposta de encontro e celebração com bom valor percebido.                                    | Cinco componentes, contato com alimento, embalagem, técnicas e logística precisam ser validados.  | Pendente.        |
 | CE-87001 | Caneta touch em alumínio    | Peça simples, útil e adequada a assinatura, eventos e complemento de kit.                     | Material, mecanismo touch, cores, área/técnica e apresentação precisam de homologação.            | Pendente.        |
 
-O critério e o status tornam a etapa de seleção auditável; não aprovam dados que ainda não foram conferidos. O gate `npm run check:editorial:ready` continuará falhando até as aprovações reais.
+O critério e o status tornam a etapa de seleção auditável; não aprovam dados que ainda não foram conferidos. Em 25/11/2026 as oito fichas foram revisadas com evidência do catálogo operacional e passaram a `approved` em [`editorial/product-review.json`](editorial/product-review.json); a coluna "Status comercial" acima preserva a decisão de 23/09/2026.
 
 ## Fluxo e SLA interno
 
