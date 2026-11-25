@@ -43,6 +43,15 @@ const jsonRows = (rows) =>
 
 function harness({ source, existing, write } = {}) {
   const calls = [];
+  // editorial_order is unique for the whole table, so the fake target mirrors the
+  // constraint for every single statement: a write in the wrong order has to fail
+  // here exactly like it fails against Postgres.
+  const storefront = new Map();
+  const holds = (id, order) =>
+    order !== undefined &&
+    [...storefront].some(
+      ([otherId, held]) => held === order && otherId !== id,
+    );
   const fetcher = async (input, init) => {
     const url = new URL(input);
     calls.push({ url, init });
@@ -66,18 +75,105 @@ function harness({ source, existing, write } = {}) {
     assert.equal(url.hostname, targetHost);
     assert.equal(url.pathname, "/rest/v1/premium_catalog_items");
     assert.equal(init.headers.apikey, env.SUPABASE_SECRET_KEY);
-    if (init.method === "GET")
-      return existing
+    if (init.method === "GET") {
+      assert.equal(
+        url.searchParams.get("select"),
+        "id,published,editorial_order",
+      );
+      assert.equal(url.searchParams.get("order"), "editorial_order.asc");
+      assert.equal(init.headers.Prefer, "count=exact");
+      const response = existing
         ? existing()
-        : jsonRows(snapshot.map((item) => ({ id: item.id, published: true })));
+        : jsonRows(
+            snapshot.map((item, index) => ({
+              id: item.id,
+              published: true,
+              editorial_order: index + 1,
+            })),
+          );
+      if (response.ok)
+        for (const row of await response.clone().json())
+          storefront.set(row.id, row.editorial_order);
+      return response;
+    }
+    assert.equal(url.searchParams.get("select"), "id");
+    if (init.method === "PATCH") {
+      const id = url.searchParams.get("id").replace(/^eq\./, "");
+      const fields = JSON.parse(init.body);
+      assert.ok(!Object.hasOwn(fields, "id"), "a patch must not rewrite the id");
+      assert.ok(
+        !Object.hasOwn(fields, "published"),
+        "a patch must leave the publication decision untouched",
+      );
+      assert.ok(!Object.hasOwn(fields, "cost_price"));
+      if (holds(id, fields.editorial_order))
+        return Response.json({ code: "23505" }, { status: 409 });
+      if (fields.editorial_order !== undefined)
+        storefront.set(id, fields.editorial_order);
+      return write ? write() : Response.json([{ id }]);
+    }
     assert.equal(init.method, "POST");
-    const payload = JSON.parse(init.body);
-    assert.equal(payload.length, snapshot.length);
-    assert.ok(payload.every((item) => !Object.hasOwn(item, "cost_price")));
-    return write ? write() : Response.json(payload.map(({ id }) => ({ id })));
+    const rows = JSON.parse(init.body);
+    assert.ok(rows.every((item) => !Object.hasOwn(item, "cost_price")));
+    assert.ok(
+      rows.every((item) => Object.hasOwn(item, "published")),
+      "an insert must carry published for every row it sends",
+    );
+    assert.equal(
+      new Set(rows.map((row) => Object.keys(row).sort().join(","))).size,
+      1,
+      "PostgREST rejects a batch whose rows do not share the same keys",
+    );
+    const orders = rows.map((row) => row.editorial_order);
+    assert.equal(
+      new Set(orders).size,
+      orders.length,
+      "a single insert statement cannot hold two rows at the same editorial_order",
+    );
+    if (rows.some((row) => holds(row.id, row.editorial_order)))
+      return Response.json({ code: "23505" }, { status: 409 });
+    for (const row of rows) storefront.set(row.id, row.editorial_order);
+    return write ? write() : Response.json(rows.map(({ id }) => ({ id })));
   };
-  return { calls, fetcher };
+  return { calls, fetcher, storefront };
 }
+
+test("the fake storefront rejects one insert batch with a repeated editorial_order", async () => {
+  const h = harness();
+  const post = (rows) =>
+    h.fetcher(
+      new URL(
+        `https://${targetHost}/rest/v1/premium_catalog_items?select=id&on_conflict=id`,
+      ),
+      {
+        method: "POST",
+        redirect: "error",
+        headers: {
+          apikey: env["SUPABASE" + "_SECRET_KEY"],
+          Prefer: "resolution=merge-duplicates,return=representation",
+        },
+        body: JSON.stringify(rows),
+      },
+    );
+  const row = (index, editorialOrder) => ({
+    id: snapshot[index].id,
+    published: true,
+    editorial_order: editorialOrder,
+  });
+  await assert.rejects(
+    post([row(0, 1), row(1, 1)]),
+    /cannot hold two rows at the same editorial_order/,
+    "Postgres rejects the whole statement, so the fake storefront must too",
+  );
+  assert.equal(
+    h.storefront.size,
+    0,
+    "a rejected statement must leave no row behind",
+  );
+  const accepted = await post([row(2, 1), row(3, 2)]);
+  assert.equal(accepted.status, 200);
+  assert.equal(h.storefront.size, 2);
+});
 
 test("sync reads the operational source and writes only to the premium project", async () => {
   const h = harness();
@@ -91,7 +187,11 @@ test("sync reads the operational source and writes only to the premium project",
   );
   assert.deepEqual(
     h.calls.map(({ url, init }) => `${url.hostname}:${init.method}`),
-    [`${sourceHost}:GET`, `${targetHost}:GET`, `${targetHost}:POST`],
+    [
+      `${sourceHost}:GET`,
+      `${targetHost}:GET`,
+      ...snapshot.map(() => `${targetHost}:PATCH`),
+    ],
   );
 });
 
@@ -105,6 +205,282 @@ test("dry run performs no writes in either project", async () => {
   assert.equal(result.dryRun, true);
   assert.equal(h.calls.length, 2);
   assert.ok(h.calls.every(({ init }) => init.method === "GET"));
+});
+
+test("reordering the published order parks the old order before rewriting it", async () => {
+  const h = harness({
+    existing: () =>
+      jsonRows(
+        snapshot.map((item, index) => ({
+          id: item.id,
+          published: true,
+          editorial_order: snapshot.length - index,
+        })),
+      ),
+  });
+  assert.deepEqual(
+    await syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }),
+    { count: snapshot.length, project: "whwloseshzraipljisqo", dryRun: false },
+  );
+  const writes = h.calls.filter(({ init }) => init.method !== "GET");
+  assert.equal(
+    writes.length,
+    snapshot.length * 2,
+    "the old editorial order must be parked first",
+  );
+  assert.ok(writes.every(({ init }) => init.method === "PATCH"));
+  const read = ({ url, init }) => [
+    url.searchParams.get("id").replace(/^eq\./, ""),
+    JSON.parse(init.body),
+  ];
+  const parked = new Map(writes.slice(0, snapshot.length).map(read));
+  const final = new Map(writes.slice(snapshot.length).map(read));
+  assert.deepEqual(
+    writes
+      .slice(0, snapshot.length)
+      .map(({ init }) => Object.keys(JSON.parse(init.body))),
+    snapshot.map(() => ["editorial_order"]),
+    "parking only moves the position",
+  );
+  assert.deepEqual(
+    [...final.values()].map((fields) => fields.editorial_order),
+    snapshot.map((_, index) => index + 1),
+  );
+  assert.ok(
+    [...parked.values()].every(
+      (fields) => fields.editorial_order > snapshot.length,
+    ),
+    "parked rows must leave the target range free",
+  );
+  const sequence = (rows) =>
+    [...rows.keys()].sort(
+      (left, right) =>
+        rows.get(left).editorial_order - rows.get(right).editorial_order,
+    );
+  assert.deepEqual(
+    sequence(parked),
+    sequence(final),
+    "an interrupted run must still read in the target order",
+  );
+});
+
+test("a manual unpublication that races the read is never republished", async () => {
+  const h = harness({
+    existing: () =>
+      jsonRows(
+        snapshot.map((item, index) => ({
+          id: item.id,
+          published: true,
+          editorial_order: index + 1,
+        })),
+      ),
+  });
+  await syncSiteCatalog(snapshot, { env, fetcher: h.fetcher });
+  const writes = h.calls.filter(({ init }) => init.method !== "GET");
+  assert.equal(
+    writes.length,
+    snapshot.length,
+    "an unchanged order must not park anything",
+  );
+  assert.ok(writes.every(({ init }) => init.method === "PATCH"));
+  for (const { init } of writes) {
+    const fields = JSON.parse(init.body);
+    for (const key of [
+      "sku",
+      "slug",
+      "name",
+      "original_name",
+      "category",
+      "tagline",
+      "description",
+      "image_path",
+      "minimum",
+      "personalizable",
+      "source_date",
+      "editorial_order",
+    ])
+      assert.ok(
+        Object.hasOwn(fields, key),
+        `${key} must be refreshed so the row stays complete`,
+      );
+  }
+});
+
+test("a newly curated product is still published while known ones are not", async () => {
+  const known = snapshot.slice(0, snapshot.length - 1);
+  const h = harness({
+    existing: () =>
+      jsonRows(
+        known.map((item, index) => ({
+          id: item.id,
+          published: true,
+          editorial_order: index + 1,
+        })),
+      ),
+  });
+  await syncSiteCatalog(snapshot, { env, fetcher: h.fetcher });
+  const inserts = h.calls.filter(({ init }) => init.method === "POST");
+  const updates = h.calls.filter(({ init }) => init.method === "PATCH");
+  assert.equal(
+    updates.length,
+    known.length,
+    "known products are refreshed in place",
+  );
+  assert.equal(inserts.length, 1, "new products go out as a single batch");
+  const inserted = JSON.parse(inserts[0].init.body);
+  assert.deepEqual(
+    inserted.map((row) => row.id),
+    [snapshot[snapshot.length - 1].id],
+  );
+  assert.equal(inserted[0].published, true);
+  assert.equal(inserted[0].editorial_order, snapshot.length);
+  assert.deepEqual(
+    Object.keys(inserted[0]).sort(),
+    [
+      "category",
+      "description",
+      "editorial_order",
+      "id",
+      "image_path",
+      "minimum",
+      "name",
+      "original_name",
+      "personalizable",
+      "published",
+      "sku",
+      "slug",
+      "source_date",
+      "tagline",
+    ].sort(),
+    "the insert must carry every column the table requires",
+  );
+});
+
+test("a reordered storefront still accepts a new product", async () => {
+  const known = snapshot.slice(0, snapshot.length - 1);
+  const h = harness({
+    existing: () =>
+      jsonRows(
+        known.map((item, index) => ({
+          id: item.id,
+          published: true,
+          editorial_order: known.length - index,
+        })),
+      ),
+  });
+  assert.deepEqual(await syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }), {
+    count: snapshot.length,
+    project: "whwloseshzraipljisqo",
+    dryRun: false,
+  });
+  const writes = h.calls.filter(({ init }) => init.method !== "GET");
+  assert.deepEqual(
+    writes.map(({ init }) => init.method),
+    [...known.map(() => "PATCH"), ...known.map(() => "PATCH"), "POST"],
+    "park, rewrite, then insert the newcomer last",
+  );
+  assert.ok(
+    writes
+      .slice(0, known.length)
+      .every(({ init }) => JSON.parse(init.body).editorial_order > snapshot.length),
+    "the newcomer's position must stay free until the end",
+  );
+  const inserted = JSON.parse(writes[writes.length - 1].init.body);
+  assert.equal(inserted[0].editorial_order, snapshot.length);
+  assert.equal(inserted[0].published, true);
+});
+
+test("a product outside the curation never blocks the positions it holds", async () => {
+  const departed = {
+    id: "00000000-0000-4000-8000-000000000000",
+    published: true,
+    editorial_order: 3,
+  };
+  const kept = snapshot
+    .map((item, index) => ({
+      id: item.id,
+      published: true,
+      editorial_order: index + 1,
+    }))
+    .filter((item) => item.editorial_order !== departed.editorial_order);
+  const h = harness({ existing: () => jsonRows([...kept, departed]) });
+  assert.deepEqual(await syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }), {
+    count: snapshot.length,
+    project: "whwloseshzraipljisqo",
+    dryRun: false,
+  });
+  const writes = h.calls.filter(({ init }) => init.method !== "GET");
+  const assigned = writes.flatMap(({ url, init }) =>
+    init.method === "POST"
+      ? JSON.parse(init.body).map((row) => [row.id, row.editorial_order])
+      : [
+          [
+            url.searchParams.get("id").replace(/^eq\./, ""),
+            JSON.parse(init.body).editorial_order,
+          ],
+        ],
+  );
+  assert.equal(
+    new Set(assigned.map(([, order]) => order)).size,
+    assigned.length,
+    "no two rows may be written to the same position",
+  );
+  assert.ok(
+    !assigned.some(([id]) => id === departed.id),
+    "a product outside the curation must never be rewritten",
+  );
+  assert.ok(
+    !assigned.some(([, order]) => order === departed.editorial_order),
+    "the position held by that product must stay untouched",
+  );
+  const inserted = writes.filter(({ init }) => init.method === "POST");
+  assert.equal(inserted.length, 1, "the replaced product is inserted once");
+  assert.equal(
+    JSON.parse(inserted[0].init.body)[0].editorial_order,
+    4,
+    "the newcomer takes the first free position in the curation order",
+  );
+  const expected = [];
+  for (let candidate = 1; expected.length < snapshot.length; candidate += 1)
+    if (candidate !== departed.editorial_order) expected.push(candidate);
+  assert.deepEqual(
+    snapshot.map((item) => h.storefront.get(item.id)),
+    expected,
+    "every curated product ends on a free position, in curation order",
+  );
+  assert.equal(
+    h.storefront.get(departed.id),
+    departed.editorial_order,
+    "the product outside the curation keeps the position it already had",
+  );
+});
+
+test("a storefront with a product outside the curation converges on the next run", async () => {
+  const departed = {
+    id: "00000000-0000-4000-8000-000000000000",
+    published: true,
+    editorial_order: 3,
+  };
+  const settled = snapshot.map((item, index) => ({
+    id: item.id,
+    published: true,
+    editorial_order: [1, 2, 4, 5, 6, 7, 8, 9][index],
+  }));
+  const h = harness({ existing: () => jsonRows([...settled, departed]) });
+  await syncSiteCatalog(snapshot, { env, fetcher: h.fetcher });
+  const writes = h.calls.filter(({ init }) => init.method !== "GET");
+  assert.equal(
+    writes.length,
+    snapshot.length,
+    "a settled storefront is refreshed without any parking",
+  );
+  assert.ok(writes.every(({ init }) => init.method === "PATCH"));
+  assert.deepEqual(
+    snapshot.map((item) => h.storefront.get(item.id)),
+    settled.map((item) => item.editorial_order),
+    "a settled storefront is rewritten in place, without touching the gaps",
+  );
+  assert.equal(h.storefront.get(departed.id), departed.editorial_order);
 });
 
 test("counts the complete active public source separately from the curated IDs", async () => {
@@ -385,15 +761,19 @@ for (const [name, existing] of [
         snapshot.map((item, index) => ({
           id: item.id,
           published: index !== 0,
+          editorial_order: index + 1,
         })),
       ),
   ],
   [
     "incomplete publication state",
     () =>
-      Response.json([{ id: snapshot[0].id, published: true }], {
-        headers: { "content-range": "0-0/8" },
-      }),
+      Response.json(
+        [{ id: snapshot[0].id, published: true, editorial_order: 1 }],
+        {
+          headers: { "content-range": "0-0/8" },
+        },
+      ),
   ],
   ["failed target read", () => new Response("down", { status: 503 })],
 ])
