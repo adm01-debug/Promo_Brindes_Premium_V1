@@ -4,6 +4,16 @@ const blockIndexing = process.env.PROMO_PREMIUM_INDEXABLE !== "true";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  async redirects() {
+    return [
+      {
+        source:
+          "/produtos/caderno-a5-de-capa-dura-em-tecido-pet-100-reciclado-com-160-paginas-pautadas-recicladas",
+        destination: "/produtos/caderno-a5-de-capa-dura-em-tecido-rpet-160-paginas",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

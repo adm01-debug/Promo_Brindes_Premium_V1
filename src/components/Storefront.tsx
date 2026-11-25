@@ -661,7 +661,7 @@ export default function Storefront({
       "SELEÇÃO DE PRODUTOS",
       ...verified.products.map(
         (p) =>
-          `${p.originalName} | SKU ${p.sku} | ID ${p.id} | ${verified.quantities[p.id]} unidades`,
+          `${p.name} | SKU ${p.sku} | ID ${p.id} | ${verified.quantities[p.id]} unidades`,
       ),
       ...(verified.products.length
         ? []
@@ -1151,7 +1151,7 @@ export default function Storefront({
                       ) : (
                         <Image
                           src={p.image}
-                          alt={p.originalName}
+                          alt={`${p.name} · SKU ${p.sku}`}
                           fill
                           sizes="(max-width: 850px) 45vw, 23vw"
                           onError={() => markImageUnavailable(p.image)}
@@ -1669,7 +1669,7 @@ export default function Storefront({
             ) : (
               <Image
                 src={detail.image}
-                alt={detail.originalName}
+                alt={`${detail.name} · SKU ${detail.sku}`}
                 fill
                 sizes="(max-width: 700px) 90vw, 450px"
                 onError={() => markImageUnavailable(detail.image)}
