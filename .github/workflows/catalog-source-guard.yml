@@ -1,0 +1,74 @@
+name: Catalog source guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/lib/products.json"
+      - "scripts/sync-site-catalog.mjs"
+      - "scripts/check-catalog-source.mjs"
+      - "scripts/lib/catalog-source.mjs"
+      - ".github/workflows/catalog-source-guard.yml"
+  schedule:
+    - cron: "17 11 * * *"
+  workflow_dispatch:
+    inputs:
+      write:
+        description: "Gravar no banco premium (desmarcado = apenas simulacao)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catalog-source-guard
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    name: Verificar e replicar o catalogo curado
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_PROJECT_REF: whwloseshzraipljisqo
+      SUPABASE_URL: https://whwloseshzraipljisqo.supabase.co
+      CATALOG_SOURCE_SUPABASE_URL: https://doufsxqlfjyuvxuezpln.supabase.co
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - name: Conferir credenciais de sincronizacao
+        env:
+          CATALOG_SOURCE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.CATALOG_SOURCE_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          missing=""
+          [ -n "$CATALOG_SOURCE_SUPABASE_PUBLISHABLE_KEY" ] || missing="$missing CATALOG_SOURCE_SUPABASE_PUBLISHABLE_KEY"
+          [ -n "$SUPABASE_SECRET_KEY" ] || missing="$missing SUPABASE_SECRET_KEY"
+          if [ -n "$missing" ]; then
+            echo "::error title=Credenciais ausentes::Provisione os secrets do repositorio:$missing"
+            echo "Local: Settings > Secrets and variables > Actions > New repository secret."
+            exit 1
+          fi
+          echo "Credenciais de sincronizacao presentes."
+      - name: Verificar catalogo curado contra a base de gestao
+        env:
+          CATALOG_SOURCE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.CATALOG_SOURCE_SUPABASE_PUBLISHABLE_KEY }}
+        run: node scripts/check-catalog-source.mjs
+      - name: Simular replicacao (sem gravar)
+        if: github.event_name == 'workflow_dispatch' && inputs.write != true
+        env:
+          CATALOG_SOURCE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.CATALOG_SOURCE_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: node scripts/sync-site-catalog.mjs --dry-run
+      - name: Replicar catalogo curado para o banco premium
+        if: github.event_name != 'workflow_dispatch' || inputs.write == true
+        env:
+          CATALOG_SOURCE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.CATALOG_SOURCE_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: node scripts/sync-site-catalog.mjs
