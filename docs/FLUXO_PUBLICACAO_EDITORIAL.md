@@ -13,6 +13,25 @@ Este fluxo controla somente a projeção curada do projeto Premium `whwloseshzra
 
 O modelo referencia os IDs canônicos dos produtos escolhidos e mantém apenas a projeção necessária para a vitrine. Ele não replica fornecedores, custos, preços internos, clientes, pedidos ou demais estruturas do sistema operacional.
 
+`editorial_order` é único na tabela inteira, inclusive para registros não publicados. Por isso o sincronizador lê todas as linhas da projeção e, quando um produto sai da curadoria, mantém o registro e a posição dele, distribuindo a curadoria nas posições livres seguintes. A ordem exibida na vitrine pode, assim, ter lacunas; a leitura pública ordena por `editorial_order` e não exige sequência contígua.
+
+### Sequência obrigatória ao trocar um produto da curadoria
+
+Numa linha **já existente** o sincronizador nunca escreve `published`, justamente para não desfazer uma decisão da operação. Produto **novo** entra pela inserção, publicamente visível como os demais. Consequência direta: tirar um produto do snapshot **não** o retira da vitrine. Se a troca for feita só no snapshot, a vitrine passa a exibir o produto antigo **e** o substituto, e `npm run check:editorial:live` acusa contagem diferente.
+
+A ordem correta é:
+
+1. retire o produto que sai (`npm run db:publication -- --id UUID --published false --apply --expect-updated-at REVISAO --confirm-sku SKU`, conforme o procedimento abaixo);
+2. confirme que ele sumiu das páginas públicas — a listagem é servida com cache de 60 segundos (`src/lib/site-database.ts`), então a retirada pode demorar até um minuto para aparecer;
+3. se o substituto **já existe** como registro despublicado, republique-o antes (`npm run db:publication -- --id UUID --published true --apply ...`): o sincronizador encontra o registro no snapshot com `published = false` e interrompe com *"A product was manually unpublished; sync stopped to preserve that decision"*, para não atropelar a decisão da operação;
+4. confira a **janela de publicação de todo substituto que já tem registro na vitrine**: `npm run db:publication -- --id UUID --inspect`. A inspeção é leitura pura — aceita somente `--id` e falha com *"Publication record is missing or violates the contract"* quando o produto ainda não foi replicado, o que é o caso do produto que entra novo pela sincronização: ele não tem janela a ajustar. A leitura pública exige a janela aberta (`supabase/migrations/20260922221500_add_catalog_publication_window.sql`), então `published = true` fica invisível se `published_from` estiver no futuro **ou** `published_until` no passado;
+5. se a janela estiver fechada, corrija o limite no comando de mutação, que **não** combina com `--inspect`: `published_from` futuro sai com `--from null`, `published_until` vencido sai com `--until null` (ou uma data futura). Cada limite é corrigido pela própria flag — renovar `--until` não antecipa um início futuro —, sempre com `--apply --expect-updated-at REVISAO --confirm-sku SKU`;
+6. altere o snapshot editorial e sincronize (`npm run db:sync-catalog`).
+
+Assim o registro antigo já está fora do ar quando o sincronizador o encontra fora da curadoria: ele desvia da posição que o registro ainda ocupa, acomoda o substituto noutra posição e a vitrine nunca mostra os dois ao mesmo tempo.
+
+Trocar é diferente de apenas retirar: o snapshot aprovado tem exatamente oito produtos (`validateCatalogSnapshot`), então remover uma entrada sem colocar outra no lugar faz o sincronizador rejeitar o arquivo antes de tocar em qualquer banco. Uma redução da vitrine exige mudar o contrato de oito itens, não só o snapshot.
+
 ## Controles antes de uma alteração
 
 O comando `npm run db:publication`:
