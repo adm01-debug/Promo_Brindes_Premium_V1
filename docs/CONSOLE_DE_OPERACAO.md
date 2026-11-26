@@ -12,6 +12,12 @@ existirem no ambiente:
 | --- | --- |
 | `PROMO_PREMIUM_CONSOLE_ENABLED` | precisa ser exatamente `true` |
 | `PROMO_PREMIUM_CONSOLE_TOKEN` | 32 caracteres ou mais, sem espaços |
+| `SUPABASE_SECRET_KEY` | chave `sb_secret_` do projeto premium; sem ela a página abre mas toda leitura da tela responde 500 |
+
+As duas primeiras liberam a página; a terceira é o que permite ao servidor ler
+briefings, limites e catálogo com `service_role`. Sem o segredo, `/operacoes`
+responde 200 e o formulário de login funciona, mas a tela cai em erro ao buscar
+os dados — por isso as três entram juntas, no ambiente de Production.
 
 Sem elas, `/operacoes` e `/api/operacoes/*` respondem 404, igual a uma rota
 inexistente. O token é digitado uma vez e trocado por um cookie de sessão
