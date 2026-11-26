@@ -9,6 +9,7 @@ import {
   type BriefingPayload,
 } from "@/lib/briefing";
 import { getSiteCatalogPage } from "@/lib/site-database";
+import { rateLimitReference } from "@/lib/console-validation.mjs";
 import {
   briefingDeliveryConfig,
   trustedBriefingAddress,
@@ -47,7 +48,7 @@ function originIsAllowed(request: NextRequest) {
   return origin === (configured || request.nextUrl.origin);
 }
 
-async function canAttemptDistributed(
+async function attemptLimit(
   config: BriefingDeliveryConfig,
   address: string,
 ) {
@@ -61,7 +62,7 @@ async function canAttemptDistributed(
   );
   if (typeof allowed !== "boolean")
     throw new Error("RATE_LIMIT_RESPONSE_INVALID");
-  return allowed;
+  return { allowed, reference: rateLimitReference(identity) };
 }
 
 function validIdempotencyKey(value: string | null) {
@@ -348,8 +349,12 @@ export async function POST(request: NextRequest) {
     if (!address)
       return jsonNoStore({ error: "CLIENT_ADDRESS_UNAVAILABLE" }, 503);
     try {
-      if (!(await canAttemptDistributed(config, address)))
-        return jsonNoStore({ error: "RATE_LIMITED" }, 429);
+      const limit = await attemptLimit(config, address);
+      if (!limit.allowed)
+        return jsonNoStore(
+          { error: "RATE_LIMITED", reference: limit.reference },
+          429,
+        );
     } catch {
       return jsonNoStore({ error: "RATE_LIMIT_UNAVAILABLE" }, 503);
     }

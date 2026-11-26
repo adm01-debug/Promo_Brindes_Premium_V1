@@ -133,6 +133,7 @@ export default function Storefront({
   const [step, setStep] = useState(1);
   const [occasion, setOccasion] = useState("Relacionamento com clientes");
   const [notice, setNotice] = useState("");
+  const [rateLimitNotice, setRateLimitNotice] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [deliveryConfigured, setDeliveryConfigured] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -216,6 +217,15 @@ export default function Storefront({
     const timer = setTimeout(() => setNotice(""), 4000);
     return () => clearTimeout(timer);
   }, [notice]);
+
+  // O aviso de limite fica junto à ação de envio; em telas estreitas ele pode
+  // nascer fora da área visível do diálogo.
+  useEffect(() => {
+    if (!rateLimitNotice) return;
+    document
+      .getElementById("briefing-rate-limit")
+      ?.scrollIntoView({ block: "nearest" });
+  }, [rateLimitNotice]);
 
   useEffect(() => {
     const syncNetworkState = () => setNetworkOnline(navigator.onLine);
@@ -677,6 +687,8 @@ export default function Storefront({
 
   async function createBriefing(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    // Nova tentativa: o aviso de limite anterior deixa de valer.
+    setRateLimitNotice("");
     const data = new FormData(event.currentTarget);
     const contact = String(data.get("name") ?? "").trim();
     const company = String(data.get("company") ?? "").trim();
@@ -771,6 +783,7 @@ export default function Storefront({
         protocol?: string;
         error?: string;
         message?: string;
+        reference?: string;
         pending?: boolean;
       } = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -779,6 +792,18 @@ export default function Storefront({
           downloadText("briefing-promo-premium.txt", lines.join("\n"));
           setProtocol(null);
           setStep(3);
+          return;
+        }
+        if (result.error === "RATE_LIMITED") {
+          // O diálogo do briefing é modal: a notificação da página fica inerte
+          // atrás do fundo e some em 4s. O código de atendimento precisa ficar
+          // no próprio formulário, selecionável, até a próxima tentativa.
+          setRateLimitNotice(
+            typeof result.reference === "string" &&
+              /^[a-f0-9]{8}$/.test(result.reference)
+              ? `Você atingiu o limite de envios agora. Aguarde 10 minutos ou informe o código ${result.reference} ao nosso time comercial para liberar.`
+              : "Você atingiu o limite de envios agora. Aguarde alguns minutos e tente novamente.",
+          );
           return;
         }
         if (
@@ -2289,11 +2314,25 @@ export default function Storefront({
                   ? "Ao enviar, seus dados seguem ao canal comercial configurado para esta solicitação. A confirmação só aparece após a resposta do servidor."
                   : "Seus dados serão usados apenas no arquivo que você baixar. Esta prévia não envia o briefing nem armazena dados de contato."}
               </p>
+              {rateLimitNotice && (
+                <div
+                  className="form-error-summary"
+                  id="briefing-rate-limit"
+                  role="alert"
+                  tabIndex={-1}
+                >
+                  <strong>Limite de envios atingido.</strong>
+                  <p>{rateLimitNotice}</p>
+                </div>
+              )}
               <div className="form-actions">
                 <button
                   type="button"
                   className="text-button"
-                  onClick={() => setStep(1)}
+                  onClick={() => {
+                    setRateLimitNotice("");
+                    setStep(1);
+                  }}
                 >
                   Voltar
                 </button>

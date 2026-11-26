@@ -6,18 +6,35 @@ const SITE_PROJECT_REF = "whwloseshzraipljisqo";
 const uuid =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const timestamp =
-  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/;
+  /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,6}))?(Z|[+-]\d{2}:\d{2})$/;
 const columns =
   "id,sku,slug,published,published_from,published_until,updated_at";
 
+/**
+ * Converte para UTC com seis casas decimais. A revisão otimista compara o valor
+ * byte a byte e a janela de publicação é comparada como texto, então instantes
+ * equivalentes precisam ter a mesma representação: truncar a fração em
+ * milissegundos o banco nunca encontra, e larguras de fração diferentes fazem
+ * dois instantes iguais parecerem distintos.
+ */
 function normalizedTimestamp(value, field, nullable = false) {
   if (nullable && value === null) return null;
-  if (typeof value !== "string" || !timestamp.test(value))
+  if (typeof value !== "string")
     throw new Error(`${field} must be an RFC 3339 timestamp with timezone.`);
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime()))
+  const match = timestamp.exec(value);
+  if (!match)
+    throw new Error(`${field} must be an RFC 3339 timestamp with timezone.`);
+  const [, clock, fraction = "", zone] = match;
+  const offsetMinutes =
+    zone === "Z"
+      ? 0
+      : (zone.startsWith("-") ? -1 : 1) *
+        (Number(zone.slice(1, 3)) * 60 + Number(zone.slice(4, 6)));
+  const seconds = Date.parse(`${clock}Z`) - offsetMinutes * 60000;
+  if (Number.isNaN(seconds))
     throw new Error(`${field} is not a valid timestamp.`);
-  return parsed.toISOString();
+  const utc = new Date(seconds).toISOString().slice(0, 19);
+  return `${utc}.${(fraction + "000000").slice(0, 6)}+00:00`;
 }
 
 function config(env) {

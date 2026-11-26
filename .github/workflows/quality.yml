@@ -15,8 +15,8 @@ concurrency:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
     env:
       CI: true
     steps:
@@ -40,6 +40,7 @@ jobs:
           npm run test:catalog-library
           npm run test:publication-management
           npm run test:runtime-environment
+          npm run test:console-operations
       - name: Build production site
         run: npm run build
       - name: Check public assets and isolated scenarios
@@ -47,6 +48,11 @@ jobs:
           npm run check:public-secrets
           npm run check:performance-budget
           node scripts/audit-plan-scenarios.mjs
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - name: Install browsers
         run: npx playwright install --with-deps chromium firefox webkit
       - name: Test browser journeys
