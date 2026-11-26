@@ -161,3 +161,11 @@ Estado lido direto do banco em 26/11/2026, para nenhuma tabela ficar acessível 
 - **Grants de tabela**: `anon` e `authenticated` recebem apenas `SELECT` (por coluna) em `premium_catalog_items`; em `premium_briefings` e `premium_briefing_rate_limits` não há grant para essas roles. `service_role` tem `INSERT/SELECT/UPDATE` em `premium_briefings` (sem `DELETE`, coerente com a regra de não apagar lead) e `DELETE/INSERT/SELECT/UPDATE` nos limites.
 - **Funções**: 6 das 7 são `SECURITY DEFINER` e todas as 7 usam `search_path` vazio; `EXECUTE` está concedido **somente** para `service_role` — nenhuma função é chamável pela vitrine pública, nem por usuário logado. `set_premium_catalog_updated_at` é função de trigger e não tem `EXECUTE` para ninguém, como deve ser.
 - **Nenhuma view nem materialized view**, então não existe caminho de leitura paralelo sem RLS.
+
+### Índices, constraints e o que não existe
+
+Levantado no mesmo banco, para ninguém procurar tela de algo que não é operável:
+
+- **40 constraints**: 3 chaves primárias, 5 unicidades (`sku`, `slug`, `editorial_order`, `idempotency_key`, `protocol`) e 32 `check` — as `*_shape_check` são as que recusam texto vazio, fora de faixa ou com espaços nas pontas; `premium_briefings_delivery_lease_check` é a que exige token de reserva e expiração só em `delivering`.
+- **11 índices não-PK**, todos de suporte (`created_at`, fila de entrega pendente, janela de publicação, `search_text`, `updated_at` dos limites). Nenhum deles é uma funcionalidade: existem para a tela responder rápido, não para o dono operar.
+- **Sem chave estrangeira, sem sequence, sem view.** As três tabelas são independentes; os identificadores são `uuid` gerados por `gen_random_uuid()`, então não há coluna de "código sequencial" para exibir.
