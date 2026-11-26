@@ -6,6 +6,7 @@ import {
   isRfc3339,
   rateLimitReference,
   summarizeRateLimit,
+  summarizeReplication,
   validateTechnicalSheet,
 } from "@/lib/console-validation.mjs";
 import { manageSitePublication } from "../../scripts/manage-site-publication.mjs";
@@ -180,12 +181,36 @@ function deliveryDiagnosis(): ConsoleDeliveryState {
   return { habilitada: false, motivo: problems.join("; ") };
 }
 
+/**
+ * Heartbeat da replicação. Um banco sem a tabela (migration ainda não aplicada)
+ * não pode derrubar a aba Situação, por isso a falha vira "sem registro".
+ */
+async function readConsoleReplication(config: SiteServerConfig) {
+  try {
+    const response = await call(
+      config,
+      "premium_catalog_sync_state?select=last_attempt_at,last_status,last_success_at,last_error,source_count,curated_count&id=eq.true&limit=1",
+    );
+    const value = await rows<Record<string, unknown>>(response);
+    return value.length ? summarizeReplication(value[0]) : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function readConsoleStatus(): Promise<ConsoleStatus> {
   const entrega = deliveryDiagnosis();
   const config = consoleDatabase();
   const verificadoEm = new Date().toISOString();
-  if (!config) return { banco: false, entrega, contagens: null, verificadoEm };
-  const [itens, publicados, leads, leadsNaFila, leadsComFalha, limites] =
+  if (!config)
+    return {
+      banco: false,
+      entrega,
+      contagens: null,
+      replicacao: null,
+      verificadoEm,
+    };
+  const [itens, publicados, leads, leadsNaFila, leadsComFalha, limites, replicacao] =
     await Promise.all([
       count(config, "premium_catalog_items?select=id&limit=1"),
       count(config, "premium_catalog_items?select=id&published=eq.true&limit=1"),
@@ -199,11 +224,13 @@ export async function readConsoleStatus(): Promise<ConsoleStatus> {
         "premium_briefings?select=id&delivery_status=eq.failed&limit=1",
       ),
       count(config, "premium_briefing_rate_limits?select=client_hash&limit=1"),
+      readConsoleReplication(config),
     ]);
   return {
     banco: true,
     entrega,
     contagens: { itens, publicados, leads, leadsNaFila, leadsComFalha, limites },
+    replicacao,
     verificadoEm,
   };
 }

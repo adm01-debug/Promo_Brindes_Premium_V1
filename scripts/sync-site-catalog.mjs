@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   approvedProjectUrl,
+  countActiveSourceProducts,
   verifyCuratedSource,
 } from "./lib/catalog-source.mjs";
 
@@ -105,10 +106,11 @@ export function validateCatalogSnapshot(snapshot) {
     );
 }
 
-export async function syncSiteCatalog(
-  snapshot,
-  { env = process.env, fetcher = fetch, dryRun = false } = {},
-) {
+/**
+ * Mesma checagem de configuração usada pela sincronização. Fica numa função só
+ * para que o heartbeat nunca aceite um alvo diferente do que recebe as peças.
+ */
+function premiumTarget(env) {
   const ref = "whwloseshzraipljisqo";
   const siteUrl = approvedProjectUrl(env.SUPABASE_URL, ref);
   const secret = env.SUPABASE_SECRET_KEY;
@@ -122,6 +124,14 @@ export async function syncSiteCatalog(
       "Approved site API configuration is missing or mismatched.",
     );
   }
+  return { ref, siteUrl, secret };
+}
+
+export async function syncSiteCatalog(
+  snapshot,
+  { env = process.env, fetcher = fetch, dryRun = false } = {},
+) {
+  const { ref, siteUrl, secret } = premiumTarget(env);
 
   validateCatalogSnapshot(snapshot);
   const payload = snapshot.map((item, index) => ({
@@ -297,26 +307,138 @@ export async function syncSiteCatalog(
   return { count: payload.length, project: ref, dryRun: false };
 }
 
+const syncStateColumns = [
+  "last_attempt_at",
+  "last_status",
+  "last_success_at",
+  "last_error",
+  "source_count",
+  "curated_count",
+].join(",");
+
+/**
+ * Grava o heartbeat da replicação numa linha única de
+ * premium_catalog_sync_state. É o que permite ao console avisar que a vitrine
+ * parou de receber atualização sem depender do histórico do GitHub Actions.
+ * Sem DDL novo e sem tocar a base de gestão.
+ */
+export async function recordSyncState(
+  { status, attemptAt, sourceCount = null, curatedCount = null, error = null },
+  { env = process.env, fetcher = fetch } = {},
+) {
+  const { siteUrl, secret } = premiumTarget(env);
+  if (status !== "success" && status !== "failed")
+    throw new Error("Sync heartbeat status must be success or failed.");
+  const reason =
+    status === "failed"
+      ? String(error ?? "").replace(/\s+/g, " ").trim().slice(0, 200) ||
+        "Falha sem mensagem."
+      : null;
+  const row = {
+    id: true,
+    last_attempt_at: attemptAt,
+    last_status: status,
+    last_error: reason,
+    source_count: sourceCount,
+    curated_count: curatedCount,
+    ...(status === "success" ? { last_success_at: attemptAt } : {}),
+  };
+  const endpoint = new URL("/rest/v1/premium_catalog_sync_state", siteUrl);
+  endpoint.searchParams.set("on_conflict", "id");
+  const response = await fetcher(endpoint, {
+    method: "POST",
+    redirect: "error",
+    headers: {
+      apikey: secret,
+      "Content-Type": "application/json",
+      Prefer: "resolution=merge-duplicates,return=minimal",
+    },
+    body: JSON.stringify(row),
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!response.ok)
+    throw new Error(`Sync heartbeat failed (HTTP ${response.status}).`);
+  return row;
+}
+
+/**
+ * Lê o heartbeat já gravado, no mesmo formato que o console consome. Serve para
+ * conferência local e para os testes provarem que a linha viva descreve a última
+ * execução.
+ */
+export async function readSyncState({ env = process.env, fetcher = fetch } = {}) {
+  const { siteUrl, secret } = premiumTarget(env);
+  const endpoint = new URL("/rest/v1/premium_catalog_sync_state", siteUrl);
+  endpoint.searchParams.set("select", syncStateColumns);
+  endpoint.searchParams.set("id", "eq.true");
+  endpoint.searchParams.set("limit", "1");
+  const response = await fetcher(endpoint, {
+    method: "GET",
+    redirect: "error",
+    headers: { apikey: secret, Accept: "application/json" },
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!response.ok)
+    throw new Error(`Sync heartbeat read failed (HTTP ${response.status}).`);
+  const value = await response.json();
+  if (!Array.isArray(value))
+    throw new Error("Sync heartbeat read returned an unexpected response.");
+  return value.length
+    ? { ...value[0], id: true }
+    : {
+        id: true,
+        last_attempt_at: null,
+        last_status: null,
+        last_success_at: null,
+        last_error: null,
+        source_count: null,
+        curated_count: null,
+      };
+}
+
 if (
   process.argv[1] &&
   resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
+  const args = process.argv.slice(2);
+  const dryRun = args.includes("--dry-run");
+  const attemptAt = new Date().toISOString();
   try {
-    const args = process.argv.slice(2);
     if (args.some((arg) => arg !== "--dry-run"))
       throw new Error("Only --dry-run is supported.");
     const snapshot = JSON.parse(
       await readFile("src/lib/products.json", "utf8"),
     );
-    const result = await syncSiteCatalog(snapshot, {
-      dryRun: args.includes("--dry-run"),
-    });
+    const result = await syncSiteCatalog(snapshot, { dryRun });
     console.log(
       result.dryRun
         ? `Dry run: ${result.count} source products verified; target ${result.project}. No writes.`
         : `Synchronized ${result.count} verified catalog items in ${result.project}. Source was read only.`,
     );
+    // O heartbeat é observabilidade: uma falha dele depois de uma replicação boa
+    // não pode derrubar a execução nem marcar o catálogo como desatualizado.
+    if (!result.dryRun)
+      try {
+        await recordSyncState({
+          status: "success",
+          attemptAt,
+          curatedCount: result.count,
+          sourceCount: await countActiveSourceProducts(),
+        });
+      } catch (heartbeat) {
+        console.warn(`Heartbeat not recorded: ${heartbeat.message}`);
+      }
   } catch (error) {
+    if (!dryRun)
+      try {
+        await recordSyncState({
+          status: "failed",
+          attemptAt,
+          error: error.message,
+        });
+      } catch (heartbeat) {
+        console.warn(`Heartbeat not recorded: ${heartbeat.message}`);
+      }
     console.error(error.message);
     process.exitCode = 1;
   }

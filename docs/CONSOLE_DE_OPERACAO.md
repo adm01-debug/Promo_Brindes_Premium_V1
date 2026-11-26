@@ -26,7 +26,12 @@ em toda leitura e gravação.
 
 **Situação** — conectividade do banco premium, estado real do envio ao
 comercial (com a lista de variáveis que faltam), contagem de peças, publicadas,
-leads na fila, leads com falha e limites ativos.
+leads na fila, leads com falha e limites ativos. Mostra também a **réplica da
+gestão**: quando o catálogo foi replicado pela última vez, quantos itens curados
+foram conferidos, quantos produtos ativos existiam na base de gestão e o motivo
+da última falha. Sem sucesso há mais de 48 horas (a replicação roda todo dia) o
+card fica **Atrasada** e a tela avisa que a vitrine pode estar exibindo nome ou
+preço antigo.
 
 **Catálogo** — lista todas as peças com ordem editorial, situação de publicação
 e janela. Permite:
@@ -91,7 +96,8 @@ registros sem atividade há mais de 1 hora.
 ## Verificação
 
 ```bash
-npm run test:console-operations        # token, sessão, ficha técnica, limites
+npm run test:console-operations        # token, sessão, ficha técnica, limites, réplica
+npm run test:catalog-boundary          # heartbeat da replicação: alvo, upsert e leitura
 npm run test:publication-management    # revisão otimista e microssegundos da publicação
 npm run test:e2e -- tests/console.spec.ts   # gate, login, sessão e ações reais
 ```
@@ -117,6 +123,9 @@ contagens iniciais: 8 peças, 0 briefings, 0 limites):
 | liberar quando o contato tentou de novo depois da leitura | 0 linhas no DELETE (`Content-Range: */0`) e registro intacto |
 | sexto envio do contato bloqueado | 429 `{"error":"RATE_LIMITED","reference":"<8 dígitos>"}` com o mesmo código da aba Limites |
 | hash de contato inválido | 400 |
+| primeira replicação depois da migration | 200 e a linha única gravou `success` com 8 itens curados entre 7.968 produtos ativos |
+| replicação que falha depois de um sucesso | linha vira `failed` com o motivo, mantendo `last_success_at` e o último sucesso visível na tela |
+| tabela sem nenhuma tentativa (banco novo) | card mostra **Sem registro** e a tela diz que ainda não houve replicação, em vez de exibir saúde falsa |
 
 ### O que o e2e cobre e o que ele não cobre
 
@@ -132,7 +141,7 @@ e2e.
 
 ## Cobertura: banco premium x tela
 
-Inventário conferido por consulta direta ao projeto `whwloseshzraipljisqo` em 26/11/2026: 3 tabelas, 7 funções, 1 trigger, 1 política de RLS, 1 job de cron, nenhuma view ou materialized view.
+Inventário conferido por consulta direta ao projeto `whwloseshzraipljisqo` em 26/11/2026: 4 tabelas, 7 funções, 2 triggers, 1 política de RLS, 1 job de cron, nenhuma view ou materialized view.
 
 | Objeto do banco | Quem usa | Onde o dono vê ou decide |
 | --- | --- | --- |
@@ -140,6 +149,7 @@ Inventário conferido por consulta direta ao projeto `whwloseshzraipljisqo` em 2
 | `premium_briefings.status` | só a aba Leads grava | seletor **Situação do lead** + botão **Gravar situação** (recebido/qualificado/encerrado) |
 | `premium_briefings.delivery_*` | funções de claim/record | aba **Leads** + botão **Voltar para a fila** (recusado enquanto a reserva está válida) |
 | `premium_briefing_rate_limits` | `allow_premium_briefing_attempt` | aba **Limites** + botão **Liberar** por contato |
+| `premium_catalog_sync_state` (7 colunas, 1 linha) | `scripts/sync-site-catalog.mjs` grava; `readConsoleStatus` lê | aba **Situação** → card **Réplica da gestão** (último sucesso, última tentativa, itens conferidos, produtos ativos, motivo da falha) |
 | RPCs de briefing (`lookup_`, `persist_`, `allow_`, `claim_`/`record_..._v2`) | `src/app/api/briefings/route.ts` | indireto: cada RPC aparece no efeito dentro da aba **Leads** (lead criado, tentativa contada, entrega reservada/concluída) |
 | `premium_catalog_items.published*` | `getSiteCatalogPage` | aba **Catálogo** → **Publicação** (exige digitar o SKU) |
 | `premium_catalog_items` ficha (materials, dimensions, weight_g, packaging) | `/api/catalog` e ficha da vitrine | aba **Catálogo** → **Ficha técnica** |
@@ -148,15 +158,15 @@ Inventário conferido por consulta direta ao projeto `whwloseshzraipljisqo` em 2
 | `set_premium_catalog_updated_at` (trigger) | automático | indireto: `updated_at` aparece nas linhas do Catálogo e protege a concorrência da publicação |
 | `prune_premium_briefing_rate_limits` | cron `*/5 * * * *` | indireto: a aba **Limites** mostra o resíduo; só remove registros sem atividade há mais de 1 hora |
 | política `premium_catalog_public_read` | leitura anônima da vitrine | vitrine pública (só itens publicados e dentro da janela) |
-| replicação gestão→premium | `.github/workflows/catalog-source-guard.yml` (cron 11:17 UTC + guard diário) | supervisionada pelo CI: o job falha quando o catálogo curado divergir da gestão. O botão "replicar agora" fica fora do console de propósito, para não expor no runtime web a chave de leitura da base de gestão |
+| replicação gestão→premium | `.github/workflows/catalog-source-guard.yml` (cron 11:17 UTC + guard diário) | aba **Situação** → card **Réplica da gestão** (data do último sucesso, itens conferidos, produtos ativos na gestão e motivo da última falha). O botão "replicar agora" continua fora do console de propósito, para não expor no runtime web a chave de leitura da base de gestão |
 
-Consequência prática do item acima: se a replicação falhar, o aviso vem do GitHub Actions, não da tela. Quem quiser o botão dentro do console precisa aceitar que a chave de leitura da gestão passe a existir no runtime do site.
+O workflow grava o resultado de cada tentativa na tabela `premium_catalog_sync_state` (uma linha só, sem dado pessoal), então a falha aparece na tela em vez de morrer no histórico do GitHub Actions. O runtime web lê essa linha com `service_role` e nunca recebe a chave da base de gestão: quem quer o botão "replicar agora" dentro do console precisa aceitar que a chave de leitura da gestão passe a existir no runtime do site.
 
 ### Segurança conferida (RLS e grants)
 
 Estado lido direto do banco em 26/11/2026, para nenhuma tabela ficar acessível por fora do console:
 
-- **RLS ligada nas 3 tabelas** (`premium_catalog_items`, `premium_briefings`, `premium_briefing_rate_limits`).
+- **RLS ligada nas 4 tabelas** (`premium_catalog_items`, `premium_briefings`, `premium_briefing_rate_limits`, `premium_catalog_sync_state`).
 - **Uma única política**: `premium_catalog_public_read` (SELECT) em `premium_catalog_items`, liberando só `published = true` dentro da janela de publicação. Briefings e limites **não têm política nenhuma** — ou seja, nem `anon` nem `authenticated` alcançam esses dados: toda leitura passa pelo console com `service_role`.
 - **Grants de tabela**: `anon` e `authenticated` recebem apenas `SELECT` (por coluna) em `premium_catalog_items`; em `premium_briefings` e `premium_briefing_rate_limits` não há grant para essas roles. `service_role` tem `INSERT/SELECT/UPDATE` em `premium_briefings` (sem `DELETE`, coerente com a regra de não apagar lead) e `DELETE/INSERT/SELECT/UPDATE` nos limites.
 - **Funções**: 6 das 7 são `SECURITY DEFINER` e todas as 7 usam `search_path` vazio; `EXECUTE` está concedido **somente** para `service_role` — nenhuma função é chamável pela vitrine pública, nem por usuário logado. `set_premium_catalog_updated_at` é função de trigger e não tem `EXECUTE` para ninguém, como deve ser.
@@ -166,6 +176,6 @@ Estado lido direto do banco em 26/11/2026, para nenhuma tabela ficar acessível 
 
 Levantado no mesmo banco, para ninguém procurar tela de algo que não é operável:
 
-- **40 constraints**: 3 chaves primárias, 5 unicidades (`sku`, `slug`, `editorial_order`, `idempotency_key`, `protocol`) e 32 `check` — as `*_shape_check` são as que recusam texto vazio, fora de faixa ou com espaços nas pontas; `premium_briefings_delivery_lease_check` é a que exige token de reserva e expiração só em `delivering`.
+- **47 constraints** (por tabela: `premium_catalog_items` 20, `premium_briefings` 18, `premium_briefing_rate_limits` 2, `premium_catalog_sync_state` 7): 4 chaves primárias, 5 unicidades (`sku`, `slug`, `editorial_order`, `idempotency_key`, `protocol`) e 38 `check` — as `*_shape_check` são as que recusam texto vazio, fora de faixa ou com espaços nas pontas; `premium_briefings_delivery_lease_check` é a que exige token de reserva e expiração só em `delivering`; em `premium_catalog_sync_state`, `id` booleano com `primary key` e `check (id)` mantém a linha única e a combinada exige `last_error` só quando a tentativa falhou.
 - **11 índices não-PK**, todos de suporte (`created_at`, fila de entrega pendente, janela de publicação, `search_text`, `updated_at` dos limites). Nenhum deles é uma funcionalidade: existem para a tela responder rápido, não para o dono operar.
 - **Sem chave estrangeira, sem sequence, sem view.** As três tabelas são independentes; os identificadores são `uuid` gerados por `gen_random_uuid()`, então não há coluna de "código sequencial" para exibir.

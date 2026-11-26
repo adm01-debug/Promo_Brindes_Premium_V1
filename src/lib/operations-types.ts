@@ -12,10 +12,23 @@ export type ConsoleCounts = {
   limites: number;
 };
 
+export type ConsoleReplication = {
+  registrada: boolean;
+  status: "success" | "failed" | null;
+  ultimaTentativaEm: string | null;
+  ultimoSucessoEm: string | null;
+  horasDesdeSucesso: number | null;
+  atrasada: boolean;
+  erro: string | null;
+  origem: number | null;
+  curados: number | null;
+};
+
 export type ConsoleStatus = {
   banco: boolean;
   entrega: ConsoleDeliveryState;
   contagens: ConsoleCounts | null;
+  replicacao: ConsoleReplication | null;
   verificadoEm: string;
 };
 
