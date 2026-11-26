@@ -12,11 +12,16 @@ import {
   RATE_LIMIT_MAX_ATTEMPTS,
   RATE_LIMIT_WINDOW_MS,
   REPLICATION_STALE_MS,
+  MAINTENANCE_STALE_MS,
   isBriefingStatus,
   isClientHash,
   isRfc3339,
+  manualPruneFailureMessage,
   parseMaterialLines,
+  pruneCountFromResponse,
   rateLimitReference,
+  summarizeMaintenance,
+  summarizeManualPrune,
   summarizeRateLimit,
   summarizeReplication,
   validateTechnicalSheet,
@@ -402,4 +407,170 @@ test("an empty or malformed heartbeat never looks healthy", () => {
   assert.equal(inconsistent.origem, null);
   assert.equal(inconsistent.curados, null);
   assert.equal(inconsistent.erro, "Falha sem mensagem.");
+});
+const maintenanceNow = Date.parse("2026-11-26T18:00:00.000Z");
+const maintenanceRow = (overrides = {}) => ({
+  last_status: "success",
+  last_finished_at: "2026-11-26T17:55:00.000Z",
+  last_success_at: "2026-11-26T17:55:00.000Z",
+  last_removed: 3,
+  last_error: null,
+  run_count: 4242,
+  ...overrides,
+});
+
+test("a fresh maintenance run proves the scheduler is alive", () => {
+  assert.deepEqual(summarizeMaintenance(maintenanceRow(), maintenanceNow), {
+    registrada: true,
+    status: "success",
+    ultimaExecucaoEm: "2026-11-26T17:55:00.000Z",
+    ultimoSucessoEm: "2026-11-26T17:55:00.000Z",
+    minutosDesdeExecucao: 5,
+    atrasada: false,
+    removidos: 3,
+    execucoes: 4242,
+    erro: null,
+  });
+});
+
+test("a maintenance run older than three cycles is flagged", () => {
+  const finished = Date.parse("2026-11-26T17:55:00.000Z");
+  const inside = summarizeMaintenance(
+    maintenanceRow(),
+    finished + MAINTENANCE_STALE_MS,
+  );
+  assert.equal(inside.atrasada, false);
+  const late = summarizeMaintenance(
+    maintenanceRow(),
+    finished + MAINTENANCE_STALE_MS + 1,
+  );
+  assert.equal(late.atrasada, true);
+  assert.equal(late.minutosDesdeExecucao, 15);
+  assert.equal(late.erro, null);
+});
+
+test("a failed maintenance run keeps the last success and the reason", () => {
+  const failed = summarizeMaintenance(
+    maintenanceRow({
+      last_status: "failed",
+      last_finished_at: "2026-11-26T17:56:00.000Z",
+      last_removed: null,
+      last_error: "synthetic retention failure",
+    }),
+    maintenanceNow,
+  );
+  assert.equal(failed.status, "failed");
+  assert.equal(failed.removidos, null);
+  assert.equal(failed.ultimoSucessoEm, "2026-11-26T17:55:00.000Z");
+  assert.equal(failed.erro, "synthetic retention failure");
+});
+
+test("a missing or malformed maintenance heartbeat never looks healthy", () => {
+  const nothing = summarizeMaintenance(null, maintenanceNow);
+  assert.equal(nothing.registrada, false);
+  assert.equal(nothing.status, null);
+  assert.equal(nothing.removidos, null);
+  assert.equal(nothing.execucoes, null);
+  // Sem execução nenhuma não há atraso a declarar: a própria tela diz que não
+  // há registro, em vez de inventar um relógio.
+  assert.equal(nothing.atrasada, false);
+  for (const row of [undefined, {}, { last_finished_at: "not a date" }]) {
+    const summary = summarizeMaintenance(row, maintenanceNow);
+    assert.equal(summary.registrada, false);
+    assert.equal(summary.atrasada, false);
+    assert.equal(summary.ultimaExecucaoEm, null);
+    assert.equal(summary.removidos, null);
+  }
+  const inconsistent = summarizeMaintenance(
+    {
+      last_status: "success",
+      last_finished_at: "2026-11-26T17:00:00.000Z",
+      last_success_at: null,
+      last_removed: "3",
+      run_count: 2.5,
+      last_error: "",
+    },
+    maintenanceNow,
+  );
+  assert.equal(inconsistent.registrada, true);
+  assert.equal(inconsistent.atrasada, true);
+  assert.equal(inconsistent.removidos, null);
+  assert.equal(inconsistent.execucoes, null);
+  assert.equal(inconsistent.erro, null);
+});
+test("a manual prune never hides a stopped scheduler", () => {
+  // A linha do agendador está atrasada (duas horas) e a limpeza manual rodou
+  // agora: o estado do card continua vindo do agendador.
+  const manual = summarizeManualPrune({
+    last_status: "success",
+    last_finished_at: "2026-11-26T18:00:00.000Z",
+    last_success_at: "2026-11-26T18:00:00.000Z",
+    last_removed: 0,
+    last_error: null,
+    run_count: 1,
+  });
+  assert.equal(manual.registrada, true);
+  assert.equal(manual.falhou, false);
+  assert.equal(manual.ultimaExecucaoEm, "2026-11-26T18:00:00.000Z");
+  assert.equal(manual.removidos, 0);
+  assert.equal(manual.erro, null);
+  // Sem execução manual registrada, nada de estado inventado.
+  for (const row of [undefined, null, {}, { last_finished_at: "nope" }]) {
+    const empty = summarizeManualPrune(row);
+    assert.equal(empty.registrada, false);
+    assert.equal(empty.falhou, false);
+    assert.equal(empty.ultimaExecucaoEm, null);
+    assert.equal(empty.removidos, null);
+  }
+});
+
+test("a failed manual prune keeps its reason and no count", () => {
+  const failed = summarizeManualPrune({
+    last_status: "failed",
+    last_finished_at: "2026-11-26T18:05:00.000Z",
+    last_success_at: null,
+    last_removed: null,
+    last_error: "synthetic manual retention failure",
+    run_count: 2,
+  });
+  assert.equal(failed.registrada, true);
+  assert.equal(failed.falhou, true);
+  assert.equal(failed.removidos, null);
+  assert.equal(failed.erro, "synthetic manual retention failure");
+});
+test("a manual prune only succeeds with a real count from the database", () => {
+  // null é o que a função devolve quando a remoção falha: não pode virar
+  // "limpeza executada" na tela.
+  assert.equal(pruneCountFromResponse(null), null);
+  assert.equal(pruneCountFromResponse(undefined), null);
+  for (const value of ["3", -1, 1.5, NaN, Infinity, true, {}, []]) {
+    assert.equal(pruneCountFromResponse(value), null);
+  }
+  assert.equal(pruneCountFromResponse(0), 0);
+  assert.equal(pruneCountFromResponse(42), 42);
+});
+
+test("a failed manual prune brings its reason to the operator", () => {
+  // O motivo já está gravado na linha da limpeza manual: a resposta do console
+  // usa esse texto em vez de mandar o operador para outra aba.
+  assert.equal(
+    manualPruneFailureMessage({
+      falhou: true,
+      erro: "synthetic manual retention failure",
+    }),
+    "A limpeza não foi concluída; nada foi removido: synthetic manual retention failure.",
+  );
+  // Sem motivo legível (ou sem histórico), a mensagem continua correta e diz
+  // onde a explicação fica.
+  for (const manual of [
+    null,
+    undefined,
+    { falhou: false, erro: null },
+    { falhou: true, erro: null },
+  ]) {
+    const mensagem = manualPruneFailureMessage(manual);
+    assert.ok(mensagem.includes("nada foi removido"));
+    assert.ok(mensagem.includes("Situação"));
+    assert.ok(!mensagem.includes("null"));
+  }
 });

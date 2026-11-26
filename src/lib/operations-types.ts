@@ -24,11 +24,33 @@ export type ConsoleReplication = {
   curados: number | null;
 };
 
+export type ConsoleMaintenance = {
+  registrada: boolean;
+  status: "success" | "failed" | null;
+  ultimaExecucaoEm: string | null;
+  ultimoSucessoEm: string | null;
+  minutosDesdeExecucao: number | null;
+  atrasada: boolean;
+  removidos: number | null;
+  execucoes: number | null;
+  erro: string | null;
+};
+
+export type ConsoleManualPrune = {
+  registrada: boolean;
+  falhou: boolean;
+  ultimaExecucaoEm: string | null;
+  removidos: number | null;
+  erro: string | null;
+};
+
 export type ConsoleStatus = {
   banco: boolean;
   entrega: ConsoleDeliveryState;
   contagens: ConsoleCounts | null;
   replicacao: ConsoleReplication | null;
+  manutencao: ConsoleMaintenance | null;
+  manutencaoManual: ConsoleManualPrune | null;
   verificadoEm: string;
 };
 

@@ -4,7 +4,11 @@ import {
   isBriefingStatus,
   isClientHash,
   isRfc3339,
+  manualPruneFailureMessage,
+  pruneCountFromResponse,
   rateLimitReference,
+  summarizeMaintenance,
+  summarizeManualPrune,
   summarizeRateLimit,
   summarizeReplication,
   validateTechnicalSheet,
@@ -202,6 +206,37 @@ async function readConsoleReplication(config: SiteServerConfig) {
   }
 }
 
+/**
+ * Heartbeat da manutenção automática. A limpeza dos limites roda a cada cinco
+ * minutos pelo agendador do banco, mas também pode ser disparada na mão pelo
+ * console; cada origem grava a própria linha, para que a ação manual não esconda
+ * um agendador parado. Aqui o console distingue "não consegui consultar"
+ * (`null`) de "ainda não houve execução" (`registrada: false`).
+ */
+async function readConsoleMaintenance(config: SiteServerConfig) {
+  try {
+    const response = await call(
+      config,
+      "premium_maintenance_state?select=job_name,last_status,last_finished_at,last_success_at,last_removed,last_error,run_count&job_name=in.(prune_premium_briefing_rate_limits,prune_premium_briefing_rate_limits_manual)",
+    );
+    const value = await rows<Record<string, unknown>>(response);
+    const scheduled = value.find(
+      (row) => row.job_name === "prune_premium_briefing_rate_limits",
+    );
+    const manual = value.find(
+      (row) => row.job_name === "prune_premium_briefing_rate_limits_manual",
+    );
+    return {
+      agendada: scheduled
+        ? summarizeMaintenance(scheduled)
+        : summarizeMaintenance({}),
+      manual: summarizeManualPrune(manual ?? {}),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function readConsoleStatus(): Promise<ConsoleStatus> {
   const entrega = deliveryDiagnosis();
   const config = consoleDatabase();
@@ -212,29 +247,42 @@ export async function readConsoleStatus(): Promise<ConsoleStatus> {
       entrega,
       contagens: null,
       replicacao: null,
+      manutencao: null,
+      manutencaoManual: null,
       verificadoEm,
     };
-  const [itens, publicados, leads, leadsNaFila, leadsComFalha, limites, replicacao] =
-    await Promise.all([
-      count(config, "premium_catalog_items?select=id&limit=1"),
-      count(config, "premium_catalog_items?select=id&published=eq.true&limit=1"),
-      count(config, "premium_briefings?select=id&limit=1"),
-      count(
-        config,
-        "premium_briefings?select=id&delivery_status=eq.pending&limit=1",
-      ),
-      count(
-        config,
-        "premium_briefings?select=id&delivery_status=eq.failed&limit=1",
-      ),
-      count(config, "premium_briefing_rate_limits?select=client_hash&limit=1"),
-      readConsoleReplication(config),
-    ]);
+  const [
+    itens,
+    publicados,
+    leads,
+    leadsNaFila,
+    leadsComFalha,
+    limites,
+    replicacao,
+    manutencaoLida,
+  ] = await Promise.all([
+    count(config, "premium_catalog_items?select=id&limit=1"),
+    count(config, "premium_catalog_items?select=id&published=eq.true&limit=1"),
+    count(config, "premium_briefings?select=id&limit=1"),
+    count(
+      config,
+      "premium_briefings?select=id&delivery_status=eq.pending&limit=1",
+    ),
+    count(
+      config,
+      "premium_briefings?select=id&delivery_status=eq.failed&limit=1",
+    ),
+    count(config, "premium_briefing_rate_limits?select=client_hash&limit=1"),
+    readConsoleReplication(config),
+    readConsoleMaintenance(config),
+  ]);
   return {
     banco: true,
     entrega,
     contagens: { itens, publicados, leads, leadsNaFila, leadsComFalha, limites },
     replicacao,
+    manutencao: manutencaoLida?.agendada ?? null,
+    manutencaoManual: manutencaoLida?.manual ?? null,
     verificadoEm,
   };
 }
@@ -524,7 +572,7 @@ async function pruneLimits() {
   const config = requiredDatabase();
   const response = await call(
     config,
-    "rpc/prune_premium_briefing_rate_limits",
+    "rpc/prune_premium_briefing_rate_limits_manual",
     { method: "POST", body: "{}", prefer: "return=representation" },
   );
   let value: unknown = null;
@@ -533,12 +581,18 @@ async function pruneLimits() {
   } catch {
     value = null;
   }
-  const removed = typeof value === "number" ? value : null;
+  // A função registra a falha e devolve null em vez de derrubar a chamada; sem
+  // uma contagem inteira não houve limpeza, e a tela não pode dizer que houve.
+  const removed = pruneCountFromResponse(value);
+  if (removed === null) {
+    // O motivo já foi gravado na linha da limpeza manual; trazer ele na
+    // resposta evita mandar o operador procurar a explicação em outra aba. Se
+    // essa leitura falhar, a mensagem continua genérica.
+    const manutencao = await readConsoleMaintenance(config);
+    throw new ConsoleError(manualPruneFailureMessage(manutencao?.manual), 502);
+  }
   return {
-    mensagem:
-      removed === null
-        ? "Limpeza dos limites executada."
-        : `Limpeza dos limites executada: ${removed} registro(s) removido(s).`,
+    mensagem: `Limpeza dos limites executada: ${removed} registro(s) removido(s).`,
   };
 }
 

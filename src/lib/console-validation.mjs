@@ -54,6 +54,99 @@ export function summarizeRateLimit(attemptTimes, now = Date.now()) {
 }
 
 /**
+ * A limpeza dos limites roda a cada cinco minutos pelo agendador do banco.
+ * Três rodadas seguidas sem registro significam agendador parado, e aí os
+ * limites antigos se acumulam sem ninguém perceber.
+ */
+export const MAINTENANCE_STALE_MS = 15 * 60 * 1000;
+
+/**
+ * Resume a linha de premium_maintenance_state da limpeza dos limites. Sem
+ * execução registrada a resposta é `registrada: false`, e o console diz que não
+ * há registro em vez de fingir que a tarefa está de pé.
+ */
+export function summarizeMaintenance(row, now = Date.now()) {
+  const finished =
+    typeof row?.last_finished_at === "string"
+      ? Date.parse(row.last_finished_at)
+      : NaN;
+  const success =
+    typeof row?.last_success_at === "string"
+      ? Date.parse(row.last_success_at)
+      : NaN;
+  const hasRun = Number.isFinite(finished);
+  const hasSuccess = Number.isFinite(success);
+  return {
+    registrada: hasRun,
+    status: /** @type {"success" | "failed" | null} */ (
+      row?.last_status === "success"
+        ? "success"
+        : row?.last_status === "failed"
+          ? "failed"
+          : null
+    ),
+    ultimaExecucaoEm: hasRun ? new Date(finished).toISOString() : null,
+    ultimoSucessoEm: hasSuccess ? new Date(success).toISOString() : null,
+    minutosDesdeExecucao: hasRun
+      ? Math.floor((now - finished) / 60_000)
+      : null,
+    atrasada: hasRun ? now - finished > MAINTENANCE_STALE_MS : false,
+    removidos: Number.isInteger(row?.last_removed) ? row.last_removed : null,
+    execucoes: Number.isInteger(row?.run_count) ? row.run_count : null,
+    erro:
+      typeof row?.last_error === "string" && row.last_error.length
+        ? row.last_error
+        : null,
+  };
+}
+
+/**
+ * Resume a execução manual da mesma limpeza. Ela é separada de propósito: a
+ * ação "Limpar limites agora" não pode zerar o atraso do agendador.
+ */
+export function summarizeManualPrune(row) {
+  const finished =
+    typeof row?.last_finished_at === "string"
+      ? Date.parse(row.last_finished_at)
+      : NaN;
+  const hasRun = Number.isFinite(finished);
+  return {
+    registrada: hasRun,
+    falhou: row?.last_status === "failed",
+    ultimaExecucaoEm: hasRun ? new Date(finished).toISOString() : null,
+    removidos: Number.isInteger(row?.last_removed) ? row.last_removed : null,
+    erro:
+      typeof row?.last_error === "string" && row.last_error.length
+        ? row.last_error
+        : null,
+  };
+}
+
+/**
+ * A limpeza manual pode falhar sem derrubar a chamada: a função do banco grava
+ * o motivo e devolve `null`. Só uma contagem inteira não negativa prova que a
+ * limpeza rodou, então o console nunca confirma sucesso sem esse número.
+ */
+export function pruneCountFromResponse(value) {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0
+    ? value
+    : null;
+}
+
+/**
+ * Mensagem da ação "Limpar limites agora" quando a limpeza não devolveu
+ * contagem. A função grava o motivo na linha da limpeza manual antes de
+ * devolver `null`; quando ele existe, a resposta o traz para o operador não
+ * precisar caçar a explicação em outra aba.
+ */
+export function manualPruneFailureMessage(manual) {
+  const motivo = manual?.falhou ? manual.erro : null;
+  return motivo
+    ? `A limpeza não foi concluída; nada foi removido: ${motivo}.`
+    : "A limpeza não foi concluída; nada foi removido. O motivo ficou registrado em Situação › Limpeza automática.";
+}
+
+/**
  * A vitrine é replicada uma vez por dia. Passado esse tempo sem sucesso
  * registrado, o console avisa que a base premium ficou para trás.
  */
