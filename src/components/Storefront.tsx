@@ -133,6 +133,7 @@ export default function Storefront({
   const [step, setStep] = useState(1);
   const [occasion, setOccasion] = useState("Relacionamento com clientes");
   const [notice, setNotice] = useState("");
+  const [rateLimitNotice, setRateLimitNotice] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [deliveryConfigured, setDeliveryConfigured] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -677,6 +678,8 @@ export default function Storefront({
 
   async function createBriefing(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    // Nova tentativa: o aviso de limite anterior deixa de valer.
+    setRateLimitNotice("");
     const data = new FormData(event.currentTarget);
     const contact = String(data.get("name") ?? "").trim();
     const company = String(data.get("company") ?? "").trim();
@@ -783,7 +786,10 @@ export default function Storefront({
           return;
         }
         if (result.error === "RATE_LIMITED") {
-          setNotice(
+          // O diálogo do briefing é modal: a notificação da página fica inerte
+          // atrás do fundo e some em 4s. O código de atendimento precisa ficar
+          // no próprio formulário, selecionável, até a próxima tentativa.
+          setRateLimitNotice(
             typeof result.reference === "string" &&
               /^[a-f0-9]{8}$/.test(result.reference)
               ? `Você atingiu o limite de envios agora. Aguarde 10 minutos ou informe o código ${result.reference} ao nosso time comercial para liberar.`
@@ -1927,6 +1933,12 @@ export default function Storefront({
                   </p>
                 </div>
               )}
+              {rateLimitNotice && (
+                <div className="form-error-summary" role="alert">
+                  <strong>Limite de envios atingido.</strong>
+                  <p>{rateLimitNotice}</p>
+                </div>
+              )}
               <div className="form-row">
                 <label>
                   Seu nome
@@ -2303,7 +2315,10 @@ export default function Storefront({
                 <button
                   type="button"
                   className="text-button"
-                  onClick={() => setStep(1)}
+                  onClick={() => {
+                    setRateLimitNotice("");
+                    setStep(1);
+                  }}
                 >
                   Voltar
                 </button>

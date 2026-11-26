@@ -592,6 +592,57 @@ test("resposta sem protocolo não confirma envio comercial", async ({
   await expect(page.getByText("Seu briefing está pronto.")).toHaveCount(0);
 });
 
+test("bloqueio por limite mostra o código de atendimento dentro do briefing", async ({
+  page,
+}) => {
+  let posts = 0;
+  await page.route("**/api/briefings", (route) => {
+    if (route.request().method() === "GET")
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ configured: true }),
+      });
+    posts += 1;
+    return route.fulfill({
+      status: posts === 1 ? 429 : 200,
+      contentType: "application/json",
+      body:
+        posts === 1
+          ? JSON.stringify({ error: "RATE_LIMITED", reference: "0123abcd" })
+          : "{}",
+    });
+  });
+  const configured = page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/api/briefings") &&
+      response.request().method() === "GET",
+  );
+  await openFilledBriefing(page);
+  await configured;
+  await page.getByRole("button", { name: "Enviar ao comercial" }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByRole("alert")).toContainText(
+    "Limite de envios atingido.",
+  );
+  await expect(dialog.getByRole("alert")).toContainText("0123abcd");
+  // A notificação da página some em 4s e fica atrás do diálogo modal: o código
+  // precisa continuar legível e selecionável no próprio formulário.
+  expect(
+    await dialog
+      .getByRole("alert")
+      .evaluate((element) => getComputedStyle(element).userSelect),
+  ).not.toBe("none");
+  await page.waitForTimeout(4500);
+  await expect(dialog.getByRole("alert")).toContainText("0123abcd");
+  await expect(page.getByLabel("Seu nome", { exact: true })).toHaveValue(
+    "Pessoa de teste",
+  );
+  // Nova tentativa: o aviso anterior deixa de valer.
+  await page.getByRole("button", { name: "Enviar ao comercial" }).click();
+  await expect(dialog.getByText("Limite de envios atingido.")).toHaveCount(0);
+});
+
 test("diálogo contém foco e Escape restaura o acionador", async ({ page }) => {
   await page.goto("/");
   const trigger = page.getByRole("button", {
