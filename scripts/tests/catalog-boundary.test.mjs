@@ -31,6 +31,9 @@ const sourceRows = () =>
     min_quantity: item.minimum,
     allows_personalization: item.personalizable,
     is_active: true,
+    materials: item.materials,
+    dimensions_display: item.dimensions,
+    weight_g: item.weightG,
   }));
 const jsonRows = (rows) =>
   Response.json(rows, {
@@ -297,6 +300,10 @@ test("a manual unpublication that races the read is never republished", async ()
       "minimum",
       "personalizable",
       "source_date",
+      "materials",
+      "dimensions",
+      "weight_g",
+      "packaging",
       "editorial_order",
     ])
       assert.ok(
@@ -339,18 +346,22 @@ test("a newly curated product is still published while known ones are not", asyn
     [
       "category",
       "description",
+      "dimensions",
       "editorial_order",
       "id",
       "image_path",
+      "materials",
       "minimum",
       "name",
       "original_name",
+      "packaging",
       "personalizable",
       "published",
       "sku",
       "slug",
       "source_date",
       "tagline",
+      "weight_g",
     ].sort(),
     "the insert must carry every column the table requires",
   );
@@ -546,6 +557,17 @@ for (const [name, candidate] of [
   ["invalid category", mutate({ category: "Interno" })],
   ["invalid minimum", mutate({ minimum: 0 })],
   ["invalid personalization", mutate({ personalizable: "yes" })],
+  ["untrimmed material", mutate({ materials: [" Algodão"] })],
+  ["blank material", mutate({ materials: [""] })],
+  ["one character dimensions", mutate({ dimensions: "x" })],
+  ["one character packaging", mutate({ packaging: "x" })],
+  [
+    "too many materials",
+    mutate({ materials: ["A", "B", "C", "D", "E", "F"] }),
+  ],
+  ["missing dimensions", mutate({ dimensions: undefined })],
+  ["untrimmed packaging", mutate({ packaging: "Caixa " })],
+  ["fractional weight", mutate({ weightG: 12.5 })],
   ["untrimmed public text", mutate({ name: ` ${snapshot[0].name}` })],
   ["oversized SKU", mutate({ sku: "S".repeat(CATALOG_FIELD_LIMITS.sku + 1) })],
   [
@@ -584,6 +606,67 @@ for (const [name, candidate] of [
     );
     assert.equal(h.calls.length, 0);
   });
+
+for (const [name, changes, sourceMaterials] of [
+  ["an empty material list", { materials: [] }, []],
+  ["a null material list", { materials: [] }, null],
+  [
+    "a pending technical sheet",
+    { materials: [], dimensions: null, weightG: null, packaging: null },
+    null,
+  ],
+])
+  test(`sync publishes ${name} from the source`, async () => {
+    const curated = mutate(changes);
+    const h = harness({
+      source: () => {
+        const rows = sourceRows();
+        rows[0].materials = sourceMaterials;
+        rows[0].dimensions_display = curated[0].dimensions;
+        rows[0].weight_g = curated[0].weightG;
+        return jsonRows(rows);
+      },
+    });
+    await syncSiteCatalog(curated, { env, fetcher: h.fetcher });
+    const written = h.calls
+      .filter(({ init }) => init.method === "POST" || init.method === "PATCH")
+      .flatMap(({ init }) => {
+        const body = JSON.parse(init.body);
+        return Array.isArray(body) ? body : [body];
+      })
+      .find((row) => row.sku === curated[0].sku);
+    assert.ok(written, "the curated product has to reach the storefront");
+    assert.deepEqual(written.materials, curated[0].materials);
+    assert.equal(written.dimensions, curated[0].dimensions);
+    assert.equal(written.weight_g, curated[0].weightG);
+    assert.equal(written.packaging, curated[0].packaging);
+  });
+
+test("a product absent from the storefront is inserted with the technical sheet", async () => {
+  // O destino responde com o catálogo vazio: o sync precisa inserir, não
+  // atualizar. É a primeira publicação de uma peça curada, caminho que o
+  // restante da suíte não exercita porque sempre simula produtos já cadastrados.
+  const h = harness({ existing: () => jsonRows([]) });
+  assert.deepEqual(
+    await syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }),
+    { count: snapshot.length, project: "whwloseshzraipljisqo", dryRun: false },
+  );
+  const writes = h.calls.filter(({ init }) => init.method !== "GET");
+  assert.equal(writes.length, 1, "the whole catalog is inserted in one statement");
+  assert.equal(writes[0].init.method, "POST");
+  const rows = JSON.parse(writes[0].init.body);
+  assert.equal(rows.length, snapshot.length);
+  assert.ok(
+    rows.every((row) => row.published === true),
+    "a product that reaches the storefront through the curation goes live",
+  );
+  const inserted = rows.find((row) => row.sku === snapshot[0].sku);
+  assert.ok(inserted, "the curated product has to be inserted");
+  assert.deepEqual(inserted.materials, snapshot[0].materials);
+  assert.equal(inserted.dimensions, snapshot[0].dimensions);
+  assert.equal(inserted.weight_g, snapshot[0].weightG);
+  assert.equal(inserted.packaging, snapshot[0].packaging);
+});
 
 for (const url of [
   `https://${sourceHost}`,
@@ -712,6 +795,30 @@ for (const [name, source] of [
     () => {
       const rows = sourceRows();
       rows[0].allows_personalization = false;
+      return jsonRows(rows);
+    },
+  ],
+  [
+    "changed materials",
+    () => {
+      const rows = sourceRows();
+      rows[0].materials = ["Vidro"];
+      return jsonRows(rows);
+    },
+  ],
+  [
+    "invalid materials",
+    () => {
+      const rows = sourceRows();
+      rows[0].materials = [" Material "];
+      return jsonRows(rows);
+    },
+  ],
+  [
+    "changed dimensions",
+    () => {
+      const rows = sourceRows();
+      rows[0].dimensions_display = "40 x 40 cm";
       return jsonRows(rows);
     },
   ],

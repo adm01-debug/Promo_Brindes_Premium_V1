@@ -90,6 +90,10 @@ const item = {
   image_path: "/images/kit.webp",
   minimum: 5,
   personalizable: true,
+  materials: [],
+  dimensions: null,
+  weight_g: null,
+  packaging: null,
   source_date: "2026-09-22",
 };
 const payload = {

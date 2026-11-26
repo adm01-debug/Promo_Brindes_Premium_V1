@@ -982,6 +982,25 @@ test("axe: painel de filtros sem violações automatizadas", async ({ page }) =>
   expect(result.violations).toEqual([]);
 });
 
+test("ficha técnica publica material, medidas e pendências do cadastro", async ({
+  page,
+}) => {
+  await page.goto("/produtos/kit-executivo-2-pecas-08255");
+  const facts = page.locator(".product-page-facts");
+  await expect(facts.getByText("Material", { exact: true })).toBeVisible();
+  await expect(
+    facts.getByText("Couro Legítimo · Couro Sintético (Ecológico)", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    facts.getByText("26,4 x 21,3 cm", { exact: true }),
+  ).toBeVisible();
+  await expect(facts.getByText("457 g", { exact: true })).toBeVisible();
+  await expect(facts.getByText("Embalagem", { exact: true })).toBeVisible();
+  await expect(facts.getByText("A confirmar", { exact: true })).toBeVisible();
+});
+
 test("axe: página permanente de produto sem violações automatizadas", async ({
   page,
 }) => {

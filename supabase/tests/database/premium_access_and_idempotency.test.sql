@@ -2,12 +2,16 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
-select plan(29);
+select plan(33);
 
 select has_table('public', 'premium_catalog_items', 'published catalog exists');
 select has_table('public', 'premium_briefings', 'private briefings exist');
 select has_column('public', 'premium_catalog_items', 'published_from', 'catalog supports scheduled publication');
 select has_column('public', 'premium_catalog_items', 'published_until', 'catalog supports publication expiry');
+select has_column('public', 'premium_catalog_items', 'materials', 'catalog carries supplier materials');
+select has_column('public', 'premium_catalog_items', 'dimensions', 'catalog carries supplier dimensions');
+select has_column('public', 'premium_catalog_items', 'weight_g', 'catalog carries supplier weight');
+select has_column('public', 'premium_catalog_items', 'packaging', 'catalog carries curated packaging');
 select ok((select relrowsecurity from pg_class where oid = 'public.premium_briefings'::regclass), 'briefings have RLS enabled');
 select ok(not has_table_privilege('anon', 'public.premium_briefings', 'SELECT'), 'anon cannot read contact records');
 select ok(not has_table_privilege('authenticated', 'public.premium_briefings', 'SELECT'), 'authenticated cannot read contact records');
@@ -28,10 +32,14 @@ select is(
         'premium_catalog_items_original_name_shape_check',
         'premium_catalog_items_tagline_shape_check',
         'premium_catalog_items_description_shape_check',
-        'premium_catalog_items_image_path_shape_check'
+        'premium_catalog_items_image_path_shape_check',
+        'premium_catalog_items_materials_shape_check',
+        'premium_catalog_items_dimensions_shape_check',
+        'premium_catalog_items_weight_g_shape_check',
+        'premium_catalog_items_packaging_shape_check'
       )
   ),
-  7::bigint,
+  11::bigint,
   'catalog persistence has every public DTO shape constraint'
 );
 select ok(

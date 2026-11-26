@@ -5,7 +5,7 @@ import { catalogCollections } from "./catalog-library";
  * Public, editorial projection of the catalog snapshot. Keep operational
  * fields (cost, supplier, stock and discount rules) outside this module.
  */
-export const CATALOG_CONTRACT_VERSION = "2026-09-22.2";
+export const CATALOG_CONTRACT_VERSION = "2026-09-22.3";
 export type PublicCategory =
   | "Kits & experiências"
   | "Escrita"
@@ -24,6 +24,10 @@ export type Product = {
   minimum: number;
   personalizable: boolean;
   sourceDate: string;
+  materials: string[];
+  dimensions: string | null;
+  weightG: number | null;
+  packaging: string | null;
 };
 export const products: readonly Product[] = Object.freeze([
   ...catalog,

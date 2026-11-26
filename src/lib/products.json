@@ -11,7 +11,14 @@
     "image": "/images/executivo.webp",
     "minimum": 5,
     "personalizable": true,
-    "sourceDate": "2026-09-20"
+    "sourceDate": "2026-09-20",
+    "materials": [
+      "Couro Legítimo",
+      "Couro Sintético (Ecológico)"
+    ],
+    "dimensions": "26,4 x 21,3 cm",
+    "weightG": 457,
+    "packaging": null
   },
   {
     "id": "03b447a0-930f-43f9-a51f-5fce910bfc4a",
@@ -25,7 +32,13 @@
     "image": "/images/caderno.webp",
     "minimum": 1,
     "personalizable": true,
-    "sourceDate": "2026-09-20"
+    "sourceDate": "2026-09-20",
+    "materials": [
+      "Plástico - rPET"
+    ],
+    "dimensions": "148 x 212 mm",
+    "weightG": 250,
+    "packaging": null
   },
   {
     "id": "015e9f0a-dd0f-444e-9a76-8404c2576ee6",
@@ -39,7 +52,13 @@
     "image": "/images/mochila.webp",
     "minimum": 1,
     "personalizable": true,
-    "sourceDate": "2026-09-20"
+    "sourceDate": "2026-09-20",
+    "materials": [
+      "Poliéster"
+    ],
+    "dimensions": "43x32x16,5cm",
+    "weightG": 475,
+    "packaging": null
   },
   {
     "id": "0111829b-9072-46cb-8cb9-9c620f55a14d",
@@ -53,7 +72,13 @@
     "image": "/images/garrafa.webp",
     "minimum": 5,
     "personalizable": true,
-    "sourceDate": "2026-09-20"
+    "sourceDate": "2026-09-20",
+    "materials": [
+      "Aço Inox"
+    ],
+    "dimensions": "27,0 x 6,9 cm",
+    "weightG": 290,
+    "packaging": null
   },
   {
     "id": "01a22943-6283-4db0-b77b-3a8b56ca09fe",
@@ -67,7 +92,13 @@
     "image": "/images/cafe.webp",
     "minimum": 1,
     "personalizable": true,
-    "sourceDate": "2026-09-20"
+    "sourceDate": "2026-09-20",
+    "materials": [
+      "Alumínio"
+    ],
+    "dimensions": "Cafeteira: 16,5x17x16,5",
+    "weightG": 886,
+    "packaging": null
   },
   {
     "id": "003c8bd0-8c02-46d2-9b6a-8464858fee97",
@@ -81,7 +112,13 @@
     "image": "/images/cha.webp",
     "minimum": 1,
     "personalizable": true,
-    "sourceDate": "2026-09-20"
+    "sourceDate": "2026-09-20",
+    "materials": [
+      "Bambu"
+    ],
+    "dimensions": "Caixa para chás: 26,7x9x9 cm",
+    "weightG": 1260,
+    "packaging": null
   },
   {
     "id": "02095e72-4ede-4e44-af95-8fc335015f94",
@@ -95,7 +132,15 @@
     "image": "/images/churrasco.webp",
     "minimum": 1,
     "personalizable": true,
-    "sourceDate": "2026-09-20"
+    "sourceDate": "2026-09-20",
+    "materials": [
+      "Aço Inox",
+      "Bambu",
+      "Madeira"
+    ],
+    "dimensions": "Tábua: 40x30x2cm",
+    "weightG": 2293,
+    "packaging": null
   },
   {
     "id": "03ad1da3-68c5-40ed-9465-e1aad642d384",
@@ -109,6 +154,12 @@
     "image": "/images/caneta.webp",
     "minimum": 1,
     "personalizable": true,
-    "sourceDate": "2026-09-20"
+    "sourceDate": "2026-09-20",
+    "materials": [
+      "Alumínio"
+    ],
+    "dimensions": "14x1cm",
+    "weightG": 21,
+    "packaging": null
   }
 ]

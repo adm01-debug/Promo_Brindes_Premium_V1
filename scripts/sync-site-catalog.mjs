@@ -26,12 +26,15 @@ export const CATALOG_FIELD_LIMITS = Object.freeze({
   tagline: 160,
   description: 2000,
   image: 255,
+  material: 60,
+  dimensions: 80,
+  packaging: 120,
 });
 
-function validText(value, limit) {
+function validText(value, limit, minimum = 1) {
   return (
     typeof value === "string" &&
-    value.length > 0 &&
+    value.length >= minimum &&
     value.length <= limit &&
     value.trim() === value
   );
@@ -72,7 +75,20 @@ export function validateCatalogSnapshot(snapshot) {
       item.minimum < 1 ||
       item.minimum > 10000 ||
       typeof item.personalizable !== "boolean" ||
-      !validDate(item.sourceDate)
+      !validDate(item.sourceDate) ||
+      !Array.isArray(item.materials) ||
+      item.materials.length > 5 ||
+      item.materials.some(
+        (material) => !validText(material, CATALOG_FIELD_LIMITS.material),
+      ) ||
+      (item.dimensions !== null &&
+        !validText(item.dimensions, CATALOG_FIELD_LIMITS.dimensions, 2)) ||
+      (item.weightG !== null &&
+        (!Number.isInteger(item.weightG) ||
+          item.weightG < 1 ||
+          item.weightG > 100000)) ||
+      (item.packaging !== null &&
+        !validText(item.packaging, CATALOG_FIELD_LIMITS.packaging, 2))
     )
       throw new Error("The curated snapshot violates the catalog contract.");
   }
@@ -121,6 +137,10 @@ export async function syncSiteCatalog(
     minimum: item.minimum,
     personalizable: item.personalizable,
     source_date: item.sourceDate,
+    materials: item.materials,
+    dimensions: item.dimensions,
+    weight_g: item.weightG,
+    packaging: item.packaging,
     editorial_order: index + 1,
     published: true,
   }));

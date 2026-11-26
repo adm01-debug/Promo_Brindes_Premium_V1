@@ -1,7 +1,7 @@
 /** The operational catalog is READ ONLY. Never add writes or RPCs here. */
 export const SOURCE_PROJECT_REF = "doufsxqlfjyuvxuezpln";
 export const SOURCE_COLUMNS =
-  "id,sku,name,min_quantity,allows_personalization,is_active";
+  "id,sku,name,min_quantity,allows_personalization,is_active,materials,dimensions_display,weight_g";
 
 const uuid =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -89,7 +89,26 @@ export async function readSourceProducts(
         row.min_quantity < 1 ||
         row.min_quantity > 10000 ||
         typeof row.allows_personalization !== "boolean" ||
-        typeof row.is_active !== "boolean",
+        typeof row.is_active !== "boolean" ||
+        (row.materials !== null &&
+          (!Array.isArray(row.materials) ||
+            row.materials.length > 5 ||
+            row.materials.some(
+              (material) =>
+                typeof material !== "string" ||
+                !material.trim() ||
+                material.length > 60 ||
+                material.trim() !== material,
+            ))) ||
+        (row.dimensions_display !== null &&
+          (typeof row.dimensions_display !== "string" ||
+            row.dimensions_display.length < 2 ||
+            row.dimensions_display.length > 80 ||
+            row.dimensions_display.trim() !== row.dimensions_display)) ||
+        (row.weight_g !== null &&
+          (!Number.isInteger(row.weight_g) ||
+            row.weight_g < 1 ||
+            row.weight_g > 100000)),
     )
   )
     throw new Error(
@@ -104,6 +123,9 @@ export async function readSourceProducts(
     min_quantity: row.min_quantity,
     allows_personalization: row.allows_personalization,
     is_active: row.is_active,
+    materials: Array.isArray(row.materials) ? row.materials : [],
+    dimensions_display: row.dimensions_display,
+    weight_g: row.weight_g,
   }));
 }
 
@@ -168,7 +190,12 @@ export async function verifyCuratedSource(snapshot, options) {
     originalName: "name",
     minimum: "min_quantity",
     personalizable: "allows_personalization",
+    materials: "materials",
+    dimensions: "dimensions_display",
+    weightG: "weight_g",
   };
+  const comparable = (value) =>
+    Array.isArray(value) ? JSON.stringify(value) : value;
   for (const item of snapshot) {
     const source = byId.get(item.id);
     if (!source.is_active)
@@ -176,7 +203,10 @@ export async function verifyCuratedSource(snapshot, options) {
         `Source product ${item.id} is inactive; review publication before syncing.`,
       );
     const changed = Object.entries(fields)
-      .filter(([local, remote]) => item[local] !== source[remote])
+      .filter(
+        ([local, remote]) =>
+          comparable(item[local]) !== comparable(source[remote]),
+      )
       .map(([local]) => local);
     if (changed.length)
       throw new Error(

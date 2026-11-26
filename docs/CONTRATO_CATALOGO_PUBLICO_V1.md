@@ -2,7 +2,7 @@
 
 Status: implementado para a tabela pública curada do projeto da vitrine `whwloseshzraipljisqo`, com snapshot editorial apenas como fallback offline. Este contrato não autoriza acesso direto do navegador a tabelas internas, à aplicação comercial ou a campos de custo.
 
-`GET /api/catalog` entrega uma projeção editorial versionada. A resposta carrega `X-Catalog-Contract-Version: 2026-09-22.2`. Consultas gerais sem texto livre usam cache compartilhado de um minuto com `must-revalidate`. Respostas de busca com `q` usam `Cache-Control: private, no-store`; a consulta por `ids` também usa `no-store` e lê a fonte sem cache para conferir a seleção imediatamente antes do briefing. A interface orienta que `q` contenha somente produto, categoria ou código, nunca nome, e-mail ou telefone.
+`GET /api/catalog` entrega uma projeção editorial versionada. A resposta carrega `X-Catalog-Contract-Version: 2026-09-22.3`. Consultas gerais sem texto livre usam cache compartilhado de um minuto com `must-revalidate`. Respostas de busca com `q` usam `Cache-Control: private, no-store`; a consulta por `ids` também usa `no-store` e lê a fonte sem cache para conferir a seleção imediatamente antes do briefing. A interface orienta que `q` contenha somente produto, categoria ou código, nunca nome, e-mail ou telefone.
 
 A semântica é **OR entre ocasiões** e **AND entre dimensões**. Exemplo: `occasion=boas-vindas,novos-destinos&category=Escrita&quantity=100` aceita uma das duas ocasiões, exige categoria Escrita e exige mínimo cadastrado menor ou igual a 100. Quantidade representa compatibilidade com o pedido mínimo; não representa estoque.
 
@@ -24,7 +24,7 @@ A semântica é **OR entre ocasiões** e **AND entre dimensões**. Exemplo: `occ
 
 ```json
 {
-  "contractVersion": "2026-09-22.2",
+  "contractVersion": "2026-09-22.3",
   "items": [],
   "page": 1,
   "pageSize": 12,
@@ -60,7 +60,9 @@ A semântica é **OR entre ocasiões** e **AND entre dimensões**. Exemplo: `occ
 
 As facetas são contextuais: cada grupo é contado aplicando busca e as demais dimensões, mas removendo temporariamente sua própria dimensão. A contagem ocorre antes da paginação e usa produtos únicos. Assim, uma opção informa quantos resultados restariam se escolhida no contexto atual.
 
-Cada item pode conter somente `id`, `sku`, `slug`, `name`, `originalName`, `category`, `tagline`, `description`, `image`, `minimum`, `personalizable` e `sourceDate`, pois essa é a projeção do snapshot. Custo, margem, fornecedor, regras de desconto, estoque, dados de compradores e identificadores operacionais não pertencem ao contrato.
+Cada item pode conter somente `id`, `sku`, `slug`, `name`, `originalName`, `category`, `tagline`, `description`, `image`, `minimum`, `personalizable`, `sourceDate`, `materials`, `dimensions`, `weightG` e `packaging`, pois essa é a projeção do snapshot. Custo, margem, fornecedor, regras de desconto, estoque, dados de compradores e identificadores operacionais não pertencem ao contrato.
+
+`materials` é a lista de materiais do cadastro operacional, `dimensions` e `weightG` são as medidas textuais e o peso em gramas informados pelo fornecedor. `packaging` só é preenchido pela curadoria; enquanto for `null`, a ficha permanente exibe "A confirmar" em vez de prometer embalagem. Os quatro campos são material da ficha técnica (APV1-09): valor ausente nunca é inventado, e a sincronização para quando material, dimensões ou peso divergem da fonte até a curadoria revisar o snapshot.
 
 ## Erros e indisponibilidade
 
@@ -70,6 +72,6 @@ Uma resposta da fonte sem contagem exata ou com intervalo incompatível retorna 
 
 ## Limite atual e migração segura
 
-A rota lê `premium_catalog_items` do banco dedicado à vitrine quando `SUPABASE_URL`, `SUPABASE_PROJECT_REF` e a chave publicável estão configurados. O servidor lê somente itens com `published=true` e dentro da janela opcional `published_from`/`published_until`, além de uma allowlist de 12 campos públicos, em páginas de 500, com contagem exata, cache de um minuto e limite auditado de 10.000 itens. Ele calcula busca, resultados e facetas sobre a mesma projeção completa e envia ao navegador apenas a página solicitada, de no máximo 24 itens. Consultas por IDs pulam o cache. Erro de rede ou violação do formato retorna `503 CATALOG_UNAVAILABLE`. Sem configuração, a rota usa o snapshot local. A fonte operacional original `v_products_public` pertence ao outro projeto, `doufsxqlfjyuvxuezpln`, e continua somente leitura.
+A rota lê `premium_catalog_items` do banco dedicado à vitrine quando `SUPABASE_URL`, `SUPABASE_PROJECT_REF` e a chave publicável estão configurados. O servidor lê somente itens com `published=true` e dentro da janela opcional `published_from`/`published_until`, além de uma allowlist de 16 campos públicos, em páginas de 500, com contagem exata, cache de um minuto e limite auditado de 10.000 itens. Ele calcula busca, resultados e facetas sobre a mesma projeção completa e envia ao navegador apenas a página solicitada, de no máximo 24 itens. Consultas por IDs pulam o cache. Erro de rede ou violação do formato retorna `503 CATALOG_UNAVAILABLE`. Sem configuração, a rota usa o snapshot local. A fonte operacional original `v_products_public` pertence ao outro projeto, `doufsxqlfjyuvxuezpln`, e continua somente leitura.
 
 O desenho atual é adequado à curadoria pequena e mantém as contagens exatas. Antes de aproximar o volume do limite, medir bytes e latência em cache frio e mover filtragem/agregação para uma função ou view no banco premium se os objetivos de desempenho deixarem de ser atendidos.

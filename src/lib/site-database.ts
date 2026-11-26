@@ -12,7 +12,7 @@ import { allowsCatalogSnapshotFallback } from "@/lib/runtime-environment.mjs";
 const SITE_PROJECT_REF = "whwloseshzraipljisqo";
 const SITE_HOST = `${SITE_PROJECT_REF}.supabase.co`;
 const publicColumns =
-  "id,sku,slug,name,original_name,category,tagline,description,image_path,minimum,personalizable,source_date";
+  "id,sku,slug,name,original_name,category,tagline,description,image_path,minimum,personalizable,source_date,materials,dimensions,weight_g,packaging";
 
 type CatalogRow = {
   id: string;
@@ -27,6 +27,10 @@ type CatalogRow = {
   minimum: number;
   personalizable: boolean;
   source_date: string;
+  materials: string[];
+  dimensions: string | null;
+  weight_g: number | null;
+  packaging: string | null;
 };
 
 export type SiteServerConfig = { url: string; secret: string };
@@ -123,7 +127,31 @@ function isCatalogRow(value: unknown): value is CatalogRow {
     /^\/images\/[a-zA-Z0-9][a-zA-Z0-9._-]*\.(?:webp|avif|png|jpe?g)$/.test(
       row.image_path as string,
     ) &&
-    !(row.image_path as string).includes("..")
+    !(row.image_path as string).includes("..") &&
+    Array.isArray(row.materials) &&
+    row.materials.length <= 5 &&
+    row.materials.every(
+      (material) =>
+        typeof material === "string" &&
+        material.length > 0 &&
+        material.length <= 60 &&
+        material.trim() === material,
+    ) &&
+    (row.dimensions === null ||
+      (typeof row.dimensions === "string" &&
+        row.dimensions.length >= 2 &&
+        row.dimensions.length <= 80 &&
+        row.dimensions.trim() === row.dimensions)) &&
+    (row.weight_g === null ||
+      (typeof row.weight_g === "number" &&
+        Number.isInteger(row.weight_g) &&
+        row.weight_g >= 1 &&
+        row.weight_g <= 100000)) &&
+    (row.packaging === null ||
+      (typeof row.packaging === "string" &&
+        row.packaging.length >= 2 &&
+        row.packaging.length <= 120 &&
+        row.packaging.trim() === row.packaging))
   );
 }
 
@@ -141,6 +169,10 @@ function toProduct(row: CatalogRow): Product {
     minimum: row.minimum,
     personalizable: row.personalizable,
     sourceDate: row.source_date,
+    materials: row.materials,
+    dimensions: row.dimensions,
+    weightG: row.weight_g,
+    packaging: row.packaging,
   };
 }
 

@@ -7,7 +7,7 @@ test("catálogo público pagina, preserva o contrato e não expõe campos intern
     "/api/catalog?q=08255&page=1&pageSize=1&sort=nome",
   );
   expect(response.status()).toBe(200);
-  expect(response.headers()["x-catalog-contract-version"]).toBe("2026-09-22.2");
+  expect(response.headers()["x-catalog-contract-version"]).toBe("2026-09-22.3");
   expect(response.headers()["cache-control"]).toBe("private, no-store");
   expect(response.headers()["x-request-id"]).toMatch(
     /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
@@ -17,7 +17,7 @@ test("catálogo público pagina, preserva o contrato e não expõe campos intern
   );
   const body = await response.json();
   expect(body).toMatchObject({
-    contractVersion: "2026-09-22.2",
+    contractVersion: "2026-09-22.3",
     page: 1,
     pageSize: 1,
     total: 1,
@@ -45,16 +45,20 @@ test("catálogo público pagina, preserva o contrato e não expõe campos intern
     [
       "category",
       "description",
+      "dimensions",
       "id",
       "image",
+      "materials",
       "minimum",
       "name",
       "originalName",
+      "packaging",
       "personalizable",
       "sku",
       "slug",
       "sourceDate",
       "tagline",
+      "weightG",
     ].sort(),
   );
   expect(Object.keys(body.facets).sort()).toEqual(

@@ -14,7 +14,7 @@
       "minimumEvidence": "Catalogo operacional doufsxqlfjyuvxuezpln (v_products_public), SKU 08255: min_quantity = 5; min_order_quantity = 5; min_quantity > 0 confirmado. O snapshot da vitrine usa minimum = 5, conferido em 2026-11-25. Disponibilidade e operação conferidas no cadastro canônico (v_products_public, SKU 08255, GET 25/11/2026): minimum = 5, equivalente a min_quantity da fonte; personalização permitida = sim (allows_personalization da fonte); disponibilidade confirmada pela consulta com is_active = true; a menção a embalagem vem da descrição do próprio cadastro canônico (plaquinha para personalização e embalagem) e não é oferecida como serviço adicional; o prazo de entrega não é prometido no texto público; a autorização de publicação editorial foi dada pelo proprietário do negócio em 25/11/2026, e a decisão de lançamento comercial segue sob o gate commercial-product-review (blocked, defer-commercial-launch).",
       "imageRightsEvidence": "Imagem publicada: public/images/executivo.webp (sha256 ac3af337a30a10b2225d28bb23c727573d309fae18d0145ad0e5c9edd33dfd4b, 69934 bytes, WebP). Procedencia registrada em docs/audit/media-check.json (2026-09-20): as URLs primarias do cadastro responderam 403 nesta rede e os ativos foram baixados das URLs alternativas do proprio cadastro (fallback), decodificados e convertidos para WebP. Nao ha comprovacao byte a byte contra a URL primaria (tamanho e formato diferentes). Publicacao autorizada pelo proprietario do negocio em 2026-11-25; licenca de terceiro nao documentada, por isso o gate content-rights permanece blocked.",
       "copyApproved": true,
-      "sourceDigest": "d5b98ee3b9ec84a4b2959c779f712a472678b6bb7f6deb635c818c8b3efdb8a4"
+      "sourceDigest": "e195a53db39530e43ca52c9c869fcadd6743b093094a12020a9af9564f4de1a4"
     },
     {
       "productId": "03b447a0-930f-43f9-a51f-5fce910bfc4a",
@@ -29,7 +29,7 @@
       "minimumEvidence": "Catalogo operacional doufsxqlfjyuvxuezpln (v_products_public), SKU 93586: min_quantity = 1; min_order_quantity = nulo; min_quantity > 0 confirmado. O snapshot da vitrine usa minimum = 1, conferido em 2026-11-25. Disponibilidade e operação conferidas no cadastro canônico (v_products_public, SKU 93586, GET 25/11/2026): minimum = 1, equivalente a min_quantity da fonte; personalização permitida = sim (allows_personalization da fonte); disponibilidade confirmada pela consulta com is_active = true; o texto público não cita embalagem; o prazo de entrega não é prometido no texto público; a autorização de publicação editorial foi dada pelo proprietário do negócio em 25/11/2026, e a decisão de lançamento comercial segue sob o gate commercial-product-review (blocked, defer-commercial-launch).",
       "imageRightsEvidence": "Imagem publicada: public/images/caderno.webp (sha256 dd7554dfb9436a05cf6ba6d013616f62a1888c2349e91de965c4f289b7a9dfb6, 45042 bytes, WebP). Procedencia registrada em docs/audit/media-check.json (2026-09-20): as URLs primarias do cadastro responderam 403 nesta rede e os ativos foram baixados das URLs alternativas do proprio cadastro (fallback), decodificados e convertidos para WebP. Nao ha comprovacao byte a byte contra a URL primaria (tamanho e formato diferentes). Publicacao autorizada pelo proprietario do negocio em 2026-11-25; licenca de terceiro nao documentada, por isso o gate content-rights permanece blocked.",
       "copyApproved": true,
-      "sourceDigest": "ca396cc89ad68c358647c1f034345a0a207c2816b20620684824cd9b04562e24"
+      "sourceDigest": "0849d9efa26b5b98daf02842536186412f34d4bd0036139cf4f4921bec70645e"
     },
     {
       "productId": "015e9f0a-dd0f-444e-9a76-8404c2576ee6",
@@ -44,7 +44,7 @@
       "minimumEvidence": "Catalogo operacional doufsxqlfjyuvxuezpln (v_products_public), SKU MA-02801: min_quantity = 1; min_order_quantity = 1; min_quantity > 0 confirmado. O snapshot da vitrine usa minimum = 1, conferido em 2026-11-25. Disponibilidade e operação conferidas no cadastro canônico (v_products_public, SKU MA-02801, GET 25/11/2026): minimum = 1, equivalente a min_quantity da fonte; personalização permitida = sim (allows_personalization da fonte); disponibilidade confirmada pela consulta com is_active = true; o texto público não cita embalagem; o prazo de entrega não é prometido no texto público; a autorização de publicação editorial foi dada pelo proprietário do negócio em 25/11/2026, e a decisão de lançamento comercial segue sob o gate commercial-product-review (blocked, defer-commercial-launch).",
       "imageRightsEvidence": "Imagem publicada: public/images/mochila.webp (sha256 db883558249f44c7c3eac45cd34b99070865e302cced304cfd614094b4c249d7, 25194 bytes, WebP). Procedencia registrada em docs/audit/media-check.json (2026-09-20): as URLs primarias do cadastro responderam 403 nesta rede e os ativos foram baixados das URLs alternativas do proprio cadastro (fallback), decodificados e convertidos para WebP. Nao ha comprovacao byte a byte contra a URL primaria (tamanho e formato diferentes). Publicacao autorizada pelo proprietario do negocio em 2026-11-25; licenca de terceiro nao documentada, por isso o gate content-rights permanece blocked.",
       "copyApproved": true,
-      "sourceDigest": "a08d56318ce8372292bd47691cce1e519c7cee907636f816301437a2091ae237"
+      "sourceDigest": "acd83802027953f065bf0c2a345f0842b907beb2fbd00c245812844595047c09"
     },
     {
       "productId": "0111829b-9072-46cb-8cb9-9c620f55a14d",
@@ -59,7 +59,7 @@
       "minimumEvidence": "Catalogo operacional doufsxqlfjyuvxuezpln (v_products_public), SKU 13845: min_quantity = 5; min_order_quantity = 5; min_quantity > 0 confirmado. O snapshot da vitrine usa minimum = 5, conferido em 2026-11-25. Disponibilidade e operação conferidas no cadastro canônico (v_products_public, SKU 13845, GET 25/11/2026): minimum = 5, equivalente a min_quantity da fonte; personalização permitida = sim (allows_personalization da fonte); disponibilidade confirmada pela consulta com is_active = true; o texto público não cita embalagem; o prazo de entrega não é prometido no texto público; a autorização de publicação editorial foi dada pelo proprietário do negócio em 25/11/2026, e a decisão de lançamento comercial segue sob o gate commercial-product-review (blocked, defer-commercial-launch).",
       "imageRightsEvidence": "Imagem publicada: public/images/garrafa.webp (sha256 24fac03fb8cffcd02d785e119a1482109b4f8ecd33ac84725a30019efcf0d131, 6198 bytes, WebP). Procedencia registrada em docs/audit/media-check.json (2026-09-20): as URLs primarias do cadastro responderam 403 nesta rede e os ativos foram baixados das URLs alternativas do proprio cadastro (fallback), decodificados e convertidos para WebP. Nao ha comprovacao byte a byte contra a URL primaria (tamanho e formato diferentes). Publicacao autorizada pelo proprietario do negocio em 2026-11-25; licenca de terceiro nao documentada, por isso o gate content-rights permanece blocked.",
       "copyApproved": true,
-      "sourceDigest": "a5aa21a93d8652762ed91cb41505b211979ff10c41d7f1f26c1b08a67fc455f2"
+      "sourceDigest": "0702d2bd7795b89ab7ef236f3a79c91839306471abc4de6dfcd7f5fbb919949f"
     },
     {
       "productId": "01a22943-6283-4db0-b77b-3a8b56ca09fe",
@@ -74,7 +74,7 @@
       "minimumEvidence": "Catalogo operacional doufsxqlfjyuvxuezpln (v_products_public), SKU KT-90231: min_quantity = 1; min_order_quantity = 1; min_quantity > 0 confirmado. O snapshot da vitrine usa minimum = 1, conferido em 2026-11-25. Disponibilidade e operação conferidas no cadastro canônico (v_products_public, SKU KT-90231, GET 25/11/2026): minimum = 1, equivalente a min_quantity da fonte; personalização permitida = sim (allows_personalization da fonte); disponibilidade confirmada pela consulta com is_active = true; o texto público não cita embalagem; o prazo de entrega não é prometido no texto público; a autorização de publicação editorial foi dada pelo proprietário do negócio em 25/11/2026, e a decisão de lançamento comercial segue sob o gate commercial-product-review (blocked, defer-commercial-launch).",
       "imageRightsEvidence": "Imagem publicada: public/images/cafe.webp (sha256 0d3cae020f7ae1227bd852bc1c7e7a9feb271bcef1e3a72b2f79ebc4d770ae89, 9062 bytes, WebP). Procedencia registrada em docs/audit/media-check.json (2026-09-20): as URLs primarias do cadastro responderam 403 nesta rede e os ativos foram baixados das URLs alternativas do proprio cadastro (fallback), decodificados e convertidos para WebP. Nao ha comprovacao byte a byte contra a URL primaria (tamanho e formato diferentes). Publicacao autorizada pelo proprietario do negocio em 2026-11-25; licenca de terceiro nao documentada, por isso o gate content-rights permanece blocked.",
       "copyApproved": true,
-      "sourceDigest": "e96bb303b2beb7b7720dea914002baadec3a962a1e7455914f9e6efcb3726310"
+      "sourceDigest": "2234b9189e04ff6726bf3e41c3187924ab0b6086f20665869da2e7e1922a04f7"
     },
     {
       "productId": "003c8bd0-8c02-46d2-9b6a-8464858fee97",
@@ -89,7 +89,7 @@
       "minimumEvidence": "Catalogo operacional doufsxqlfjyuvxuezpln (v_products_public), SKU KT-90455: min_quantity = 1; min_order_quantity = 1; min_quantity > 0 confirmado. O snapshot da vitrine usa minimum = 1, conferido em 2026-11-25. Disponibilidade e operação conferidas no cadastro canônico (v_products_public, SKU KT-90455, GET 25/11/2026): minimum = 1, equivalente a min_quantity da fonte; personalização permitida = sim (allows_personalization da fonte); disponibilidade confirmada pela consulta com is_active = true; o texto público não cita embalagem; o prazo de entrega não é prometido no texto público; a autorização de publicação editorial foi dada pelo proprietário do negócio em 25/11/2026, e a decisão de lançamento comercial segue sob o gate commercial-product-review (blocked, defer-commercial-launch).",
       "imageRightsEvidence": "Imagem publicada: public/images/cha.webp (sha256 d639e9a3eecff6ca54035590071cf9076d8f36436bf29ae2c0a1f8d44b8bab14, 9218 bytes, WebP). Procedencia registrada em docs/audit/media-check.json (2026-09-20): as URLs primarias do cadastro responderam 403 nesta rede e os ativos foram baixados das URLs alternativas do proprio cadastro (fallback), decodificados e convertidos para WebP. Nao ha comprovacao byte a byte contra a URL primaria (tamanho e formato diferentes). Publicacao autorizada pelo proprietario do negocio em 2026-11-25; licenca de terceiro nao documentada, por isso o gate content-rights permanece blocked.",
       "copyApproved": true,
-      "sourceDigest": "e16ca223d214b5b7179a6b53a5c74fe7530dadc09f58979ec876fb4093f24392"
+      "sourceDigest": "f55f6d08febd21b4c4e21aab235d872ed38555f93d4ab0842bb7d8b8cdfc3718"
     },
     {
       "productId": "02095e72-4ede-4e44-af95-8fc335015f94",
@@ -104,7 +104,7 @@
       "minimumEvidence": "Catalogo operacional doufsxqlfjyuvxuezpln (v_products_public), SKU KT-90307: min_quantity = 1; min_order_quantity = 1; min_quantity > 0 confirmado. O snapshot da vitrine usa minimum = 1, conferido em 2026-11-25. Disponibilidade e operação conferidas no cadastro canônico (v_products_public, SKU KT-90307, GET 25/11/2026): minimum = 1, equivalente a min_quantity da fonte; personalização permitida = sim (allows_personalization da fonte); disponibilidade confirmada pela consulta com is_active = true; o texto público não cita embalagem; o prazo de entrega não é prometido no texto público; a autorização de publicação editorial foi dada pelo proprietário do negócio em 25/11/2026, e a decisão de lançamento comercial segue sob o gate commercial-product-review (blocked, defer-commercial-launch).",
       "imageRightsEvidence": "Imagem publicada: public/images/churrasco.webp (sha256 be0ee90391974920ccbcab9ef13fb3a6c76948ad21832dbb52730c13747aaeb6, 24550 bytes, WebP). Procedencia registrada em docs/audit/media-check.json (2026-09-20): as URLs primarias do cadastro responderam 403 nesta rede e os ativos foram baixados das URLs alternativas do proprio cadastro (fallback), decodificados e convertidos para WebP. Nao ha comprovacao byte a byte contra a URL primaria (tamanho e formato diferentes). Publicacao autorizada pelo proprietario do negocio em 2026-11-25; licenca de terceiro nao documentada, por isso o gate content-rights permanece blocked.",
       "copyApproved": true,
-      "sourceDigest": "54f3fe983193d5d70be92858b37778b2c48a187012998dbcdf6771e7759b700a"
+      "sourceDigest": "35dd6ad6ac3e66857cc7a3eb508fdca85b21ca77afcc1bfffc00537563f63df4"
     },
     {
       "productId": "03ad1da3-68c5-40ed-9465-e1aad642d384",
@@ -119,7 +119,7 @@
       "minimumEvidence": "Catalogo operacional doufsxqlfjyuvxuezpln (v_products_public), SKU CE-87001: min_quantity = 1; min_order_quantity = 1; min_quantity > 0 confirmado. O snapshot da vitrine usa minimum = 1, conferido em 2026-11-25. Disponibilidade e operação conferidas no cadastro canônico (v_products_public, SKU CE-87001, GET 25/11/2026): minimum = 1, equivalente a min_quantity da fonte; personalização permitida = sim (allows_personalization da fonte); disponibilidade confirmada pela consulta com is_active = true; o texto público não cita embalagem; o prazo de entrega não é prometido no texto público; a autorização de publicação editorial foi dada pelo proprietário do negócio em 25/11/2026, e a decisão de lançamento comercial segue sob o gate commercial-product-review (blocked, defer-commercial-launch).",
       "imageRightsEvidence": "Imagem publicada: public/images/caneta.webp (sha256 a0cb40852c68d1e586bd3ec5040957fb745bfed846ef5c74c2eaba22e4e290b2, 6168 bytes, WebP). Procedencia registrada em docs/audit/media-check.json (2026-09-20): as URLs primarias do cadastro responderam 403 nesta rede e os ativos foram baixados das URLs alternativas do proprio cadastro (fallback), decodificados e convertidos para WebP. Nao ha comprovacao byte a byte contra a URL primaria (tamanho e formato diferentes). Publicacao autorizada pelo proprietario do negocio em 2026-11-25; licenca de terceiro nao documentada, por isso o gate content-rights permanece blocked.",
       "copyApproved": true,
-      "sourceDigest": "3b8d8fccaf5bef3ed36f1d34293c80fdafb80d334ec3fe72d268c75373054a13"
+      "sourceDigest": "cbf869255170057904443e66cd5bddc110730401165a096c5d63bcc43c3ac643"
     }
   ]
 }
