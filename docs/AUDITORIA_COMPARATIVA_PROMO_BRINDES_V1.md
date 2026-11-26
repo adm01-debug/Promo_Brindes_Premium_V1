@@ -151,7 +151,7 @@ A eventual unificação de contas entre sites exige decisão explícita de ident
 
 ## 6. Aproveitamentos prioritários e critérios de conclusão
 
-O [backlog completo em CSV](BACKLOG_APROVEITAMENTO_V1.csv) e sua [fonte JSON](audit/comparativo-v1-20260922/backlog.json) contêm **32 recomendações**, com origem, lacuna premium, adaptação, prioridade, etapas relacionadas, dependências, responsável sugerido e aceitação. Os IDs `APV1` não substituem nem aumentam silenciosamente o plano de 200 etapas. Algumas funções são extensões propostas de escopo.
+O [backlog completo em CSV](BACKLOG_APROVEITAMENTO_V1.csv) e sua [fonte JSON](audit/comparativo-v1-20260922/backlog.json) contêm **32 recomendações**, com origem, lacuna premium, adaptação, prioridade, etapas relacionadas, dependências, responsável sugerido e aceitação. Os IDs `APV1` não substituem nem aumentam silenciosamente o plano de 200 etapas. Algumas funções são extensões propostas de escopo. A coluna `status` do CSV foi revisada contra o código e o banco em 26/11/2026: APV1-09, 15, 16, 22 e 32 saíram de "recomendado" para o estado real, com a evidência de onde cada critério foi cumprido.
 
 ### A. Briefing que reduz perguntas de retorno
 
