@@ -45,6 +45,11 @@ const jsonRows = (rows) =>
         : "*/0",
     },
   });
+// Resposta da consulta de contagem: uma linha só, com o total do catálogo ativo.
+const countResponse = (total = sourceRows().length) =>
+  Response.json([{ id: sourceRows()[0].id }], {
+    headers: { "content-range": `0-0/${total}` },
+  });
 
 function harness({ source, existing, write } = {}) {
   const calls = [];
@@ -74,8 +79,17 @@ function harness({ source, existing, write } = {}) {
       );
       assert.equal(init.headers.Authorization, undefined);
       assert.equal(url.pathname, "/rest/v1/v_products_public");
-      assert.equal(url.searchParams.get("select"), SOURCE_COLUMNS);
-      return source ? source() : jsonRows(sourceRows());
+      const select = url.searchParams.get("select");
+      assert.ok(
+        select === SOURCE_COLUMNS || select === "id",
+        "the source view is read only for the curated rows or the active count",
+      );
+      if (select === "id") {
+        assert.equal(url.searchParams.get("is_active"), "eq.true");
+        assert.equal(url.searchParams.get("limit"), "1");
+      }
+      if (source) return source({ url, select });
+      return select === "id" ? countResponse() : jsonRows(sourceRows());
     }
     assert.equal(url.hostname, targetHost);
     assert.equal(url.pathname, "/rest/v1/premium_catalog_items");
@@ -188,11 +202,14 @@ test("sync reads the operational source and writes only to the premium project",
       count: 8,
       project: "whwloseshzraipljisqo",
       dryRun: false,
+          sourceCount: 8,
+      sourceCount: 8,
     },
   );
   assert.deepEqual(
     h.calls.map(({ url, init }) => `${url.hostname}:${init.method}`),
     [
+      `${sourceHost}:GET`,
       `${sourceHost}:GET`,
       `${targetHost}:GET`,
       ...snapshot.map(() => `${targetHost}:PATCH`),
@@ -225,7 +242,12 @@ test("reordering the published order parks the old order before rewriting it", a
   });
   assert.deepEqual(
     await syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }),
-    { count: snapshot.length, project: "whwloseshzraipljisqo", dryRun: false },
+    {
+      count: snapshot.length,
+      project: "whwloseshzraipljisqo",
+      dryRun: false,
+      sourceCount: snapshot.length,
+    },
   );
   const writes = h.calls.filter(({ init }) => init.method !== "GET");
   assert.equal(
@@ -385,6 +407,7 @@ test("a reordered storefront still accepts a new product", async () => {
     count: snapshot.length,
     project: "whwloseshzraipljisqo",
     dryRun: false,
+    sourceCount: snapshot.length,
   });
   const writes = h.calls.filter(({ init }) => init.method !== "GET");
   assert.deepEqual(
@@ -421,6 +444,7 @@ test("a product outside the curation never blocks the positions it holds", async
     count: snapshot.length,
     project: "whwloseshzraipljisqo",
     dryRun: false,
+    sourceCount: snapshot.length,
   });
   const writes = h.calls.filter(({ init }) => init.method !== "GET");
   const assigned = writes.flatMap(({ url, init }) =>
@@ -541,6 +565,29 @@ test("rejects a source count without an exact content range", async () => {
   );
 });
 
+test("a rejected source count writes nothing to the storefront", async () => {
+  const h = harness({
+    source: ({ select }) =>
+      select === "id"
+        ? Response.json([{ id: snapshot[0].id }])
+        : jsonRows(sourceRows()),
+  });
+  await assert.rejects(
+    syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }),
+    /count is missing/,
+  );
+  assert.deepEqual(
+    h.calls.filter(({ init }) => init.method !== "GET"),
+    [],
+    "a source count that cannot be proven must not reach the storefront",
+  );
+  assert.equal(
+    h.storefront.size,
+    0,
+    "the storefront state is never read before the count is validated",
+  );
+});
+
 const mutate = (changes, index = 0) =>
   snapshot.map((item, itemIndex) =>
     itemIndex === index ? { ...item, ...changes } : { ...item },
@@ -621,7 +668,8 @@ for (const [name, changes, sourceMaterials] of [
   test(`sync publishes ${name} from the source`, async () => {
     const curated = mutate(changes);
     const h = harness({
-      source: () => {
+      source: ({ select }) => {
+        if (select === "id") return countResponse();
         const rows = sourceRows();
         rows[0].materials = sourceMaterials;
         rows[0].dimensions_display = curated[0].dimensions;
@@ -651,7 +699,12 @@ test("a product absent from the storefront is inserted with the technical sheet"
   const h = harness({ existing: () => jsonRows([]) });
   assert.deepEqual(
     await syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }),
-    { count: snapshot.length, project: "whwloseshzraipljisqo", dryRun: false },
+    {
+      count: snapshot.length,
+      project: "whwloseshzraipljisqo",
+      dryRun: false,
+      sourceCount: snapshot.length,
+    },
   );
   const writes = h.calls.filter(({ init }) => init.method !== "GET");
   assert.equal(writes.length, 1, "the whole catalog is inserted in one statement");
@@ -891,7 +944,7 @@ for (const [name, existing] of [
     await assert.rejects(
       syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }),
     );
-    assert.equal(h.calls.length, 2);
+    assert.equal(h.calls.length, 3);
     assert.ok(h.calls.every(({ init }) => init.method === "GET"));
   });
 
@@ -903,7 +956,7 @@ test("failed write is reported and never retried against another project", async
     syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }),
     /Catalog sync failed \(HTTP 503\)/,
   );
-  assert.equal(h.calls.length, 3);
+  assert.equal(h.calls.length, 4);
 });
 
 const heartbeatStore = () => {

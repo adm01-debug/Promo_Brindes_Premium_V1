@@ -130,6 +130,8 @@ contagens iniciais: 8 peças, 0 briefings, 0 limites):
 | hash de contato inválido | 400 |
 | primeira replicação depois da migration | 200 e a linha única gravou `success` com 8 itens curados entre 7.968 produtos ativos |
 | replicação que falha depois de um sucesso | linha vira `failed` com o motivo, mantendo `last_success_at` e as duas contagens do último sucesso, e a nota da tela traz o motivo junto com a idade dos dados |
+| replicação que falha sem nenhum sucesso anterior | a nota diz que ainda não houve replicação bem-sucedida, em vez de "há 0 hora(s)" |
+| contagem da gestão reprovada (resposta sem `Content-Range` exato) | a contagem é conferida antes de qualquer escrita: a vitrine não recebe nada, a execução falha e o motivo fica no card |
 | conferência da gestão reprovada no workflow | o passo de replicação roda mesmo assim (`!cancelled()`), o sincronizador reprova a mesma divergência e grava `failed` com o motivo, em vez de o job abortar em silêncio |
 | tabela sem nenhuma tentativa (banco novo) | card mostra **Sem registro** e a tela diz que ainda não houve replicação, em vez de exibir saúde falsa |
 | leitura do heartbeat indisponível | card mostra **Indisponível** e a tela diz que não conseguiu consultar o histórico, sem sugerir primeira sincronização |
@@ -167,7 +169,7 @@ Inventário conferido por consulta direta ao projeto `whwloseshzraipljisqo` em 2
 | política `premium_catalog_public_read` | leitura anônima da vitrine | vitrine pública (só itens publicados e dentro da janela) |
 | replicação gestão→premium | `.github/workflows/catalog-source-guard.yml` (cron 11:17 UTC + guard diário) | aba **Situação** → card **Réplica da gestão** (data do último sucesso, itens conferidos, produtos ativos na gestão e motivo da última falha). O botão "replicar agora" continua fora do console de propósito, para não expor no runtime web a chave de leitura da base de gestão |
 
-O workflow grava o resultado de cada tentativa na tabela `premium_catalog_sync_state` (uma linha só, sem dado pessoal), então a falha aparece na tela em vez de morrer no histórico do GitHub Actions. A etapa de replicação roda mesmo quando a conferência da base de gestão reprova: o sincronizador repete a mesma validação e registra o motivo no heartbeat, para que a divergência que bloqueou a atualização fique visível no card. O runtime web lê essa linha com `service_role` e nunca recebe a chave da base de gestão: quem quer o botão "replicar agora" dentro do console precisa aceitar que a chave de leitura da gestão passe a existir no runtime do site.
+O workflow grava o resultado de cada tentativa na tabela `premium_catalog_sync_state` (uma linha só, sem dado pessoal), então a falha aparece na tela em vez de morrer no histórico do GitHub Actions. A etapa de replicação roda mesmo quando a conferência da base de gestão reprova: o sincronizador repete a mesma validação e registra o motivo no heartbeat, para que a divergência que bloqueou a atualização fique visível no card. A contagem de produtos ativos da gestão é a última conferência antes de qualquer escrita: se ela não puder ser provada, a vitrine fica intocada e a tentativa entra como falha — assim o card nunca mostra um resultado antigo para uma vitrine que já foi atualizada. O runtime web lê essa linha com `service_role` e nunca recebe a chave da base de gestão: quem quer o botão "replicar agora" dentro do console precisa aceitar que a chave de leitura da gestão passe a existir no runtime do site.
 
 ### Segurança conferida (RLS e grants)
 

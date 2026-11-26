@@ -182,10 +182,12 @@ function deliveryDiagnosis(): ConsoleDeliveryState {
 }
 
 /**
- * Heartbeat da replicação. Uma leitura que falha (banco fora do ar, tabela ainda
- * não instalada) vira `null` para não derrubar a aba Situação, enquanto uma
- * tabela acessível e sem linha vira `registrada: false` — o console distingue
- * "não consegui consultar" de "ainda não houve replicação".
+ * Heartbeat da replicação. Uma leitura que falha só nesta consulta (tabela ainda
+ * não instalada num ambiente novo, sem permissão para a chave usada) vira `null`
+ * para não derrubar a aba Situação, enquanto uma tabela acessível e sem linha
+ * vira `registrada: false` — o console distingue "não consegui consultar" de
+ * "ainda não houve replicação". Banco fora do ar não chega aqui: as contagens de
+ * `readConsoleStatus` falham antes e a aba inteira responde erro.
  */
 async function readConsoleReplication(config: SiteServerConfig) {
   try {

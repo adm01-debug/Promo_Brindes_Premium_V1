@@ -156,6 +156,12 @@ export async function syncSiteCatalog(
   }));
   // No target write is reachable before a complete, current source check.
   await verifyCuratedSource(snapshot, { env, fetcher });
+  // A contagem da gestão faz parte da conferência: enquanto ela não for
+  // validada, nenhuma escrita acontece. Contar depois de gravar deixaria a
+  // vitrine atualizada e o console mostrando o resultado da execução anterior.
+  const sourceCount = dryRun
+    ? null
+    : await countActiveSourceProducts({ env, fetcher });
 
   const payloadIds = new Set(payload.map((item) => item.id));
   // editorial_order is unique for the whole table, so the entire storefront has
@@ -304,7 +310,12 @@ export async function syncSiteCatalog(
   }
   const fresh = payload.filter((item) => !existingIds.has(item.id));
   if (fresh.length) await insertRows(fresh);
-  return { count: payload.length, project: ref, dryRun: false };
+  return {
+    count: payload.length,
+    project: ref,
+    dryRun: false,
+    sourceCount,
+  };
 }
 
 const syncStateColumns = [
@@ -411,6 +422,8 @@ if (
     const snapshot = JSON.parse(
       await readFile("src/lib/products.json", "utf8"),
     );
+    // A contagem da gestão já foi validada dentro de syncSiteCatalog, antes de
+    // qualquer escrita: aqui só reaproveitamos o total conferido.
     const result = await syncSiteCatalog(snapshot, { dryRun });
     console.log(
       result.dryRun
@@ -425,7 +438,7 @@ if (
           status: "success",
           attemptAt,
           curatedCount: result.count,
-          sourceCount: await countActiveSourceProducts(),
+          sourceCount: result.sourceCount,
         });
       } catch (heartbeat) {
         console.warn(`Heartbeat not recorded: ${heartbeat.message}`);

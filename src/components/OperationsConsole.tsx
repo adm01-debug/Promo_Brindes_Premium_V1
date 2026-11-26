@@ -435,14 +435,18 @@ function StatusPanel({ status }: { status: ConsoleStatus | null }) {
         <p className="console-note">
           {`A replicação falhou na última tentativa: ${replication.erro ?? "sem motivo registrado"}.`}{" "}
           {replication.atrasada
-            ? `A última replicação bem-sucedida foi há ${replication.horasDesdeSucesso ?? 0} hora(s); a vitrine pode estar exibindo nome ou preço antigo.`
+            ? replication.horasDesdeSucesso === null
+              ? "Ainda não há replicação bem-sucedida registrada; a vitrine pode estar exibindo dados desatualizados."
+              : `A última replicação bem-sucedida foi há ${replication.horasDesdeSucesso} hora(s); a vitrine pode estar exibindo nome ou preço antigo.`
             : "Enquanto isso, os dados publicados continuam os da última execução boa."}{" "}
           A sincronização roda no workflow do catálogo e grava aqui o resultado
           de cada tentativa.
         </p>
       ) : replication?.atrasada ? (
         <p className="console-note">
-          {`A última replicação bem-sucedida foi há ${replication.horasDesdeSucesso ?? 0} hora(s); a vitrine pode estar exibindo nome ou preço antigo.`}{" "}
+          {replication.horasDesdeSucesso === null
+            ? "Ainda não há replicação bem-sucedida registrada; a vitrine pode estar exibindo dados desatualizados."
+            : `A última replicação bem-sucedida foi há ${replication.horasDesdeSucesso} hora(s); a vitrine pode estar exibindo nome ou preço antigo.`}{" "}
           Enquanto isso, os dados publicados continuam os da última execução
           boa. A sincronização roda no workflow do catálogo e grava aqui o
           resultado de cada tentativa.
