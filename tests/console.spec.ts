@@ -81,6 +81,9 @@ test("o token correto abre a sessão e as abas carregam", async ({ page }) => {
   await expect(page.getByLabel("Token de acesso")).toBeVisible();
 });
 test("o console qualifica e encerra um lead pela tela", async ({ page }) => {
+  // A lista responde com a situação que o banco teria depois da última gravação,
+  // então o teste prova que a tela reflete o que foi registrado.
+  let situacao = "received";
   const briefing = {
     id: "11111111-1111-4111-8111-111111111111",
     protocol: "PB-AAAAAAAAAAAA",
@@ -92,7 +95,6 @@ test("o console qualifica e encerra um lead pela tela", async ({ page }) => {
     budget: null,
     message: null,
     items: [{ sku: "CANETA-A", quantity: 100 }],
-    status: "received",
     created_at: "2026-11-26T10:00:00.000Z",
     delivery_status: "pending",
     delivery_attempts: 0,
@@ -110,7 +112,7 @@ test("o console qualifica e encerra um lead pela tela", async ({ page }) => {
   await page.route("**/api/operacoes/dados**", async (route) => {
     const escopo =
       new URL(route.request().url()).searchParams.get("escopo") ?? "situacao";
-    const dados = escopo === "briefings" ? [briefing] : [];
+    const dados = escopo === "briefings" ? [{ ...briefing, status: situacao }] : [];
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -120,6 +122,9 @@ test("o console qualifica e encerra um lead pela tela", async ({ page }) => {
   let enviado: unknown = null;
   await page.route("**/api/operacoes/acoes", async (route) => {
     enviado = route.request().postDataJSON();
+    const pedido = enviado as { acao?: string; status?: string };
+    if (pedido?.acao === "briefing-status" && pedido.status)
+      situacao = pedido.status;
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -147,6 +152,33 @@ test("o console qualifica e encerra um lead pela tela", async ({ page }) => {
       id: briefing.id,
       status: "qualified",
     });
+  // Depois de gravar, a lista é recarregada: a situação exibida é a que o banco
+  // guardou e o botão volta ao estado de espera.
+  await expect(seletor).toHaveValue("qualified");
+  await expect(gravar).toBeDisabled();
+  await expect(page.getByText("Situação atualizada.")).toBeVisible();
+  // Navegar pelas opções do seletor fechado (setas do teclado) não pode gravar
+  // nada: só o botão envia.
+  await seletor.focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(seletor).toHaveValue("closed");
+  await expect
+    .poll(() => enviado)
+    .toEqual({
+      acao: "briefing-status",
+      id: briefing.id,
+      status: "qualified",
+    });
+  await gravar.click();
+  await expect
+    .poll(() => enviado)
+    .toEqual({
+      acao: "briefing-status",
+      id: briefing.id,
+      status: "closed",
+    });
+  await expect(seletor).toHaveValue("closed");
+  await expect(gravar).toBeDisabled();
 });
 
 test("o console grava a ficha técnica e libera um contato bloqueado", async ({
