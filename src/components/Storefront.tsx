@@ -218,6 +218,15 @@ export default function Storefront({
     return () => clearTimeout(timer);
   }, [notice]);
 
+  // O aviso de limite fica junto à ação de envio; em telas estreitas ele pode
+  // nascer fora da área visível do diálogo.
+  useEffect(() => {
+    if (!rateLimitNotice) return;
+    document
+      .getElementById("briefing-rate-limit")
+      ?.scrollIntoView({ block: "nearest" });
+  }, [rateLimitNotice]);
+
   useEffect(() => {
     const syncNetworkState = () => setNetworkOnline(navigator.onLine);
     syncNetworkState();
@@ -1933,12 +1942,6 @@ export default function Storefront({
                   </p>
                 </div>
               )}
-              {rateLimitNotice && (
-                <div className="form-error-summary" role="alert">
-                  <strong>Limite de envios atingido.</strong>
-                  <p>{rateLimitNotice}</p>
-                </div>
-              )}
               <div className="form-row">
                 <label>
                   Seu nome
@@ -2311,6 +2314,17 @@ export default function Storefront({
                   ? "Ao enviar, seus dados seguem ao canal comercial configurado para esta solicitação. A confirmação só aparece após a resposta do servidor."
                   : "Seus dados serão usados apenas no arquivo que você baixar. Esta prévia não envia o briefing nem armazena dados de contato."}
               </p>
+              {rateLimitNotice && (
+                <div
+                  className="form-error-summary"
+                  id="briefing-rate-limit"
+                  role="alert"
+                  tabIndex={-1}
+                >
+                  <strong>Limite de envios atingido.</strong>
+                  <p>{rateLimitNotice}</p>
+                </div>
+              )}
               <div className="form-actions">
                 <button
                   type="button"

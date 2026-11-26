@@ -626,6 +626,13 @@ test("bloqueio por limite mostra o código de atendimento dentro do briefing", a
     "Limite de envios atingido.",
   );
   await expect(dialog.getByRole("alert")).toContainText("0123abcd");
+  // O aviso precisa nascer junto à ação de envio: no celular o topo do
+  // formulário fica fora da área visível do diálogo.
+  expect(
+    await dialog
+      .getByRole("alert")
+      .evaluate((element) => element.nextElementSibling?.className ?? ""),
+  ).toContain("form-actions");
   // A notificação da página some em 4s e fica atrás do diálogo modal: o código
   // precisa continuar legível e selecionável no próprio formulário.
   expect(
