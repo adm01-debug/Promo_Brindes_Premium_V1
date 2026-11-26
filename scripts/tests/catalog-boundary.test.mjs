@@ -612,7 +612,7 @@ for (const [name, changes, sourceMaterials] of [
   ["a null material list", { materials: [] }, null],
   [
     "a pending technical sheet",
-    { materials: [], dimensions: null, weightG: null },
+    { materials: [], dimensions: null, weightG: null, packaging: null },
     null,
   ],
 ])
@@ -628,7 +628,18 @@ for (const [name, changes, sourceMaterials] of [
       },
     });
     await syncSiteCatalog(curated, { env, fetcher: h.fetcher });
-    assert.ok(h.calls.some(({ url }) => url.hostname === targetHost));
+    const written = h.calls
+      .filter(({ init }) => init.method === "POST" || init.method === "PATCH")
+      .flatMap(({ init }) => {
+        const body = JSON.parse(init.body);
+        return Array.isArray(body) ? body : [body];
+      })
+      .find((row) => row.sku === curated[0].sku);
+    assert.ok(written, "the curated product has to reach the storefront");
+    assert.deepEqual(written.materials, curated[0].materials);
+    assert.equal(written.dimensions, curated[0].dimensions);
+    assert.equal(written.weight_g, curated[0].weightG);
+    assert.equal(written.packaging, curated[0].packaging);
   });
 
 for (const url of [
