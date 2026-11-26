@@ -30,6 +30,10 @@ const fields = {
   minimum: "minimum",
   personalizable: "personalizable",
   sourceDate: "source_date",
+  materials: "materials",
+  dimensions: "dimensions",
+  weightG: "weight_g",
+  packaging: "packaging",
 };
 const expected = JSON.parse(readFileSync("src/lib/products.json", "utf8"));
 const endpoint = new URL("/rest/v1/premium_catalog_items", url);
@@ -63,6 +67,8 @@ if (
   throw new Error("Catálogo retornou contagem incompleta ou inválida.");
 
 const byId = new Map(rows.map((row) => [row.id, row]));
+const comparable = (value) =>
+  Array.isArray(value) ? JSON.stringify(value) : value;
 const differences = [];
 for (const product of expected) {
   const current = byId.get(product.id);
@@ -71,7 +77,10 @@ for (const product of expected) {
     continue;
   }
   const changed = Object.entries(fields)
-    .filter(([source, remote]) => product[source] !== current[remote])
+    .filter(
+      ([source, remote]) =>
+        comparable(product[source]) !== comparable(current[remote]),
+    )
     .map(([source]) => source);
   if (changed.length) differences.push(`${product.sku}:${changed.join(",")}`);
 }
@@ -80,5 +89,5 @@ if (byId.size !== expected.length || differences.length)
     `Drift na publicação premium: ${differences.join("; ") || "contagem diferente"}`,
   );
 console.log(
-  `Catálogo canônico conferido: ${rows.length} produtos publicados; 12 campos por peça iguais ao snapshot.`,
+  `Catálogo canônico conferido: ${rows.length} produtos publicados; ${Object.keys(fields).length} campos por peça iguais ao snapshot.`,
 );

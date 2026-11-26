@@ -97,6 +97,9 @@ export default async function ProductPage({
     // The product detail remains useful when contextual discovery is offline.
   }
   const minimum = Math.max(1, product.minimum ?? 1);
+  // Technical rows come from the supplier record; anything missing must read as
+  // pending so the page never implies an unconfirmed material or packaging.
+  const pending = "A confirmar";
   const siteUrl = publicSiteOrigin();
   const schema = {
     "@context": "https://schema.org",
@@ -153,6 +156,26 @@ export default async function ProductPage({
           <p className="product-page-description">{product.description}</p>
           <dl className="product-page-facts">
             <div>
+              <dt>Material</dt>
+              <dd>
+                {product.materials.length > 0
+                  ? product.materials.join(" · ")
+                  : pending}
+              </dd>
+            </div>
+            <div>
+              <dt>Medidas</dt>
+              <dd>{product.dimensions ?? pending}</dd>
+            </div>
+            <div>
+              <dt>Peso</dt>
+              <dd>{product.weightG === null ? pending : `${product.weightG} g`}</dd>
+            </div>
+            <div>
+              <dt>Embalagem</dt>
+              <dd>{product.packaging ?? pending}</dd>
+            </div>
+            <div>
               <dt>Quantidade mínima cadastrada</dt>
               <dd>
                 {minimum} {minimum === 1 ? "unidade" : "unidades"}
@@ -174,9 +197,9 @@ export default async function ProductPage({
           <ProductDetailActions product={product} />
           <p className="fine-print">
             Dados editoriais confirmados em{" "}
-            {product.sourceDate.split("-").reverse().join(".")}. Condições,
-            materiais, variantes e estoque precisam ser confirmados pelo
-            comercial antes da proposta.
+            {product.sourceDate.split("-").reverse().join(".")}. Material,
+            medidas e peso vêm do cadastro do fornecedor; variantes, embalagem
+            e estoque são confirmados pelo comercial antes da proposta.
           </p>
         </div>
       </article>

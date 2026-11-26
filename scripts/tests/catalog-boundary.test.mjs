@@ -31,6 +31,9 @@ const sourceRows = () =>
     min_quantity: item.minimum,
     allows_personalization: item.personalizable,
     is_active: true,
+    materials: item.materials,
+    dimensions_display: item.dimensions,
+    weight_g: item.weightG,
   }));
 const jsonRows = (rows) =>
   Response.json(rows, {
@@ -339,18 +342,22 @@ test("a newly curated product is still published while known ones are not", asyn
     [
       "category",
       "description",
+      "dimensions",
       "editorial_order",
       "id",
       "image_path",
+      "materials",
       "minimum",
       "name",
       "original_name",
+      "packaging",
       "personalizable",
       "published",
       "sku",
       "slug",
       "source_date",
       "tagline",
+      "weight_g",
     ].sort(),
     "the insert must carry every column the table requires",
   );
@@ -546,6 +553,14 @@ for (const [name, candidate] of [
   ["invalid category", mutate({ category: "Interno" })],
   ["invalid minimum", mutate({ minimum: 0 })],
   ["invalid personalization", mutate({ personalizable: "yes" })],
+  ["untrimmed material", mutate({ materials: [" Algodão"] })],
+  [
+    "too many materials",
+    mutate({ materials: ["A", "B", "C", "D", "E", "F"] }),
+  ],
+  ["missing dimensions", mutate({ dimensions: undefined })],
+  ["untrimmed packaging", mutate({ packaging: "Caixa " })],
+  ["fractional weight", mutate({ weightG: 12.5 })],
   ["untrimmed public text", mutate({ name: ` ${snapshot[0].name}` })],
   ["oversized SKU", mutate({ sku: "S".repeat(CATALOG_FIELD_LIMITS.sku + 1) })],
   [
@@ -712,6 +727,30 @@ for (const [name, source] of [
     () => {
       const rows = sourceRows();
       rows[0].allows_personalization = false;
+      return jsonRows(rows);
+    },
+  ],
+  [
+    "changed materials",
+    () => {
+      const rows = sourceRows();
+      rows[0].materials = ["Vidro"];
+      return jsonRows(rows);
+    },
+  ],
+  [
+    "invalid materials",
+    () => {
+      const rows = sourceRows();
+      rows[0].materials = [" Material "];
+      return jsonRows(rows);
+    },
+  ],
+  [
+    "changed dimensions",
+    () => {
+      const rows = sourceRows();
+      rows[0].dimensions_display = "40 x 40 cm";
       return jsonRows(rows);
     },
   ],
