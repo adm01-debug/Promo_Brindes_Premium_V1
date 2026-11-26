@@ -238,7 +238,8 @@
 }
 
 .console-field input,
-.console-field textarea {
+.console-field textarea,
+.console-field select {
   font: inherit;
   font-size: 0.88rem;
   color: #e8e6e1;

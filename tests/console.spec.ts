@@ -80,3 +80,62 @@ test("o token correto abre a sessão e as abas carregam", async ({ page }) => {
   await page.getByRole("button", { name: "Sair" }).click();
   await expect(page.getByLabel("Token de acesso")).toBeVisible();
 });
+test("o console qualifica e encerra um lead pela tela", async ({ page }) => {
+  const briefing = {
+    id: "11111111-1111-4111-8111-111111111111",
+    protocol: "PB-AAAAAAAAAAAA",
+    contact_name: "Ana",
+    company: "ACME",
+    email: "ana@acme.test",
+    occasion: "Corporativo",
+    desired_date: null,
+    budget: null,
+    message: null,
+    items: [{ sku: "CANETA-A", quantity: 100 }],
+    status: "received",
+    created_at: "2026-11-26T10:00:00.000Z",
+    delivery_status: "pending",
+    delivery_attempts: 0,
+    last_delivery_error: null,
+    delivered_at: null,
+  };
+
+  await page.goto("/operacoes");
+  await page.getByLabel("Token de acesso").fill(token);
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page.getByRole("tab", { name: "Leads" })).toBeVisible();
+
+  // Only after the real login do the leads and actions get stubbed, so the test
+  // runs identically with or without premium database credentials in CI.
+  await page.route("**/api/operacoes/dados**", async (route) => {
+    const escopo =
+      new URL(route.request().url()).searchParams.get("escopo") ?? "situacao";
+    const dados = escopo === "briefings" ? [briefing] : [];
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ escopo, dados }),
+    });
+  });
+  let enviado: unknown = null;
+  await page.route("**/api/operacoes/acoes", async (route) => {
+    enviado = route.request().postDataJSON();
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ mensagem: "Situação atualizada." }),
+    });
+  });
+
+  await page.getByRole("tab", { name: "Leads" }).click();
+  const seletor = page.getByLabel("Situação do lead PB-AAAAAAAAAAAA");
+  await expect(seletor).toHaveValue("received");
+  await seletor.selectOption("qualified");
+  await expect
+    .poll(() => enviado)
+    .toEqual({
+      acao: "briefing-status",
+      id: briefing.id,
+      status: "qualified",
+    });
+});

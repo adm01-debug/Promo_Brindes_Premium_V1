@@ -9,6 +9,7 @@ import {
   verifyConsoleSession,
 } from "../../src/lib/console-access.mjs";
 import {
+  isBriefingStatus,
   parseMaterialLines,
   validateTechnicalSheet,
 } from "../../src/lib/console-validation.mjs";
@@ -184,4 +185,11 @@ test("only the site itself may post to the console", () => {
     false,
     "a request without Origin is refused",
   );
+});
+
+test("the console only accepts the three lead statuses of the database", () => {
+  for (const value of ["received", "qualified", "closed"])
+    assert.equal(isBriefingStatus(value), true, `${value} must be accepted`);
+  for (const value of ["Received", "open", "", null, undefined, 7, ["closed"]])
+    assert.equal(isBriefingStatus(value), false, `${String(value)} must be refused`);
 });

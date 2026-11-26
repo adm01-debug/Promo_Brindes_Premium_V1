@@ -1,3 +1,10 @@
+export const BRIEFING_STATUSES = ["received", "qualified", "closed"];
+
+/** Mirrors the premium_briefings.status CHECK constraint. */
+export function isBriefingStatus(value) {
+  return typeof value === "string" && BRIEFING_STATUSES.includes(value);
+}
+
 /**
  * Rules shared by the operations console and its tests. Every limit here
  * mirrors a constraint of premium_catalog_items in the premium database, so the

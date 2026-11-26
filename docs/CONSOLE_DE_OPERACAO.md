@@ -39,10 +39,11 @@ e janela. Permite:
   que a tela carregou, a gravação é recusada em vez de sobrescrever.
 
 **Leads** — últimos 200 briefings com contato, ocasião, peças, situação da
-entrega, número de tentativas e último erro. Leads em `failed` (ou presos em
-`delivering`) podem voltar para a fila (`pending`). O reenvio real depende do
-receptor comercial configurado: o console não inventa um payload que o banco
-não guarda.
+entrega, número de tentativas e último erro. Cada lead traz o seletor de
+situação do funil (`recebido` → `qualificado` → `encerrado`), que era o único
+estado do banco sem tela. Leads em `failed` (ou presos em `delivering`) podem
+voltar para a fila (`pending`). O reenvio real depende do receptor comercial
+configurado: o console não inventa um payload que o banco não guarda.
 
 **Limites** — janelas de rate limit por contato (hash) e limpeza manual. A
 limpeza automática já roda a cada 5 minutos pelo `pg_cron`.

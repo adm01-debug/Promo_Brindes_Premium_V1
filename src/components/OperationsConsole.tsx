@@ -5,6 +5,7 @@ import type { FormEvent } from "react";
 import type {
   ConsoleActionBody,
   ConsoleBriefing,
+  ConsoleBriefingStatus,
   ConsoleCatalogItem,
   ConsoleLimit,
   ConsoleStatus,
@@ -32,6 +33,12 @@ const statusLabels: Record<string, string> = {
   qualified: "Qualificado",
   closed: "Encerrado",
 };
+
+const statusOptions: { value: ConsoleBriefingStatus; label: string }[] = [
+  { value: "received", label: "Recebido" },
+  { value: "qualified", label: "Qualificado" },
+  { value: "closed", label: "Encerrado" },
+];
 
 function formatDate(value: string | null) {
   if (!value) return "—";
@@ -770,6 +777,27 @@ function BriefingRow({
         ) : null}
       </td>
       <td>
+        <label className="console-field">
+          <span>Situação do lead</span>
+          <select
+            value={briefing.status}
+            disabled={busy}
+            aria-label={`Situação do lead ${briefing.protocol}`}
+            onChange={(event) =>
+              void onRun({
+                acao: "briefing-status",
+                id: briefing.id,
+                status: event.target.value as ConsoleBriefingStatus,
+              })
+            }
+          >
+            {statusOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
         {requeueable ? (
           <button
             className="console-button"
@@ -781,9 +809,7 @@ function BriefingRow({
           >
             Voltar para a fila
           </button>
-        ) : (
-          <span className="console-muted">Sem ação</span>
-        )}
+        ) : null}
       </td>
     </tr>
   );

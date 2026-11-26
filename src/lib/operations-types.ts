@@ -39,6 +39,8 @@ export type ConsoleCatalogItem = {
   updated_at: string;
 };
 
+export type ConsoleBriefingStatus = "received" | "qualified" | "closed";
+
 export type ConsoleBriefing = {
   id: string;
   protocol: string;
@@ -91,6 +93,7 @@ export type ConsoleActionBody =
       confirmSku: string;
     }
   | { acao: "briefing-reenviar"; id: string }
+  | { acao: "briefing-status"; id: string; status: ConsoleBriefingStatus }
   | { acao: "limites-limpar" };
 
 export type ConsoleActionResult = { mensagem: string };

@@ -1,6 +1,9 @@
 import { briefingDeliveryConfig } from "@/lib/briefing-delivery-config";
 import { siteServerConfig, type SiteServerConfig } from "@/lib/site-database";
-import { validateTechnicalSheet } from "@/lib/console-validation.mjs";
+import {
+  isBriefingStatus,
+  validateTechnicalSheet,
+} from "@/lib/console-validation.mjs";
 import { manageSitePublication } from "../../scripts/manage-site-publication.mjs";
 import type {
   ConsoleActionBody,
@@ -396,6 +399,45 @@ async function requeueBriefing(
   };
 }
 
+const BRIEFING_STATUS_LABELS = {
+  received: "recebido",
+  qualified: "qualificado",
+  closed: "encerrado",
+};
+
+async function setBriefingStatus(
+  body: Extract<ConsoleActionBody, { acao: "briefing-status" }>,
+) {
+  const config = requiredDatabase();
+  if (typeof body.id !== "string" || !uuidPattern.test(body.id))
+    throw new ConsoleError("Lead inválido.", 400);
+  if (!isBriefingStatus(body.status))
+    throw new ConsoleError(
+      "Situação inválida: use recebido, qualificado ou encerrado.",
+      400,
+    );
+  const response = await call(
+    config,
+    `premium_briefings?id=eq.${body.id}&select=id,protocol,status`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ status: body.status }),
+      prefer: "return=representation,count=exact",
+    },
+  );
+  const updated = await rows<{ id: string; protocol: string; status: string }>(
+    response,
+  );
+  if (updated.length !== 1 || updated[0].status !== body.status)
+    throw new ConsoleError(
+      "O banco não confirmou a mudança de situação; recarregue a lista.",
+      409,
+    );
+  return {
+    mensagem: `Lead ${updated[0].protocol} agora está como ${BRIEFING_STATUS_LABELS[body.status]}.`,
+  };
+}
+
 async function pruneLimits() {
   const config = requiredDatabase();
   const response = await call(
@@ -430,6 +472,8 @@ export async function runConsoleAction(
       return savePublication(body);
     case "briefing-reenviar":
       return requeueBriefing(body);
+    case "briefing-status":
+      return setBriefingStatus(body);
     case "limites-limpar":
       return pruneLimits();
     default:
