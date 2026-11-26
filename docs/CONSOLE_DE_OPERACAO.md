@@ -14,13 +14,14 @@ existirem no ambiente:
 | `PROMO_PREMIUM_CONSOLE_TOKEN` | 32 caracteres ou mais, sem espaços |
 | `SUPABASE_SECRET_KEY` | chave `sb_secret_` do projeto premium; sem ela a página abre mas toda leitura da tela responde 500 |
 
-As duas primeiras liberam a página; a terceira é o que permite ao servidor ler
-briefings, limites e catálogo com `service_role`. Sem o segredo, `/operacoes`
-responde 200 e o formulário de login funciona, mas a tela cai em erro ao buscar
-os dados — por isso as três entram juntas, no ambiente de Production.
-
-Sem elas, `/operacoes` e `/api/operacoes/*` respondem 404, igual a uma rota
-inexistente. O token é digitado uma vez e trocado por um cookie de sessão
+As duas primeiras liberam a página e as rotas; a terceira é o que permite ao
+servidor ler briefings, limites e catálogo com `service_role`. São gates
+diferentes, com sintomas diferentes: sem `PROMO_PREMIUM_CONSOLE_ENABLED` ou sem
+o token, `/operacoes` e `/api/operacoes/*` respondem 404, igual a uma rota
+inexistente; com o gate liberado e sem `SUPABASE_SECRET_KEY`, a página responde
+200 e o login funciona, mas toda leitura da tela responde 500, porque
+`siteServerConfig()` devolve `null` sem a chave do projeto premium. Por isso as
+três entram juntas, no ambiente de Production. O token é digitado uma vez e trocado por um cookie de sessão
 `HttpOnly`, `SameSite=Strict`, com validade de 8 horas, assinado por
 HMAC-SHA256 com o próprio token. O cookie nunca vai para o cliente em texto
 legível e não pode ser forjado sem o token.
@@ -142,7 +143,7 @@ contagens iniciais: 8 peças, 0 briefings, 0 limites):
 | tabela sem nenhuma tentativa (banco novo) | card mostra **Sem registro** e a tela diz que ainda não houve replicação, em vez de exibir saúde falsa |
 | leitura do heartbeat indisponível | card mostra **Indisponível** e a tela diz que não conseguiu consultar o histórico, sem sugerir primeira sincronização |
 | contagem da gestão reprovada na simulação (`--dry-run`) | a simulação falha pelo mesmo motivo que a replicação real falharia, em vez de passar limpa e dar a impressão de execução saudável |
-| vitrine replicada, mas o heartbeat não pôde ser gravado | a replicação continua válida (o catálogo está atualizado) e o comando avisa no log; o card mantém a tentativa anterior e, depois de 48h sem sucesso gravado, passa a **atrasada** — o erro cai para o lado de avisar, nunca para o de mostrar saúde falsa |
+| vitrine replicada, mas o heartbeat não pôde ser gravado | a replicação continua válida (o catálogo está atualizado) e o comando avisa no log; o card mantém a tentativa anterior — se já houve sucesso gravado, vira **atrasada** em 48h; se nunca houve, fica em **Sem registro**, que já avisa que a vitrine pode estar desatualizada. O erro cai para o lado de avisar, nunca para o de mostrar saúde falsa |
 
 ### O que o e2e cobre e o que ele não cobre
 
@@ -177,7 +178,7 @@ Inventário conferido por consulta direta ao projeto `whwloseshzraipljisqo` em 2
 | política `premium_catalog_public_read` | leitura anônima da vitrine | vitrine pública (só itens publicados e dentro da janela) |
 | replicação gestão→premium | `.github/workflows/catalog-source-guard.yml` (cron 11:17 UTC + guard diário) | aba **Situação** → card **Réplica da gestão** (data do último sucesso, itens conferidos, produtos ativos na gestão e motivo da última falha). O botão "replicar agora" continua fora do console de propósito, para não expor no runtime web a chave de leitura da base de gestão |
 
-O workflow grava o resultado de cada tentativa na tabela `premium_catalog_sync_state` (uma linha só, sem dado pessoal), então a falha aparece na tela em vez de morrer no histórico do GitHub Actions. A etapa de replicação roda mesmo quando a conferência da base de gestão reprova: o sincronizador repete a mesma validação e registra o motivo no heartbeat, para que a divergência que bloqueou a atualização fique visível no card. A contagem de produtos ativos da gestão é a última conferência antes de qualquer escrita: se ela não puder ser provada, a vitrine fica intocada e a tentativa entra como falha — assim o card nunca mostra um resultado antigo para uma vitrine que já foi atualizada. Por ser consulta de leitura, ela roda também no `--dry-run`: a simulação local reprova pelos mesmos motivos que a replicação real reprovaria, e é ela que o workflow executa na conferência diária. O heartbeat é observabilidade depois do fato: se a gravação dele falhar depois de uma replicação bem-sucedida, o catálogo continua correto e o comando apenas avisa no log — o card fica na tentativa anterior e vira **atrasada** em 48h, ou seja, a falha aparece como aviso e nunca como saúde garantida. O runtime web lê essa linha com `service_role` e nunca recebe a chave da base de gestão: quem quer o botão "replicar agora" dentro do console precisa aceitar que a chave de leitura da gestão passe a existir no runtime do site.
+O workflow grava o resultado de cada tentativa na tabela `premium_catalog_sync_state` (uma linha só, sem dado pessoal), então a falha aparece na tela em vez de morrer no histórico do GitHub Actions. A etapa de replicação roda mesmo quando a conferência da base de gestão reprova: o sincronizador repete a mesma validação e registra o motivo no heartbeat, para que a divergência que bloqueou a atualização fique visível no card. A contagem de produtos ativos da gestão é a última conferência antes de qualquer escrita: se ela não puder ser provada, a vitrine fica intocada e a tentativa entra como falha — assim o card nunca mostra um resultado antigo para uma vitrine que já foi atualizada. Por ser consulta de leitura, ela roda também no `--dry-run`, que é o passo que o workflow executa no disparo manual sem escrita; o agendamento diário roda `check-catalog-source.mjs` e a replicação real, e as duas passam pela mesma contagem. O heartbeat é observabilidade depois do fato: se a gravação dele falhar depois de uma replicação bem-sucedida, o catálogo continua correto e o comando apenas avisa no log — o card fica na tentativa anterior, virando **atrasada** em 48h quando já havia sucesso gravado e permanecendo em **Sem registro** quando nunca houve, que já avisa que a vitrine pode estar desatualizada. Ou seja, a falha aparece como aviso e nunca como saúde garantida. O runtime web lê essa linha com `service_role` e nunca recebe a chave da base de gestão: quem quer o botão "replicar agora" dentro do console precisa aceitar que a chave de leitura da gestão passe a existir no runtime do site.
 
 ### Segurança conferida (RLS e grants)
 
