@@ -300,6 +300,10 @@ test("a manual unpublication that races the read is never republished", async ()
       "minimum",
       "personalizable",
       "source_date",
+      "materials",
+      "dimensions",
+      "weight_g",
+      "packaging",
       "editorial_order",
     ])
       assert.ok(
@@ -554,6 +558,9 @@ for (const [name, candidate] of [
   ["invalid minimum", mutate({ minimum: 0 })],
   ["invalid personalization", mutate({ personalizable: "yes" })],
   ["untrimmed material", mutate({ materials: [" Algodão"] })],
+  ["blank material", mutate({ materials: [""] })],
+  ["one character dimensions", mutate({ dimensions: "x" })],
+  ["one character packaging", mutate({ packaging: "x" })],
   [
     "too many materials",
     mutate({ materials: ["A", "B", "C", "D", "E", "F"] }),
@@ -598,6 +605,30 @@ for (const [name, candidate] of [
       syncSiteCatalog(candidate, { env, fetcher: h.fetcher }),
     );
     assert.equal(h.calls.length, 0);
+  });
+
+for (const [name, changes, sourceMaterials] of [
+  ["an empty material list", { materials: [] }, []],
+  ["a null material list", { materials: [] }, null],
+  [
+    "a pending technical sheet",
+    { materials: [], dimensions: null, weightG: null },
+    null,
+  ],
+])
+  test(`sync publishes ${name} from the source`, async () => {
+    const curated = mutate(changes);
+    const h = harness({
+      source: () => {
+        const rows = sourceRows();
+        rows[0].materials = sourceMaterials;
+        rows[0].dimensions_display = curated[0].dimensions;
+        rows[0].weight_g = curated[0].weightG;
+        return jsonRows(rows);
+      },
+    });
+    await syncSiteCatalog(curated, { env, fetcher: h.fetcher });
+    assert.ok(h.calls.some(({ url }) => url.hostname === targetHost));
   });
 
 for (const url of [

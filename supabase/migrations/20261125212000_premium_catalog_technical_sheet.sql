@@ -12,6 +12,7 @@ alter table public.premium_catalog_items
     check (
       cardinality(materials) between 0 and 5
       and array_position(materials, '') is null
+      and array_position(materials, null) is null
     ),
   add constraint premium_catalog_items_dimensions_shape_check
     check (

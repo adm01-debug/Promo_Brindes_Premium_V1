@@ -89,27 +89,26 @@ export async function readSourceProducts(
         row.min_quantity < 1 ||
         row.min_quantity > 10000 ||
         typeof row.allows_personalization !== "boolean" ||
-                typeof row.is_active !== "boolean" ||
-                (row.materials !== null &&
-                  (!Array.isArray(row.materials) ||
-                    row.materials.length < 1 ||
-                    row.materials.length > 5 ||
-                    row.materials.some(
-                      (material) =>
-                        typeof material !== "string" ||
-                        !material.trim() ||
-                        material.length > 60 ||
-                        material.trim() !== material,
-                    ))) ||
-                (row.dimensions_display !== null &&
-                  (typeof row.dimensions_display !== "string" ||
-                    row.dimensions_display.length < 2 ||
-                    row.dimensions_display.length > 80 ||
-                    row.dimensions_display.trim() !== row.dimensions_display)) ||
-                (row.weight_g !== null &&
-                  (!Number.isInteger(row.weight_g) ||
-                    row.weight_g < 1 ||
-                    row.weight_g > 100000)),
+        typeof row.is_active !== "boolean" ||
+        (row.materials !== null &&
+          (!Array.isArray(row.materials) ||
+            row.materials.length > 5 ||
+            row.materials.some(
+              (material) =>
+                typeof material !== "string" ||
+                !material.trim() ||
+                material.length > 60 ||
+                material.trim() !== material,
+            ))) ||
+        (row.dimensions_display !== null &&
+          (typeof row.dimensions_display !== "string" ||
+            row.dimensions_display.length < 2 ||
+            row.dimensions_display.length > 80 ||
+            row.dimensions_display.trim() !== row.dimensions_display)) ||
+        (row.weight_g !== null &&
+          (!Number.isInteger(row.weight_g) ||
+            row.weight_g < 1 ||
+            row.weight_g > 100000)),
     )
   )
     throw new Error(

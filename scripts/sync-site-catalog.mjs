@@ -31,10 +31,10 @@ export const CATALOG_FIELD_LIMITS = Object.freeze({
   packaging: 120,
 });
 
-function validText(value, limit) {
+function validText(value, limit, minimum = 1) {
   return (
     typeof value === "string" &&
-    value.length > 0 &&
+    value.length >= minimum &&
     value.length <= limit &&
     value.trim() === value
   );
@@ -82,13 +82,13 @@ export function validateCatalogSnapshot(snapshot) {
         (material) => !validText(material, CATALOG_FIELD_LIMITS.material),
       ) ||
       (item.dimensions !== null &&
-        !validText(item.dimensions, CATALOG_FIELD_LIMITS.dimensions)) ||
+        !validText(item.dimensions, CATALOG_FIELD_LIMITS.dimensions, 2)) ||
       (item.weightG !== null &&
         (!Number.isInteger(item.weightG) ||
           item.weightG < 1 ||
           item.weightG > 100000)) ||
       (item.packaging !== null &&
-        !validText(item.packaging, CATALOG_FIELD_LIMITS.packaging))
+        !validText(item.packaging, CATALOG_FIELD_LIMITS.packaging, 2))
     )
       throw new Error("The curated snapshot violates the catalog contract.");
   }
