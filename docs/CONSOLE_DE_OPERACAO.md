@@ -34,9 +34,12 @@ em toda leitura e gravação.
 O `PROMO_PREMIUM_CONSOLE_TOKEN` fica gravado como *Sensitive* na Vercel: depois
 de salvo, o valor não pode ser lido de volta, só sobrescrito. Trocar o token é
 gravar a variável de novo em Production e refazer o deploy, porque cada
-deployment congela as variáveis do momento em que nasceu. O cookie de sessão é
-assinado com o próprio token, então a troca derruba na hora as sessões abertas:
-o dono entra outra vez digitando o token novo.
+deployment congela as variáveis do momento em que nasceu. O token novo só vale
+no domínio do ar quando o alias de produção aponta para o deployment novo:
+confira esse vínculo depois do deploy, porque é ele que decide qual deployment
+responde. O cookie de sessão é assinado com o próprio token, então a troca
+derruba na hora as sessões abertas: o dono entra outra vez digitando o token
+novo.
 
 ## O que cada aba faz
 
