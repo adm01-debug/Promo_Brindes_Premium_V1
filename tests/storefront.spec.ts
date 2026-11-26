@@ -620,6 +620,8 @@ test("bloqueio por limite mostra o código de atendimento dentro do briefing", a
   );
   await openFilledBriefing(page);
   await configured;
+  // Cenário do relato: celular, formulário longo e diálogo com rolagem própria.
+  await page.setViewportSize({ width: 390, height: 740 });
   await page.getByRole("button", { name: "Enviar ao comercial" }).click();
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("alert")).toContainText(
@@ -633,6 +635,13 @@ test("bloqueio por limite mostra o código de atendimento dentro do briefing", a
       .getByRole("alert")
       .evaluate((element) => element.nextElementSibling?.className ?? ""),
   ).toContain("form-actions");
+  // Em 390x740 o aviso precisa estar dentro da área visível, sem rolagem
+  // manual do usuário.
+  const viewport = page.viewportSize();
+  const aviso = await dialog.getByRole("alert").boundingBox();
+  expect(aviso).not.toBeNull();
+  expect(aviso!.y).toBeGreaterThanOrEqual(0);
+  expect(aviso!.y + aviso!.height).toBeLessThanOrEqual(viewport!.height);
   // A notificação da página some em 4s e fica atrás do diálogo modal: o código
   // precisa continuar legível e selecionável no próprio formulário.
   expect(
