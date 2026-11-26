@@ -771,6 +771,7 @@ export default function Storefront({
         protocol?: string;
         error?: string;
         message?: string;
+        reference?: string;
         pending?: boolean;
       } = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -779,6 +780,15 @@ export default function Storefront({
           downloadText("briefing-promo-premium.txt", lines.join("\n"));
           setProtocol(null);
           setStep(3);
+          return;
+        }
+        if (result.error === "RATE_LIMITED") {
+          setNotice(
+            typeof result.reference === "string" &&
+              /^[a-f0-9]{8}$/.test(result.reference)
+              ? `Você atingiu o limite de envios agora. Aguarde 10 minutos ou informe o código ${result.reference} ao nosso time comercial para liberar.`
+              : "Você atingiu o limite de envios agora. Aguarde alguns minutos e tente novamente.",
+          );
           return;
         }
         if (

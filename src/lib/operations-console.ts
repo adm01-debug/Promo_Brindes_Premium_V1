@@ -4,6 +4,8 @@ import {
   isBriefingStatus,
   isClientHash,
   isRfc3339,
+  rateLimitReference,
+  summarizeRateLimit,
   validateTechnicalSheet,
 } from "@/lib/console-validation.mjs";
 import { manageSitePublication } from "../../scripts/manage-site-publication.mjs";
@@ -239,11 +241,18 @@ export async function readConsoleLimits(): Promise<ConsoleLimit[]> {
     attempt_times: unknown;
     updated_at: string;
   }>(response);
-  return limits.map((limit) => ({
-    client_hash: limit.client_hash,
-    attempts: Array.isArray(limit.attempt_times) ? limit.attempt_times.length : 0,
-    updated_at: limit.updated_at,
-  }));
+  return limits.map((limit) => {
+    const summary = summarizeRateLimit(limit.attempt_times);
+    return {
+      client_hash: limit.client_hash,
+      reference: rateLimitReference(limit.client_hash) ?? "",
+      attempts: summary.attempts,
+      recent_attempts: summary.recentAttempts,
+      blocked: summary.blocked,
+      last_attempt_at: summary.lastAttemptAt,
+      updated_at: limit.updated_at,
+    };
+  });
 }
 
 const publicationMessages: Record<string, [string, number]> = {
@@ -411,9 +420,15 @@ async function requeueBriefing(
       "Esse lead está em envio agora. Espere o envio terminar (ou a reserva expirar) antes de reenfileirar.",
       409,
     );
+  // A reserva lida entra na condição: se o envio público reservou o lead nesse
+  // intervalo, a linha mudou e o PATCH não apaga a reserva nova.
+  const leaseFilter =
+    typeof lease === "string"
+      ? `delivery_lease_expires_at=eq.${encodeURIComponent(lease)}`
+      : "delivery_lease_expires_at=is.null";
   const response = await call(
     config,
-    `premium_briefings?id=eq.${body.id}&delivery_status=in.(failed,delivering)&select=id,protocol,delivery_status`,
+    `premium_briefings?id=eq.${body.id}&delivery_status=in.(failed,delivering)&${leaseFilter}&select=id,protocol,delivery_status`,
     {
       method: "PATCH",
       body: JSON.stringify({
@@ -427,7 +442,7 @@ async function requeueBriefing(
   const updated = await rows<{ id: string; protocol: string }>(response);
   if (updated.length !== 1)
     throw new ConsoleError(
-      "Esse lead não está mais em falha; recarregue a lista.",
+      "Esse lead mudou de estado desde que a lista foi carregada; recarregue antes de reenfileirar.",
       409,
     );
   return {
@@ -502,15 +517,40 @@ async function releaseLimit(
   const config = requiredDatabase();
   if (!isClientHash(body.clientHash))
     throw new ConsoleError("Contato inválido.", 400);
+  const current = await rows<{ attempt_times: unknown }>(
+    await call(
+      config,
+      `premium_briefing_rate_limits?client_hash=eq.${body.clientHash}&select=attempt_times`,
+    ),
+  );
+  if (current.length !== 1)
+    throw new ConsoleError(
+      "Esse contato não está mais bloqueado; recarregue a lista.",
+      409,
+    );
+  const attempts = Array.isArray(current[0].attempt_times)
+    ? current[0].attempt_times.filter(
+        (value): value is string => typeof value === "string",
+      )
+    : [];
+  if (!summarizeRateLimit(attempts).blocked)
+    throw new ConsoleError(
+      "Esse contato não está bloqueado agora: ainda pode enviar. Nada foi apagado.",
+      409,
+    );
+  // A exclusão repete as tentativas lidas: se o visitante tentou de novo no
+  // intervalo, a linha mudou e a operação falha em vez de apagar o registro novo.
   const response = await call(
     config,
-    `premium_briefing_rate_limits?client_hash=eq.${body.clientHash}`,
+    `premium_briefing_rate_limits?client_hash=eq.${body.clientHash}&attempt_times=eq.${encodeURIComponent(
+      `{${attempts.join(",")}}`,
+    )}`,
     { method: "DELETE", prefer: "return=representation,count=exact" },
   );
   const removed = await rows<{ client_hash: string }>(response);
   if (removed.length !== 1 || removed[0].client_hash !== body.clientHash)
     throw new ConsoleError(
-      "Esse contato não está mais bloqueado; recarregue a lista.",
+      "As tentativas mudaram desde que a lista foi carregada; recarregue antes de liberar.",
       409,
     );
   return { mensagem: "Contato liberado: já pode enviar um novo briefing." };

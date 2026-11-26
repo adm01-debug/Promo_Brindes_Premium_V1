@@ -20,6 +20,39 @@ export function isClientHash(value) {
   return typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
 }
 
+/** Janela e teto do limitador, iguais aos de allow_premium_briefing_attempt. */
+export const RATE_LIMIT_WINDOW_MS = 10 * 60_000;
+export const RATE_LIMIT_MAX_ATTEMPTS = 5;
+
+/**
+ * Referência de atendimento: os primeiros dígitos do hash. Quem foi bloqueado
+ * recebe o mesmo código na mensagem de erro, então o operador identifica a
+ * linha certa sem ver endereço nenhum.
+ */
+export function rateLimitReference(clientHash) {
+  return isClientHash(clientHash) ? clientHash.slice(0, 8) : null;
+}
+
+/**
+ * Resume uma linha de premium_briefing_rate_limits. O bloqueio só existe com
+ * RATE_LIMIT_MAX_ATTEMPTS tentativas dentro da janela: linhas antigas continuam
+ * gravadas e não podem ser liberadas como se estivessem bloqueadas.
+ */
+export function summarizeRateLimit(attemptTimes, now = Date.now()) {
+  const instants = (Array.isArray(attemptTimes) ? attemptTimes : [])
+    .map((value) => (typeof value === "string" ? Date.parse(value) : NaN))
+    .filter((value) => Number.isFinite(value));
+  const recent = instants.filter((value) => value > now - RATE_LIMIT_WINDOW_MS);
+  return {
+    attempts: instants.length,
+    recentAttempts: recent.length,
+    blocked: recent.length >= RATE_LIMIT_MAX_ATTEMPTS,
+    lastAttemptAt: instants.length
+      ? new Date(Math.max(...instants)).toISOString()
+      : null,
+  };
+}
+
 /**
  * Rules shared by the operations console and its tests. Every limit here
  * mirrors a constraint of premium_catalog_items in the premium database, so the

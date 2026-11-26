@@ -7,7 +7,7 @@ import {
 
 const host = "whwloseshzraipljisqo.supabase.co";
 const id = "0144f10f-c311-47eb-afd6-14b9ebef35b6";
-const updatedAt = "2026-09-22T20:00:00.000Z";
+const updatedAt = "2026-09-22T20:00:00.000000+00:00";
 const secretKey = ["sb", "secret", "synthetic"].join("_");
 const publishableKey = ["sb", "publishable", "synthetic"].join("_");
 const env = {
@@ -48,7 +48,7 @@ function harness({ row = current, update } = {}) {
           {
             ...row,
             ...JSON.parse(init.body),
-            updated_at: "2026-09-22T20:01:00.000Z",
+            updated_at: "2026-09-22T20:01:00.000000+00:00",
           },
         ]);
   };
@@ -77,8 +77,14 @@ test("dry run plans a bounded window without writing", async () => {
   );
   assert.equal(result.applied, false);
   assert.equal(result.noOp, false);
-  assert.equal(result.proposed.published_from, "2026-10-01T12:00:00.000Z");
-  assert.equal(result.proposed.published_until, "2026-11-01T00:00:00.000Z");
+  assert.equal(
+    result.proposed.published_from,
+    "2026-10-01T12:00:00.000000+00:00",
+  );
+  assert.equal(
+    result.proposed.published_until,
+    "2026-11-01T00:00:00.000000+00:00",
+  );
   assert.equal(h.calls.length, 1);
 });
 
@@ -93,7 +99,7 @@ test("apply uses SKU confirmation and an optimistic revision lock", async () => 
         {
           ...current,
           published: false,
-          updated_at: "2026-09-22T20:01:00.000Z",
+          updated_at: "2026-09-22T20:01:00.000000+00:00",
         },
       ]);
     },
@@ -124,7 +130,7 @@ test("apply keeps the microseconds of the revision the database returned", async
     update(url, init) {
       assert.equal(
         url.searchParams.get("updated_at"),
-        "eq.2026-11-26T10:01:34.413148Z",
+        "eq.2026-11-26T10:01:34.413148+00:00",
       );
       assert.deepEqual(JSON.parse(init.body), { published: false });
       return response([
@@ -148,7 +154,51 @@ test("apply keeps the microseconds of the revision the database returned", async
     },
   );
   assert.equal(result.applied, true);
-  assert.equal(result.current.updated_at, "2026-11-26T10:02:00.000001Z");
+  assert.equal(result.current.updated_at, "2026-11-26T10:02:00.000001+00:00");
+});
+
+test("equivalent instants compare equal whatever the fraction width", async () => {
+  const h = harness({
+    row: { ...current, updated_at: "2026-11-27T00:00:00.1234+00:00" },
+    update(url) {
+      // O mesmo instante escrito com seis casas precisa encontrar a linha.
+      assert.equal(
+        url.searchParams.get("updated_at"),
+        "eq.2026-11-27T00:00:00.123400+00:00",
+      );
+      return response([{ ...current, published: false }]);
+    },
+  });
+  const result = await manageSitePublication(
+    id,
+    { published: false },
+    {
+      env,
+      fetcher: h.fetcher,
+      apply: true,
+      expectedUpdatedAt: "2026-11-27T00:00:00.123400Z",
+      confirmSku: current.sku,
+    },
+  );
+  assert.equal(result.applied, true);
+});
+
+test("a window inside the same millisecond is accepted", async () => {
+  const h = harness({ row: { ...current, published: false } });
+  const result = await manageSitePublication(
+    id,
+    {
+      published: true,
+      published_from: "2026-11-27T00:00:00.123Z",
+      published_until: "2026-11-27T00:00:00.123001Z",
+    },
+    { env, fetcher: h.fetcher },
+  );
+  assert.equal(result.proposed.published_from, "2026-11-27T00:00:00.123000+00:00");
+  assert.equal(
+    result.proposed.published_until,
+    "2026-11-27T00:00:00.123001+00:00",
+  );
 });
 
 for (const [name, options, message] of [

@@ -59,13 +59,24 @@ de um envio apagaria a reserva e o envio em andamento não conseguiria registrar
 a entrega. O reenvio real depende do receptor comercial configurado: o console
 não inventa um payload que o banco não guarda.
 
-**Limites** — janelas de rate limit por contato (hash), com a data do último
-registro e a contagem de tentativas. Cada linha tem o botão **Liberar**, que
-apaga o registro daquele contato: é a única forma de destravar na hora quem
-ficou sem enviar (o bloqueio real dura 10 minutos, 5 tentativas na janela). A
-limpeza automática do `pg_cron` a cada 5 minutos **não** serve para isso — ela
-só remove registros sem atividade há mais de 1 hora. Liberar um contato que já
-não está bloqueado devolve 409 em vez de fingir sucesso.
+**Limites** — janelas de rate limit por contato, com cinco colunas: **Código**
+(8 primeiros dígitos do hash do contato, o mesmo que a vitrine mostra a quem foi
+barrado), **Tentativas na janela**, **Situação** (Bloqueado / Sem bloqueio),
+**Última tentativa** e **Ações**. O bloqueio real é o da função
+`allow_premium_briefing_attempt`: 5 tentativas ou mais dentro de 10 minutos. A
+tela aplica exatamente essa regra, então **Tentativas na janela** pode ser menor
+que o total de tentativas gravadas — as antigas já saíram da janela e não
+bloqueiam ninguém.
+
+O botão **Liberar** apaga o registro daquele contato: é a única forma de
+destravar na hora quem ficou sem enviar. Ele só fica habilitado quando a linha
+está **Bloqueado**; liberar quem ainda pode enviar devolveria 409 ("ainda pode
+enviar, nada foi apagado") e zeraria tentativas válidas. A exclusão é condicional
+à lista de tentativas lida (`attempt_times` no filtro): se o contato tentou de
+novo entre a leitura da tela e o clique, o DELETE não encontra a linha, nada é
+apagado e a resposta é 409 para a tela recarregar. A limpeza automática do
+`pg_cron` a cada 5 minutos **não** serve para liberar na hora — ela só remove
+registros sem atividade há mais de 1 hora.
 
 ## O que o console não faz
 
@@ -100,9 +111,24 @@ contagens iniciais: 8 peças, 0 briefings, 0 limites):
 | SKU de confirmação errado | 409 "O SKU digitado não confere com o produto" |
 | reenfileirar lead em envio com reserva válida | 409 "Esse lead está em envio agora" |
 | reenfileirar lead em falha | 200 "voltou para a fila de entrega" |
+| lead que ganhou reserva entre a leitura e o envio do pedido | 0 linhas no PATCH (`Content-Range: */0`) e lead intacto em `delivering` |
 | liberar contato bloqueado | 200 "já pode enviar um novo briefing" |
-| liberar o mesmo contato de novo | 409 "não está mais bloqueado" |
+| liberar contato com 4 tentativas na janela | 409 "não está bloqueado agora" e registro intacto |
+| liberar quando o contato tentou de novo depois da leitura | 0 linhas no DELETE (`Content-Range: */0`) e registro intacto |
+| sexto envio do contato bloqueado | 429 `{"error":"RATE_LIMITED","reference":"<8 dígitos>"}` com o mesmo código da aba Limites |
 | hash de contato inválido | 400 |
+
+### O que o e2e cobre e o que ele não cobre
+
+O e2e de navegador (`tests/console.spec.ts`) roda com `route.fulfill`: ele prova
+que a tela pede a ação certa, com o corpo certo e no momento certo — não prova
+que o banco aplicou. A aplicação real (efeito no Postgres, RLS, `409` de
+concorrência, código de atendimento do `429`) é verificada à parte, contra o
+projeto premium, e é essa segunda camada que sustenta a tabela acima. As duas
+existem porque o e2e não pode rodar contra o banco de produção em cada PR: o
+teste não teria como desfazer fixtures de leads e limites com segurança em um
+pipeline público. Nenhuma linha da tabela de verificação foi provada só pelo
+e2e.
 
 ## Cobertura: banco premium x tela
 

@@ -10,6 +10,7 @@ import type {
   ConsoleLimit,
   ConsoleStatus,
 } from "@/lib/operations-types";
+import { RATE_LIMIT_MAX_ATTEMPTS } from "@/lib/console-validation.mjs";
 
 type Tab = "situacao" | "catalogo" | "briefings" | "limites";
 type Feedback = { tipo: "ok" | "erro"; texto: string } | null;
@@ -856,8 +857,10 @@ function LimitsPanel({
     <>
       <p className="console-note" data-tone="ok">
         A limpeza automática roda a cada 5 minutos no banco e remove apenas
-        registros sem atividade há mais de uma hora. Para liberar um contato
-        bloqueado agora, use Liberar na linha dele.
+        registros sem atividade há mais de uma hora; ela não libera ninguém na
+        hora. Quem recebeu o bloqueio vê um código de atendimento de 8 dígitos na
+        mensagem de erro: a coluna Código mostra o mesmo valor, e só a linha
+        bloqueada — 5 tentativas nos últimos 10 minutos — pode ser liberada.
       </p>
       <div className="console-actions" style={{ marginBottom: 16 }}>
         <button
@@ -878,9 +881,10 @@ function LimitsPanel({
           <table className="console-table">
             <thead>
               <tr>
-                <th scope="col">Contato (hash)</th>
+                <th scope="col">Código</th>
                 <th scope="col">Tentativas na janela</th>
-                <th scope="col">Atualizado em</th>
+                <th scope="col">Situação</th>
+                <th scope="col">Última tentativa</th>
                 <th scope="col">Ações</th>
               </tr>
             </thead>
@@ -888,18 +892,23 @@ function LimitsPanel({
               {items.map((limit) => (
                 <tr key={`${limit.client_hash}-${limit.updated_at}`}>
                   <td>
-                    <code>{limit.client_hash.slice(0, 16)}…</code>
+                    <code>{limit.reference}</code>
                   </td>
-                  <td>{limit.attempts}</td>
+                  <td>
+                    {limit.recent_attempts} de {RATE_LIMIT_MAX_ATTEMPTS}
+                  </td>
                   <td className="console-muted">
-                    {formatDate(limit.updated_at)}
+                    {limit.blocked ? "Bloqueado" : "Sem bloqueio"}
+                  </td>
+                  <td className="console-muted">
+                    {formatDate(limit.last_attempt_at)}
                   </td>
                   <td>
                     <button
                       className="console-button"
                       type="button"
-                      disabled={busy}
-                      aria-label={`Liberar contato ${limit.client_hash.slice(0, 16)}`}
+                      disabled={busy || !limit.blocked}
+                      aria-label={`Liberar contato ${limit.reference}`}
                       onClick={() =>
                         void onRun({
                           acao: "limites-liberar",

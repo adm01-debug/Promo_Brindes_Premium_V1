@@ -9,10 +9,14 @@ import {
   verifyConsoleSession,
 } from "../../src/lib/console-access.mjs";
 import {
+  RATE_LIMIT_MAX_ATTEMPTS,
+  RATE_LIMIT_WINDOW_MS,
   isBriefingStatus,
   isClientHash,
   isRfc3339,
   parseMaterialLines,
+  rateLimitReference,
+  summarizeRateLimit,
   validateTechnicalSheet,
 } from "../../src/lib/console-validation.mjs";
 
@@ -210,6 +214,66 @@ test("the console only accepts the contact hash of the rate limiter", () => {
     64,
   ])
     assert.equal(isClientHash(value), false, `${String(value)} must be refused`);
+});
+
+test("the support code is the visible part of the same contact hash", () => {
+  const hash = "0123456789abcdef".repeat(4);
+  const reference = rateLimitReference(hash);
+  assert.equal(reference, "01234567");
+  assert.equal(hash.startsWith(String(reference)), true);
+  for (const value of ["", "a".repeat(63), "A".repeat(64), null, undefined])
+    assert.equal(rateLimitReference(value), null);
+});
+
+test("only five attempts inside the window count as a block", () => {
+  const now = Date.parse("2026-11-26T12:00:00Z");
+  const minute = 60_000;
+  const attempt = (offsetMinutes) =>
+    new Date(now - offsetMinutes * minute).toISOString();
+
+  const blocked = summarizeRateLimit(
+    [0, 1, 2, 3, 4].map((offset) => attempt(offset)),
+    now,
+  );
+  assert.deepEqual(blocked, {
+    attempts: 5,
+    recentAttempts: 5,
+    blocked: true,
+    lastAttemptAt: "2026-11-26T12:00:00.000Z",
+  });
+
+  // Quatro tentativas recentes: o visitante ainda pode enviar e a linha não
+  // pode ser liberada como se estivesse bloqueada.
+  const free = summarizeRateLimit([0, 1, 2, 3].map((o) => attempt(o)), now);
+  assert.equal(free.recentAttempts, 4);
+  assert.equal(free.blocked, false);
+
+  // Cinco registros gravados, mas o mais antigo saiu da janela de 10 minutos.
+  const expired = summarizeRateLimit(
+    [0, 1, 2, 3, 11].map((offset) => attempt(offset)),
+    now,
+  );
+  assert.equal(expired.attempts, 5);
+  assert.equal(expired.recentAttempts, 4);
+  assert.equal(expired.blocked, false);
+
+  assert.equal(RATE_LIMIT_MAX_ATTEMPTS, 5);
+  assert.equal(RATE_LIMIT_WINDOW_MS, 600_000);
+});
+
+test("invalid or empty attempt histories never look like a block", () => {
+  const now = Date.parse("2026-11-26T12:00:00Z");
+  for (const value of [null, undefined, "2026-11-26T12:00:00Z", [], [null, 7, {}]]) {
+    const summary = summarizeRateLimit(value, now);
+    assert.equal(summary.blocked, false, `${String(value)} must not block`);
+    assert.equal(summary.lastAttemptAt, null);
+  }
+  const far = summarizeRateLimit(
+    Array.from({ length: 5 }, () => "2026-11-26T11:00:01Z"),
+    now,
+  );
+  assert.equal(far.blocked, false);
+  assert.equal(far.attempts, 5);
 });
 
 test("the console only accepts the timestamps the database returns", () => {

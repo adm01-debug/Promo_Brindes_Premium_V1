@@ -63,7 +63,11 @@ export type ConsoleBriefing = {
 
 export type ConsoleLimit = {
   client_hash: string;
+  reference: string;
   attempts: number;
+  recent_attempts: number;
+  blocked: boolean;
+  last_attempt_at: string | null;
   updated_at: string;
 };
 

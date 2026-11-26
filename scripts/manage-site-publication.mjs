@@ -11,9 +11,11 @@ const columns =
   "id,sku,slug,published,published_from,published_until,updated_at";
 
 /**
- * Normaliza para UTC preservando os microssegundos devolvidos pelo PostgREST.
- * A revisão otimista compara o valor gravado byte a byte, então truncar a
- * fração em milissegundos faria o banco nunca encontrar a linha.
+ * Converte para UTC com seis casas decimais. A revisão otimista compara o valor
+ * byte a byte e a janela de publicação é comparada como texto, então instantes
+ * equivalentes precisam ter a mesma representação: truncar a fração em
+ * milissegundos o banco nunca encontra, e larguras de fração diferentes fazem
+ * dois instantes iguais parecerem distintos.
  */
 function normalizedTimestamp(value, field, nullable = false) {
   if (nullable && value === null) return null;
@@ -23,15 +25,16 @@ function normalizedTimestamp(value, field, nullable = false) {
   if (!match)
     throw new Error(`${field} must be an RFC 3339 timestamp with timezone.`);
   const [, clock, fraction = "", zone] = match;
-  const milliseconds = (fraction + "000").slice(0, 3);
-  const instant = Date.parse(`${clock}.${milliseconds}${zone}`);
-  if (Number.isNaN(instant))
+  const offsetMinutes =
+    zone === "Z"
+      ? 0
+      : (zone.startsWith("-") ? -1 : 1) *
+        (Number(zone.slice(1, 3)) * 60 + Number(zone.slice(4, 6)));
+  const seconds = Date.parse(`${clock}Z`) - offsetMinutes * 60000;
+  if (Number.isNaN(seconds))
     throw new Error(`${field} is not a valid timestamp.`);
-  const iso = new Date(instant).toISOString();
-  const subMilliseconds = fraction.slice(3);
-  return subMilliseconds
-    ? iso.replace(/Z$/, `${subMilliseconds}Z`)
-    : iso;
+  const utc = new Date(seconds).toISOString().slice(0, 19);
+  return `${utc}.${(fraction + "000000").slice(0, 6)}+00:00`;
 }
 
 function config(env) {

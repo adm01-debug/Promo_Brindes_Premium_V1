@@ -203,7 +203,8 @@ test("o console grava a ficha técnica e libera um contato bloqueado", async ({
     source_date: "2026-11-26",
     updated_at: "2026-11-26T10:01:34.413148+00:00",
   };
-  const contato = "b".repeat(16);
+  // O código de atendimento mostrado na tela é o prefixo de 8 dígitos do hash.
+  const contato = "b".repeat(8);
 
   await page.goto("/operacoes");
   await page.getByLabel("Token de acesso").fill(token);
@@ -229,8 +230,21 @@ test("o console grava a ficha técnica e libera um contato bloqueado", async ({
         dados: [
           {
             client_hash: "b".repeat(64),
+            reference: "b".repeat(8),
             attempts: 5,
+            recent_attempts: 5,
+            blocked: true,
+            last_attempt_at: "2026-11-26T10:00:00.000Z",
             updated_at: "2026-11-26T10:00:00.000Z",
+          },
+          {
+            client_hash: "c".repeat(64),
+            reference: "c".repeat(8),
+            attempts: 5,
+            recent_attempts: 4,
+            blocked: false,
+            last_attempt_at: "2026-11-26T09:40:00.000Z",
+            updated_at: "2026-11-26T09:40:00.000Z",
           },
         ],
       }),
@@ -266,6 +280,14 @@ test("o console grava a ficha técnica e libera um contato bloqueado", async ({
     });
 
   await page.getByRole("tab", { name: "Limites" }).click();
+  await expect(
+    page.getByRole("button", { name: `Liberar contato ${contato}` }),
+  ).toBeEnabled();
+  // A linha com quatro tentativas na janela não está bloqueada: liberar
+  // zeraria tentativas válidas e a tela nem oferece a ação.
+  await expect(
+    page.getByRole("button", { name: `Liberar contato ${"c".repeat(8)}` }),
+  ).toBeDisabled();
   await page.getByRole("button", { name: `Liberar contato ${contato}` }).click();
   await expect
     .poll(() => enviado)
