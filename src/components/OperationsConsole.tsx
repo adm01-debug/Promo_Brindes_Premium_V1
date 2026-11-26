@@ -356,13 +356,15 @@ function StatusPanel({ status }: { status: ConsoleStatus | null }) {
   if (!status) return <p className="console-muted">Consultando o banco…</p>;
   const counts = status.contagens;
   const replication = status.replicacao;
-  const replicationState = !replication?.registrada
-    ? "Sem registro"
-    : replication.status === "failed"
-      ? "Falhou na última tentativa"
-      : replication.atrasada
-        ? "Atrasada"
-        : "Em dia";
+  const replicationState = !replication
+    ? "Indisponível"
+    : !replication.registrada
+      ? "Sem registro"
+      : replication.status === "failed"
+        ? "Falhou na última tentativa"
+        : replication.atrasada
+          ? "Atrasada"
+          : "Em dia";
   return (
     <>
       <div className="console-cards">
@@ -429,21 +431,37 @@ function StatusPanel({ status }: { status: ConsoleStatus | null }) {
           </ul>
         </section>
       </div>
-      {replication?.atrasada || replication?.status === "failed" ? (
+      {replication?.status === "failed" ? (
         <p className="console-note">
-          {replication.status === "failed"
-            ? `A replicação falhou na última tentativa: ${replication.erro ?? "sem motivo registrado"}.`
-            : `A última replicação bem-sucedida foi há ${replication.horasDesdeSucesso ?? 0} hora(s); a vitrine pode estar exibindo nome ou preço antigo.`}{" "}
+          {`A replicação falhou na última tentativa: ${replication.erro ?? "sem motivo registrado"}.`}{" "}
+          {replication.atrasada
+            ? `A última replicação bem-sucedida foi há ${replication.horasDesdeSucesso ?? 0} hora(s); a vitrine pode estar exibindo nome ou preço antigo.`
+            : "Enquanto isso, os dados publicados continuam os da última execução boa."}{" "}
+          A sincronização roda no workflow do catálogo e grava aqui o resultado
+          de cada tentativa.
+        </p>
+      ) : replication?.atrasada ? (
+        <p className="console-note">
+          {`A última replicação bem-sucedida foi há ${replication.horasDesdeSucesso ?? 0} hora(s); a vitrine pode estar exibindo nome ou preço antigo.`}{" "}
           Enquanto isso, os dados publicados continuam os da última execução
           boa. A sincronização roda no workflow do catálogo e grava aqui o
           resultado de cada tentativa.
         </p>
       ) : null}
-      {!replication?.registrada ? (
+      {replication ? (
+        !replication.registrada ? (
+          <p className="console-note">
+            Nenhuma tentativa de replicação registrada desde que este aviso
+            entrou no ar. Rode a sincronização do catálogo para gravar a
+            primeira marca e passar a acompanhar a atualização da vitrine por
+            aqui.
+          </p>
+        ) : null
+      ) : status.banco ? (
         <p className="console-note">
-          Nenhuma tentativa de replicação registrada desde que este aviso entrou
-          no ar. Rode a sincronização do catálogo para gravar a primeira marca e
-          passar a acompanhar a atualização da vitrine por aqui.
+          Não foi possível consultar o histórico de replicação no banco premium
+          agora, então este card pode estar incompleto. Os itens publicados
+          continuam os da última execução boa.
         </p>
       ) : null}
       {!status.entrega.habilitada ? (

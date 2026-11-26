@@ -182,8 +182,10 @@ function deliveryDiagnosis(): ConsoleDeliveryState {
 }
 
 /**
- * Heartbeat da replicação. Um banco sem a tabela (migration ainda não aplicada)
- * não pode derrubar a aba Situação, por isso a falha vira "sem registro".
+ * Heartbeat da replicação. Uma leitura que falha (banco fora do ar, tabela ainda
+ * não instalada) vira `null` para não derrubar a aba Situação, enquanto uma
+ * tabela acessível e sem linha vira `registrada: false` — o console distingue
+ * "não consegui consultar" de "ainda não houve replicação".
  */
 async function readConsoleReplication(config: SiteServerConfig) {
   try {
@@ -192,7 +194,7 @@ async function readConsoleReplication(config: SiteServerConfig) {
       "premium_catalog_sync_state?select=last_attempt_at,last_status,last_success_at,last_error,source_count,curated_count&id=eq.true&limit=1",
     );
     const value = await rows<Record<string, unknown>>(response);
-    return value.length ? summarizeReplication(value[0]) : null;
+    return value.length ? summarizeReplication(value[0]) : summarizeReplication({});
   } catch {
     return null;
   }

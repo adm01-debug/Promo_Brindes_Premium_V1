@@ -67,7 +67,11 @@ jobs:
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
         run: node scripts/sync-site-catalog.mjs --dry-run
       - name: Replicar catalogo curado para o banco premium
-        if: github.event_name != 'workflow_dispatch' || inputs.write == true
+        # Roda mesmo se a conferencia acima falhar: o sincronizador faz a mesma
+        # validacao e registra o motivo da falha no heartbeat do console. Sem
+        # isso, uma divergencia na gestao abortava o job e o console continuava
+        # exibindo o ultimo sucesso, sem motivo nenhum.
+        if: ${{ !cancelled() && (github.event_name != 'workflow_dispatch' || inputs.write == true) }}
         env:
           CATALOG_SOURCE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.CATALOG_SOURCE_SUPABASE_PUBLISHABLE_KEY }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}

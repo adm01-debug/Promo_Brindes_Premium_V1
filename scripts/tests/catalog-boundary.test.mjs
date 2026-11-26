@@ -961,8 +961,9 @@ test("the sync heartbeat writes the outcome to the premium project only", async 
   const failedBody = JSON.parse(h.calls[1].init.body);
   assert.equal(failedBody.last_status, "failed");
   assert.equal(failedBody.last_error, "Catalog sync failed (HTTP 503).");
-  assert.equal(failedBody.source_count, null);
-  assert.equal(failedBody.curated_count, null);
+  // As contagens descrevem a última execução boa, então a falha não as envia.
+  assert.ok(!Object.hasOwn(failedBody, "source_count"));
+  assert.ok(!Object.hasOwn(failedBody, "curated_count"));
   assert.ok(!Object.hasOwn(failedBody, "last_success_at"));
 });
 

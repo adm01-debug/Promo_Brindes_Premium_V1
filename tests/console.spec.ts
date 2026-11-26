@@ -375,11 +375,14 @@ test("a situação mostra a réplica da gestão e avisa quando ela atrasa", asyn
     "há 52 hora(s)",
   );
 
-  // Falha registrada: o motivo exato do workflow fica visível na tela.
+  // Falha registrada: o motivo exato do workflow fica visível na tela, e a
+  // idade dos dados continua aparecendo junto — uma falha não pode esconder que
+  // a vitrine já está desatualizada.
   replicacao = {
     ...replicacao,
     status: "failed",
-    atrasada: false,
+    atrasada: true,
+    horasDesdeSucesso: 52,
     ultimaTentativaEm: "2026-11-26T17:00:00.000Z",
     erro: "Catalog sync failed (HTTP 503).",
   };
@@ -390,12 +393,34 @@ test("a situação mostra a réplica da gestão e avisa quando ela atrasa", asyn
   await expect(page.locator("p.console-note").first()).toContainText(
     "Catalog sync failed (HTTP 503).",
   );
+  await expect(page.locator("p.console-note").first()).toContainText(
+    "há 52 hora(s)",
+  );
 
-  // Sem registro: a tela diz que ainda não houve replicação, sem fingir saúde.
-  replicacao = null;
+  // Sem registro: o banco respondeu e não há nenhuma tentativa gravada.
+  replicacao = {
+    registrada: false,
+    status: null,
+    ultimaTentativaEm: null,
+    ultimoSucessoEm: null,
+    horasDesdeSucesso: null,
+    atrasada: false,
+    erro: null,
+    origem: null,
+    curados: null,
+  };
   await voltarParaSituacao();
   await expect(replicaCard.locator("strong")).toHaveText("Sem registro");
   await expect(page.locator("p.console-note").first()).toContainText(
     "Nenhuma tentativa de replicação registrada",
+  );
+
+  // Histórico indisponível: a tela diz que não conseguiu consultar, em vez de
+  // sugerir que nunca houve replicação.
+  replicacao = null;
+  await voltarParaSituacao();
+  await expect(replicaCard.locator("strong")).toHaveText("Indisponível");
+  await expect(page.locator("p.console-note").first()).toContainText(
+    "Não foi possível consultar o histórico de replicação",
   );
 });

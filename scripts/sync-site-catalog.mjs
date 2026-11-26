@@ -339,9 +339,11 @@ export async function recordSyncState(
     last_attempt_at: attemptAt,
     last_status: status,
     last_error: reason,
-    source_count: sourceCount,
-    curated_count: curatedCount,
-    ...(status === "success" ? { last_success_at: attemptAt } : {}),
+    // As duas contagens descrevem a última execução boa: uma tentativa com falha
+    // preserva os totais, como já acontece com last_success_at.
+    ...(status === "success"
+      ? { last_success_at: attemptAt, source_count: sourceCount, curated_count: curatedCount }
+      : {}),
   };
   const endpoint = new URL("/rest/v1/premium_catalog_sync_state", siteUrl);
   endpoint.searchParams.set("on_conflict", "id");
