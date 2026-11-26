@@ -3,6 +3,14 @@ import { expect, test } from "@playwright/test";
 const token = "console-e2e-token-0000000000000001";
 const sessionCookie = "promo_operacoes";
 
+/** Mesmo formato do card, para comparar datas sem depender do fuso do runner. */
+function cardDate(iso: string) {
+  return new Date(iso).toLocaleString("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+}
+
 test("o console recusa leitura e gravação sem sessão", async ({ request }) => {
   const read = await request.get("/api/operacoes/dados?escopo=situacao");
   expect(read.status()).toBe(401);
@@ -307,6 +315,24 @@ test("a situação mostra a réplica da gestão e avisa quando ela atrasa", asyn
     origem: 7968,
     curados: 8,
   };
+  let manutencao: Record<string, unknown> | null = {
+    registrada: true,
+    status: "success",
+    ultimaExecucaoEm: "2026-11-26T17:55:00.000Z",
+    ultimoSucessoEm: "2026-11-26T17:55:00.000Z",
+    minutosDesdeExecucao: 5,
+    atrasada: false,
+    removidos: 3,
+    execucoes: 4242,
+    erro: null,
+  };
+  let manutencaoManual: Record<string, unknown> | null = {
+    registrada: true,
+    falhou: false,
+    ultimaExecucaoEm: "2026-11-26T17:40:00.000Z",
+    removidos: 1,
+    erro: null,
+  };
 
   await page.goto("/operacoes");
   await page.getByLabel("Token de acesso").fill(token);
@@ -335,6 +361,8 @@ test("a situação mostra a réplica da gestão e avisa quando ela atrasa", asyn
               limites: 0,
             },
             replicacao,
+            manutencao,
+            manutencaoManual,
             verificadoEm: "2026-11-26T18:00:00.000Z",
           }
         : [];
@@ -359,6 +387,11 @@ test("a situação mostra a réplica da gestão e avisa quando ela atrasa", asyn
   });
   await expect(replicaCard.locator("strong")).toHaveText("Em dia");
   await expect(replicaCard).toContainText("7968");
+  const manutencaoCard = page.locator("section.console-card", {
+    hasText: "Limpeza automática",
+  });
+  await expect(manutencaoCard.locator("strong")).toHaveText("Em dia");
+  await expect(manutencaoCard).toContainText("4242");
   await expect(
     page.getByText("receptor comercial ainda não configurado"),
   ).toBeVisible();
@@ -415,6 +448,82 @@ test("a situação mostra a réplica da gestão e avisa quando ela atrasa", asyn
     "Nenhuma tentativa de replicação registrada",
   );
 
+  // Agendador do banco parado: a limpeza automática não roda há vários ciclos.
+  manutencao = {
+    ...manutencao,
+    atrasada: true,
+    minutosDesdeExecucao: 47,
+  };
+  await voltarParaSituacao();
+  await expect(manutencaoCard.locator("strong")).toHaveText("Atrasada");
+  await expect(
+    page
+      .locator("p.console-note")
+      .filter({ hasText: "limpeza automática dos limites deveria rodar" }),
+  ).toContainText("há 47 minuto(s)");
+  // A parada da limpeza não estende bloqueio: o limite de envio conta só os
+  // últimos dez minutos, então a tela não pode prometer retenção além disso.
+  await expect(
+    page
+      .locator("p.console-note")
+      .filter({ hasText: "limpeza automática dos limites deveria rodar" }),
+  ).not.toContainText("além da janela");
+  await expect(manutencaoCard).toContainText("Último sucesso");
+
+  // Limpeza que falhou: o motivo gravado pela função aparece na tela e o item
+  // "Último sucesso" mantém o ciclo bom. As duas datas são diferentes de
+  // propósito: repetir a data da tentativa, ou mostrar "—", reprova o teste.
+  const tentativaQueFalhou = "2026-11-26T18:02:00.000Z";
+  const ultimoCicloBom = "2026-11-25T09:30:00.000Z";
+  manutencao = {
+    ...manutencao,
+    status: "failed",
+    removidos: null,
+    erro: "synthetic retention failure",
+    ultimaExecucaoEm: tentativaQueFalhou,
+    ultimoSucessoEm: ultimoCicloBom,
+  };
+  await voltarParaSituacao();
+  await expect(manutencaoCard.locator("strong")).toHaveText(
+    "Falhou na última execução",
+  );
+  await expect(manutencaoCard).toContainText(cardDate(tentativaQueFalhou));
+  await expect(manutencaoCard).toContainText(cardDate(ultimoCicloBom));
+  await expect(manutencaoCard).toContainText("Último sucesso");
+  await expect(
+    page
+      .locator("p.console-note")
+      .filter({ hasText: "limpeza automática dos limites falhou" }),
+  ).toContainText("synthetic retention failure");
+
+  // A limpeza manual tem heartbeat próprio: falhar nela não muda o estado do
+  // agendador, e o motivo aparece na tela em vez de sumir no clique.
+  manutencao = {
+    registrada: true,
+    status: "success",
+    ultimaExecucaoEm: "2026-11-26T17:55:00.000Z",
+    ultimoSucessoEm: "2026-11-26T17:55:00.000Z",
+    minutosDesdeExecucao: 5,
+    atrasada: false,
+    removidos: 0,
+    execucoes: 4243,
+    erro: null,
+  };
+  manutencaoManual = {
+    registrada: true,
+    falhou: true,
+    ultimaExecucaoEm: "2026-11-26T18:02:00.000Z",
+    removidos: null,
+    erro: "synthetic manual retention failure",
+  };
+  await voltarParaSituacao();
+  await expect(manutencaoCard.locator("strong")).toHaveText("Em dia");
+  await expect(
+    page
+      .locator("p.console-note")
+      .filter({ hasText: "última limpeza manual dos limites falhou" }),
+  ).toContainText("synthetic manual retention failure");
+
   // Histórico indisponível: a tela diz que não conseguiu consultar, em vez de
   // sugerir que nunca houve replicação.
   replicacao = null;
@@ -423,4 +532,45 @@ test("a situação mostra a réplica da gestão e avisa quando ela atrasa", asyn
   await expect(page.locator("p.console-note").first()).toContainText(
     "Não foi possível consultar o histórico de replicação",
   );
+});
+
+test("a limpeza manual que falha não vira confirmação na tela", async ({
+  page,
+}) => {
+  // A RPC devolveu null (nada removido), então o servidor responde 502 com o
+  // motivo gravado pela função. O clique não pode terminar em "limpeza
+  // executada" — é justamente o erro que esta correção existe para evitar.
+  const mensagem =
+    "A limpeza não foi concluída; nada foi removido: synthetic retention failure.";
+  await page.goto("/operacoes");
+  await page.getByLabel("Token de acesso").fill(token);
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page.getByRole("tab", { name: "Limites" })).toBeVisible();
+
+  await page.route("**/api/operacoes/dados**", async (route) => {
+    const escopo =
+      new URL(route.request().url()).searchParams.get("escopo") ?? "limites";
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ escopo, dados: [] }),
+    });
+  });
+  let pedido: unknown = null;
+  await page.route("**/api/operacoes/acoes", async (route) => {
+    pedido = route.request().postDataJSON();
+    await route.fulfill({
+      status: 502,
+      contentType: "application/json",
+      body: JSON.stringify({ mensagem }),
+    });
+  });
+
+  await page.getByRole("tab", { name: "Limites" }).click();
+  await page.getByRole("button", { name: "Limpar limites agora" }).click();
+  await expect.poll(() => pedido).toEqual({ acao: "limites-limpar" });
+  const aviso = page.locator("p.console-feedback").first();
+  await expect(aviso).toHaveAttribute("data-tone", "erro");
+  await expect(aviso).toHaveText(mensagem);
+  await expect(aviso).not.toContainText("Limpeza dos limites executada");
 });

@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
-select plan(35);
+select plan(37);
 
 -- All elevated functions must resolve relations independently of caller input.
 select is(
@@ -34,6 +34,16 @@ select is(
   (select p.proconfig from pg_proc as p where p.oid = 'public.prune_premium_briefing_rate_limits()'::regprocedure),
   array['search_path=""']::text[],
   'retention function has an empty search path'
+);
+select is(
+  (select p.proconfig from pg_proc as p where p.oid = 'public.prune_premium_briefing_rate_limits_manual()'::regprocedure),
+  array['search_path=""']::text[],
+  'manual retention function has an empty search path'
+);
+select is(
+  (select p.proconfig from pg_proc as p where p.oid = 'public.prune_premium_rate_limits_for(text)'::regprocedure),
+  array['search_path=""']::text[],
+  'shared retention routine has an empty search path'
 );
 
 select ok(

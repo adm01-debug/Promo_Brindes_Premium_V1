@@ -45,8 +45,8 @@ select is(
     from information_schema.role_table_grants
     where table_schema = 'public' and grantee = 'service_role'
   ),
-  14::bigint,
-  'service role has exactly fourteen explicit table capabilities'
+  17::bigint,
+  'service role has exactly seventeen explicit table capabilities'
 );
 select ok(
   not has_table_privilege('service_role', 'public.premium_briefings', 'DELETE'),

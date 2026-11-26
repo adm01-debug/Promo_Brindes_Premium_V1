@@ -356,6 +356,8 @@ function StatusPanel({ status }: { status: ConsoleStatus | null }) {
   if (!status) return <p className="console-muted">Consultando o banco…</p>;
   const counts = status.contagens;
   const replication = status.replicacao;
+  const maintenance = status.manutencao;
+  const manual = status.manutencaoManual;
   const replicationState = !replication
     ? "Indisponível"
     : !replication.registrada
@@ -363,6 +365,15 @@ function StatusPanel({ status }: { status: ConsoleStatus | null }) {
       : replication.status === "failed"
         ? "Falhou na última tentativa"
         : replication.atrasada
+          ? "Atrasada"
+          : "Em dia";
+  const maintenanceState = !maintenance
+    ? "Indisponível"
+    : !maintenance.registrada
+      ? "Sem registro"
+      : maintenance.status === "failed"
+        ? "Falhou na última execução"
+        : maintenance.atrasada
           ? "Atrasada"
           : "Em dia";
   return (
@@ -430,6 +441,30 @@ function StatusPanel({ status }: { status: ConsoleStatus | null }) {
             </li>
           </ul>
         </section>
+        <section className="console-card">
+          <h2>Limpeza automática</h2>
+          <strong>{maintenanceState}</strong>
+          <ul>
+            <li>
+              Última execução{" "}
+              <b>{formatDate(maintenance?.ultimaExecucaoEm ?? null)}</b>
+            </li>
+            <li>
+              Último sucesso{" "}
+              <b>{formatDate(maintenance?.ultimoSucessoEm ?? null)}</b>
+            </li>
+            <li>
+              Removidos na última execução <b>{maintenance?.removidos ?? "—"}</b>
+            </li>
+            <li>
+              Execuções registradas <b>{maintenance?.execucoes ?? "—"}</b>
+            </li>
+            <li>
+              Última limpeza manual{" "}
+              <b>{formatDate(manual?.ultimaExecucaoEm ?? null)}</b>
+            </li>
+          </ul>
+        </section>
       </div>
       {replication?.status === "failed" ? (
         <p className="console-note">
@@ -474,6 +509,45 @@ function StatusPanel({ status }: { status: ConsoleStatus | null }) {
           estiver desligado. Esta tela mostra o estado real e permite voltar um
           lead com falha para a fila, mas o envio só acontece quando o receptor
           estiver configurado.
+        </p>
+      ) : null}
+      {maintenance?.status === "failed" ? (
+        <p className="console-note">
+          {`A limpeza automática dos limites falhou na última execução: ${maintenance.erro ?? "sem motivo registrado"}.`}{" "}
+          {maintenance.atrasada
+            ? "Enquanto ela não volta a rodar, os registros vencidos se acumulam na tabela de limites — o bloqueio de envio não, porque ele conta só os últimos dez minutos."
+            : "A última execução boa continua valendo; o próximo ciclo tenta de novo em até cinco minutos."}{" "}
+          A limpeza roda a cada cinco minutos pelo agendador do banco.
+        </p>
+      ) : maintenance?.atrasada ? (
+        <p className="console-note">
+          {`A limpeza automática dos limites deveria rodar a cada cinco minutos e a última execução foi há ${maintenance.minutosDesdeExecucao ?? "?"} minuto(s).`}{" "}
+          O agendador do banco pode estar parado; até voltar, os registros
+          vencidos se acumulam na tabela de limites, sem bloquear nenhum envio
+          além dos últimos dez minutos — o limite conta só essa janela.
+          A limpeza também pode ser disparada na mão em Limpar limites agora, na
+          aba Limites.
+        </p>
+      ) : null}
+      {maintenance && !maintenance.registrada ? (
+        <p className="console-note">
+          Nenhuma execução da limpeza automática registrada desde que este aviso
+          entrou no ar. Ela roda a cada cinco minutos pelo agendador do banco; se
+          este card continuar vazio, o agendador não está rodando.
+        </p>
+      ) : null}
+      {manual?.falhou ? (
+        <p className="console-note">
+          {`A última limpeza manual dos limites falhou: ${manual.erro ?? "sem motivo registrado"}.`}{" "}
+          Nada foi removido nessa rodada e o estado acima continua sendo o do
+          agendador do banco; os registros vencidos seguem na aba Limites.
+        </p>
+      ) : null}
+      {!maintenance && status.banco ? (
+        <p className="console-note">
+          Não foi possível consultar o histórico da limpeza automática agora,
+          então este card pode estar incompleto. Os limites continuam valendo
+          exatamente como estão gravados no banco.
         </p>
       ) : null}
     </>

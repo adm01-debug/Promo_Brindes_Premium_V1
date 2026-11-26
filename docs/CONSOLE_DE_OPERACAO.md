@@ -144,6 +144,13 @@ contagens iniciais: 8 peças, 0 briefings, 0 limites):
 | leitura do heartbeat indisponível | card mostra **Indisponível** e a tela diz que não conseguiu consultar o histórico, sem sugerir primeira sincronização |
 | contagem da gestão reprovada na simulação (`--dry-run`) | a simulação falha pelo mesmo motivo que a replicação real falharia, em vez de passar limpa e dar a impressão de execução saudável |
 | vitrine replicada, mas o heartbeat não pôde ser gravado | a replicação continua válida (o catálogo está atualizado) e o comando avisa no log; o card mantém a tentativa anterior — se já houve sucesso gravado, vira **atrasada** em 48h; se nunca houve, fica em **Sem registro**, que já avisa que a vitrine pode estar desatualizada. O erro cai para o lado de avisar, nunca para o de mostrar saúde falsa |
+| limpeza automática rodando normalmente | o heartbeat grava `success`, os registros vencidos (sem atividade há mais de 1 hora) são removidos na mesma chamada e o card mostra a hora da última execução, quantos saíram e o total de execuções |
+| limpeza automática numa rodada sem nada vencido | grava `success` com `0` removidos e incrementa o total — o card se move, provando que o agendador está vivo mesmo quando não há resíduo |
+| limpeza automática que falha | a função captura o erro, normaliza o motivo em uma linha de até 200 caracteres e grava `failed` com a hora da tentativa, **preservando** `last_success_at`; o card mostra **Falhou na última execução** com o motivo e o item *Último sucesso* preserva a hora do último ciclo bom |
+| limpeza automática parada há mais de três ciclos | o card vira **Atrasada** com os minutos decorridos e aponta o botão **Limpar limites agora** na aba Limites. O resíduo vencido se acumula na tabela de limites; o bloqueio de envio não se estende, porque `allow_premium_briefing_attempt` só conta as tentativas dos últimos dez minutos |
+| heartbeat da manutenção sem nenhuma execução (banco novo) | card mostra **Sem registro** — e, como `registrada = false` nunca vira "atrasada", a tela não inventa atraso nem inventa saúde |
+| limpeza manual com o agendador parado | a linha do agendador fica intacta: o card continua **Atrasada** e aparece o item **Última limpeza manual** com o resultado do clique — o botão nunca faz o problema que o card existe para mostrar desaparecer |
+| limpeza manual que falha | a resposta do banco não traz contagem, a ação relê a linha da limpeza manual e devolve `502` com o motivo gravado por ela (se essa leitura falhar, a mensagem fica genérica e aponta a aba Situação); a tela mostra o aviso de erro no topo, sem carimbar sucesso |
 
 ### O que o e2e cobre e o que ele não cobre
 
@@ -159,7 +166,7 @@ e2e.
 
 ## Cobertura: banco premium x tela
 
-Inventário conferido por consulta direta ao projeto `whwloseshzraipljisqo` em 26/11/2026: 4 tabelas, 7 funções, 2 triggers, 1 política de RLS, 1 job de cron, nenhuma view ou materialized view.
+Inventário conferido por consulta direta ao projeto `whwloseshzraipljisqo` em 26/11/2026: 5 tabelas, 9 funções, 2 triggers, 1 política de RLS, 1 job de cron, nenhuma view ou materialized view.
 
 | Objeto do banco | Quem usa | Onde o dono vê ou decide |
 | --- | --- | --- |
@@ -167,14 +174,15 @@ Inventário conferido por consulta direta ao projeto `whwloseshzraipljisqo` em 2
 | `premium_briefings.status` | só a aba Leads grava | seletor **Situação do lead** + botão **Gravar situação** (recebido/qualificado/encerrado) |
 | `premium_briefings.delivery_*` | funções de claim/record | aba **Leads** + botão **Voltar para a fila** (recusado enquanto a reserva está válida) |
 | `premium_briefing_rate_limits` | `allow_premium_briefing_attempt` | aba **Limites** + botão **Liberar** por contato |
-| `premium_catalog_sync_state` (7 colunas, 1 linha) | `scripts/sync-site-catalog.mjs` grava; `readConsoleStatus` lê | aba **Situação** → card **Réplica da gestão** (último sucesso, última tentativa, itens conferidos, produtos ativos, motivo da falha) |
+| `premium_catalog_sync_state` (8 colunas, 1 linha) | `scripts/sync-site-catalog.mjs` grava; `readConsoleStatus` lê | aba **Situação** → card **Réplica da gestão** (último sucesso, última tentativa, itens conferidos, produtos ativos, motivo da falha) |
+| `premium_maintenance_state` (8 colunas, 1 linha por tarefa) | `prune_premium_rate_limits_for` grava a cada execução — uma linha para o agendador e outra para a limpeza manual; `readConsoleStatus` lê as duas | aba **Situação** → card **Limpeza automática** (última execução, último sucesso, registros removidos, execuções acumuladas, última limpeza manual e motivo da falha de cada origem) |
 | RPCs de briefing (`lookup_`, `persist_`, `allow_`, `claim_`/`record_..._v2`) | `src/app/api/briefings/route.ts` | indireto: cada RPC aparece no efeito dentro da aba **Leads** (lead criado, tentativa contada, entrega reservada/concluída) |
 | `premium_catalog_items.published*` | `getSiteCatalogPage` | aba **Catálogo** → **Publicação** (exige digitar o SKU) |
 | `premium_catalog_items` ficha (materials, dimensions, weight_g, packaging) | `/api/catalog` e ficha da vitrine | aba **Catálogo** → **Ficha técnica** |
 | `premium_catalog_items` editorial (name, slug, tagline, description, image_path, minimum, personalizable, category, editorial_order) | `src/lib/products.json` + sync | fora da tela de propósito: é curadoria versionada e o sync sobrescreve — editar no banco criaria um valor que o próximo ciclo apaga |
 | `premium_catalog_items.search_text` | busca pública | vitrine (derivado no sync; não é campo de operação) |
 | `set_premium_catalog_updated_at` (trigger) | automático | indireto: `updated_at` aparece nas linhas do Catálogo e protege a concorrência da publicação |
-| `prune_premium_briefing_rate_limits` | cron `*/5 * * * *` | indireto: a aba **Limites** mostra o resíduo; só remove registros sem atividade há mais de 1 hora |
+| `prune_premium_briefing_rate_limits` (agendador) e `prune_premium_briefing_rate_limits_manual` (botão) | cron `*/5 * * * *` e chamada do console | aba **Situação** → card **Limpeza automática** (horário da última execução, último sucesso, quantos registros removeu, total de execuções, última limpeza manual e motivo da falha) + botão **Limpar limites agora** na aba Limites, que devolve o motivo quando a limpeza falha |
 | política `premium_catalog_public_read` | leitura anônima da vitrine | vitrine pública (só itens publicados e dentro da janela) |
 | replicação gestão→premium | `.github/workflows/catalog-source-guard.yml` (cron 11:17 UTC + guard diário) | aba **Situação** → card **Réplica da gestão** (data do último sucesso, itens conferidos, produtos ativos na gestão e motivo da última falha). O botão "replicar agora" continua fora do console de propósito, para não expor no runtime web a chave de leitura da base de gestão |
 
@@ -184,16 +192,22 @@ O workflow grava o resultado de cada tentativa na tabela `premium_catalog_sync_s
 
 Estado lido direto do banco em 26/11/2026, para nenhuma tabela ficar acessível por fora do console:
 
-- **RLS ligada nas 4 tabelas** (`premium_catalog_items`, `premium_briefings`, `premium_briefing_rate_limits`, `premium_catalog_sync_state`).
-- **Uma única política**: `premium_catalog_public_read` (SELECT) em `premium_catalog_items`, liberando só `published = true` dentro da janela de publicação. Briefings e limites **não têm política nenhuma** — ou seja, nem `anon` nem `authenticated` alcançam esses dados: toda leitura passa pelo console com `service_role`.
-- **Grants de tabela**: `anon` e `authenticated` recebem apenas `SELECT` (por coluna) em `premium_catalog_items`; em `premium_briefings` e `premium_briefing_rate_limits` não há grant para essas roles. `service_role` tem `INSERT/SELECT/UPDATE` em `premium_briefings` (sem `DELETE`, coerente com a regra de não apagar lead) e `DELETE/INSERT/SELECT/UPDATE` nos limites.
-- **Funções**: 6 das 7 são `SECURITY DEFINER` e todas as 7 usam `search_path` vazio; `EXECUTE` está concedido **somente** para `service_role` — nenhuma função é chamável pela vitrine pública, nem por usuário logado. `set_premium_catalog_updated_at` é função de trigger e não tem `EXECUTE` para ninguém, como deve ser.
+- **RLS ligada nas 5 tabelas** (`premium_catalog_items`, `premium_briefings`, `premium_briefing_rate_limits`, `premium_catalog_sync_state`, `premium_maintenance_state`).
+- **Uma única política**: `premium_catalog_public_read` (SELECT) em `premium_catalog_items`, liberando só `published = true` dentro da janela de publicação. Briefings, limites e as duas tabelas de histórico **não têm política nenhuma** — ou seja, nem `anon` nem `authenticated` alcançam esses dados: toda leitura passa pelo console com `service_role`.
+- **Grants de tabela**: `anon` e `authenticated` recebem apenas `SELECT` (por coluna) em `premium_catalog_items`; em `premium_briefings` e `premium_briefing_rate_limits` não há grant para essas roles. `service_role` tem `INSERT/SELECT/UPDATE` em `premium_briefings` (sem `DELETE`, coerente com a regra de não apagar lead), `DELETE/INSERT/SELECT/UPDATE` nos limites e `INSERT/SELECT/UPDATE` nos dois históricos (sem `DELETE`: o registro da execução não é apagável pela API).
+- **Funções**: 8 das 9 são `SECURITY DEFINER` e todas as 9 usam `search_path` vazio; `EXECUTE` está concedido **somente** para `service_role` — nenhuma função é chamável pela vitrine pública, nem por usuário logado. `set_premium_catalog_updated_at` é função de trigger e não tem `EXECUTE` para ninguém, como deve ser; `prune_premium_rate_limits_for(text)` é a rotina interna compartilhada pelas duas entradas de limpeza e também não tem `EXECUTE` para ninguém (só é alcançável de dentro das outras duas).
 - **Nenhuma view nem materialized view**, então não existe caminho de leitura paralelo sem RLS.
 
 ### Índices, constraints e o que não existe
 
 Levantado no mesmo banco, para ninguém procurar tela de algo que não é operável:
 
-- **47 constraints** (por tabela: `premium_catalog_items` 20, `premium_briefings` 18, `premium_briefing_rate_limits` 2, `premium_catalog_sync_state` 7): 4 chaves primárias, 5 unicidades (`sku`, `slug`, `editorial_order`, `idempotency_key`, `protocol`) e 38 `check` — as `*_shape_check` são as que recusam texto vazio, fora de faixa ou com espaços nas pontas; `premium_briefings_delivery_lease_check` é a que exige token de reserva e expiração só em `delivering`; em `premium_catalog_sync_state`, `id` booleano com `primary key` e `check (id)` mantém a linha única e a combinada exige `last_error` só quando a tentativa falhou.
+- **54 constraints** (por tabela: `premium_catalog_items` 20, `premium_briefings` 18, `premium_briefing_rate_limits` 2, `premium_catalog_sync_state` 7, `premium_maintenance_state` 7): 5 chaves primárias, 5 unicidades (`sku`, `slug`, `editorial_order`, `idempotency_key`, `protocol`) e 44 `check` — as `*_shape_check` são as que recusam texto vazio, fora de faixa ou com espaços nas pontas; `premium_briefings_delivery_lease_check` é a que exige token de reserva e expiração só em `delivering`; em `premium_catalog_sync_state`, `id` booleano com `primary key` e `check (id)` mantém a linha única e a combinada exige `last_error` só quando a tentativa falhou; em `premium_maintenance_state`, a combinada exige contagem e data de sucesso só na execução bem-sucedida, e o motivo só na falha.
 - **11 índices não-PK**, todos de suporte (`created_at`, fila de entrega pendente, janela de publicação, `search_text`, `updated_at` dos limites). Nenhum deles é uma funcionalidade: existem para a tela responder rápido, não para o dono operar.
-- **Sem chave estrangeira, sem sequence, sem view.** As três tabelas são independentes; os identificadores são `uuid` gerados por `gen_random_uuid()`, então não há coluna de "código sequencial" para exibir.
+- **Sem chave estrangeira, sem sequence, sem view.** As cinco tabelas são independentes; os identificadores são `uuid` gerados por `gen_random_uuid()`, então não há coluna de "código sequencial" para exibir.
+
+### Livro-caixa de migrations
+
+Conferido no mesmo banco em 26/11/2026: os **16 arquivos** de `supabase/migrations` estão registrados um a um em `supabase_migrations.schema_migrations` (16 linhas) — não existe migration aplicada sem arquivo nem arquivo aplicado sem registro. As três últimas (`premium_catalog_sync_state`, `premium_maintenance_state` e `premium_maintenance_manual_origin`) foram aplicadas por `psql` direto e o registro foi gravado na mesma execução, com o SQL do arquivo guardado na coluna `statements`.
+
+Isso importa porque o registro é o que o Supabase CLI lê: sem a linha, `supabase migration list` mostra a migration como pendente e o próximo `supabase db push` tentaria rodar de novo um `create table` que já existe — o push aborta e a impressão é de banco dessincronizado, quando o schema está correto. Regra prática: toda migration aplicada à mão em produção ganha a linha correspondente em `supabase_migrations.schema_migrations` na mesma execução.
