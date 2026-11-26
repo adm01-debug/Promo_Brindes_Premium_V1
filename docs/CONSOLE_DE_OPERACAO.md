@@ -136,10 +136,11 @@ Inventário conferido por consulta direta ao projeto `whwloseshzraipljisqo` em 2
 
 | Objeto do banco | Quem usa | Onde o dono vê ou decide |
 | --- | --- | --- |
-| `premium_briefings` (20 colunas) | `POST /api/briefings` | aba **Leads** (contato, ocasião, peças, entrega, tentativas, erro) |
+| `premium_briefings` (20 colunas) | `POST /api/briefings` | aba **Leads**: protocolo, criado em, situação, contato, empresa, e-mail, ocasião, data desejada, peças, mensagem, orçamento (em "Detalhes do pedido"), entrega, tentativas, entregue em, erro. Ficam fora de propósito apenas `id`/`idempotency_key`/`request_hash`/`delivery_lease_*`, que são controle interno e aparecem só como efeito (botão desabilitado enquanto a reserva vale) |
 | `premium_briefings.status` | só a aba Leads grava | seletor **Situação do lead** + botão **Gravar situação** (recebido/qualificado/encerrado) |
 | `premium_briefings.delivery_*` | funções de claim/record | aba **Leads** + botão **Voltar para a fila** (recusado enquanto a reserva está válida) |
 | `premium_briefing_rate_limits` | `allow_premium_briefing_attempt` | aba **Limites** + botão **Liberar** por contato |
+| RPCs de briefing (`lookup_`, `persist_`, `allow_`, `claim_`/`record_..._v2`) | `src/app/api/briefings/route.ts` | indireto: cada RPC aparece no efeito dentro da aba **Leads** (lead criado, tentativa contada, entrega reservada/concluída) |
 | `premium_catalog_items.published*` | `getSiteCatalogPage` | aba **Catálogo** → **Publicação** (exige digitar o SKU) |
 | `premium_catalog_items` ficha (materials, dimensions, weight_g, packaging) | `/api/catalog` e ficha da vitrine | aba **Catálogo** → **Ficha técnica** |
 | `premium_catalog_items` editorial (name, slug, tagline, description, image_path, minimum, personalizable, category, editorial_order) | `src/lib/products.json` + sync | fora da tela de propósito: é curadoria versionada e o sync sobrescreve — editar no banco criaria um valor que o próximo ciclo apaga |
@@ -150,3 +151,13 @@ Inventário conferido por consulta direta ao projeto `whwloseshzraipljisqo` em 2
 | replicação gestão→premium | `.github/workflows/catalog-source-guard.yml` (cron 11:17 UTC + guard diário) | supervisionada pelo CI: o job falha quando o catálogo curado divergir da gestão. O botão "replicar agora" fica fora do console de propósito, para não expor no runtime web a chave de leitura da base de gestão |
 
 Consequência prática do item acima: se a replicação falhar, o aviso vem do GitHub Actions, não da tela. Quem quiser o botão dentro do console precisa aceitar que a chave de leitura da gestão passe a existir no runtime do site.
+
+### Segurança conferida (RLS e grants)
+
+Estado lido direto do banco em 26/11/2026, para nenhuma tabela ficar acessível por fora do console:
+
+- **RLS ligada nas 3 tabelas** (`premium_catalog_items`, `premium_briefings`, `premium_briefing_rate_limits`).
+- **Uma única política**: `premium_catalog_public_read` (SELECT) em `premium_catalog_items`, liberando só `published = true` dentro da janela de publicação. Briefings e limites **não têm política nenhuma** — ou seja, nem `anon` nem `authenticated` alcançam esses dados: toda leitura passa pelo console com `service_role`.
+- **Grants de tabela**: `anon` e `authenticated` recebem apenas `SELECT` (por coluna) em `premium_catalog_items`; em `premium_briefings` e `premium_briefing_rate_limits` não há grant para essas roles. `service_role` tem `INSERT/SELECT/UPDATE` em `premium_briefings` (sem `DELETE`, coerente com a regra de não apagar lead) e `DELETE/INSERT/SELECT/UPDATE` nos limites.
+- **Funções**: 6 das 7 são `SECURITY DEFINER` e todas as 7 usam `search_path` vazio; `EXECUTE` está concedido **somente** para `service_role` — nenhuma função é chamável pela vitrine pública, nem por usuário logado. `set_premium_catalog_updated_at` é função de trigger e não tem `EXECUTE` para ninguém, como deve ser.
+- **Nenhuma view nem materialized view**, então não existe caminho de leitura paralelo sem RLS.
