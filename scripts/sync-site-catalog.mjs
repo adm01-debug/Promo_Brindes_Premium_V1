@@ -159,9 +159,9 @@ export async function syncSiteCatalog(
   // A contagem da gestão faz parte da conferência: enquanto ela não for
   // validada, nenhuma escrita acontece. Contar depois de gravar deixaria a
   // vitrine atualizada e o console mostrando o resultado da execução anterior.
-  const sourceCount = dryRun
-    ? null
-    : await countActiveSourceProducts({ env, fetcher });
+  // Sendo só leitura, roda também no --dry-run: a simulação local tem de falhar
+  // pelos mesmos motivos que a replicação real falharia.
+  const sourceCount = await countActiveSourceProducts({ env, fetcher });
 
   const payloadIds = new Set(payload.map((item) => item.id));
   // editorial_order is unique for the whole table, so the entire storefront has
@@ -202,7 +202,8 @@ export async function syncSiteCatalog(
       "A product was manually unpublished; sync stopped to preserve that decision.",
     );
 
-  if (dryRun) return { count: payload.length, project: ref, dryRun: true };
+  if (dryRun)
+    return { count: payload.length, project: ref, dryRun: true, sourceCount };
 
   const curated = existing.filter((item) => payloadIds.has(item.id));
   const position = new Map(payload.map((item, index) => [item.id, index]));
@@ -427,7 +428,7 @@ if (
     const result = await syncSiteCatalog(snapshot, { dryRun });
     console.log(
       result.dryRun
-        ? `Dry run: ${result.count} source products verified; target ${result.project}. No writes.`
+        ? `Dry run: ${result.count} curated products verified against ${result.sourceCount} active management products; target ${result.project}. No writes.`
         : `Synchronized ${result.count} verified catalog items in ${result.project}. Source was read only.`,
     );
     // O heartbeat é observabilidade: uma falha dele depois de uma replicação boa

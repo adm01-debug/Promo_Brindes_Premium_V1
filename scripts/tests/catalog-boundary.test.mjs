@@ -202,7 +202,6 @@ test("sync reads the operational source and writes only to the premium project",
       count: 8,
       project: "whwloseshzraipljisqo",
       dryRun: false,
-          sourceCount: 8,
       sourceCount: 8,
     },
   );
@@ -225,7 +224,10 @@ test("dry run performs no writes in either project", async () => {
     dryRun: true,
   });
   assert.equal(result.dryRun, true);
-  assert.equal(h.calls.length, 2);
+  // A simulação lê a gestão duas vezes (linhas curadas e contagem ativa) e a
+  // vitrine uma: a contagem não pode ser a única conferência fora do dry-run.
+  assert.equal(result.sourceCount, snapshot.length);
+  assert.equal(h.calls.length, 3);
   assert.ok(h.calls.every(({ init }) => init.method === "GET"));
 });
 
@@ -586,6 +588,26 @@ test("a rejected source count writes nothing to the storefront", async () => {
     0,
     "the storefront state is never read before the count is validated",
   );
+});
+
+test("a rejected source count also fails the dry run", async () => {
+  const h = harness({
+    source: ({ select }) =>
+      select === "id"
+        ? Response.json([{ id: snapshot[0].id }])
+        : jsonRows(sourceRows()),
+  });
+  await assert.rejects(
+    syncSiteCatalog(snapshot, { env, fetcher: h.fetcher, dryRun: true }),
+    /count is missing/,
+    "a simulation that cannot prove the active count is not a clean simulation",
+  );
+  assert.equal(
+    h.calls.length,
+    2,
+    "the dry run stops at the count, before reading the publication state",
+  );
+  assert.equal(h.storefront.size, 0);
 });
 
 const mutate = (changes, index = 0) =>
