@@ -642,6 +642,32 @@ for (const [name, changes, sourceMaterials] of [
     assert.equal(written.packaging, curated[0].packaging);
   });
 
+test("a product absent from the storefront is inserted with the technical sheet", async () => {
+  // O destino responde com o catálogo vazio: o sync precisa inserir, não
+  // atualizar. É a primeira publicação de uma peça curada, caminho que o
+  // restante da suíte não exercita porque sempre simula produtos já cadastrados.
+  const h = harness({ existing: () => jsonRows([]) });
+  assert.deepEqual(
+    await syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }),
+    { count: snapshot.length, project: "whwloseshzraipljisqo", dryRun: false },
+  );
+  const writes = h.calls.filter(({ init }) => init.method !== "GET");
+  assert.equal(writes.length, 1, "the whole catalog is inserted in one statement");
+  assert.equal(writes[0].init.method, "POST");
+  const rows = JSON.parse(writes[0].init.body);
+  assert.equal(rows.length, snapshot.length);
+  assert.ok(
+    rows.every((row) => row.published === true),
+    "a product that reaches the storefront through the curation goes live",
+  );
+  const inserted = rows.find((row) => row.sku === snapshot[0].sku);
+  assert.ok(inserted, "the curated product has to be inserted");
+  assert.deepEqual(inserted.materials, snapshot[0].materials);
+  assert.equal(inserted.dimensions, snapshot[0].dimensions);
+  assert.equal(inserted.weight_g, snapshot[0].weightG);
+  assert.equal(inserted.packaging, snapshot[0].packaging);
+});
+
 for (const url of [
   `https://${sourceHost}`,
   `https://${targetHost}.example.com`,
