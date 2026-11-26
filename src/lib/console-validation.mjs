@@ -5,6 +5,21 @@ export function isBriefingStatus(value) {
   return typeof value === "string" && BRIEFING_STATUSES.includes(value);
 }
 
+/** RFC 3339 com fuso, como o PostgREST devolve timestamptz (até 6 casas). */
+export function isRfc3339(value) {
+  return (
+    typeof value === "string" &&
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/.test(
+      value,
+    )
+  );
+}
+
+/** Identificação do contato nos limites: HMAC-SHA256 em hexadecimal. */
+export function isClientHash(value) {
+  return typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
+}
+
 /**
  * Rules shared by the operations console and its tests. Every limit here
  * mirrors a constraint of premium_catalog_items in the premium database, so the

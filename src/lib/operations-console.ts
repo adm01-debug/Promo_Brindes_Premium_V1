@@ -2,6 +2,8 @@ import { briefingDeliveryConfig } from "@/lib/briefing-delivery-config";
 import { siteServerConfig, type SiteServerConfig } from "@/lib/site-database";
 import {
   isBriefingStatus,
+  isClientHash,
+  isRfc3339,
   validateTechnicalSheet,
 } from "@/lib/console-validation.mjs";
 import { manageSitePublication } from "../../scripts/manage-site-publication.mjs";
@@ -52,6 +54,7 @@ const briefingColumns = [
   "created_at",
   "delivery_status",
   "delivery_attempts",
+  "delivery_lease_expires_at",
   "last_delivery_error",
   "delivered_at",
 ].join(",");
@@ -283,9 +286,16 @@ async function saveTechnicalSheet(body: Extract<ConsoleActionBody, { acao: "cata
   };
   if (!sheet.valid || !sheet.value)
     throw new ConsoleError(sheet.errors.join(" "), 400);
+  if (!isRfc3339(body.expectedUpdatedAt))
+    throw new ConsoleError(
+      "Recarregue o catálogo antes de gravar a ficha.",
+      400,
+    );
   const response = await call(
     config,
-    `premium_catalog_items?id=eq.${body.id}&select=id,sku,materials,dimensions,weight_g,packaging,updated_at`,
+    `premium_catalog_items?id=eq.${body.id}&updated_at=eq.${encodeURIComponent(
+      body.expectedUpdatedAt,
+    )}&select=id,sku,materials,dimensions,weight_g,packaging,updated_at`,
     {
       method: "PATCH",
       body: JSON.stringify(sheet.value),
@@ -293,6 +303,11 @@ async function saveTechnicalSheet(body: Extract<ConsoleActionBody, { acao: "cata
     },
   );
   const updated = await rows<ConsoleCatalogItem>(response);
+  if (updated.length === 0)
+    throw new ConsoleError(
+      "A ficha mudou desde que a tela foi carregada. Recarregue a lista antes de gravar.",
+      409,
+    );
   const saved = updated.length === 1 ? updated[0] : null;
   if (!saved || saved.id !== body.id)
     throw new ConsoleError(
@@ -375,6 +390,27 @@ async function requeueBriefing(
   const config = requiredDatabase();
   if (typeof body.id !== "string" || !uuidPattern.test(body.id))
     throw new ConsoleError("Lead inválido.", 400);
+  const current = await rows<{
+    delivery_status: string;
+    delivery_lease_expires_at: string | null;
+  }>(
+    await call(
+      config,
+      `premium_briefings?id=eq.${body.id}&select=delivery_status,delivery_lease_expires_at`,
+    ),
+  );
+  if (current.length !== 1)
+    throw new ConsoleError("Esse lead não existe mais; recarregue a lista.", 409);
+  const lease = current[0].delivery_lease_expires_at;
+  if (
+    current[0].delivery_status === "delivering" &&
+    typeof lease === "string" &&
+    Date.parse(lease) > Date.now()
+  )
+    throw new ConsoleError(
+      "Esse lead está em envio agora. Espere o envio terminar (ou a reserva expirar) antes de reenfileirar.",
+      409,
+    );
   const response = await call(
     config,
     `premium_briefings?id=eq.${body.id}&delivery_status=in.(failed,delivering)&select=id,protocol,delivery_status`,
@@ -460,6 +496,26 @@ async function pruneLimits() {
   };
 }
 
+async function releaseLimit(
+  body: Extract<ConsoleActionBody, { acao: "limites-liberar" }>,
+) {
+  const config = requiredDatabase();
+  if (!isClientHash(body.clientHash))
+    throw new ConsoleError("Contato inválido.", 400);
+  const response = await call(
+    config,
+    `premium_briefing_rate_limits?client_hash=eq.${body.clientHash}`,
+    { method: "DELETE", prefer: "return=representation,count=exact" },
+  );
+  const removed = await rows<{ client_hash: string }>(response);
+  if (removed.length !== 1 || removed[0].client_hash !== body.clientHash)
+    throw new ConsoleError(
+      "Esse contato não está mais bloqueado; recarregue a lista.",
+      409,
+    );
+  return { mensagem: "Contato liberado: já pode enviar um novo briefing." };
+}
+
 export async function runConsoleAction(
   body: ConsoleActionBody,
 ): Promise<ConsoleActionResult> {
@@ -476,6 +532,8 @@ export async function runConsoleAction(
       return setBriefingStatus(body);
     case "limites-limpar":
       return pruneLimits();
+    case "limites-liberar":
+      return releaseLimit(body);
     default:
       throw new ConsoleError("Ação desconhecida.", 400);
   }

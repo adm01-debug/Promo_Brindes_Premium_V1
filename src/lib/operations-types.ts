@@ -56,6 +56,7 @@ export type ConsoleBriefing = {
   created_at: string;
   delivery_status: string;
   delivery_attempts: number;
+  delivery_lease_expires_at: string | null;
   last_delivery_error: string | null;
   delivered_at: string | null;
 };
@@ -82,6 +83,7 @@ export type ConsoleActionBody =
       dimensions: string | null;
       weightG: string | number | null;
       packaging: string | null;
+      expectedUpdatedAt: string;
     }
   | {
       acao: "catalogo-publicacao";
@@ -94,6 +96,7 @@ export type ConsoleActionBody =
     }
   | { acao: "briefing-reenviar"; id: string }
   | { acao: "briefing-status"; id: string; status: ConsoleBriefingStatus }
-  | { acao: "limites-limpar" };
+  | { acao: "limites-limpar" }
+  | { acao: "limites-liberar"; clientHash: string };
 
 export type ConsoleActionResult = { mensagem: string };

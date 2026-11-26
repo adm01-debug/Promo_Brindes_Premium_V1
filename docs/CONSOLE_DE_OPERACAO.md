@@ -38,15 +38,34 @@ e janela. Permite:
   com concorrência otimista por `updated_at`: se alguém alterou a peça depois
   que a tela carregou, a gravação é recusada em vez de sobrescrever.
 
+As duas gravações do catálogo (ficha e publicação) carregam a revisão
+(`updated_at`) que a tela leu e só gravam se ela ainda for a do banco, em duas
+camadas: a comparação em memória e o filtro `updated_at=eq.<revisão>` no
+`PATCH`, com falha fechada quando o banco não devolve exatamente 1 linha. O
+carimbo preserva os microssegundos do Postgres — sem isso o filtro nunca
+encontraria a linha e a publicação seria sempre recusada. Duas abas abertas não
+sobrescrevem mais uma à outra: a segunda recebe "A ficha mudou desde que a tela
+foi carregada" (409) e precisa recarregar. Repetir uma publicação idêntica é
+tratado como nada a fazer ("Nada mudou em ..."), não como erro.
+
 **Leads** — últimos 200 briefings com contato, ocasião, peças, situação da
 entrega, número de tentativas e último erro. Cada lead traz o seletor de
-situação do funil (`recebido` → `qualificado` → `encerrado`), que era o único
-estado do banco sem tela. Leads em `failed` (ou presos em `delivering`) podem
-voltar para a fila (`pending`). O reenvio real depende do receptor comercial
-configurado: o console não inventa um payload que o banco não guarda.
+situação do funil (`recebido` → `qualificado` → `encerrado`); a troca só é
+enviada ao clicar em **Gravar situação**, e o botão fica desabilitado quando
+nada mudou ou enquanto a gravação está em curso. Leads em `failed` (ou presos em
+`delivering` com a reserva já expirada) podem voltar para a fila (`pending`). Um
+lead em `delivering` com reserva válida é recusado (409): reenfileirar no meio
+de um envio apagaria a reserva e o envio em andamento não conseguiria registrar
+a entrega. O reenvio real depende do receptor comercial configurado: o console
+não inventa um payload que o banco não guarda.
 
-**Limites** — janelas de rate limit por contato (hash) e limpeza manual. A
-limpeza automática já roda a cada 5 minutos pelo `pg_cron`.
+**Limites** — janelas de rate limit por contato (hash), com a data do último
+registro e a contagem de tentativas. Cada linha tem o botão **Liberar**, que
+apaga o registro daquele contato: é a única forma de destravar na hora quem
+ficou sem enviar (o bloqueio real dura 10 minutos, 5 tentativas na janela). A
+limpeza automática do `pg_cron` a cada 5 minutos **não** serve para isso — ela
+só remove registros sem atividade há mais de 1 hora. Liberar um contato que já
+não está bloqueado devolve 409 em vez de fingir sucesso.
 
 ## O que o console não faz
 
@@ -61,9 +80,29 @@ limpeza automática já roda a cada 5 minutos pelo `pg_cron`.
 ## Verificação
 
 ```bash
-npm run test:console-operations   # regras de token, sessão e ficha técnica
-npm run test:e2e -- tests/console.spec.ts   # gate, login e sessão reais
+npm run test:console-operations        # token, sessão, ficha técnica, limites
+npm run test:publication-management    # revisão otimista e microssegundos da publicação
+npm run test:e2e -- tests/console.spec.ts   # gate, login, sessão e ações reais
 ```
+
+Conferido contra o projeto premium (`whwloseshzraipljisqo`) em 26/11/2026, com
+peças e leads de teste criados e removidos na mesma execução (o banco voltou às
+contagens iniciais: 8 peças, 0 briefings, 0 limites):
+
+| Cenário no runtime de produção | Resultado |
+| --- | --- |
+| login com o token do console | 200, cookie `HttpOnly` |
+| ficha com revisão velha | 409 "A ficha mudou desde que a tela foi carregada" |
+| ficha com a revisão lida (microssegundos) | 200 e valores gravados no banco |
+| publicar com a revisão lida | 200 "está no ar com a janela informada" |
+| repetir a publicação idêntica | 200 "Nada mudou em ..." |
+| despublicar com revisão velha | 409 e peça intacta |
+| SKU de confirmação errado | 409 "O SKU digitado não confere com o produto" |
+| reenfileirar lead em envio com reserva válida | 409 "Esse lead está em envio agora" |
+| reenfileirar lead em falha | 200 "voltou para a fila de entrega" |
+| liberar contato bloqueado | 200 "já pode enviar um novo briefing" |
+| liberar o mesmo contato de novo | 409 "não está mais bloqueado" |
+| hash de contato inválido | 400 |
 
 ## Cobertura: banco premium x tela
 
@@ -71,16 +110,16 @@ Inventário conferido por consulta direta ao projeto `whwloseshzraipljisqo` em 2
 
 | Objeto do banco | Quem usa | Onde o dono vê ou decide |
 | --- | --- | --- |
-| `premium_briefings` (21 colunas) | `POST /api/briefings` | aba **Leads** (contato, ocasião, peças, entrega, tentativas, erro) |
-| `premium_briefings.status` | só a aba Leads grava | seletor **Situação do lead** (recebido/qualificado/encerrado) |
-| `premium_briefings.delivery_*` | funções de claim/record | aba **Leads** + botão **Voltar para a fila** |
-| `premium_briefing_rate_limits` | `allow_premium_briefing_attempt` | aba **Limites** + botão **Limpar janelas** |
+| `premium_briefings` (20 colunas) | `POST /api/briefings` | aba **Leads** (contato, ocasião, peças, entrega, tentativas, erro) |
+| `premium_briefings.status` | só a aba Leads grava | seletor **Situação do lead** + botão **Gravar situação** (recebido/qualificado/encerrado) |
+| `premium_briefings.delivery_*` | funções de claim/record | aba **Leads** + botão **Voltar para a fila** (recusado enquanto a reserva está válida) |
+| `premium_briefing_rate_limits` | `allow_premium_briefing_attempt` | aba **Limites** + botão **Liberar** por contato |
 | `premium_catalog_items.published*` | `getSiteCatalogPage` | aba **Catálogo** → **Publicação** (exige digitar o SKU) |
 | `premium_catalog_items` ficha (materials, dimensions, weight_g, packaging) | `/api/catalog` e ficha da vitrine | aba **Catálogo** → **Ficha técnica** |
 | `premium_catalog_items` editorial (name, slug, tagline, description, image_path, minimum, personalizable, category, editorial_order) | `src/lib/products.json` + sync | fora da tela de propósito: é curadoria versionada e o sync sobrescreve — editar no banco criaria um valor que o próximo ciclo apaga |
 | `premium_catalog_items.search_text` | busca pública | vitrine (derivado no sync; não é campo de operação) |
 | `set_premium_catalog_updated_at` (trigger) | automático | indireto: `updated_at` aparece nas linhas do Catálogo e protege a concorrência da publicação |
-| `prune_premium_briefing_rate_limits` | cron `*/5 * * * *` + aba Limites | aba **Limites** mostra o resíduo antes/depois da limpeza |
+| `prune_premium_briefing_rate_limits` | cron `*/5 * * * *` | indireto: a aba **Limites** mostra o resíduo; só remove registros sem atividade há mais de 1 hora |
 | política `premium_catalog_public_read` | leitura anônima da vitrine | vitrine pública (só itens publicados e dentro da janela) |
 | replicação gestão→premium | `.github/workflows/catalog-source-guard.yml` (cron 11:17 UTC + guard diário) | supervisionada pelo CI: o job falha quando o catálogo curado divergir da gestão. O botão "replicar agora" fica fora do console de propósito, para não expor no runtime web a chave de leitura da base de gestão |
 

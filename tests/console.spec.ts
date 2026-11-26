@@ -128,9 +128,18 @@ test("o console qualifica e encerra um lead pela tela", async ({ page }) => {
   });
 
   await page.getByRole("tab", { name: "Leads" }).click();
-  const seletor = page.getByLabel("Situação do lead PB-AAAAAAAAAAAA");
+  const seletor = page.getByLabel("Situação do lead PB-AAAAAAAAAAAA", {
+    exact: true,
+  });
   await expect(seletor).toHaveValue("received");
+  const gravar = page.getByRole("button", {
+    name: "Gravar situação do lead PB-AAAAAAAAAAAA",
+  });
+  await expect(gravar).toBeDisabled();
   await seletor.selectOption("qualified");
+  await expect(gravar).toBeEnabled();
+  await expect.poll(() => enviado).toBeNull();
+  await gravar.click();
   await expect
     .poll(() => enviado)
     .toEqual({
@@ -138,4 +147,95 @@ test("o console qualifica e encerra um lead pela tela", async ({ page }) => {
       id: briefing.id,
       status: "qualified",
     });
+});
+
+test("o console grava a ficha técnica e libera um contato bloqueado", async ({
+  page,
+}) => {
+  const item = {
+    id: "22222222-2222-4222-8222-222222222222",
+    sku: "CANETA-A",
+    slug: "caneta-a",
+    name: "Caneta A",
+    category: "Escritório",
+    minimum: 50,
+    personalizable: true,
+    editorial_order: 1,
+    published: true,
+    published_from: null,
+    published_until: null,
+    materials: [],
+    dimensions: null,
+    weight_g: null,
+    packaging: null,
+    source_date: "2026-11-26",
+    updated_at: "2026-11-26T10:01:34.413148+00:00",
+  };
+  const contato = "b".repeat(16);
+
+  await page.goto("/operacoes");
+  await page.getByLabel("Token de acesso").fill(token);
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page.getByRole("tab", { name: "Catálogo" })).toBeVisible();
+
+  await page.route("**/api/operacoes/dados**", async (route) => {
+    const escopo =
+      new URL(route.request().url()).searchParams.get("escopo") ?? "situacao";
+    const dados = escopo === "catalogo" ? [item] : [];
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ escopo, dados }),
+    });
+  });
+  await page.route("**/api/operacoes/dados?escopo=limites", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        escopo: "limites",
+        dados: [
+          {
+            client_hash: "b".repeat(64),
+            attempts: 5,
+            updated_at: "2026-11-26T10:00:00.000Z",
+          },
+        ],
+      }),
+    });
+  });
+  let enviado: unknown = null;
+  await page.route("**/api/operacoes/acoes", async (route) => {
+    enviado = route.request().postDataJSON();
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ mensagem: "Gravado." }),
+    });
+  });
+
+  await page.getByRole("tab", { name: "Catálogo" }).click();
+  await page.getByRole("button", { name: "Editar ficha" }).click();
+  await page.getByLabel("Materiais (um por linha, até 5)").fill("Papel kraft");
+  await page.getByLabel("Medidas").fill("10 x 2 x 2 cm");
+  await page.getByLabel("Peso em gramas").fill("35");
+  await page.getByLabel("Embalagem").fill("Sacola");
+  await page.getByRole("button", { name: "Salvar ficha" }).click();
+  await expect
+    .poll(() => enviado)
+    .toEqual({
+      acao: "catalogo-ficha",
+      id: item.id,
+      materials: ["Papel kraft"],
+      dimensions: "10 x 2 x 2 cm",
+      weightG: "35",
+      packaging: "Sacola",
+      expectedUpdatedAt: "2026-11-26T10:01:34.413148+00:00",
+    });
+
+  await page.getByRole("tab", { name: "Limites" }).click();
+  await page.getByRole("button", { name: `Liberar contato ${contato}` }).click();
+  await expect
+    .poll(() => enviado)
+    .toEqual({ acao: "limites-liberar", clientHash: "b".repeat(64) });
 });

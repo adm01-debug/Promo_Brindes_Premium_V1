@@ -6,18 +6,32 @@ const SITE_PROJECT_REF = "whwloseshzraipljisqo";
 const uuid =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const timestamp =
-  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/;
+  /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,6}))?(Z|[+-]\d{2}:\d{2})$/;
 const columns =
   "id,sku,slug,published,published_from,published_until,updated_at";
 
+/**
+ * Normaliza para UTC preservando os microssegundos devolvidos pelo PostgREST.
+ * A revisão otimista compara o valor gravado byte a byte, então truncar a
+ * fração em milissegundos faria o banco nunca encontrar a linha.
+ */
 function normalizedTimestamp(value, field, nullable = false) {
   if (nullable && value === null) return null;
-  if (typeof value !== "string" || !timestamp.test(value))
+  if (typeof value !== "string")
     throw new Error(`${field} must be an RFC 3339 timestamp with timezone.`);
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime()))
+  const match = timestamp.exec(value);
+  if (!match)
+    throw new Error(`${field} must be an RFC 3339 timestamp with timezone.`);
+  const [, clock, fraction = "", zone] = match;
+  const milliseconds = (fraction + "000").slice(0, 3);
+  const instant = Date.parse(`${clock}.${milliseconds}${zone}`);
+  if (Number.isNaN(instant))
     throw new Error(`${field} is not a valid timestamp.`);
-  return parsed.toISOString();
+  const iso = new Date(instant).toISOString();
+  const subMilliseconds = fraction.slice(3);
+  return subMilliseconds
+    ? iso.replace(/Z$/, `${subMilliseconds}Z`)
+    : iso;
 }
 
 function config(env) {

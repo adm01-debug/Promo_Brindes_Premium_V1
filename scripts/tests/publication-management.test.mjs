@@ -117,6 +117,40 @@ test("apply uses SKU confirmation and an optimistic revision lock", async () => 
   );
 });
 
+test("apply keeps the microseconds of the revision the database returned", async () => {
+  const micro = "2026-11-26T10:01:34.413148+00:00";
+  const h = harness({
+    row: { ...current, updated_at: micro },
+    update(url, init) {
+      assert.equal(
+        url.searchParams.get("updated_at"),
+        "eq.2026-11-26T10:01:34.413148Z",
+      );
+      assert.deepEqual(JSON.parse(init.body), { published: false });
+      return response([
+        {
+          ...current,
+          published: false,
+          updated_at: "2026-11-26T10:02:00.000001Z",
+        },
+      ]);
+    },
+  });
+  const result = await manageSitePublication(
+    id,
+    { published: false },
+    {
+      env,
+      fetcher: h.fetcher,
+      apply: true,
+      expectedUpdatedAt: micro,
+      confirmSku: current.sku,
+    },
+  );
+  assert.equal(result.applied, true);
+  assert.equal(result.current.updated_at, "2026-11-26T10:02:00.000001Z");
+});
+
 for (const [name, options, message] of [
   [
     "stale revision",

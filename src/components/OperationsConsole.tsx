@@ -50,6 +50,14 @@ function formatDate(value: string | null) {
   });
 }
 
+/** Colunas `date` (sem hora) não podem passar por fuso: o dia é o texto. */
+function formatDay(value: string | null) {
+  if (!value) return "—";
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+  if (!match) return formatDate(value);
+  return `${match[3]}/${match[2]}/${match[1]}`;
+}
+
 function toLocalInput(value: string | null) {
   if (!value) return "";
   const date = new Date(value);
@@ -521,6 +529,7 @@ function CatalogRow({
                 dimensions,
                 weightG: weight,
                 packaging,
+                expectedUpdatedAt: item.updated_at,
               });
             }}
           >
@@ -702,7 +711,7 @@ function BriefingsPanel({
             <tbody>
               {items.map((briefing) => (
                 <BriefingRow
-                  key={briefing.id}
+                  key={`${briefing.id}-${briefing.status}-${briefing.delivery_status}-${briefing.delivery_lease_expires_at ?? ""}`}
                   briefing={briefing}
                   busy={busy}
                   onRun={onRun}
@@ -725,8 +734,16 @@ function BriefingRow({
   busy: boolean;
   onRun: (action: ConsoleActionBody) => Promise<void>;
 }) {
-  const requeueable = ["failed", "delivering"].includes(
-    briefing.delivery_status,
+  const lease = briefing.delivery_lease_expires_at;
+  const inFlight =
+    briefing.delivery_status === "delivering" &&
+    typeof lease === "string" &&
+    Date.parse(lease) > Date.now();
+  const requeueable =
+    briefing.delivery_status === "failed" ||
+    (briefing.delivery_status === "delivering" && !inFlight);
+  const [pendente, setPendente] = useState<ConsoleBriefingStatus>(
+    briefing.status as ConsoleBriefingStatus,
   );
   return (
     <tr>
@@ -746,7 +763,7 @@ function BriefingRow({
         {briefing.occasion}
         <p className="console-muted">
           {briefing.desired_date
-            ? `desejada para ${formatDate(briefing.desired_date)}`
+            ? `desejada para ${formatDay(briefing.desired_date)}`
             : "sem data desejada"}{" "}
           · {briefingPieces(briefing.items)}
         </p>
@@ -780,15 +797,11 @@ function BriefingRow({
         <label className="console-field">
           <span>Situação do lead</span>
           <select
-            value={briefing.status}
+            value={pendente}
             disabled={busy}
             aria-label={`Situação do lead ${briefing.protocol}`}
             onChange={(event) =>
-              void onRun({
-                acao: "briefing-status",
-                id: briefing.id,
-                status: event.target.value as ConsoleBriefingStatus,
-              })
+              setPendente(event.target.value as ConsoleBriefingStatus)
             }
           >
             {statusOptions.map((option) => (
@@ -798,6 +811,21 @@ function BriefingRow({
             ))}
           </select>
         </label>
+        <button
+          className="console-button"
+          type="button"
+          disabled={busy || pendente === briefing.status}
+          aria-label={`Gravar situação do lead ${briefing.protocol}`}
+          onClick={() =>
+            void onRun({
+              acao: "briefing-status",
+              id: briefing.id,
+              status: pendente,
+            })
+          }
+        >
+          Gravar situação
+        </button>
         {requeueable ? (
           <button
             className="console-button"
@@ -827,8 +855,9 @@ function LimitsPanel({
   return (
     <>
       <p className="console-note" data-tone="ok">
-        A limpeza automática roda a cada 5 minutos no banco. Use a limpeza
-        manual apenas para liberar um contato bloqueado agora.
+        A limpeza automática roda a cada 5 minutos no banco e remove apenas
+        registros sem atividade há mais de uma hora. Para liberar um contato
+        bloqueado agora, use Liberar na linha dele.
       </p>
       <div className="console-actions" style={{ marginBottom: 16 }}>
         <button
@@ -852,6 +881,7 @@ function LimitsPanel({
                 <th scope="col">Contato (hash)</th>
                 <th scope="col">Tentativas na janela</th>
                 <th scope="col">Atualizado em</th>
+                <th scope="col">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -863,6 +893,22 @@ function LimitsPanel({
                   <td>{limit.attempts}</td>
                   <td className="console-muted">
                     {formatDate(limit.updated_at)}
+                  </td>
+                  <td>
+                    <button
+                      className="console-button"
+                      type="button"
+                      disabled={busy}
+                      aria-label={`Liberar contato ${limit.client_hash.slice(0, 16)}`}
+                      onClick={() =>
+                        void onRun({
+                          acao: "limites-liberar",
+                          clientHash: limit.client_hash,
+                        })
+                      }
+                    >
+                      Liberar
+                    </button>
                   </td>
                 </tr>
               ))}

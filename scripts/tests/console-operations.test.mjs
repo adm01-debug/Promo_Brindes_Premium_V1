@@ -10,6 +10,8 @@ import {
 } from "../../src/lib/console-access.mjs";
 import {
   isBriefingStatus,
+  isClientHash,
+  isRfc3339,
   parseMaterialLines,
   validateTechnicalSheet,
 } from "../../src/lib/console-validation.mjs";
@@ -192,4 +194,40 @@ test("the console only accepts the three lead statuses of the database", () => {
     assert.equal(isBriefingStatus(value), true, `${value} must be accepted`);
   for (const value of ["Received", "open", "", null, undefined, 7, ["closed"]])
     assert.equal(isBriefingStatus(value), false, `${String(value)} must be refused`);
+});
+
+test("the console only accepts the contact hash of the rate limiter", () => {
+  assert.equal(isClientHash("a".repeat(64)), true);
+  assert.equal(isClientHash("0123456789abcdef".repeat(4)), true);
+  for (const value of [
+    "a".repeat(63),
+    "a".repeat(65),
+    "A".repeat(64),
+    "g".repeat(64),
+    "",
+    null,
+    undefined,
+    64,
+  ])
+    assert.equal(isClientHash(value), false, `${String(value)} must be refused`);
+});
+
+test("the console only accepts the timestamps the database returns", () => {
+  for (const value of [
+    "2026-11-26T10:01:34.413148+00:00",
+    "2026-11-26T10:01:34.413Z",
+    "2026-11-26T10:01:34Z",
+  ])
+    assert.equal(isRfc3339(value), true, `${value} must be accepted`);
+  for (const value of [
+    "2026-11-26",
+    "2026-11-26 10:01:34Z",
+    "2026-11-26T10:01:34",
+    "2026-11-26T10:01:34.1234567Z",
+    "",
+    null,
+    undefined,
+    42,
+  ])
+    assert.equal(isRfc3339(value), false, `${String(value)} must be refused`);
 });
