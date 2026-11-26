@@ -29,6 +29,15 @@ legível e não pode ser forjado sem o token.
 As rotas também recusam requisição de outra origem e exigem o cookie de sessão
 em toda leitura e gravação.
 
+### Trocar o token
+
+O `PROMO_PREMIUM_CONSOLE_TOKEN` fica gravado como *Sensitive* na Vercel: depois
+de salvo, o valor não pode ser lido de volta, só sobrescrito. Trocar o token é
+gravar a variável de novo em Production e refazer o deploy, porque cada
+deployment congela as variáveis do momento em que nasceu. O cookie de sessão é
+assinado com o próprio token, então a troca derruba na hora as sessões abertas:
+o dono entra outra vez digitando o token novo.
+
 ## O que cada aba faz
 
 **Situação** — conectividade do banco premium, estado real do envio ao
