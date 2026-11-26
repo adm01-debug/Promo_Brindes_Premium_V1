@@ -18,6 +18,8 @@ export default defineConfig({
     env: {
       ...process.env,
       PROMO_PREMIUM_PLANNING_ENABLED: "true",
+      PROMO_PREMIUM_CONSOLE_ENABLED: "true",
+      PROMO_PREMIUM_CONSOLE_TOKEN: "console-e2e-token-0000000000000001",
       PROMO_PREMIUM_SITE_ORIGIN: "http://localhost:3107",
     },
     reuseExistingServer: false,

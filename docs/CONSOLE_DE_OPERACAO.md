@@ -1,0 +1,65 @@
+# Console de operação (/operacoes)
+
+Área interna do dono do site para operar o banco premium sem linha de comando:
+catálogo, ficha técnica, publicação, leads e limites de envio.
+
+## Como ligar
+
+O console fica invisível (404 na página e nas rotas) até estas duas variáveis
+existirem no ambiente:
+
+| Variável | Regra |
+| --- | --- |
+| `PROMO_PREMIUM_CONSOLE_ENABLED` | precisa ser exatamente `true` |
+| `PROMO_PREMIUM_CONSOLE_TOKEN` | 32 caracteres ou mais, sem espaços |
+
+Sem elas, `/operacoes` e `/api/operacoes/*` respondem 404, igual a uma rota
+inexistente. O token é digitado uma vez e trocado por um cookie de sessão
+`HttpOnly`, `SameSite=Strict`, com validade de 8 horas, assinado por
+HMAC-SHA256 com o próprio token. O cookie nunca vai para o cliente em texto
+legível e não pode ser forjado sem o token.
+
+As rotas também recusam requisição de outra origem e exigem o cookie de sessão
+em toda leitura e gravação.
+
+## O que cada aba faz
+
+**Situação** — conectividade do banco premium, estado real do envio ao
+comercial (com a lista de variáveis que faltam), contagem de peças, publicadas,
+leads na fila, leads com falha e limites ativos.
+
+**Catálogo** — lista todas as peças com ordem editorial, situação de publicação
+e janela. Permite:
+
+- editar a ficha técnica (materiais, medidas, peso em gramas e embalagem) com
+  as mesmas regras do banco (até 5 materiais, medidas 2..80, embalagem 2..120,
+  peso 1..100000 g) e conferência do que voltou gravado;
+- aplicar publicação (no ar/fora do ar + janela) exigindo a digitação do SKU,
+  com concorrência otimista por `updated_at`: se alguém alterou a peça depois
+  que a tela carregou, a gravação é recusada em vez de sobrescrever.
+
+**Leads** — últimos 200 briefings com contato, ocasião, peças, situação da
+entrega, número de tentativas e último erro. Leads em `failed` (ou presos em
+`delivering`) podem voltar para a fila (`pending`). O reenvio real depende do
+receptor comercial configurado: o console não inventa um payload que o banco
+não guarda.
+
+**Limites** — janelas de rate limit por contato (hash) e limpeza manual. A
+limpeza automática já roda a cada 5 minutos pelo `pg_cron`.
+
+## O que o console não faz
+
+- Não envia lead ao comercial por conta própria: sem `BRIEFING_DELIVERY_ENABLED`
+  e o receptor configurado, nenhum lead novo entra no banco e a aba mostra o
+  motivo exato.
+- Não reordena o catálogo: `editorial_order` é único no banco e reordenar exige
+  função transacional nova (DDL), fora do escopo deste console.
+- Não expõe segredo, chave ou token: as respostas trazem somente estado,
+  contagens e conteúdo editorial.
+
+## Verificação
+
+```bash
+npm run test:console-operations   # regras de token, sessão e ficha técnica
+npm run test:e2e -- tests/console.spec.ts   # gate, login e sessão reais
+```
