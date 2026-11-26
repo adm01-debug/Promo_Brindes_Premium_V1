@@ -21,7 +21,9 @@ flowchart LR
 - `CATALOG_SOURCE_SUPABASE_URL` aponta exclusivamente para `https://doufsxqlfjyuvxuezpln.supabase.co`.
 - `CATALOG_SOURCE_SUPABASE_PUBLISHABLE_KEY` recebe a chave publishable. O adaptador rejeita secret/service_role e JWT legado; não possui alternativa administrativa.
 - A chave secreta fornecida para a origem **não foi gravada no `.env.local` nem usada**. O `.env.local` é ignorado pelo Git e tem permissão `0600`.
-- `scripts/lib/catalog-source.mjs` aceita somente IDs. Método GET, view e projeção de seis campos são fixos. Não recebe método, caminho, SQL, RPC ou corpo. Redirecionamentos são recusados.
+- `scripts/lib/catalog-source.mjs` aceita somente IDs e usa dois caminhos de leitura fixos, ambos GET na view pública `v_products_public`, sem receber método, caminho, SQL, RPC ou corpo, e recusando redirecionamentos:
+  - **por IDs**: `select=id,sku,name,min_quantity,allows_personalization,is_active,materials,dimensions_display,weight_g`, `id=in.(...)`, `order=id.asc` e `limit` igual à quantidade de IDs pedidos — nove campos fixos, nenhum outro campo da view é transferido;
+  - **contagem**: `select=id`, `is_active=eq.true` e `limit=1` com `Prefer: count=exact`; o total vem do cabeçalho `Content-Range` e nenhuma linha do catálogo é baixada além desse único ID.
 - O sincronizador valida os dois hosts, recusa URLs com credenciais, caminhos adicionais, portas diferentes, query ou fragmento e limita todas as gravações ao destino premium.
 - A entrega de briefing recusa o projeto operacional como webhook, inclusive o host legado de Edge Functions. As gravações e o webhook recusam redirecionamentos.
 - [AGENTS.md](../AGENTS.md) preserva a proibição para trabalhos futuros.

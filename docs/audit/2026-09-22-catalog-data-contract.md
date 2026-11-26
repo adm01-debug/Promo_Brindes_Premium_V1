@@ -11,14 +11,14 @@ O sincronizador passou a validar integralmente o snapshot antes de qualquer cham
 
 ## Evidências reproduzíveis
 
-| Verificação                                  | Resultado                            | Comando                                                                                                           |
-| -------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| Fronteira origem/destino e falhas simuladas  | 52/52 testes                         | `npm run test:catalog-boundary`                                                                                   |
-| Paginação, cache, drift e integração isolada | 57/57 cenários                       | `node scripts/audit-plan-scenarios.mjs`                                                                           |
-| Origem operacional ao vivo                   | 8 ativos e coincidentes; GET público | `npm run check:catalog-source`                                                                                    |
-| Fluxo completo sem mutação                   | 8 conferidos; zero escritas          | `npm run db:sync-catalog -- --dry-run`                                                                            |
-| Publicação premium ao vivo                   | 8 publicados; 12 campos exatos       | `npm run check:editorial:live`                                                                                    |
-| Formatação e whitespace                      | aprovado                             | `npx prettier --check scripts/sync-site-catalog.mjs scripts/tests/catalog-boundary.test.mjs` e `git diff --check` |
+| Verificação                                  | Resultado                                 | Comando                                                                                                           |
+| -------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Fronteira origem/destino e falhas simuladas  | 82/82 testes                              | `npm run test:catalog-boundary`                                                                                   |
+| Paginação, cache, drift e integração isolada | 57/57 cenários                            | `node scripts/audit-plan-scenarios.mjs`                                                                           |
+| Origem operacional ao vivo                   | 8 curados entre 7.968 ativos; GET público | `npm run check:catalog-source`                                                                                    |
+| Fluxo completo sem mutação                   | 8 conferidos; zero escritas               | `npm run db:sync-catalog -- --dry-run`                                                                            |
+| Publicação premium ao vivo                   | 8 publicados; 12 campos exatos            | `npm run check:editorial:live`                                                                                    |
+| Formatação e whitespace                      | aprovado                                  | `npx prettier --check scripts/sync-site-catalog.mjs scripts/tests/catalog-boundary.test.mjs` e `git diff --check` |
 
 Nenhum teste de escrita, migration, RPC de mutação ou alteração de permissão foi executado em `doufsxqlfjyuvxuezpln`.
 

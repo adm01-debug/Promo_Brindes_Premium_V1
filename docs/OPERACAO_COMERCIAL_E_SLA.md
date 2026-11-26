@@ -63,7 +63,7 @@ Horário útil e feriados precisam ser configurados no receptor. O dashboard dev
 
 O processo futuro compara todos os registros persistidos com confirmações do receptor:
 
-1. selecionar itens `received`, `sending` ou `uncertain` por protocolo;
+1. selecionar por protocolo os itens cujo `status` de negócio seja `received` ou `qualified` e cujo `delivery_status` seja `pending`, `delivering` ou `failed` — o schema não possui `sending` nem `uncertain`, e o aceite incerto é `delivery_status = 'delivering'` com lease vencida;
 2. consultar o receptor de forma autenticada;
 3. se o mesmo protocolo e hash existirem, registrar confirmação sem novo envio;
 4. se não existirem e a lease estiver expirada, reprocessar com a mesma chave idempotente;
