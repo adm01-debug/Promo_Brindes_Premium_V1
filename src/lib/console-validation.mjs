@@ -54,6 +54,52 @@ export function summarizeRateLimit(attemptTimes, now = Date.now()) {
 }
 
 /**
+ * A vitrine é replicada uma vez por dia. Passado esse tempo sem sucesso
+ * registrado, o console avisa que a base premium ficou para trás.
+ */
+export const REPLICATION_STALE_MS = 48 * 60 * 60 * 1000;
+
+/**
+ * Resume a linha única de premium_catalog_sync_state. Sem tentativa registrada a
+ * resposta é `registrada: false`, e o console diz que ainda não houve replicação
+ * em vez de fingir um estado saudável.
+ */
+export function summarizeReplication(row, now = Date.now()) {
+  const attempt =
+    typeof row?.last_attempt_at === "string"
+      ? Date.parse(row.last_attempt_at)
+      : NaN;
+  const success =
+    typeof row?.last_success_at === "string"
+      ? Date.parse(row.last_success_at)
+      : NaN;
+  const hasAttempt = Number.isFinite(attempt);
+  const hasSuccess = Number.isFinite(success);
+  return {
+    registrada: hasAttempt,
+    status: /** @type {"success" | "failed" | null} */ (
+      row?.last_status === "success"
+        ? "success"
+        : row?.last_status === "failed"
+          ? "failed"
+          : null
+    ),
+    ultimaTentativaEm: hasAttempt ? new Date(attempt).toISOString() : null,
+    ultimoSucessoEm: hasSuccess ? new Date(success).toISOString() : null,
+    horasDesdeSucesso: hasSuccess
+      ? Math.floor((now - success) / 3_600_000)
+      : null,
+    atrasada: hasSuccess ? now - success > REPLICATION_STALE_MS : hasAttempt,
+    erro:
+      typeof row?.last_error === "string" && row.last_error.length
+        ? row.last_error
+        : null,
+    origem: Number.isInteger(row?.source_count) ? row.source_count : null,
+    curados: Number.isInteger(row?.curated_count) ? row.curated_count : null,
+  };
+}
+
+/**
  * Rules shared by the operations console and its tests. Every limit here
  * mirrors a constraint of premium_catalog_items in the premium database, so the
  * console refuses invalid technical sheets before the database does.

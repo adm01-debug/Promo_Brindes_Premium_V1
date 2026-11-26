@@ -8,6 +8,8 @@ import {
 } from "../lib/catalog-source.mjs";
 import {
   CATALOG_FIELD_LIMITS,
+  readSyncState,
+  recordSyncState,
   syncSiteCatalog,
 } from "../sync-site-catalog.mjs";
 
@@ -43,6 +45,11 @@ const jsonRows = (rows) =>
         : "*/0",
     },
   });
+// Resposta da consulta de contagem: uma linha só, com o total do catálogo ativo.
+const countResponse = (total = sourceRows().length) =>
+  Response.json([{ id: sourceRows()[0].id }], {
+    headers: { "content-range": `0-0/${total}` },
+  });
 
 function harness({ source, existing, write } = {}) {
   const calls = [];
@@ -72,8 +79,17 @@ function harness({ source, existing, write } = {}) {
       );
       assert.equal(init.headers.Authorization, undefined);
       assert.equal(url.pathname, "/rest/v1/v_products_public");
-      assert.equal(url.searchParams.get("select"), SOURCE_COLUMNS);
-      return source ? source() : jsonRows(sourceRows());
+      const select = url.searchParams.get("select");
+      assert.ok(
+        select === SOURCE_COLUMNS || select === "id",
+        "the source view is read only for the curated rows or the active count",
+      );
+      if (select === "id") {
+        assert.equal(url.searchParams.get("is_active"), "eq.true");
+        assert.equal(url.searchParams.get("limit"), "1");
+      }
+      if (source) return source({ url, select });
+      return select === "id" ? countResponse() : jsonRows(sourceRows());
     }
     assert.equal(url.hostname, targetHost);
     assert.equal(url.pathname, "/rest/v1/premium_catalog_items");
@@ -186,11 +202,13 @@ test("sync reads the operational source and writes only to the premium project",
       count: 8,
       project: "whwloseshzraipljisqo",
       dryRun: false,
+      sourceCount: 8,
     },
   );
   assert.deepEqual(
     h.calls.map(({ url, init }) => `${url.hostname}:${init.method}`),
     [
+      `${sourceHost}:GET`,
       `${sourceHost}:GET`,
       `${targetHost}:GET`,
       ...snapshot.map(() => `${targetHost}:PATCH`),
@@ -206,7 +224,10 @@ test("dry run performs no writes in either project", async () => {
     dryRun: true,
   });
   assert.equal(result.dryRun, true);
-  assert.equal(h.calls.length, 2);
+  // A simulação lê a gestão duas vezes (linhas curadas e contagem ativa) e a
+  // vitrine uma: a contagem não pode ser a única conferência fora do dry-run.
+  assert.equal(result.sourceCount, snapshot.length);
+  assert.equal(h.calls.length, 3);
   assert.ok(h.calls.every(({ init }) => init.method === "GET"));
 });
 
@@ -223,7 +244,12 @@ test("reordering the published order parks the old order before rewriting it", a
   });
   assert.deepEqual(
     await syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }),
-    { count: snapshot.length, project: "whwloseshzraipljisqo", dryRun: false },
+    {
+      count: snapshot.length,
+      project: "whwloseshzraipljisqo",
+      dryRun: false,
+      sourceCount: snapshot.length,
+    },
   );
   const writes = h.calls.filter(({ init }) => init.method !== "GET");
   assert.equal(
@@ -383,6 +409,7 @@ test("a reordered storefront still accepts a new product", async () => {
     count: snapshot.length,
     project: "whwloseshzraipljisqo",
     dryRun: false,
+    sourceCount: snapshot.length,
   });
   const writes = h.calls.filter(({ init }) => init.method !== "GET");
   assert.deepEqual(
@@ -419,6 +446,7 @@ test("a product outside the curation never blocks the positions it holds", async
     count: snapshot.length,
     project: "whwloseshzraipljisqo",
     dryRun: false,
+    sourceCount: snapshot.length,
   });
   const writes = h.calls.filter(({ init }) => init.method !== "GET");
   const assigned = writes.flatMap(({ url, init }) =>
@@ -539,6 +567,49 @@ test("rejects a source count without an exact content range", async () => {
   );
 });
 
+test("a rejected source count writes nothing to the storefront", async () => {
+  const h = harness({
+    source: ({ select }) =>
+      select === "id"
+        ? Response.json([{ id: snapshot[0].id }])
+        : jsonRows(sourceRows()),
+  });
+  await assert.rejects(
+    syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }),
+    /count is missing/,
+  );
+  assert.deepEqual(
+    h.calls.filter(({ init }) => init.method !== "GET"),
+    [],
+    "a source count that cannot be proven must not reach the storefront",
+  );
+  assert.equal(
+    h.storefront.size,
+    0,
+    "the storefront state is never read before the count is validated",
+  );
+});
+
+test("a rejected source count also fails the dry run", async () => {
+  const h = harness({
+    source: ({ select }) =>
+      select === "id"
+        ? Response.json([{ id: snapshot[0].id }])
+        : jsonRows(sourceRows()),
+  });
+  await assert.rejects(
+    syncSiteCatalog(snapshot, { env, fetcher: h.fetcher, dryRun: true }),
+    /count is missing/,
+    "a simulation that cannot prove the active count is not a clean simulation",
+  );
+  assert.equal(
+    h.calls.length,
+    2,
+    "the dry run stops at the count, before reading the publication state",
+  );
+  assert.equal(h.storefront.size, 0);
+});
+
 const mutate = (changes, index = 0) =>
   snapshot.map((item, itemIndex) =>
     itemIndex === index ? { ...item, ...changes } : { ...item },
@@ -619,7 +690,8 @@ for (const [name, changes, sourceMaterials] of [
   test(`sync publishes ${name} from the source`, async () => {
     const curated = mutate(changes);
     const h = harness({
-      source: () => {
+      source: ({ select }) => {
+        if (select === "id") return countResponse();
         const rows = sourceRows();
         rows[0].materials = sourceMaterials;
         rows[0].dimensions_display = curated[0].dimensions;
@@ -649,7 +721,12 @@ test("a product absent from the storefront is inserted with the technical sheet"
   const h = harness({ existing: () => jsonRows([]) });
   assert.deepEqual(
     await syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }),
-    { count: snapshot.length, project: "whwloseshzraipljisqo", dryRun: false },
+    {
+      count: snapshot.length,
+      project: "whwloseshzraipljisqo",
+      dryRun: false,
+      sourceCount: snapshot.length,
+    },
   );
   const writes = h.calls.filter(({ init }) => init.method !== "GET");
   assert.equal(writes.length, 1, "the whole catalog is inserted in one statement");
@@ -889,7 +966,7 @@ for (const [name, existing] of [
     await assert.rejects(
       syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }),
     );
-    assert.equal(h.calls.length, 2);
+    assert.equal(h.calls.length, 3);
     assert.ok(h.calls.every(({ init }) => init.method === "GET"));
   });
 
@@ -901,5 +978,165 @@ test("failed write is reported and never retried against another project", async
     syncSiteCatalog(snapshot, { env, fetcher: h.fetcher }),
     /Catalog sync failed \(HTTP 503\)/,
   );
-  assert.equal(h.calls.length, 3);
+  assert.equal(h.calls.length, 4);
+});
+
+const heartbeatStore = () => {
+  const calls = [];
+  const fetcher = async (input, init) => {
+    const url = new URL(input);
+    calls.push({ url, init });
+    assert.equal(url.hostname, targetHost);
+    assert.equal(url.pathname, "/rest/v1/premium_catalog_sync_state");
+    assert.equal(init.headers.apikey, env.SUPABASE_SECRET_KEY);
+    return new Response(null, { status: init.method === "GET" ? 200 : 201 });
+  };
+  return { calls, fetcher };
+};
+
+test("the sync heartbeat writes the outcome to the premium project only", async () => {
+  const h = heartbeatStore();
+  const stored = await recordSyncState(
+    {
+      status: "success",
+      attemptAt: "2026-11-26T14:00:00.000Z",
+      curatedCount: 8,
+      sourceCount: 7968,
+    },
+    { env, fetcher: h.fetcher },
+  );
+  assert.equal(h.calls.length, 1);
+  const { url, init } = h.calls[0];
+  assert.equal(init.method, "POST");
+  assert.equal(url.searchParams.get("on_conflict"), "id");
+  assert.equal(
+    init.headers.Prefer,
+    "resolution=merge-duplicates,return=minimal",
+  );
+  assert.deepEqual(JSON.parse(init.body), {
+    id: true,
+    last_attempt_at: "2026-11-26T14:00:00.000Z",
+    last_status: "success",
+    last_error: null,
+    source_count: 7968,
+    curated_count: 8,
+    last_success_at: "2026-11-26T14:00:00.000Z",
+  });
+  assert.equal(stored.last_status, "success");
+
+  // Uma falha posterior não pode apagar a marca do último sucesso.
+  await recordSyncState(
+    {
+      status: "failed",
+      attemptAt: "2026-11-27T14:00:00.000Z",
+      error: "Catalog sync failed (HTTP 503).",
+    },
+    { env, fetcher: h.fetcher },
+  );
+  const failedBody = JSON.parse(h.calls[1].init.body);
+  assert.equal(failedBody.last_status, "failed");
+  assert.equal(failedBody.last_error, "Catalog sync failed (HTTP 503).");
+  // As contagens descrevem a última execução boa, então a falha não as envia.
+  assert.ok(!Object.hasOwn(failedBody, "source_count"));
+  assert.ok(!Object.hasOwn(failedBody, "curated_count"));
+  assert.ok(!Object.hasOwn(failedBody, "last_success_at"));
+});
+
+test("the heartbeat refuses another project, a bad status and an empty reason", async () => {
+  const h = heartbeatStore();
+  await assert.rejects(
+    recordSyncState(
+      { status: "success", attemptAt: "2026-11-26T14:00:00.000Z" },
+      { env: { ...env, SUPABASE_URL: `https://${sourceHost}` }, fetcher: h.fetcher },
+    ),
+    /Catalog URL does not match the approved project/,
+  );
+  await assert.rejects(
+    recordSyncState(
+      { status: "success", attemptAt: "2026-11-26T14:00:00.000Z" },
+      {
+        env: { ...env, SUPABASE_PROJECT_REF: "outro" },
+        fetcher: h.fetcher,
+      },
+    ),
+    /Approved site API configuration is missing or mismatched/,
+  );
+  await assert.rejects(
+    recordSyncState(
+      { status: "success", attemptAt: "2026-11-26T14:00:00.000Z" },
+      { env: { ...env, ["SUPABASE" + "_SECRET_KEY"]: "" }, fetcher: h.fetcher },
+    ),
+    /Approved site API configuration is missing or mismatched/,
+  );
+  await assert.rejects(
+    recordSyncState(
+      { status: "partial", attemptAt: "2026-11-26T14:00:00.000Z" },
+      { env, fetcher: h.fetcher },
+    ),
+    /must be success or failed/,
+  );
+  assert.equal(h.calls.length, 0);
+
+  const blank = await recordSyncState(
+    { status: "failed", attemptAt: "2026-11-26T14:00:00.000Z", error: "   " },
+    { env, fetcher: h.fetcher },
+  );
+  assert.equal(blank.last_error, "Falha sem mensagem.");
+  const long = await recordSyncState(
+    { status: "failed", attemptAt: "2026-11-26T14:00:00.000Z", error: "x".repeat(400) },
+    { env, fetcher: h.fetcher },
+  );
+  assert.equal(long.last_error.length, 200);
+  await assert.rejects(
+    recordSyncState(
+      { status: "success", attemptAt: "2026-11-26T14:00:00.000Z" },
+      {
+        env,
+        fetcher: async () => new Response("no", { status: 401 }),
+      },
+    ),
+    /Sync heartbeat failed \(HTTP 401\)/,
+  );
+});
+
+test("the heartbeat reads back the stored state, or an empty one", async () => {
+  assert.deepEqual(await readSyncState({ env, fetcher: async (input, init) => {
+    const url = new URL(input);
+    assert.equal(url.pathname, "/rest/v1/premium_catalog_sync_state");
+    assert.equal(url.searchParams.get("id"), "eq.true");
+    assert.equal(url.searchParams.get("limit"), "1");
+    assert.equal(
+      url.searchParams.get("select"),
+      "last_attempt_at,last_status,last_success_at,last_error,source_count,curated_count",
+    );
+    assert.equal(init.method, "GET");
+    return Response.json([]);
+  } }), {
+    id: true,
+    last_attempt_at: null,
+    last_status: null,
+    last_success_at: null,
+    last_error: null,
+    source_count: null,
+    curated_count: null,
+  });
+
+  const row = {
+    last_attempt_at: "2026-11-26T14:00:00.000Z",
+    last_status: "success",
+    last_success_at: "2026-11-26T14:00:00.000Z",
+    last_error: null,
+    source_count: 7968,
+    curated_count: 8,
+  };
+  assert.deepEqual(
+    await readSyncState({
+      env,
+      fetcher: async (input) => {
+        assert.equal(new URL(input).hostname, targetHost);
+        return Response.json([{ ...row, id: true }]);
+      },
+    }),
+    { ...row, id: true },
+  );
 });

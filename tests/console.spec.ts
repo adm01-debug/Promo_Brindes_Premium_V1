@@ -293,3 +293,134 @@ test("o console grava a ficha técnica e libera um contato bloqueado", async ({
     .poll(() => enviado)
     .toEqual({ acao: "limites-liberar", clientHash: "b".repeat(64) });
 });
+test("a situação mostra a réplica da gestão e avisa quando ela atrasa", async ({
+  page,
+}) => {
+  let replicacao: Record<string, unknown> | null = {
+    registrada: true,
+    status: "success",
+    ultimaTentativaEm: "2026-11-26T14:00:00.000Z",
+    ultimoSucessoEm: "2026-11-26T14:00:00.000Z",
+    horasDesdeSucesso: 4,
+    atrasada: false,
+    erro: null,
+    origem: 7968,
+    curados: 8,
+  };
+
+  await page.goto("/operacoes");
+  await page.getByLabel("Token de acesso").fill(token);
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page.getByRole("tab", { name: "Situação" })).toBeVisible();
+
+  // O stub entra só depois do login real: registrado antes, o próprio carregamento
+  // inicial da aba Situação autenticaria a sessão e o formulário nunca apareceria.
+  await page.route("**/api/operacoes/dados**", async (route) => {
+    const escopo =
+      new URL(route.request().url()).searchParams.get("escopo") ?? "situacao";
+    const dados =
+      escopo === "situacao"
+        ? {
+            banco: true,
+            entrega: {
+              habilitada: false,
+              motivo: "receptor comercial ainda não configurado",
+            },
+            contagens: {
+              itens: 8,
+              publicados: 8,
+              leads: 0,
+              leadsNaFila: 0,
+              leadsComFalha: 0,
+              limites: 0,
+            },
+            replicacao,
+            verificadoEm: "2026-11-26T18:00:00.000Z",
+          }
+        : [];
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ escopo, dados }),
+    });
+  });
+
+  const voltarParaSituacao = async () => {
+    await page.getByRole("tab", { name: "Catálogo" }).click();
+    await page.getByRole("tab", { name: "Situação" }).click();
+  };
+
+  await voltarParaSituacao();
+  await expect(
+    page.getByRole("heading", { name: "Réplica da gestão" }),
+  ).toBeVisible();
+  const replicaCard = page.locator("section.console-card", {
+    hasText: "Réplica da gestão",
+  });
+  await expect(replicaCard.locator("strong")).toHaveText("Em dia");
+  await expect(replicaCard).toContainText("7968");
+  await expect(
+    page.getByText("receptor comercial ainda não configurado"),
+  ).toBeVisible();
+
+  // Replicação atrasada: a vitrine pode estar mostrando nome ou preço antigo.
+  replicacao = {
+    ...replicacao,
+    atrasada: true,
+    horasDesdeSucesso: 52,
+  };
+  await voltarParaSituacao();
+  await expect(replicaCard.locator("strong")).toHaveText("Atrasada");
+  await expect(page.locator("p.console-note").first()).toContainText(
+    "há 52 hora(s)",
+  );
+
+  // Falha registrada: o motivo exato do workflow fica visível na tela, e a
+  // idade dos dados continua aparecendo junto — uma falha não pode esconder que
+  // a vitrine já está desatualizada.
+  replicacao = {
+    ...replicacao,
+    status: "failed",
+    atrasada: true,
+    horasDesdeSucesso: 52,
+    ultimaTentativaEm: "2026-11-26T17:00:00.000Z",
+    erro: "Catalog sync failed (HTTP 503).",
+  };
+  await voltarParaSituacao();
+  await expect(replicaCard.locator("strong")).toHaveText(
+    "Falhou na última tentativa",
+  );
+  await expect(page.locator("p.console-note").first()).toContainText(
+    "Catalog sync failed (HTTP 503).",
+  );
+  await expect(page.locator("p.console-note").first()).toContainText(
+    "há 52 hora(s)",
+  );
+
+  // Sem registro: o banco respondeu e não há nenhuma tentativa gravada.
+  replicacao = {
+    registrada: false,
+    status: null,
+    ultimaTentativaEm: null,
+    ultimoSucessoEm: null,
+    horasDesdeSucesso: null,
+    atrasada: false,
+    erro: null,
+    origem: null,
+    curados: null,
+  };
+  await voltarParaSituacao();
+  await expect(replicaCard.locator("strong")).toHaveText("Sem registro");
+  await expect(page.locator("p.console-note").first()).toContainText(
+    "Nenhuma tentativa de replicação registrada",
+  );
+
+  // Histórico indisponível: a tela diz que não conseguiu consultar, em vez de
+  // sugerir que nunca houve replicação.
+  replicacao = null;
+  await voltarParaSituacao();
+  await expect(replicaCard.locator("strong")).toHaveText("Indisponível");
+  await expect(page.locator("p.console-note").first()).toContainText(
+    "Não foi possível consultar o histórico de replicação",
+  );
+});

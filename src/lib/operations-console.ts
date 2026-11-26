@@ -6,6 +6,7 @@ import {
   isRfc3339,
   rateLimitReference,
   summarizeRateLimit,
+  summarizeReplication,
   validateTechnicalSheet,
 } from "@/lib/console-validation.mjs";
 import { manageSitePublication } from "../../scripts/manage-site-publication.mjs";
@@ -180,12 +181,40 @@ function deliveryDiagnosis(): ConsoleDeliveryState {
   return { habilitada: false, motivo: problems.join("; ") };
 }
 
+/**
+ * Heartbeat da replicação. Uma leitura que falha só nesta consulta (tabela ainda
+ * não instalada num ambiente novo, sem permissão para a chave usada) vira `null`
+ * para não derrubar a aba Situação, enquanto uma tabela acessível e sem linha
+ * vira `registrada: false` — o console distingue "não consegui consultar" de
+ * "ainda não houve replicação". Banco fora do ar não chega aqui: as contagens de
+ * `readConsoleStatus` falham antes e a aba inteira responde erro.
+ */
+async function readConsoleReplication(config: SiteServerConfig) {
+  try {
+    const response = await call(
+      config,
+      "premium_catalog_sync_state?select=last_attempt_at,last_status,last_success_at,last_error,source_count,curated_count&id=eq.true&limit=1",
+    );
+    const value = await rows<Record<string, unknown>>(response);
+    return value.length ? summarizeReplication(value[0]) : summarizeReplication({});
+  } catch {
+    return null;
+  }
+}
+
 export async function readConsoleStatus(): Promise<ConsoleStatus> {
   const entrega = deliveryDiagnosis();
   const config = consoleDatabase();
   const verificadoEm = new Date().toISOString();
-  if (!config) return { banco: false, entrega, contagens: null, verificadoEm };
-  const [itens, publicados, leads, leadsNaFila, leadsComFalha, limites] =
+  if (!config)
+    return {
+      banco: false,
+      entrega,
+      contagens: null,
+      replicacao: null,
+      verificadoEm,
+    };
+  const [itens, publicados, leads, leadsNaFila, leadsComFalha, limites, replicacao] =
     await Promise.all([
       count(config, "premium_catalog_items?select=id&limit=1"),
       count(config, "premium_catalog_items?select=id&published=eq.true&limit=1"),
@@ -199,11 +228,13 @@ export async function readConsoleStatus(): Promise<ConsoleStatus> {
         "premium_briefings?select=id&delivery_status=eq.failed&limit=1",
       ),
       count(config, "premium_briefing_rate_limits?select=client_hash&limit=1"),
+      readConsoleReplication(config),
     ]);
   return {
     banco: true,
     entrega,
     contagens: { itens, publicados, leads, leadsNaFila, leadsComFalha, limites },
+    replicacao,
     verificadoEm,
   };
 }

@@ -11,12 +11,14 @@ import {
 import {
   RATE_LIMIT_MAX_ATTEMPTS,
   RATE_LIMIT_WINDOW_MS,
+  REPLICATION_STALE_MS,
   isBriefingStatus,
   isClientHash,
   isRfc3339,
   parseMaterialLines,
   rateLimitReference,
   summarizeRateLimit,
+  summarizeReplication,
   validateTechnicalSheet,
 } from "../../src/lib/console-validation.mjs";
 
@@ -294,4 +296,110 @@ test("the console only accepts the timestamps the database returns", () => {
     42,
   ])
     assert.equal(isRfc3339(value), false, `${String(value)} must be refused`);
+});
+const replicationNow = Date.parse("2026-11-26T18:00:00.000Z");
+const replicationRow = (overrides = {}) => ({
+  last_attempt_at: "2026-11-26T14:00:00.000Z",
+  last_status: "success",
+  last_success_at: "2026-11-26T14:00:00.000Z",
+  last_error: null,
+  source_count: 7968,
+  curated_count: 8,
+  ...overrides,
+});
+
+test("a fresh replication shows when it ran and what it checked", () => {
+  assert.deepEqual(summarizeReplication(replicationRow(), replicationNow), {
+    registrada: true,
+    status: "success",
+    ultimaTentativaEm: "2026-11-26T14:00:00.000Z",
+    ultimoSucessoEm: "2026-11-26T14:00:00.000Z",
+    horasDesdeSucesso: 4,
+    atrasada: false,
+    erro: null,
+    origem: 7968,
+    curados: 8,
+  });
+});
+
+test("a stalled replication is flagged after the stale window", () => {
+  const success = Date.parse("2026-11-26T14:00:00.000Z");
+  const inside = summarizeReplication(
+    replicationRow(),
+    success + REPLICATION_STALE_MS,
+  );
+  assert.equal(inside.atrasada, false);
+  const late = summarizeReplication(
+    replicationRow(),
+    success + REPLICATION_STALE_MS + 1,
+  );
+  assert.equal(late.atrasada, true);
+  assert.equal(late.erro, null);
+});
+
+test("a failed attempt keeps the last success and exposes the reason", () => {
+  const failed = summarizeReplication(
+    replicationRow({
+      last_attempt_at: "2026-11-26T17:00:00.000Z",
+      last_status: "failed",
+      last_error: "Catalog sync failed (HTTP 503).",
+    }),
+    replicationNow,
+  );
+  assert.equal(failed.status, "failed");
+  assert.equal(failed.atrasada, false);
+  assert.equal(failed.ultimoSucessoEm, "2026-11-26T14:00:00.000Z");
+  assert.equal(failed.horasDesdeSucesso, 4);
+  assert.equal(failed.erro, "Catalog sync failed (HTTP 503).");
+});
+
+test("a failed attempt without any success is already late", () => {
+  const failed = summarizeReplication(
+    replicationRow({
+      last_status: "failed",
+      last_success_at: null,
+      last_error: "Approved site API configuration is missing or mismatched.",
+    }),
+    replicationNow,
+  );
+  assert.equal(failed.status, "failed");
+  assert.equal(failed.ultimoSucessoEm, null);
+  assert.equal(failed.horasDesdeSucesso, null);
+  assert.equal(failed.atrasada, true);
+});
+
+test("an empty or malformed heartbeat never looks healthy", () => {
+  const nothing = summarizeReplication(null, replicationNow);
+  assert.equal(nothing.registrada, false);
+  assert.equal(nothing.status, null);
+  assert.equal(nothing.erro, null);
+  // Sem tentativa nenhuma o console diz "sem registro" na aba Situação, então
+  // aqui não há atraso a declarar: a própria tela já avisa.
+  assert.equal(nothing.atrasada, false);
+  for (const row of [undefined, {}, { last_attempt_at: "not a date" }]) {
+    const summary = summarizeReplication(row, replicationNow);
+    assert.equal(summary.registrada, false);
+    assert.equal(summary.atrasada, false);
+    assert.equal(summary.ultimaTentativaEm, null);
+    assert.equal(summary.origem, null);
+  }
+
+  // Tentativa registrada com sucesso e sem data de sucesso é estado inconsistente:
+  // atrasada, e o motivo do erro continua disponível quando existir.
+  const inconsistent = summarizeReplication(
+    {
+      last_attempt_at: "2026-11-26T14:00:00.000Z",
+      last_status: "failed",
+      last_success_at: null,
+      last_error: "Falha sem mensagem.",
+      source_count: "7968",
+      curated_count: 8.5,
+    },
+    replicationNow,
+  );
+  assert.equal(inconsistent.registrada, true);
+  assert.equal(inconsistent.atrasada, true);
+  assert.equal(inconsistent.origem, null);
+  assert.equal(inconsistent.curados, null);
+  assert.equal(inconsistent.erro, "Falha sem mensagem.");
 });
