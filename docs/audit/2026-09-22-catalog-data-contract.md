@@ -5,20 +5,22 @@ Escopo: `doufsxqlfjyuvxuezpln` (somente GET) → conferência/sincronizador → 
 
 ## Resultado
 
-O fluxo preservou a fronteira entre os bancos em todos os ensaios. A origem operacional recebeu somente GET com chave publishable, view e seis colunas fixas. O dry-run consultou os dois projetos e não executou escrita. A conferência ao vivo encontrou os oito IDs da curadoria ativos na origem e oito produtos publicados no banco premium, com os 12 campos públicos iguais ao snapshot editorial. “Oito” descreve a seleção consultada, não o total da origem.
+O fluxo preservou a fronteira entre os bancos em todos os ensaios. A origem operacional recebeu somente GET com chave publishable, view e projeção fixa de nove colunas (a execução original de 22/09/2026 registrou seis; a projeção cresceu depois, sem mudar a fronteira). O dry-run consultou os dois projetos e não executou escrita. A conferência ao vivo encontrou os oito IDs da curadoria ativos na origem e oito produtos publicados no banco premium, com os 12 campos públicos iguais ao snapshot editorial. “Oito” descreve a seleção consultada, não o total da origem.
 
 O sincronizador passou a validar integralmente o snapshot antes de qualquer chamada de rede. Dados malformados, ambíguos ou excessivos agora falham antes de ler a origem e antes de alcançar o destino.
 
 ## Evidências reproduzíveis
 
-| Verificação                                  | Resultado                            | Comando                                                                                                           |
-| -------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| Fronteira origem/destino e falhas simuladas  | 52/52 testes                         | `npm run test:catalog-boundary`                                                                                   |
-| Paginação, cache, drift e integração isolada | 57/57 cenários                       | `node scripts/audit-plan-scenarios.mjs`                                                                           |
-| Origem operacional ao vivo                   | 8 ativos e coincidentes; GET público | `npm run check:catalog-source`                                                                                    |
-| Fluxo completo sem mutação                   | 8 conferidos; zero escritas          | `npm run db:sync-catalog -- --dry-run`                                                                            |
-| Publicação premium ao vivo                   | 8 publicados; 12 campos exatos       | `npm run check:editorial:live`                                                                                    |
-| Formatação e whitespace                      | aprovado                             | `npx prettier --check scripts/sync-site-catalog.mjs scripts/tests/catalog-boundary.test.mjs` e `git diff --check` |
+| Verificação                                  | Resultado                                 | Comando                                                                                                           |
+| -------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Fronteira origem/destino e falhas simuladas  | 82/82 testes                              | `npm run test:catalog-boundary`                                                                                   |
+| Paginação, cache, drift e integração isolada | 57/57 cenários                            | `node scripts/audit-plan-scenarios.mjs`                                                                           |
+| Origem operacional ao vivo                   | 8 curados entre 7.968 ativos; GET público | `npm run check:catalog-source`                                                                                    |
+| Fluxo completo sem mutação                   | 8 conferidos; zero escritas               | `npm run db:sync-catalog -- --dry-run`                                                                            |
+| Publicação premium ao vivo                   | 8 publicados; 12 campos exatos            | `npm run check:editorial:live`                                                                                    |
+| Formatação e whitespace                      | aprovado                                  | `npx prettier --check scripts/sync-site-catalog.mjs scripts/tests/catalog-boundary.test.mjs` e `git diff --check` |
+
+A linha da fronteira do catálogo foi revalidada em 26/11/2026: `82/82` testes na suíte `test:catalog-boundary` e `7.968` ativos medidos na origem nessa data. As demais linhas registram a execução original de 22/09/2026.
 
 Nenhum teste de escrita, migration, RPC de mutação ou alteração de permissão foi executado em `doufsxqlfjyuvxuezpln`.
 

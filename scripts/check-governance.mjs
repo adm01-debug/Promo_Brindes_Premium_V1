@@ -38,6 +38,12 @@ assert.deepEqual(
 );
 for (const gate of governance.requiredGates) {
   assert.ok(["blocked", "proven"].includes(gate.state));
+  if (gate.state === "proven") {
+    assert.ok(
+      typeof gate.evidence === "string" && gate.evidence.trim().length > 0,
+      `${gate.id} está marcado como proven sem evidência registrada`,
+    );
+  }
   if (gate.evidence) assert.ok(existsSync(gate.evidence), gate.evidence);
 }
 assert.ok(governance.decisions.length >= 8);

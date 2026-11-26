@@ -27,7 +27,7 @@ A resposta `2026-09-22.2` inclui total, página, critérios normalizados, sugest
 | --------------------------------------------------- | ----------------------------------------------------- |
 | Build de produção e TypeScript                      | Aprovados                                             |
 | Playwright em Chromium, Firefox e WebKit            | 213/213 aprovados                                     |
-| Isolamento de sincronização e fronteira dos bancos  | 52/52 aprovados                                       |
+| Isolamento de sincronização e fronteira dos bancos  | 82/82 aprovados                                       |
 | Biblioteca de catálogos                             | 13/13 aprovados                                       |
 | Ambientes de runtime                                | 5/5 aprovados                                         |
 | Probes sintéticos de catálogo, briefing e segurança | 57/57 aprovados                                       |
