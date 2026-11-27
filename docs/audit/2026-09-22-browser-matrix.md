@@ -2,6 +2,8 @@
 
 Playwright `1.63.0`, Linux headless e build de produção. A matriz vigente executa as mesmas 71 jornadas em cada motor: catálogo/contrato/API, facetas combináveis, busca e histórico, seleção e briefing, recomendações contextuais, metadados, teclado, alvos, privacidade de runtime, rede lenta, menu e reflow móvel, diálogos, privacidade, plano e axe nos fluxos representativos. A rodada atual tem **213 aprovações locais**; a matriz imediatamente anterior teve 198 aprovações no [CI remoto do commit `41f2af9`](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/35782380054).
 
+Revalidação de 26/11/2026 na `main` (`6979a72`): a matriz cresceu para `81` jornadas por motor e passou com **243/243** execuções no job `verify` do run [45913281279](https://github.com/adm01-debug/Promo_Brindes_Premium_V1/actions/runs/45913281279).
+
 | Motor    | Versão observada | Larguras exercitadas | Resultado local |
 | -------- | ---------------- | -------------------- | --------------- |
 | Chromium | `153.0.8010.12`  | 1280, 390 e 320 px   | 71/71           |

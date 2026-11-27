@@ -5,22 +5,22 @@ Escopo: `doufsxqlfjyuvxuezpln` (somente GET) → conferência/sincronizador → 
 
 ## Resultado
 
-O fluxo preservou a fronteira entre os bancos em todos os ensaios. A origem operacional recebeu somente GET com chave publishable, view e projeção fixa de nove colunas (a execução original de 22/09/2026 registrou seis; a projeção cresceu depois, sem mudar a fronteira). O dry-run consultou os dois projetos e não executou escrita. A conferência ao vivo encontrou os oito IDs da curadoria ativos na origem e oito produtos publicados no banco premium, com os 12 campos públicos iguais ao snapshot editorial. “Oito” descreve a seleção consultada, não o total da origem.
+O fluxo preservou a fronteira entre os bancos em todos os ensaios. A origem operacional recebeu somente GET com chave publishable, view e projeção fixa de nove colunas (a execução original de 22/09/2026 registrou seis; a projeção cresceu depois, sem mudar a fronteira). O dry-run consultou os dois projetos e não executou escrita. A conferência ao vivo encontrou os oito IDs da curadoria ativos na origem e oito produtos publicados no banco premium, com os 16 campos públicos iguais ao snapshot editorial. “Oito” descreve a seleção consultada, não o total da origem.
 
 O sincronizador passou a validar integralmente o snapshot antes de qualquer chamada de rede. Dados malformados, ambíguos ou excessivos agora falham antes de ler a origem e antes de alcançar o destino.
 
 ## Evidências reproduzíveis
 
-| Verificação                                  | Resultado                                 | Comando                                                                                                           |
-| -------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Fronteira origem/destino e falhas simuladas  | 82/82 testes                              | `npm run test:catalog-boundary`                                                                                   |
-| Paginação, cache, drift e integração isolada | 57/57 cenários                            | `node scripts/audit-plan-scenarios.mjs`                                                                           |
-| Origem operacional ao vivo                   | 8 curados entre 7.968 ativos; GET público | `npm run check:catalog-source`                                                                                    |
-| Fluxo completo sem mutação                   | 8 conferidos; zero escritas               | `npm run db:sync-catalog -- --dry-run`                                                                            |
-| Publicação premium ao vivo                   | 8 publicados; 12 campos exatos            | `npm run check:editorial:live`                                                                                    |
-| Formatação e whitespace                      | aprovado                                  | `npx prettier --check scripts/sync-site-catalog.mjs scripts/tests/catalog-boundary.test.mjs` e `git diff --check` |
+| Verificação                                  | Resultado                                  | Comando                                                                                                           |
+| -------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Fronteira origem/destino e falhas simuladas  | 82/82 testes                               | `npm run test:catalog-boundary`                                                                                   |
+| Paginação, cache, drift e integração isolada | 61/61 cenários                             | `node scripts/audit-plan-scenarios.mjs`                                                                           |
+| Origem operacional ao vivo                   | 8 curados entre 7.968 ativos; GET público  | `npm run check:catalog-source`                                                                                    |
+| Fluxo completo sem mutação                   | 8 conferidos; zero escritas                | `npm run db:sync-catalog -- --dry-run`                                                                            |
+| Publicação premium ao vivo                   | 8 publicados; 16 campos iguais ao snapshot | `npm run check:editorial:live`                                                                                    |
+| Formatação e whitespace                      | aprovado                                   | `npx prettier --check scripts/sync-site-catalog.mjs scripts/tests/catalog-boundary.test.mjs` e `git diff --check` |
 
-A linha da fronteira do catálogo foi revalidada em 26/11/2026: `82/82` testes na suíte `test:catalog-boundary` e `7.968` ativos medidos na origem nessa data. As demais linhas registram a execução original de 22/09/2026.
+A linha da fronteira do catálogo foi revalidada em 26/11/2026: `82/82` testes na suíte `test:catalog-boundary` e `7.968` ativos medidos na origem nessa data. As linhas de cenários, fluxo sem mutação e publicação ao vivo foram revalidadas na mesma data: `61/61` cenários em `audit-plan-scenarios.mjs`, dry-run com `8` conferidos entre `7.968` ativos e zero escritas, conferência editorial com `8` publicados e `16` campos por peça iguais ao snapshot. As demais linhas registram a execução original de 22/09/2026.
 
 Nenhum teste de escrita, migration, RPC de mutação ou alteração de permissão foi executado em `doufsxqlfjyuvxuezpln`.
 
@@ -34,7 +34,7 @@ Nenhum teste de escrita, migration, RPC de mutação ou alteração de permissã
 - Colunas inesperadas da origem, incluindo custo e fornecedor sintéticos, são descartadas na reconstrução do DTO.
 - Escrita do sincronizador permanece restrita ao host premium exato; URL operacional, lookalikes, porta, credenciais na URL, caminho, query, fragmento e redirecionamento são recusados.
 - Despublicação manual, leitura parcial do destino, falha da origem e drift em SKU, nome original, mínimo ou personalização interrompem o fluxo antes da escrita.
-- API pública lê somente os 12 campos aprovados, somente publicados, em páginas de 500, com contagem exata e teto de 10.000 itens.
+- API pública lê somente os 16 campos aprovados, somente publicados, em páginas de 500, com contagem exata e teto de 10.000 itens.
 - Paginação de 530 itens, mudança de total entre páginas, ausência de total, intervalo inconsistente, duplicata e item não solicitado foram simulados.
 - Consulta por IDs usa `no-store`; descoberta usa cache compartilhado de um minuto e `must-revalidate`.
 - Publicação exige `published=true` e a janela opcional `published_from`/`published_until` vigente tanto na RLS quanto nas consultas do runtime.

@@ -41,11 +41,13 @@ O sincronizador não envia os campos de vigência em seu `upsert`; portanto, uma
 
 Evidência reproduzível:
 
-- `supabase test db --local`: **64/64** contratos pgTAP;
+- `supabase test db --local`: **103/103** asserções pgTAP em 4 arquivos;
 - `supabase db lint --local --level warning --fail-on warning`: zero alertas;
-- `node scripts/audit-plan-scenarios.mjs`: **57/57** cenários;
-- `npm run check:editorial:live`: oito produtos e 12 campos por peça iguais ao snapshot;
+- `node scripts/audit-plan-scenarios.mjs`: **61/61** cenários;
+- `npm run check:editorial:live`: oito produtos e 16 campos por peça iguais ao snapshot;
 - `npm run db:migrate -- --dry-run`: banco remoto atualizado, sem migration pendente.
+
+Revalidação de 26/11/2026 na `main` (`6979a72`): a execução isolada do CI mediu `103/103` asserções pgTAP (`Files=4, Tests=103` no run 45913281171) e `61/61` cenários no run 45913281279; a conferência editorial ao vivo encontrou `16` campos por peça iguais ao snapshot. As demais linhas registram a execução original de 22/09/2026.
 
 ## Produção validada
 
