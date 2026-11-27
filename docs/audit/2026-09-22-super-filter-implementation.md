@@ -26,16 +26,18 @@ A resposta `2026-09-22.2` inclui total, página, critérios normalizados, sugest
 | Verificação                                         | Resultado                                             |
 | --------------------------------------------------- | ----------------------------------------------------- |
 | Build de produção e TypeScript                      | Aprovados                                             |
-| Playwright em Chromium, Firefox e WebKit            | 213/213 aprovados                                     |
+| Playwright em Chromium, Firefox e WebKit            | 243/243 aprovados                                     |
 | Isolamento de sincronização e fronteira dos bancos  | 82/82 aprovados                                       |
 | Biblioteca de catálogos                             | 13/13 aprovados                                       |
-| Ambientes de runtime                                | 5/5 aprovados                                         |
-| Probes sintéticos de catálogo, briefing e segurança | 57/57 aprovados                                       |
+| Ambientes de runtime                                | 10/10 aprovados                                       |
+| Probes sintéticos de catálogo, briefing e segurança | 61/61 aprovados                                       |
 | Plano de 200 etapas                                 | 200 IDs/revisões; Markdown e CSV sincronizados        |
-| Segredos em arquivos públicos/build                 | 70 arquivos verificados; aprovado                     |
+| Segredos em arquivos públicos/build                 | 91 arquivos verificados; aprovado                     |
 | Orçamento de mídia e build                          | Aprovado                                              |
 | Origem operacional ao vivo                          | 8 IDs da curadoria ativos por GET; nenhuma escrita    |
 | Dependências de produção                            | `npm audit --omit=dev`: 0 vulnerabilidades conhecidas |
+
+A revalidação de 26/11/2026 na `main` (`6979a72`) mediu `243/243` execuções E2E (81 jornadas em cada um de Chromium, Firefox e WebKit), `10/10` ambientes de runtime, `61/61` cenários sintéticos e `91` arquivos públicos no scanner de segredos. As demais linhas registram a execução original de 22/09/2026.
 
 Capturas revisadas: [desktop](../screenshots/super-filtro-desktop.png) e [mobile](../screenshots/super-filtro-mobile.png).
 
