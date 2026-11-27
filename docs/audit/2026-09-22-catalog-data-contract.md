@@ -28,7 +28,7 @@ Nenhum teste de escrita, migration, RPC de mutação ou alteração de permissã
 
 - Origem fixa em `https://doufsxqlfjyuvxuezpln.supabase.co/rest/v1/v_products_public`.
 - Método GET, redirecionamento recusado, sem corpo e sem `Authorization` administrativo.
-- Projeção fixa: `id,sku,name,min_quantity,allows_personalization,is_active`.
+- Projeção fixa: `id,sku,name,min_quantity,allows_personalization,is_active,materials,dimensions_display,weight_g`.
 - Chave da origem aceita somente no formato `sb_publishable_*`; secret e JWT legado falham antes da rede.
 - Resposta exige contagem exata, todos os IDs solicitados, IDs únicos, tipos válidos e itens ativos.
 - Colunas inesperadas da origem, incluindo custo e fornecedor sintéticos, são descartadas na reconstrução do DTO.

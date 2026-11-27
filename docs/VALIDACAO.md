@@ -10,7 +10,7 @@ Os gates comerciais permanecem documentados como abertos. Esta revisão corrigiu
 
 ## Resultados funcionais
 
-**243 execuções E2E locais: 81 jornadas em cada Chromium, Firefox e WebKit** cobrem os fluxos da prévia e a auditoria do plano. A suíte garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. Os cenários incluem:
+**243 execuções E2E em CI: 81 jornadas em cada Chromium, Firefox e WebKit**, medidas no job `verify` do commit `6979a72`, cobrem os fluxos da prévia e a auditoria do plano. A suíte garante que marcação local não altera o status auditado e que revisão antiga não mascara uma etapa ainda parcial. Os cenários incluem:
 
 1. Busca por SKU, resultado vazio, limpeza e filtro de categoria.
 2. Favoritos e seleção após recarregar, mínimo de quantidade e remoção.
