@@ -39,13 +39,13 @@ npm run db:sync-catalog
 npm run check:editorial:live
 ```
 
-O primeiro comando apenas consulta a origem. O segundo também confere a publicação no destino, sem gravação em nenhum banco. O terceiro repete as conferências e grava somente no banco premium. O último compara os 12 campos públicos publicados com o snapshot editorial.
+O primeiro comando apenas consulta a origem. O segundo também confere a publicação no destino, sem gravação em nenhum banco. O terceiro repete as conferências e grava somente no banco premium. O último compara os 16 campos públicos publicados com o snapshot editorial.
 
 A seleção editorial existente permanece com oito produtos; ela não representa o tamanho do catálogo operacional. IDs, SKU, nome original, mínimo e elegibilidade de personalização precisam coincidir com a origem e os oito candidatos devem estar ativos. Títulos editoriais, descrições, categorias, slugs, imagens e demais decisões públicas permanecem no snapshot revisável. A validação não certifica estoque, preços, alegações dos textos nem direitos das imagens.
 
 Resposta incompleta, IDs ausentes/duplicados, item inativo, dados inválidos, divergência ou indisponibilidade **interrompem a sincronização antes de qualquer escrita**. Uma despublicação no destino também interrompe o processo para não ser desfeita. Não se interpreta uma falha de leitura como autorização para apagar ou publicar produtos.
 
-Não há cron nem sincronização automática. Mudanças no catálogo central não aparecem imediatamente na vitrine. Quando houver divergência, revisar a seleção e seu registro editorial, ou retirar o item de publicação **somente no banco premium**, antes da próxima sincronização. O snapshot anterior permanece no site até essa ação; interromper a sincronização não o remove automaticamente. `sourceDate` continua sendo a data do snapshot editorial e não a hora da última leitura central.
+A conferência e a replicação rodam automaticamente todo dia pelo workflow `.github/workflows/catalog-source-guard.yml` (cron `17 11 * * *` UTC) e a cada mudança nos arquivos do catálogo na `main`, com disparo manual disponível. Fora desses horários, mudanças no catálogo central não aparecem imediatamente na vitrine. Quando houver divergência, revisar a seleção e seu registro editorial, ou retirar o item de publicação **somente no banco premium**, antes da próxima sincronização. O snapshot anterior permanece no site até essa ação; interromper a sincronização não o remove automaticamente. `sourceDate` continua sendo a data do snapshot editorial e não a hora da última leitura central.
 
 ## Evidências desta implementação
 
