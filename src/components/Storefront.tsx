@@ -43,6 +43,10 @@ import {
   type Selection,
 } from "@/lib/catalog";
 import { catalogCollections } from "@/lib/catalog-library";
+import {
+  buildPresentation,
+  renderPresentationHtml,
+} from "@/lib/presentation.mjs";
 
 const faq = [
   [
@@ -570,6 +574,32 @@ export default function Storefront({
     if (menuOpen) closeMenuAndFocusCuration();
     else scrollToCuration();
   };
+
+  async function exportPresentation() {
+    const verified = await verifySelectedProducts();
+    if (!verified) return;
+    const html = renderPresentationHtml(
+      buildPresentation({
+        briefing: {
+          name: briefingDraft.name,
+          company: briefingDraft.company,
+          occasion,
+          eventDate: briefingDraft.eventDate,
+          date: briefingDraft.date,
+        },
+        products: verified.products,
+        quantities: verified.quantities,
+      }),
+    );
+    downloadText(
+      "apresentacao-promo-premium.html",
+      html,
+      "text/html;charset=utf-8",
+    );
+    setNotice(
+      "Apresentação gerada. Abra o arquivo e use Imprimir para salvar em PDF.",
+    );
+  }
 
   async function verifySelectedProducts(): Promise<VerifiedSelection | null> {
     const quantities = { ...selectedRef.current };
@@ -1919,6 +1949,12 @@ export default function Storefront({
                 onClick={() => setStep(2)}
               >
                 Preparar meu briefing <ArrowRight size={17} />
+              </button>
+              <button
+                className="text-button"
+                onClick={() => void exportPresentation()}
+              >
+                Gerar apresentação para imprimir <Download size={15} />
               </button>
               <p className="fine-print">
                 {deliveryConfigured

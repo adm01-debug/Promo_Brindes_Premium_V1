@@ -1078,3 +1078,35 @@ test("axe: página permanente de produto sem violações automatizadas", async (
     .analyze();
   expect(result.violations).toEqual([]);
 });
+
+test("apresentação imprimível baixa documento com a seleção e sem preço", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", {
+      name: "Adicionar Kit executivo à seleção",
+      exact: true,
+    })
+    .click();
+  await page.getByRole("button", { name: "Minha seleção, 1 produtos" }).click();
+
+  const download = page.waitForEvent("download");
+  await page
+    .getByRole("button", {
+      name: "Gerar apresentação para imprimir",
+      exact: true,
+    })
+    .click();
+  const file = await download;
+  expect(file.suggestedFilename()).toBe("apresentacao-promo-premium.html");
+
+  const path = await file.path();
+  const html = await readFile(path, "utf8");
+
+  expect(html).toContain("<!doctype html>");
+  expect(html).toContain("Kit executivo");
+  expect(html).toMatch(/@page\{size:A4/);
+  expect(html).not.toMatch(/R\$\s*\d/);
+  expect(html).not.toContain("<script");
+});
