@@ -40,6 +40,7 @@ jobs:
           npm run test:catalog-library
           npm run test:publication-management
           npm run test:runtime-environment
+          npm run test:presentation
           npm run test:console-operations
       - name: Build production site
         run: npm run build
