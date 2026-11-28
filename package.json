@@ -18,6 +18,7 @@
     "test:catalog-library": "node --test scripts/tests/catalog-library.test.mjs",
     "test:publication-management": "node --test scripts/tests/publication-management.test.mjs",
     "test:runtime-environment": "node --test scripts/tests/runtime-environment.test.mjs",
+    "test:search-synonyms": "node --test scripts/tests/search-synonyms.test.mjs",
     "test:console-operations": "node --test scripts/tests/console-operations.test.mjs",
     "test:database-concurrency": "node scripts/tests/database-concurrency.mjs",
     "check:public-secrets": "node scripts/check-public-secrets.mjs",

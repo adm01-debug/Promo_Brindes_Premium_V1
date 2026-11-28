@@ -1,5 +1,6 @@
 import catalog from "./products.json";
 import { catalogCollections } from "./catalog-library";
+import { expandSearchQuery, searchTextMatches } from "./search-synonyms.mjs";
 
 /**
  * Public, editorial projection of the catalog snapshot. Keep operational
@@ -248,6 +249,11 @@ function filterCatalogItems(
     catalogItems.some((product) =>
       terms.every((term) => productCoreSearchText(product).includes(term)),
     );
+  // Expansão por sinônimo só entra quando o texto exato não casaria a palavra.
+  const expansionGroups = expandSearchQuery(
+    terms.join(" "),
+    catalogSearchVocabulary(catalogItems),
+  ).groups;
   const occasionIds = new Set(
     catalogCollections
       .filter((collection) => query.occasions.includes(collection.slug))
@@ -266,13 +272,22 @@ function filterCatalogItems(
         !query.personalizable ||
         product.personalizable) &&
       (query.quantity === null || product.minimum <= query.quantity) &&
-      terms.every((term) =>
-        (useCoreSearch
-          ? productCoreSearchText(product)
-          : productSearchText(product)
-        ).includes(term),
-      ),
+      (expansionGroups.length === 0 ||
+        searchTextMatches(
+          useCoreSearch
+            ? productCoreSearchText(product)
+            : productSearchText(product),
+          expansionGroups,
+        )),
   );
+}
+
+function catalogSearchVocabulary(catalogItems: readonly Product[]) {
+  const vocabulary = new Set<string>();
+  for (const product of catalogItems)
+    for (const token of productSearchText(product).split(/[^a-z0-9]+/))
+      if (token.length >= 3) vocabulary.add(token);
+  return vocabulary;
 }
 
 function catalogFacets(
