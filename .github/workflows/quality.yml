@@ -41,6 +41,7 @@ jobs:
           npm run test:publication-management
           npm run test:runtime-environment
           npm run test:console-operations
+          npm run test:product-comparison
       - name: Build production site
         run: npm run build
       - name: Check public assets and isolated scenarios
