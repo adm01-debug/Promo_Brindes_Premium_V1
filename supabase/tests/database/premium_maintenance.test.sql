@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
-select plan(22);
+select plan(39);
 
 select has_table(
   'public',
@@ -204,6 +204,201 @@ select ok(
     where job_name = 'prune_premium_briefing_rate_limits'
   ),
   'the failure keeps the last success time and the reason'
+);
+
+-- O cartao "Conferencia da vitrine" depende do heartbeat da replicacao: mesmo
+-- contrato de operacao do heartbeat da limpeza, com as garantias proprias do
+-- workflow do catalogo (um status por tentativa, motivo em linha unica e
+-- ultimo sucesso preservado quando a rodada falha).
+select has_table(
+  'public',
+  'premium_catalog_sync_state',
+  'replication keeps a heartbeat'
+);
+select is(
+  (
+    select pg_get_constraintdef(oid)
+    from pg_constraint
+    where conrelid = 'public.premium_catalog_sync_state'::regclass
+      and contype = 'p'
+  ),
+  'PRIMARY KEY (id)',
+  'the replication heartbeat is a keyed singleton row'
+);
+select ok(
+  (
+    select relrowsecurity
+    from pg_class
+    where oid = 'public.premium_catalog_sync_state'::regclass
+  ),
+  'the replication heartbeat has RLS enabled'
+);
+select is(
+  (
+    select count(*)
+    from pg_policies
+    where schemaname = 'public' and tablename = 'premium_catalog_sync_state'
+  ),
+  0::bigint,
+  'the replication heartbeat exposes no policy to API roles'
+);
+select ok(
+  not has_table_privilege('anon', 'public.premium_catalog_sync_state', 'SELECT')
+  and not has_table_privilege(
+    'authenticated',
+    'public.premium_catalog_sync_state',
+    'SELECT'
+  ),
+  'API roles cannot read the replication heartbeat'
+);
+select ok(
+  has_table_privilege('service_role', 'public.premium_catalog_sync_state', 'SELECT')
+  and has_table_privilege('service_role', 'public.premium_catalog_sync_state', 'INSERT')
+  and has_table_privilege('service_role', 'public.premium_catalog_sync_state', 'UPDATE'),
+  'service role reads and writes the replication heartbeat'
+);
+select ok(
+  not has_table_privilege('service_role', 'public.premium_catalog_sync_state', 'DELETE')
+  and not has_table_privilege(
+    'service_role',
+    'public.premium_catalog_sync_state',
+    'TRUNCATE'
+  ),
+  'service role cannot erase the replication history'
+);
+select ok(
+  not has_function_privilege(
+    'service_role',
+    'public.set_premium_catalog_updated_at()',
+    'EXECUTE'
+  ),
+  'the heartbeat trigger is not exposed as a service RPC'
+);
+select is(
+  (
+    select count(*)
+    from pg_trigger
+    where tgrelid = 'public.premium_catalog_sync_state'::regclass
+      and tgname = 'premium_catalog_sync_state_set_updated_at'
+      and not tgisinternal
+  ),
+  1::bigint,
+  'the heartbeat stamps its own update time'
+);
+select is(
+  (
+    select count(*)
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'premium_catalog_sync_state'
+      and column_name ~ '(email|phone|name|client|ip)'
+  ),
+  0::bigint,
+  'the heartbeat carries no personal data column'
+);
+
+insert into public.premium_catalog_sync_state (
+  id, last_attempt_at, last_status, last_success_at, last_error,
+  source_count, curated_count
+) values (
+  true, now() - interval '3 hours', 'success', now() - interval '3 hours', null,
+  7910, 8
+);
+
+create function public.pgtap_read_catalog_sync_state()
+returns text
+language plpgsql
+set search_path = ''
+as $$
+declare
+  observed text;
+begin
+  select state.last_status
+  into observed
+  from public.premium_catalog_sync_state as state
+  where state.id;
+
+  return coalesce(observed, 'missing');
+end;
+$$;
+
+savepoint as_catalog_reader;
+set local role service_role;
+select is(
+  public.pgtap_read_catalog_sync_state(),
+  'success',
+  'service role reads the heartbeat through RLS'
+);
+rollback to savepoint as_catalog_reader;
+
+select throws_ok(
+  $sql$
+    update public.premium_catalog_sync_state
+    set last_attempt_at = now(), last_status = 'partial'
+  $sql$,
+  '23514',
+  null,
+  'an unknown replication status is refused'
+);
+select throws_ok(
+  $sql$
+    update public.premium_catalog_sync_state
+    set last_attempt_at = now(), last_status = 'failed', last_error = null
+  $sql$,
+  '23514',
+  null,
+  'a failed replication without a reason is refused'
+);
+select throws_ok(
+  $sql$
+    update public.premium_catalog_sync_state
+    set last_attempt_at = now(), curated_count = 0
+  $sql$,
+  '23514',
+  null,
+  'a curated count below one is refused'
+);
+
+update public.premium_catalog_sync_state
+set last_attempt_at = now(),
+    last_status = 'failed',
+    last_error = 'gestao inacessivel';
+
+select is(
+  (
+    select state.last_status || ':' || state.last_error
+    from public.premium_catalog_sync_state as state
+    where state.id
+  ),
+  'failed:gestao inacessivel',
+  'a failed replication is recorded with its reason'
+);
+select ok(
+  (
+    select state.last_success_at is not null
+    from public.premium_catalog_sync_state as state
+    where state.id
+  ),
+  'a failed replication keeps the last success time for the console'
+);
+
+update public.premium_catalog_sync_state
+set last_attempt_at = now(),
+    last_status = 'success',
+    last_error = null,
+    last_success_at = now(),
+    source_count = 7984,
+    curated_count = 8;
+
+select ok(
+  (
+    select state.updated_at > state.last_attempt_at - interval '1 minute'
+      and state.source_count = 7984
+      and state.curated_count = 8
+    from public.premium_catalog_sync_state as state
+    where state.id
+  ),
+  'a successful replication records counts and its own update time'
 );
 
 select * from finish();
