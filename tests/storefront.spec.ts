@@ -1078,3 +1078,105 @@ test("axe: página permanente de produto sem violações automatizadas", async (
     .analyze();
   expect(result.violations).toEqual([]);
 });
+
+test("comparação mostra diferenças reais e marca dado ausente", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Conheça toda a seleção" }).click();
+  await page
+    .getByRole("button", { name: "Comparar Kit executivo", exact: true })
+    .click();
+  await page
+    .getByRole("button", {
+      name: "Comparar Caneta touch em alumínio",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.locator('.product-card .compare-button[aria-pressed="true"]'),
+  ).toHaveCount(2);
+  const tray = page.getByRole("region", { name: "Comparação", exact: true });
+  await expect(tray).toContainText("2 na comparação");
+  await tray.getByRole("button", { name: "Comparar", exact: true }).click();
+  const table = page.getByRole("table", { name: /Comparação de 2 peças/ });
+  await expect(table).toBeVisible();
+  await expect(
+    table.getByRole("columnheader", { name: /Kit executivo/ }),
+  ).toBeVisible();
+  await expect(
+    table.getByRole("columnheader", { name: /Caneta touch em alumínio/ }),
+  ).toBeVisible();
+  await expect(table.locator("tbody th")).toHaveCount(7);
+  const minimumRow = table.locator("tr", { hasText: "Pedido mínimo" });
+  await expect(minimumRow).toHaveClass(/is-different/);
+  const dimensionRow = table.locator("tr", { hasText: "Dimensões" });
+  await expect(dimensionRow).toHaveClass(/is-different/);
+  const categoryRow = table.locator("tr", { hasText: "Categoria" });
+  await expect(categoryRow).toHaveClass(/is-different/);
+  await expect(
+    table.locator('td[data-missing="true"]').first(),
+  ).toContainText("Não informado");
+  await page.getByRole("button", { name: "Fechar janela", exact: true }).click();
+});
+
+test("comparação limita a três peças e explica a recusa", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Conheça toda a seleção" }).click();
+  const compareButtons = page.getByRole("button", { name: /^Comparar / });
+  await expect(compareButtons).toHaveCount(8);
+  for (const name of [
+    "Kit executivo",
+    "Caderno A5 em PET reciclado",
+    "Mochila executive 22 L",
+  ])
+    await page
+      .getByRole("button", { name: `Comparar ${name}`, exact: true })
+      .click();
+  await page
+    .getByRole("button", {
+      name: "Comparar Garrafa térmica 500 ml",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByRole("status").filter({ hasText: "no máximo 3 peças" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", {
+      name: "Comparar Garrafa térmica 500 ml",
+      exact: true,
+    }),
+  ).toHaveAttribute("aria-pressed", "false");
+  const tray = page.getByRole("region", { name: "Comparação", exact: true });
+  await expect(tray).toContainText("3 na comparação");
+  await tray.getByRole("button", { name: "Limpar", exact: true }).click();
+  await expect(tray).toHaveCount(0);
+});
+
+test("comparação é operável só pelo teclado e respeita o foco", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const compare = page
+    .locator(".product-card")
+    .first()
+    .locator(".compare-button");
+  await compare.focus();
+  await page.keyboard.press("Enter");
+  await expect(compare).toHaveAttribute("aria-pressed", "true");
+  const tray = page.getByRole("region", { name: "Comparação", exact: true });
+  await tray.getByRole("button", { name: "Comparar", exact: true }).click();
+  await expect(
+    page.getByRole("table", { name: /Comparação de 1 peças/ }),
+  ).toBeVisible();
+  await expect(page.getByText("Não informado").first()).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("table")).toHaveCount(0);
+  await expect(tray).toBeVisible();
+  await expect(
+    page.evaluate(() =>
+      Boolean(document.querySelector("dialog[open]")),
+    ),
+  ).resolves.toBe(false);
+});

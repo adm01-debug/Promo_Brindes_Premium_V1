@@ -11,6 +11,7 @@ import {
   ChevronDown,
   Download,
   Gift,
+  GitCompareArrows,
   Heart,
   Menu,
   Minus,
@@ -23,6 +24,12 @@ import {
   X,
 } from "lucide-react";
 import Modal from "./Modal";
+import ComparisonPanel, { ComparisonTray } from "./ComparisonPanel";
+import {
+  COMPARISON_MAX_ITEMS,
+  comparisonRefusalMessage,
+  toggleComparison,
+} from "@/lib/product-comparison.mjs";
 import CatalogFilters, {
   countDiscoveryFilters,
   type CatalogDiscovery,
@@ -120,6 +127,8 @@ export default function Storefront({
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [comparing, setComparing] = useState<string[]>([]);
+  const [comparisonOpen, setComparisonOpen] = useState(false);
   const [onlyFavorites, setOnlyFavorites] = useState(false);
   const [selected, setSelected] = useState<Selection>({});
   const selectedRef = useRef(selected);
@@ -366,6 +375,7 @@ export default function Storefront({
   const selection = Object.keys(selected)
     .map((id) => knownProducts[id])
     .filter((product): product is Product => Boolean(product));
+  const knownProductsList = Object.values(knownProducts);
   const markImageUnavailable = (image: string) =>
     setUnavailableImages((current) => {
       if (current.has(image)) return current;
@@ -551,6 +561,25 @@ export default function Storefront({
     }
     setFavorites((prev) =>
       prev.includes(p.id) ? prev.filter((id) => id !== p.id) : [...prev, p.id],
+    );
+  };
+  const toggleCompare = (p: Product) => {
+    const catalogIds = (catalog?.items ?? []).map((item) => item.id);
+    const result = toggleComparison(comparing, p.id, catalogIds);
+    setComparing(result.items);
+    if (!result.accepted) {
+      setNotice(comparisonRefusalMessage(result.reason, COMPARISON_MAX_ITEMS));
+      return;
+    }
+    if (result.reason === "removed") {
+      setNotice(`${p.name} saiu da comparação.`);
+      if (!result.items.length) setComparisonOpen(false);
+      return;
+    }
+    setNotice(
+      result.items.length === 1
+        ? `${p.name} na comparação. Escolha mais uma para ver as diferenças.`
+        : `${p.name} na comparação (${result.items.length} de ${COMPARISON_MAX_ITEMS}).`,
     );
   };
   const browse = (value: string) => {
@@ -1196,6 +1225,14 @@ export default function Storefront({
                     >
                       <Heart size={18} />
                     </button>
+                    <button
+                      className={`compare-button ${comparing.includes(p.id) ? "is-comparing" : ""}`}
+                      aria-label={`${comparing.includes(p.id) ? "Remover" : "Comparar"} ${p.name}`}
+                      aria-pressed={comparing.includes(p.id)}
+                      onClick={() => toggleCompare(p)}
+                    >
+                      <GitCompareArrows size={18} />
+                    </button>
                     <span className="product-index">
                       Nº{" "}
                       {(
@@ -1311,6 +1348,37 @@ export default function Storefront({
                 </button>
               </div>
             )
+          )}
+          {!catalogError && (
+            <ComparisonTray
+              count={comparing.length}
+              onOpen={() => setComparisonOpen(true)}
+              onClear={() => {
+                setComparing([]);
+                setNotice("Comparação limpa.");
+              }}
+            />
+          )}
+          {comparisonOpen && comparing.length > 0 && (
+            <ComparisonPanel
+              items={comparing}
+              products={knownProductsList}
+              imageUnavailable={imageIsUnavailable}
+              onToggle={(id) => {
+                const product = knownProductsList.find((item) => item.id === id);
+                if (!product) {
+                  setComparing((current) => current.filter((item) => item !== id));
+                  return;
+                }
+                toggleCompare(product);
+              }}
+              onClear={() => {
+                setComparing([]);
+                setComparisonOpen(false);
+                setNotice("Comparação limpa.");
+              }}
+              onClose={() => setComparisonOpen(false)}
+            />
           )}
           {!catalogError &&
             !expanded &&
